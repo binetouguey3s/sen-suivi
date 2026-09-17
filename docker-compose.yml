@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sensuivi_db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sensuivi_network
+
+  backend:
+    build: ./backend
+    container_name: sensuivi_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - sensuivi_network
+
+  ai-service:
+    build: ./ai-service
+    container_name: sensuivi_ai_service
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
+    volumes:
+      - chroma_data:${CHROMA_PERSIST_DIR}
+    networks:
+      - sensuivi_network
+
+  frontend:
+    build: ./frontend
+    container_name: sensuivi_frontend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    networks:
+      - sensuivi_network
+
+  n8n:
+    image: n8nio/n8n
+    container_name: sensuivi_n8n
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - sensuivi_network
+
+networks:
+  sensuivi_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  chroma_data:
+  n8n_data:
