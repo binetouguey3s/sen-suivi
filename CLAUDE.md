@@ -189,21 +189,56 @@ Une courbe d'humeur menthe, trait plein 3px, extrémités arrondies, traverse le
 
 ## 7. Règles de code
 
+### Environnement
+
+Angular CLI 22.1.2 · Node.js 24.16 · npm 11.17 · Linux x64
+Image Docker du front-end : node:24-alpine
+
+### Angular 22 — approche signal-first obligatoire
+
+Angular 22 est la version signal-first. N'écris jamais de code au style
+Angular 16-19 : il serait obsolète dans un projet daté de 2026.
+
+| À utiliser | À ne jamais utiliser |
+|---|---|
+| Zoneless (défaut) | zone.js, provideZoneChangeDetection, ngZone |
+| OnPush (défaut sur les nouveaux composants) | ChangeDetectionStrategy.Eager sauf raison explicite |
+| signal(), computed(), linkedSignal(), effect() | propriétés de classe mutables pour l'état |
+| input(), output(), model() | décorateurs @Input() et @Output() |
+| httpResource() pour la lecture de données | HttpClient + subscribe + switchMap |
+| Signal Forms (@angular/forms/signals) | ReactiveFormsModule, FormBuilder, ControlValueAccessor |
+| @if, @for, @switch, @defer | *ngIf, *ngFor, *ngSwitch, NgIf, NgForOf |
+| inject() | injection par constructeur |
+| @Service() pour les services applicatifs simples | @Injectable({providedIn:'root'}) par réflexe |
+| Composants standalone | NgModule |
+| Vitest | Karma, Jasmine |
+
+Notes de version :
+- `paramsInheritanceStrategy` vaut `'always'` par défaut en v22 : vérifie
+  le comportement des routes imbriquées.
+- `httpResource()` reste réactif : si un signal utilisé dans sa lambda
+  change, la requête repart automatiquement. C'est ce qu'on veut pour les
+  filtres de la bibliothèque et du répertoire des lieux.
+- Utilise `@defer (on viewport)` pour les sections lourdes de la page
+  d'accueil : la galerie de lieux et la section professionnels.
+- `injectAsync` est en developer preview : ne l'utilise pas en v1.
+
+### Conventions du projet
+
 | Sujet | Règle |
 |---|---|
-| Langue du code | Noms de modèles et de champs en français (cohérence avec le diagramme UML). Commentaires en français |
-| Angular | Composants **standalone** uniquement, pas de NgModule. Signals pour l'état local |
-| Styles | Tous les tokens dans `frontend/src/app/styles/tokens.scss`. Aucune valeur hexadécimale en dur dans un composant |
-| Icônes | Toujours `<ss-icon name="...">`, jamais `<lucide-icon>` directement, jamais d'import Lucide hors de `icons.ts` |
-| Secrets | Jamais dans le code. Toujours via `.env`, avec un `.env.example` à jour |
-| Tests | Au minimum les règles métier sensibles : détection de détresse, calcul du score de tendance, refus de connexion d'un pro non validé |
+| Langue du code | Noms de modèles et de champs en français, cohérents avec le diagramme UML. Commentaires en français |
+| Styles | Tous les tokens dans frontend/src/app/styles/tokens.scss. Aucune valeur hexadécimale en dur dans un composant |
+| Icônes | Toujours <ss-icon>, jamais <lucide-icon> directement, jamais d'import Lucide hors de core/icons/icons.ts |
+| Secrets | Jamais dans le code. Toujours via .env, avec un .env.example à jour |
+| Tests | Vitest. Au minimum : détection de détresse, calcul du score de tendance, refus de connexion d'un professionnel non validé |
 
 ### Git
 
-Branches : `main` (stable) et `dev` (intégration). Une branche `feat/<nom>` par fonctionnalité.
-Commits en conventional commits, en français : `feat(chatbot): ajoute la détection de détresse`.
-
----
+Branches : `main` (stable) et `dev` (intégration). Une branche `feat/<nom>`
+par fonctionnalité.
+Commits en conventional commits, en français :
+`feat(chatbot): ajoute la détection de détresse`
 
 ## 8. Maquettes
 
