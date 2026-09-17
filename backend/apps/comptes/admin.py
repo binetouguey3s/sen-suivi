@@ -11,8 +11,9 @@ class CompteUtilisateurAdmin(admin.ModelAdmin):
 
 @admin.register(Utilisateur)
 class UtilisateurAdmin(admin.ModelAdmin):
-    list_display = ('prenom', 'nom', 'email', 'date_creation')
-    search_fields = ('prenom', 'nom', 'email')
+    list_display = ('prenom', 'nom', 'email', 'pseudonyme', 'date_creation')
+    search_fields = ('prenom', 'nom', 'email', 'pseudonyme')
+    readonly_fields = ('pseudonyme',)
 
 
 @admin.register(Professionnel)

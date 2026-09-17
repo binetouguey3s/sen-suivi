@@ -46,6 +46,55 @@ class SuiviHumeur(models.Model):
         return f'{self.utilisateur} — {self.date} ({self.get_score_humeur_display()})'
 
 
+class QuestionEvaluation(models.Model):
+    """Question d'auto-évaluation, propre à la plateforme (jamais PHQ-9/GAD-7).
+
+    Modélisée en base (et non en constantes Python) pour deux raisons
+    (décision de l'autrice) : pouvoir corriger un libellé depuis l'admin
+    sans redéployer, et garder les AutoEvaluation rattachables aux
+    questions réellement posées, pour un score vérifiable.
+    """
+
+    type_evaluation = models.CharField(
+        "type d'évaluation", max_length=10, choices=TypeEvaluation.choices
+    )
+    libelle = models.CharField('libellé', max_length=255)
+    ordre = models.PositiveSmallIntegerField('ordre')
+
+    class Meta:
+        verbose_name = "question d'évaluation"
+        verbose_name_plural = "questions d'évaluation"
+        ordering = ['type_evaluation', 'ordre']
+
+    def __str__(self):
+        return f'{self.get_type_evaluation_display()} #{self.ordre} — {self.libelle}'
+
+
+class OptionReponse(models.Model):
+    question = models.ForeignKey(
+        QuestionEvaluation,
+        on_delete=models.CASCADE,
+        related_name='options',
+        verbose_name='question',
+    )
+    libelle = models.CharField('libellé', max_length=150)
+    valeur = models.PositiveSmallIntegerField('valeur')
+
+    class Meta:
+        verbose_name = 'option de réponse'
+        verbose_name_plural = 'options de réponse'
+        ordering = ['question', 'valeur']
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(valeur__gte=0) & models.Q(valeur__lte=4),
+                name='valeur_option_entre_0_et_4',
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.libelle} ({self.valeur})'
+
+
 class AutoEvaluation(models.Model):
     utilisateur = models.ForeignKey(
         'comptes.Utilisateur',
