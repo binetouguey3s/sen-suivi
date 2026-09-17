@@ -2,7 +2,7 @@
 
 À placer dans `docs/SPECIFICATIONS.md`. Complète `CLAUDE.md` : celui-ci dit **quoi** construire, celui-là dit **avec quelles valeurs**.
 
-> Les points marqués **À VALIDER** sont des propositions. Tranche-les avant de lancer le code : ce sont des décisions produit, pas techniques, et le jury peut t'interroger dessus.
+> Les points marqués **Décidé** sont des propositions. Tranche-les avant de lancer le code : ce sont des décisions produit, pas techniques, et le jury peut t'interroger dessus.
 
 ---
 
@@ -10,13 +10,13 @@
 
 | Sujet | Proposition | Statut |
 |---|---|---|
-| Durée du token JWT | 60 minutes, refresh 7 jours | À VALIDER |
-| Seuil d'inactivité déclenchant un rappel | 3 jours sans entrée de journal | À VALIDER |
-| Nombre de questions par auto-évaluation | 8 | À VALIDER |
-| Fréquence maximale d'une auto-évaluation | Une fois par semaine par type | À VALIDER |
-| Anonymat du forum | Pseudonyme généré à l'inscription, non modifiable | À VALIDER |
-| Modération du forum | A priori : rien n'est visible avant validation | À VALIDER |
-| Conservation de l'historique du chatbot | Uniquement si l'utilisateur est connecté et l'accepte | À VALIDER |
+| Durée du token JWT | 60 minutes, refresh 7 jours | Décidé |
+| Seuil d'inactivité déclenchant un rappel | 3 jours sans entrée de journal | Décidé |
+| Nombre de questions par auto-évaluation | 8 | Décidé |
+| Fréquence maximale d'une auto-évaluation | Une fois par semaine par type | Décidé |
+| Anonymat du forum | Pseudonyme généré à l'inscription, non modifiable | Décidé |
+| Modération du forum | A priori : rien n'est visible avant validation | Décidé |
+| Conservation de l'historique du chatbot | Uniquement si l'utilisateur est connecté et l'accepte | Décidé |
 | Langue de l'interface | Français uniquement en v1 | Décidé |
 
 ---
@@ -62,9 +62,9 @@ Après une auto-évaluation, on filtre les `Professionnel` avec `statutValidatio
 
 **Niveau 0, détection de détresse.** Liste de mots-clés et d'expressions stockée dans un fichier de configuration versionné, `ai-service/app/config/mots_cles_detresse.py`, relu et validé par l'autrice du projet. Elle couvre les expressions de désespoir, de perte de sens et de mise en danger de soi. Dès qu'une correspondance est trouvée, la réponse est **uniquement** la redirection vers les ressources d'urgence : on ne passe jamais aux niveaux suivants, on ne propose aucune ressource, aucun exercice. Ce comportement est couvert par des tests unitaires.
 
-**Niveau 1, classification d'intention.** Seuil de confiance **0,70** (À VALIDER). Au-dessus, on renvoie la réponse validée associée au `TypeIntention`. En dessous, on passe au niveau 2.
+**Niveau 1, classification d'intention.** Seuil de confiance **0,70** (Décidé). Au-dessus, on renvoie la réponse validée associée au `TypeIntention`. En dessous, on passe au niveau 2.
 
-**Niveau 2, RAG.** Recherche par similarité dans ChromaDB, seuil de similarité minimal **0,65** (À VALIDER), 3 ressources maximum. Si rien ne dépasse le seuil, réponse de repli : proposer la bibliothèque de ressources ou une mise en relation.
+**Niveau 2, RAG.** Recherche par similarité dans ChromaDB, seuil de similarité minimal **0,65** (Décidé), 3 ressources maximum. Si rien ne dépasse le seuil, réponse de repli : proposer la bibliothèque de ressources ou une mise en relation.
 
 Chaque `MessageChatbot` du bot enregistre sa `sourceReponse` : `REGLE` pour les niveaux 0 et 1, `RAG` pour le niveau 2. C'est ce qui rend l'IA **explicable**, un argument central de ton mémoire.
 
