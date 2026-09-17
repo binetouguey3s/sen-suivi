@@ -28,7 +28,7 @@ Cette commande lance quatre services applicatifs et un moteur d'automatisation :
 
 | Service | URL locale | Rôle |
 |---|---|---|
-| PostgreSQL | `localhost:5432` | Base de données |
+| PostgreSQL | `localhost:5433` | Base de données |
 | Django (back-end) | `http://localhost:8000` | API REST + authentification JWT |
 | FastAPI (microservice IA) | `http://localhost:8001` | Chatbot à trois niveaux |
 | Angular (front-end) | `http://localhost:4200` | Application web |
@@ -66,15 +66,13 @@ fichier vers `.env` avant de lancer le projet ; `.env` n'est jamais versionné.
 ## Dépannage
 
 **Port déjà utilisé**
-Si un message indique qu'un port (5432, 8000, 8001, 4200 ou 5678) est déjà utilisé,
-un autre service tourne déjà dessus sur votre machine. Arrêtez-le, ou modifiez le port
-publié dans `docker-compose.yml` (partie gauche du mapping `"hôte:conteneur"`), par
-exemple `"5433:5432"` pour PostgreSQL.
-
-Ajoute dans la section Dépannage du README : le port 5432 de l'hôte peut
-être occupé par un PostgreSQL installé localement. Dans ce cas, le service
-db expose 5433 côté hôte ; la configuration interne reste inchangée
-puisque les conteneurs communiquent par le réseau Docker.
+Si un message indique qu'un port (5433, 8000, 8001, 4200 ou 5678) est déjà utilisé,
+un autre service tourne déjà dessus sur votre machine. Le port 5432 de l'hôte est
+souvent pris par un PostgreSQL déjà installé localement : c'est pourquoi le service
+`db` publie son port sur **5433** côté hôte (`docker-compose.yml`). La configuration
+interne reste inchangée, puisque les conteneurs communiquent entre eux par le réseau
+Docker sur le port 5432. Si un autre port est occupé, modifiez la partie gauche du
+mapping `"hôte:conteneur"` correspondant dans `docker-compose.yml`.
 
 **`.env` manquant**
 Si Docker Compose signale des variables vides ou refuse de démarrer un service, vérifiez
