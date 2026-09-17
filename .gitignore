@@ -1,0 +1,20 @@
+# Environnement
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+.angular/
+
+# Système
+.DS_Store
+*~
