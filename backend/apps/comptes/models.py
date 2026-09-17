@@ -10,9 +10,30 @@ Aucun profil séparé du modèle User natif de Django n'est utilisé :
 CompteUtilisateur EST le modèle d'authentification.
 """
 
+import random
+
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+
+# Mots à consonance sénégalaise (contenu sénégalais uniquement),
+# combinés à un nombre pour générer un pseudonyme de forum lisible et anonyme.
+_MOTS_PSEUDONYME = [
+    'Teranga', 'Jamm', 'Baobab', 'Sahel', 'Ngor', 'Sine', 'Saloum',
+    'Casamance', 'Fouta', 'Xalima', 'Sama', 'Yeewu', 'Ndar', 'Gorgui',
+]
+
+
+def generer_pseudonyme():
+    """Pseudonyme unique généré à la création d'un Utilisateur.
+
+    Non modifiable ensuite (champ editable=False) : il sert exclusivement à
+    l'anonymat du forum.
+    """
+    while True:
+        candidat = f'{random.choice(_MOTS_PSEUDONYME)}{random.randint(100, 999)}'
+        if not Utilisateur.objects.filter(pseudonyme=candidat).exists():
+            return candidat
 
 
 class CompteUtilisateurManager(BaseUserManager):
@@ -102,11 +123,19 @@ class CompteUtilisateur(AbstractBaseUser, PermissionsMixin):
 
 class Utilisateur(CompteUtilisateur):
     prenom = models.CharField('prénom', max_length=150)
+    # Utilisé par le forum à la place de nom/prenom/email.
+    # Généré automatiquement à la création (voir save()), jamais modifiable ensuite.
+    pseudonyme = models.CharField('pseudonyme', max_length=50, unique=True, editable=False)
 
     class Meta:
         verbose_name = 'utilisateur'
         verbose_name_plural = 'utilisateurs'
         ordering = ['nom', 'prenom']
+
+    def save(self, *args, **kwargs):
+        if not self.pseudonyme:
+            self.pseudonyme = generer_pseudonyme()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.prenom} {self.nom}'
@@ -131,6 +160,32 @@ class Professionnel(CompteUtilisateur):
 
     def __str__(self):
         return f'{self.nom} — {self.get_specialite_display()}'
+
+    def valider(self):
+        """Passe le compte à VALIDE et notifie le professionnel (SPECIFICATIONS.md section 2)."""
+        if self.statut_validation == StatutValidationPro.REFUSE:
+            raise ValueError('Un compte professionnel refusé ne peut plus changer de statut.')
+        self.statut_validation = StatutValidationPro.VALIDE
+        self.save(update_fields=['statut_validation'])
+
+        from apps.notifications.models import NotificationEmail
+
+        NotificationEmail.objects.create(
+            destinataire=self,
+            contenu=(
+                'Votre compte professionnel a été validé. Vous pouvez désormais '
+                'recevoir des demandes de mise en relation.'
+            ),
+            adresse_email=self.email,
+            objet='Votre compte Sen Suivi a été validé',
+        )
+
+    def refuser(self):
+        """Passe le compte à REFUSE : définitif (SPECIFICATIONS.md section 2)."""
+        if self.statut_validation == StatutValidationPro.REFUSE:
+            raise ValueError('Un compte professionnel refusé ne peut plus changer de statut.')
+        self.statut_validation = StatutValidationPro.REFUSE
+        self.save(update_fields=['statut_validation'])
 
 
 class Administrateur(CompteUtilisateur):
