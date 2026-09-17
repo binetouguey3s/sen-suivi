@@ -239,6 +239,9 @@ Branches : `main` (stable) et `dev` (intégration). Une branche `feat/<nom>`
 par fonctionnalité.
 Commits en conventional commits, en français :
 `feat(chatbot): ajoute la détection de détresse`
+Aucune ligne de signature d'outil (type `Co-Authored-By`) dans les messages de
+commit : le dépôt est évalué en certification, l'historique doit refléter le
+travail de l'autrice.
 
 ## 8. Maquettes
 
