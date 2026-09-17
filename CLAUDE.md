@@ -254,3 +254,15 @@ Avant d'intégrer un écran, **ouvre le PNG correspondant** et respecte sa mise 
 - Si une consigne que je te donne contredit ce fichier, **signale-le-moi** avant de l'appliquer.
 - Explique-moi simplement les parties techniques : je maîtrise mieux la rédaction que la modélisation.
 - Réponds toujours en français.
+
+### Style de code back-end
+
+| Sujet | Règle |
+|---|---|
+| Vues DRF | Vues basées sur les classes uniquement. Jamais de @api_view ni de vue fonction |
+| Génériques | ModelViewSet quand le CRUD complet est pertinent, sinon les vues génériques (ListAPIView, RetrieveAPIView, CreateAPIView...) |
+| Mixins | Factoriser la logique transverse en mixins réutilisables plutôt qu'en dupliquant du code entre vues |
+| Permissions | Classes de permission dédiées (EstProprietaire, EstProfessionnelValide, EstAdministrateur) dans un module permissions.py par app, jamais de test de rôle en dur dans une vue |
+| Sérialiseurs | Un sérialiseur par usage quand la lecture et l'écriture diffèrent (ex. ProfessionnelLectureSerializer et ProfessionnelEcritureSerializer) |
+| Routage | Routeur DRF pour les ViewSets, chemins explicites pour les vues génériques |
+| Logique métier | Dans les modèles ou des services dédiés, jamais dans les vues. Une vue orchestre, elle ne calcule pas |
