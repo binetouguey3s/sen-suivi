@@ -14,7 +14,12 @@ venv/
 node_modules/
 dist/
 .angular/
+.npm-cache/
+.tmp/
 
 # Système
 .DS_Store
 *~
+images-brutes/
+images-brutes/
+images-brutes/
