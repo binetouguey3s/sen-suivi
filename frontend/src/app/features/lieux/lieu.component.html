@@ -1,0 +1,85 @@
+@if (lieu.isLoading()) {
+  <p class="lieu__etat">Chargement du lieu…</p>
+} @else if (lieu.error() || !lieu.hasValue()) {
+  <div class="lieu__etat">
+    <p>Ce lieu est introuvable.</p>
+    <a routerLink="/lieux">Retour au répertoire</a>
+  </div>
+} @else if (lieu.value(); as l) {
+  <header class="lieu__hero" [class.lieu__hero--vide]="!image(l)">
+    @if (image(l); as src) {
+      <img [src]="src" [alt]="l.nom" />
+    }
+    <a class="lieu__retour" routerLink="/lieux"><ss-icon nom="fleche-gauche" taille="sm" /> Tous les lieux</a>
+    <div class="lieu__hero-texte">
+      <h1>{{ l.nom }}</h1>
+      <p class="lieu__chips">
+        <span><ss-icon nom="lieux" taille="sm" /> {{ l.ville }}</span>
+        <span>{{ l.categorie }}</span>
+      </p>
+    </div>
+  </header>
+
+  <div class="lieu__corps">
+    <div class="lieu__principal">
+      <p class="lieu__description">{{ l.description }}</p>
+
+      <ul class="lieu__infos">
+        <li>
+          <ss-icon nom="lieux" />
+          <div><span>Localisation</span><strong>{{ l.ville }}, Sénégal</strong></div>
+        </li>
+        <li>
+          <ss-icon nom="verifie" />
+          <div><span>Catégorie</span><strong>{{ l.categorie }}</strong></div>
+        </li>
+        <li>
+          @if (l.acces_libre) {
+            <ss-icon nom="verifie" />
+          } @else {
+            <ss-icon nom="ticket" />
+          }
+          <div><span>Coût</span><strong>{{ l.acces_libre ? 'Accès libre' : 'Entrée payante' }}</strong></div>
+        </li>
+      </ul>
+    </div>
+
+    <aside class="lieu__carte">
+      <div class="lieu__mini-carte">
+        <ss-carte-lieux [lieux]="pourCarte()" [selection]="l.id" [compact]="true" />
+      </div>
+      @if (itineraire(); as lien) {
+        <a class="lieu__itineraire" [href]="lien" target="_blank" rel="noopener">
+          <ss-icon nom="itineraire" taille="sm" /> Ouvrir l'itinéraire
+        </a>
+      }
+    </aside>
+  </div>
+
+  @if (proches().length) {
+    <section class="lieu__proches">
+      <h2>Autres lieux à proximité</h2>
+      <div class="lieu__proches-grille">
+        @for (autre of proches(); track autre.id) {
+          <a class="lieu__proche" [routerLink]="['/lieux', autre.id]">
+            @if (image(autre); as src) {
+              <img [src]="src" [alt]="autre.nom" loading="lazy" />
+            } @else {
+              <span class="lieu__proche-vide" aria-hidden="true"><ss-icon nom="lieux" taille="xl" /></span>
+            }
+            <span class="lieu__proche-ville">{{ autre.ville }}</span>
+            <h3>{{ autre.nom }}</h3>
+            <p>{{ autre.description }}</p>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  <footer class="lieu__pied">
+    <span>© 2026 Sen Suivi</span>
+    <button type="button" (click)="modaleUrgenceOuverte.set(true)">Besoin d'aide tout de suite <ss-icon nom="fleche" taille="sm" /></button>
+  </footer>
+
+  <ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />
+}

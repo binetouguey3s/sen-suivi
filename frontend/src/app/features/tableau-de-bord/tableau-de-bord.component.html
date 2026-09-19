@@ -80,8 +80,8 @@
         <h3 class="tdb__lieu-titre">{{ lieu.nom }}, {{ lieu.ville }}</h3>
         <p class="tdb__texte-secondaire">{{ lieu.description }}</p>
         <div class="tdb__lieu-actions">
-          <button type="button" class="tdb__bouton-principal" title="Écran à venir">M'y rendre</button>
-          <button type="button" class="tdb__bouton-texte" title="Écran à venir">Plus d'infos</button>
+          <a class="tdb__bouton-principal" [routerLink]="['/lieux', lieu.id]">M'y rendre</a>
+          <a class="tdb__bouton-texte" [routerLink]="['/lieux', lieu.id]">Plus d'infos</a>
         </div>
       </div>
     </section>

@@ -26,6 +26,15 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'lieux',
+    loadComponent: () =>
+      import('./features/lieux/repertoire.component').then((m) => m.RepertoireComponent),
+  },
+  {
+    path: 'lieux/:id',
+    loadComponent: () => import('./features/lieux/lieu.component').then((m) => m.LieuComponent),
+  },
+  {
     path: 'app/evaluation/:type',
     canActivate: [estConnecteGuard],
     loadComponent: () =>

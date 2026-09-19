@@ -1,0 +1,84 @@
+:host {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+}
+
+.carte {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--ss-menthe-tres-pale);
+}
+
+.carte__commandes {
+  position: absolute;
+  top: var(--ss-espace-3);
+  right: var(--ss-espace-3);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-1);
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: var(--ss-rayon-champ);
+    background: var(--ss-blanc);
+    color: var(--ss-bleu-profond);
+    box-shadow: var(--ss-ombre-carte);
+    cursor: pointer;
+  }
+}
+
+.carte__legende {
+  position: absolute;
+  left: var(--ss-espace-3);
+  bottom: 96px;
+  z-index: 500;
+
+  @media (min-width: 900px) {
+    bottom: var(--ss-espace-3);
+  }
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--ss-espace-2);
+  border-radius: var(--ss-rayon-champ);
+  background: var(--ss-blanc);
+  box-shadow: var(--ss-ombre-carte);
+  font-size: 13px;
+  color: var(--ss-bleu-profond);
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: var(--ss-poids-texte-fort);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ss-bleu-sen-suivi);
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: var(--ss-espace-1);
+  }
+}
+
+.carte__point {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ss-bleu-sen-suivi);
+}
+
+.carte__point--selection {
+  background: var(--ss-menthe);
+}

@@ -1,0 +1,93 @@
+<div class="rep">
+  <section class="rep__panneau" [class.rep__panneau--masque]="carteVisibleMobile()">
+    <header class="rep__entete">
+      <a routerLink="/ressources" class="rep__marque" aria-label="Sen Suivi"><img src="/logo-sen-suivi.png" alt="Sen Suivi" /></a>
+      @if (auth.estConnecte()) {
+        <a class="rep__avatar" routerLink="/app" aria-label="Mon espace">{{ auth.prenom()?.[0] }}{{ auth.nom()?.[0] }}</a>
+      } @else {
+        <a class="rep__connexion" routerLink="/connexion">Se connecter</a>
+      }
+    </header>
+
+    <label class="rep__recherche">
+      <ss-icon nom="recherche" />
+      <span class="rep__sr">Rechercher un lieu</span>
+      <input type="search" placeholder="Rechercher un lieu…" (input)="saisirRecherche($event)" />
+    </label>
+
+    <div class="rep__chips" role="group" aria-label="Villes">
+      <button type="button" class="rep__chip" [class.rep__chip--actif]="!villeChoisie()" (click)="basculerVille(null)">Toutes les villes</button>
+      @for (ville of villes(); track ville) {
+        <button type="button" class="rep__chip" [class.rep__chip--actif]="villeChoisie() === ville" (click)="basculerVille(ville)">{{ ville }}</button>
+      }
+    </div>
+
+    <div class="rep__chips rep__chips--categories" role="group" aria-label="Catégories">
+      @for (categorie of categories(); track categorie) {
+        <button
+          type="button"
+          class="rep__categorie"
+          [class.rep__categorie--actif]="categorieChoisie() === categorie"
+          [attr.aria-pressed]="categorieChoisie() === categorie"
+          (click)="basculerCategorie(categorie)"
+        >
+          {{ categorie }}
+        </button>
+      }
+    </div>
+
+    <h1 class="rep__titre">Lieux à découvrir</h1>
+
+    @if (lieux.isLoading()) {
+      <p class="rep__etat">Chargement des lieux…</p>
+    } @else if (lieux.error()) {
+      <p class="rep__etat rep__etat--erreur">Impossible de charger les lieux pour le moment.</p>
+    } @else if (!lieux.value().length) {
+      <div class="rep__etat">
+        <img src="/images/illustrations/etat-vide-favoris.svg" alt="" width="140" height="140" />
+        <p>Aucun lieu ne correspond à votre recherche.</p>
+      </div>
+    } @else {
+      <ul class="rep__liste">
+        @for (lieu of lieux.value(); track lieu.id) {
+          <li>
+            <a
+              class="rep__carte"
+              [class.rep__carte--selection]="selection() === lieu.id"
+              [routerLink]="['/lieux', lieu.id]"
+              (mouseenter)="selection.set(lieu.id)"
+              (focus)="selection.set(lieu.id)"
+            >
+              @if (image(lieu); as src) {
+                <img class="rep__photo" [src]="src" [alt]="lieu.nom" loading="lazy" />
+              } @else {
+                <span class="rep__photo rep__photo--vide" aria-hidden="true"><ss-icon nom="lieux" taille="lg" /></span>
+              }
+              <div class="rep__infos">
+                <span class="rep__badge">{{ lieu.categorie }}</span>
+                <h2>{{ lieu.nom }}</h2>
+                <p class="rep__ville">{{ lieu.ville }}, Sénégal</p>
+                <p class="rep__acces">
+                  @if (lieu.acces_libre) {
+                    <ss-icon nom="verifie" taille="sm" /> Accès libre
+                  } @else {
+                    <ss-icon nom="ticket" taille="sm" /> Entrée payante
+                  }
+                </p>
+              </div>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+
+    <button type="button" class="rep__voir-carte" (click)="carteVisibleMobile.set(true)">
+      <ss-icon nom="carte" /> Voir sur la carte
+    </button>
+  </section>
+
+  <section class="rep__carte-zone" [class.rep__carte-zone--visible]="carteVisibleMobile()">
+    <ss-carte-lieux [lieux]="lieux.value()" [selection]="selection()" (choisi)="selection.set($event)" (ouvrir)="ouvrir($event)" />
+    <button type="button" class="rep__voir-liste" (click)="carteVisibleMobile.set(false)">Voir la liste</button>
+  </section>
+</div>

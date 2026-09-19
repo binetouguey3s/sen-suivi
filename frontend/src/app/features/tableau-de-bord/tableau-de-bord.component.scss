@@ -181,12 +181,16 @@
 }
 
 .tdb__bouton-principal {
+  text-decoration: none;
+  cursor: pointer;
   background: var(--ss-bleu-profond);
   color: var(--ss-blanc);
   border: none;
 }
 
 .tdb__bouton-texte {
+  text-decoration: none;
+  cursor: pointer;
   background: var(--ss-gris-clair);
   color: var(--ss-bleu-profond);
   border: none;

@@ -34,3 +34,33 @@ h3 {
 button {
   font-family: inherit;
 }
+
+// Repères de la carte (Leaflet) : couleurs via les tokens, jamais de valeur en dur.
+.ss-pin svg {
+  width: 30px;
+  height: 38px;
+  fill: var(--ss-bleu-sen-suivi);
+  stroke: var(--ss-blanc);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 2px 3px rgba(18, 53, 79, 0.35));
+}
+
+.ss-pin--selection svg {
+  fill: var(--ss-menthe);
+  stroke: var(--ss-bleu-sen-suivi);
+}
+
+.leaflet-tooltip.ss-etiquette {
+  background: var(--ss-blanc);
+  border: none;
+  border-radius: var(--ss-rayon-pilule);
+  color: var(--ss-bleu-profond);
+  font-family: var(--ss-police-texte);
+  font-weight: var(--ss-poids-texte-fort);
+  padding: 4px var(--ss-espace-2);
+  box-shadow: var(--ss-ombre-carte);
+}
+
+.leaflet-tooltip.ss-etiquette::before {
+  display: none;
+}
