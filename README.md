@@ -38,9 +38,23 @@ Pour arrêter les services : `docker compose down`.
 Pour arrêter et supprimer les données persistées (base de données, base vectorielle,
 workflows n8n) : `docker compose down -v`.
 
-> À ce stade du projet, seule l'ossature (dossiers, Dockerfile, configuration) existe.
-> Le code applicatif est ajouté étape par étape ; `docker compose up --build` ne
-> deviendra pleinement fonctionnel qu'une fois chaque service initialisé.
+> État actuel : le **back-end Django est fonctionnel** (API REST, JWT, admin).
+> Le **front-end Angular** est initialisé (projet Angular 22 créé) mais pas encore
+> connecté au back-end. Le **microservice IA** et les **workflows n8n** ne sont pas
+> encore implémentés : `docker compose up --build` démarre déjà PostgreSQL et Django
+> correctement, mais `ai-service` n'a pas encore de code applicatif.
+
+### Premières commandes après le démarrage
+
+Une fois les conteneurs `db` et `backend` lancés, préparez la base de données :
+
+```bash
+docker compose exec backend python manage.py migrate
+docker compose exec backend python manage.py seed_donnees
+```
+
+La commande de seed affiche le mot de passe commun à tous les comptes de
+démonstration. Interface d'administration Django : `http://localhost:8000/admin/`.
 
 ---
 
