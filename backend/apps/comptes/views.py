@@ -63,13 +63,26 @@ class ProfessionnelListView(generics.ListAPIView):
         return queryset
 
 
-class ProfessionnelValidationView(generics.UpdateAPIView):
-    """PATCH /api/professionnels/{id} — passe le compte à VALIDE ou REFUSE."""
+class ProfessionnelDetailView(generics.RetrieveUpdateAPIView):
+    """GET /api/professionnels/{id} — profil d'un professionnel validé (compte connecté) ;
+    PATCH — un administrateur passe le compte à VALIDE ou REFUSE."""
 
-    permission_classes = [EstAdministrateur]
-    serializer_class = ProfessionnelValidationSerializer
-    queryset = Professionnel.objects.all()
-    http_method_names = ['patch']
+    http_method_names = ['get', 'patch']
+
+    def get_permissions(self):
+        if self.request.method == 'PATCH':
+            return [EstAdministrateur()]
+        return [IsAuthenticated()]
+
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return ProfessionnelValidationSerializer
+        return ProfessionnelPublicSerializer
+
+    def get_queryset(self):
+        if self.request.method == 'PATCH':
+            return Professionnel.objects.all()
+        return Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE)
 
 
 class DemandeReinitialisationView(APIView):
