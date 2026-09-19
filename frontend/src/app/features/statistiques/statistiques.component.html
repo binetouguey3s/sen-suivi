@@ -1,0 +1,75 @@
+<header class="st__entete">
+  <h1>Statistiques personnelles</h1>
+  <div class="st__periodes" role="group" aria-label="Période">
+    @for (p of periodes; track p.jours) {
+      <button type="button" [class.st__periode--actif]="periode() === p.jours" [attr.aria-pressed]="periode() === p.jours" (click)="periode.set(p.jours)">{{ p.libelle }}</button>
+    }
+  </div>
+</header>
+
+<div class="st__grille">
+  <section class="st__carte st__carte--graphique">
+    <h2>Évolution de l'humeur</h2>
+    @if (suivi.isLoading()) {
+      <p class="st__etat">Chargement de votre historique…</p>
+    } @else if (suivi.error()) {
+      <p class="st__etat st__etat--erreur">Impossible de charger votre historique pour le moment.</p>
+    } @else {
+      <ss-mood-chart [points]="points()" [moyenne]="moyenne()" [pas]="pasEtiquettes()" />
+    }
+  </section>
+
+  <section class="st__carte">
+    <h2>Répartition par type</h2>
+    <p class="st__aide">Dernier résultat de chaque auto-évaluation</p>
+    <ul class="st__barres">
+      @for (ligne of repartition(); track ligne.type) {
+        <li>
+          <span class="st__barre-libelle">{{ ligne.libelle }}</span>
+          <span class="st__barre-piste"><span class="st__barre-valeur" [style.width.%]="ligne.score ?? 0"></span></span>
+          <span class="st__barre-score">{{ ligne.score === null ? '—' : ligne.score + ' %' }}</span>
+        </li>
+      }
+    </ul>
+    <a class="st__lien" routerLink="/app/evaluation/STRESS">Faire une auto-évaluation <ss-icon nom="fleche" taille="sm" /></a>
+  </section>
+
+  <section class="st__carte st__carte--menthe">
+    <h2>Ce que l'on observe</h2>
+    <ul class="st__observations">
+      @for (o of observations(); track o) {
+        <li><ss-icon nom="verifie" taille="sm" /> {{ o }}</li>
+      }
+    </ul>
+    <a class="st__bouton" routerLink="/ressources">Voir les conseils <ss-icon nom="fleche" taille="sm" /></a>
+  </section>
+
+  <section class="st__carte st__carte--calendrier">
+    <div class="st__mois">
+      <h2>Calendrier mensuel</h2>
+      <div class="st__mois-nav">
+        <button type="button" aria-label="Mois précédent" (click)="changerMois(-1)"><ss-icon nom="chevron-gauche" taille="sm" /></button>
+        <span>{{ titreMois() }}</span>
+        <button type="button" aria-label="Mois suivant" (click)="changerMois(1)"><ss-icon nom="chevron-droite" taille="sm" /></button>
+      </div>
+    </div>
+    <div class="st__semaine" aria-hidden="true">
+      @for (j of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']; track j) { <span>{{ j }}</span> }
+    </div>
+    <div class="st__jours">
+      @for (jour of jours(); track jour.iso) {
+        <span
+          class="st__jour"
+          [class.st__jour--hors]="jour.hors"
+          [attr.data-score]="jour.score"
+          [attr.title]="jour.score ? 'Humeur : ' + jour.score + ' sur 5' : null"
+        >{{ jour.numero }}</span>
+      }
+    </div>
+    <div class="st__legende">
+      <span><i data-score="1"></i> Bas</span>
+      <span><i data-score="3"></i> Moyen</span>
+      <span><i data-score="5"></i> Haut</span>
+    </div>
+  </section>
+</div>

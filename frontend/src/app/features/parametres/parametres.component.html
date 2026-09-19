@@ -1,0 +1,87 @@
+<h1 class="pa__titre">Paramètres</h1>
+
+@if (chargement()) {
+  <p class="pa__etat">Chargement de votre compte…</p>
+} @else if (erreurChargement()) {
+  <p class="pa__etat pa__etat--erreur">Impossible de charger votre compte pour le moment.</p>
+} @else {
+  <div class="pa__pages">
+    <section class="pa__carte" id="infos">
+      <h2>Informations personnelles</h2>
+      <form class="pa__formulaire" (submit)="enregistrer($event)" novalidate>
+        @if (estUtilisateur()) {
+          <ss-champ libelle="Prénom" [(valeur)]="prenom" autocomplete="given-name" [erreur]="erreurs()['prenom'] ?? null" />
+        }
+        <ss-champ libelle="Nom" [(valeur)]="nom" autocomplete="family-name" [erreur]="erreurs()['nom'] ?? null" />
+        <ss-champ libelle="Email" type="email" [(valeur)]="email" autocomplete="email" [erreur]="erreurs()['email'] ?? null" />
+        <div class="pa__select">
+          <label for="pa-ville">Ville</label>
+          <select id="pa-ville" [value]="ville()" (change)="ville.set($any($event.target).value)">
+            <option value="">Non renseignée</option>
+            @for (v of villes; track v) { <option [value]="v" [selected]="v === ville()">{{ v }}</option> }
+          </select>
+        </div>
+        @if (estUtilisateur()) {
+          <p class="pa__aide">Votre ville sert à vous suggérer des professionnels près de chez vous.</p>
+        }
+        @if (infoEnregistre()) { <p class="pa__ok" role="status">Modifications enregistrées.</p> }
+        <button type="submit" class="pa__bouton">Enregistrer les modifications</button>
+      </form>
+    </section>
+
+    <section class="pa__carte" id="securite">
+      <h2>Sécurité</h2>
+      <form class="pa__formulaire" (submit)="changerMotDePasse($event)" novalidate>
+        <ss-champ libelle="Mot de passe actuel" type="password" [(valeur)]="ancien" autocomplete="current-password" [erreur]="erreursMdp()['ancien'] ?? null" />
+        <ss-champ libelle="Nouveau mot de passe" type="password" [(valeur)]="nouveau" autocomplete="new-password" [erreur]="erreursMdp()['nouveau'] ?? null" />
+        @if (mdpModifie()) { <p class="pa__ok" role="status">Votre mot de passe a été modifié.</p> }
+        <button type="submit" class="pa__bouton pa__bouton--contour">Changer le mot de passe</button>
+      </form>
+    </section>
+
+    <section class="pa__carte" id="notifications">
+      <h2>Notifications</h2>
+      <div class="pa__notif-entete" aria-hidden="true"><span>E-mail</span><span>Push</span></div>
+      @for (n of notifications; track n.cle) {
+        <div class="pa__notif">
+          <div><strong>{{ n.titre }}</strong><p>{{ n.texte }}</p></div>
+          <ss-interrupteur [libelle]="n.titre + ' par e-mail'" [actif]="actif(n.cle, 'email')" (actifChange)="basculer(n.cle, 'email', $event)" />
+          <ss-interrupteur [libelle]="n.titre + ' en notification push'" [actif]="actif(n.cle, 'push')" (actifChange)="basculer(n.cle, 'push', $event)" />
+        </div>
+      }
+    </section>
+
+    @if (estUtilisateur()) {
+      <section class="pa__carte" id="confidentialite">
+        <h2>Confidentialité</h2>
+        <p class="pa__texte">Sur le forum, vous apparaissez uniquement sous votre pseudonyme <strong>{{ compte()?.pseudonyme }}</strong>. Votre nom, votre prénom et votre e-mail ne sont jamais affichés. Votre journal et vos résultats ne sont visibles que par vous.</p>
+      </section>
+    }
+
+    <section class="pa__carte">
+      <button type="button" class="pa__deconnexion" (click)="deconnecter()"><ss-icon nom="deconnexion" taille="sm" /> Se déconnecter</button>
+    </section>
+
+    <section class="pa__carte pa__carte--danger" id="suppression">
+      <h2>Supprimer mon compte</h2>
+      <div class="pa__danger">
+        <p>Cette action est irréversible. Toutes vos données, votre journal et votre historique seront définitivement supprimés.</p>
+        <button type="button" class="pa__bouton pa__bouton--danger" (click)="suppressionOuverte.set(true)">
+          <ss-icon nom="danger" taille="sm" /> Supprimer définitivement mon compte
+        </button>
+      </div>
+    </section>
+  </div>
+}
+
+<ss-modal [(ouverte)]="suppressionOuverte">
+  <div class="pa__modale">
+    <h2>Supprimer votre compte ?</h2>
+    <p>Pour confirmer, saisissez votre mot de passe. Cette action est définitive.</p>
+    <ss-champ libelle="Mot de passe" type="password" [(valeur)]="mdpSuppression" autocomplete="current-password" [erreur]="erreurSuppression()" />
+    <div class="pa__modale-actions">
+      <button type="button" class="pa__bouton pa__bouton--contour" (click)="suppressionOuverte.set(false)">Annuler</button>
+      <button type="button" class="pa__bouton pa__bouton--danger" [disabled]="!mdpSuppression()" (click)="supprimer()">Supprimer</button>
+    </div>
+  </div>
+</ss-modal>

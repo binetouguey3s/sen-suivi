@@ -1,0 +1,282 @@
+:host {
+  display: block;
+}
+
+.st__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ss-espace-2);
+  margin-bottom: var(--ss-espace-3);
+
+  h1 {
+    font-size: 28px;
+    color: var(--ss-bleu-sen-suivi);
+
+    @media (min-width: 900px) {
+      font-size: 36px;
+    }
+  }
+}
+
+.st__periodes {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--ss-gris-clair);
+  border-radius: var(--ss-rayon-champ);
+
+  button {
+    border: none;
+    background: none;
+    border-radius: var(--ss-rayon-champ);
+    padding: var(--ss-espace-1) var(--ss-espace-2);
+    color: var(--ss-gris-ardoise);
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .st__periode--actif {
+    background: var(--ss-blanc);
+    color: var(--ss-bleu-sen-suivi);
+    font-weight: var(--ss-poids-texte-fort);
+  }
+}
+
+.st__grille {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ss-espace-3);
+
+  @media (min-width: 900px) {
+    grid-template-columns: 1.7fr 1fr;
+  }
+}
+
+.st__carte {
+  background: var(--ss-fond-carte);
+  border-radius: var(--ss-rayon-carte);
+  padding: var(--ss-espace-3);
+  box-shadow: var(--ss-ombre-carte);
+
+  h2 {
+    font-size: 18px;
+    margin-bottom: var(--ss-espace-2);
+  }
+}
+
+.st__carte--menthe {
+  background: var(--ss-menthe-pale);
+  box-shadow: none;
+}
+
+.st__carte--calendrier {
+  @media (min-width: 900px) {
+    grid-column: span 1;
+  }
+}
+
+.st__etat {
+  color: var(--ss-gris-ardoise);
+}
+
+.st__etat--erreur {
+  color: var(--ss-rouge-alerte);
+}
+
+.st__aide {
+  margin: 0 0 var(--ss-espace-2);
+  font-size: 13px;
+  color: var(--ss-gris-ardoise);
+}
+
+.st__barres {
+  list-style: none;
+  margin: 0 0 var(--ss-espace-3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+
+  li {
+    display: grid;
+    grid-template-columns: 80px 1fr 48px;
+    align-items: center;
+    gap: var(--ss-espace-1);
+    font-size: 14px;
+    color: var(--ss-bleu-profond);
+    text-transform: capitalize;
+  }
+}
+
+.st__barre-piste {
+  height: 10px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-menthe-pale);
+  overflow: hidden;
+}
+
+.st__barre-valeur {
+  display: block;
+  height: 100%;
+  background: var(--ss-bleu-sen-suivi);
+  border-radius: var(--ss-rayon-pilule);
+}
+
+.st__barre-score {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.st__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.st__observations {
+  list-style: none;
+  margin: 0 0 var(--ss-espace-3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+  color: var(--ss-bleu-profond);
+
+  li {
+    display: flex;
+    gap: var(--ss-espace-1);
+    align-items: flex-start;
+  }
+}
+
+.st__bouton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ss-espace-1);
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+  border-radius: var(--ss-rayon-bouton);
+  padding: var(--ss-espace-2);
+  font-weight: var(--ss-poids-texte-fort);
+  text-decoration: none;
+}
+
+.st__mois {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ss-espace-1);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.st__mois-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  text-transform: capitalize;
+  font-weight: var(--ss-poids-texte-fort);
+  color: var(--ss-bleu-sen-suivi);
+
+  button {
+    display: flex;
+    background: none;
+    border: 1px solid var(--ss-gris-clair);
+    border-radius: 50%;
+    padding: 6px;
+    color: var(--ss-bleu-sen-suivi);
+    cursor: pointer;
+  }
+}
+
+.st__semaine,
+.st__jours {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: var(--ss-espace-2);
+  text-align: center;
+}
+
+.st__semaine span {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--ss-gris-ardoise);
+}
+
+.st__jour {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--ss-bleu-profond);
+  background: var(--ss-menthe-tres-pale);
+}
+
+.st__jour--hors {
+  background: none;
+  color: var(--ss-gris-clair);
+}
+
+// Intensité de l'humeur : 1 (basse) à 5 (haute), uniquement avec la palette de marque
+.st__jour[data-score='1'],
+.st__legende i[data-score='1'] {
+  background: var(--ss-bleu-profond);
+  color: var(--ss-blanc);
+}
+
+.st__jour[data-score='2'],
+.st__legende i[data-score='2'] {
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+}
+
+.st__jour[data-score='3'],
+.st__legende i[data-score='3'] {
+  background: var(--ss-gris-clair);
+}
+
+.st__jour[data-score='4'],
+.st__legende i[data-score='4'] {
+  background: var(--ss-menthe-pale);
+}
+
+.st__jour[data-score='5'],
+.st__legende i[data-score='5'] {
+  background: var(--ss-menthe);
+}
+
+.st__legende {
+  display: flex;
+  justify-content: center;
+  gap: var(--ss-espace-3);
+  margin-top: var(--ss-espace-3);
+  padding-top: var(--ss-espace-2);
+  border-top: 1px solid var(--ss-gris-clair);
+  font-size: 12px;
+  color: var(--ss-gris-ardoise);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+}

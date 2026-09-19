@@ -21,7 +21,7 @@ const LIENS_NAV: LienNav[] = [
   { route: '/app/journal', libelle: 'Mon Journal', icone: 'journal', disponible: true },
   { route: '/ressources', libelle: 'Ressources', icone: 'ressources', disponible: true },
   { route: '/lieux', libelle: 'Lieux & Soins', icone: 'lieux', disponible: true },
-  { route: '/app/parametres', libelle: 'Paramètres', icone: 'parametres', disponible: false },
+  { route: '/app/parametres', libelle: 'Paramètres', icone: 'parametres', disponible: true },
 ];
 
 @Component({

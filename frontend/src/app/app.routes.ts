@@ -102,11 +102,33 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'statistiques',
+        loadComponent: () =>
+          import('./features/statistiques/statistiques.component').then((m) => m.StatistiquesComponent),
+      },
+      {
+        path: 'parametres',
+        loadComponent: () =>
+          import('./features/parametres/parametres.component').then((m) => m.ParametresComponent),
+      },
+      {
         path: 'journal',
         loadComponent: () =>
           import('./features/journal/journal.component').then((m) => m.JournalComponent),
       },
     ],
   },
-  { path: '**', redirectTo: '' },
+  {
+    // Toute adresse inconnue : page 404 dans le layout public (doit rester la dernière route)
+    path: '**',
+    loadComponent: () =>
+      import('./shared/layout-public/layout-public.component').then((m) => m.LayoutPublicComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/erreur/page-404.component').then((m) => m.Page404Component),
+      },
+    ],
+  },
 ];

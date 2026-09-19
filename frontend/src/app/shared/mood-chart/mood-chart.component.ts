@@ -19,6 +19,8 @@ const MARGE = 16;
 export class MoodChartComponent {
   readonly points = input.required<PointHumeur[]>();
   readonly moyenne = input<number | null>(null);
+  // Une étiquette sur `pas` (utile pour 30 ou 90 jours)
+  readonly pas = input(1);
 
   protected readonly viewBox = `0 0 ${LARGEUR} ${HAUTEUR}`;
 
@@ -53,7 +55,9 @@ export class MoodChartComponent {
     this.coordonnees().filter((p) => p.y !== null),
   );
 
-  protected readonly etiquettes = computed(() => this.coordonnees());
+  protected readonly etiquettes = computed(() =>
+    this.coordonnees().map((p, i) => ({ ...p, libelle: i % this.pas() === 0 ? p.libelle : '' })),
+  );
 
   protected readonly yMoyenne = computed(() => {
     const m = this.moyenne();

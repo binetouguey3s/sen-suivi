@@ -73,7 +73,10 @@ export class CarteLieuxComponent implements OnDestroy {
       }).addTo(this.carte);
       this.calque.addTo(this.carte);
       // La carte peut être créée alors qu'elle est masquée (mobile) : on la recalcule dès qu'elle change de taille.
-      this.observateur = new ResizeObserver(() => this.carte?.invalidateSize());
+      this.observateur = new ResizeObserver(() => {
+        this.carte?.invalidateSize();
+        this.dessiner();
+      });
       this.observateur.observe(this.conteneur().nativeElement);
       this.dessiner();
     });
@@ -109,7 +112,8 @@ export class CarteLieuxComponent implements OnDestroy {
   }
 
   private dessiner(): void {
-    if (!this.carte) return;
+    // Une carte sans dimensions (masquée) ne sait pas se centrer : on attend qu'elle soit visible.
+    if (!this.carte || this.carte.getSize().x === 0 || this.carte.getSize().y === 0) return;
     this.calque.clearLayers();
     const choisie = this.selection();
     for (const lieu of this.avecCoordonnees()) {

@@ -1,6 +1,8 @@
 import { httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 
+import { RouterLink } from '@angular/router';
+
 import { MoodSelectorComponent } from '../../shared/mood-selector/mood-selector.component';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { SuiviHumeurService } from '../../core/services/suivi-humeur.service';
@@ -9,7 +11,7 @@ import { INFLUENCES_HUMEUR, NIVEAUX_HUMEUR, NiveauHumeur, SuiviHumeur } from '..
 @Component({
   selector: 'ss-journal',
   standalone: true,
-  imports: [MoodSelectorComponent],
+  imports: [RouterLink, MoodSelectorComponent],
   templateUrl: './journal.component.html',
   styleUrl: './journal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
