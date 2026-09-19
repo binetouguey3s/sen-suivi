@@ -99,6 +99,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # Le paramètre ?format= sert de filtre de la bibliothèque : on désactive l'usage qu'en fait DRF pour le rendu.
+    'URL_FORMAT_OVERRIDE': None,
 }
 
 SIMPLE_JWT = {

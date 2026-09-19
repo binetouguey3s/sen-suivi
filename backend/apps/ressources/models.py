@@ -1,6 +1,7 @@
 """Ressources : Ressource (bibliothèque), Favori, LieuDetente."""
 
 from django.db import models
+from django.utils import timezone
 
 
 class TypeRessource(models.TextChoices):
@@ -16,6 +17,9 @@ class Ressource(models.Model):
     )
     contenu = models.TextField('contenu')
     thematique = models.CharField('thématique', max_length=100)
+    # Ajoutés suite à la correction du diagramme de classes.
+    duree_lecture = models.PositiveSmallIntegerField('durée (minutes)', default=5)
+    date_publication = models.DateField('date de publication', default=timezone.localdate)
 
     class Meta:
         verbose_name = 'ressource'
@@ -61,6 +65,10 @@ class LieuDetente(models.Model):
     ville = models.CharField('ville', max_length=100)
     description = models.TextField('description')
     categorie = models.CharField('catégorie', max_length=100)
+    # Ajoutés suite à la correction du diagramme de classes.
+    latitude = models.FloatField('latitude', null=True, blank=True)
+    longitude = models.FloatField('longitude', null=True, blank=True)
+    acces_libre = models.BooleanField('accès libre', default=True)
 
     class Meta:
         verbose_name = 'lieu de détente'

@@ -16,7 +16,8 @@ from django.utils import timezone
 
 from apps.comptes.models import Administrateur, Professionnel, StatutValidationPro, Utilisateur
 from apps.forum.models import PublicationForum, StatutModeration
-from apps.ressources.models import LieuDetente, Ressource, TypeRessource
+from apps.ressources.contenus_demo import LIEUX as LIEUX_DETAILS, RESSOURCES as RESSOURCES_DEMO
+from apps.ressources.models import LieuDetente, Ressource
 from apps.suivi.models import (
     AutoEvaluation,
     NiveauHumeur,
@@ -89,17 +90,6 @@ LIEUX = [
     ('Toubab Dialaw', 'Thiès', 'Plage'),
 ]
 
-RESSOURCES = [
-    ('Cinq minutes pour respirer avant un examen', TypeRessource.EXERCICE, 'Stress'),
-    ('Exercice de respiration guidée, 4 minutes', TypeRessource.EXERCICE, 'Stress'),
-    ('Gérer la pression familiale sans culpabiliser', TypeRessource.ARTICLE, 'Famille'),
-    ("La charge mentale des étudiantes à l'UCAD", TypeRessource.ARTICLE, 'Études'),
-    ('Dormir mieux quand on travaille en horaires décalés', TypeRessource.ARTICLE, 'Sommeil'),
-    ('Retrouver le calme après une journée dans les embouteillages', TypeRessource.ARTICLE, 'Quotidien'),
-    ("Parler de ce qu'on ressent, même quand ça ne se fait pas", TypeRessource.PODCAST, 'Expression'),
-    ('Podcast : la teranga commence par soi-même', TypeRessource.PODCAST, 'Bien-être'),
-]
-
 PUBLICATIONS_FORUM = [
     ('Teranga221', "Je trouve que parler ici m'aide déjà à y voir plus clair.", StatutModeration.VISIBLE),
     ('Jàmm_rekk', "Quelqu'un a des conseils pour mieux dormir avant les examens ?", StatutModeration.VISIBLE),
@@ -168,20 +158,19 @@ class Command(BaseCommand):
 
     def _creer_lieux(self):
         for nom, ville, categorie in LIEUX:
-            LieuDetente.objects.get_or_create(
+            details = LIEUX_DETAILS.get(nom, {})
+            LieuDetente.objects.update_or_create(
                 nom=nom, ville=ville,
-                defaults={'categorie': categorie, 'description': f'{nom}, {ville}.'},
+                defaults={'categorie': categorie, 'description': details.get('description', f'{nom}, {ville}.'),
+                          'latitude': details.get('latitude'), 'longitude': details.get('longitude'),
+                          'acces_libre': details.get('acces_libre', True)},
             )
 
     def _creer_ressources(self):
-        for titre, type_ressource, thematique in RESSOURCES:
-            Ressource.objects.get_or_create(
-                titre=titre,
-                defaults={
-                    'type_ressource': type_ressource,
-                    'thematique': thematique,
-                    'contenu': f'Contenu de démonstration pour « {titre} ».',
-                },
+        for ressource in RESSOURCES_DEMO:
+            Ressource.objects.update_or_create(
+                titre=ressource['titre'],
+                defaults={cle: valeur for cle, valeur in ressource.items() if cle != 'titre'},
             )
 
     def _creer_comptes_demo(self, professionnel_valide):
