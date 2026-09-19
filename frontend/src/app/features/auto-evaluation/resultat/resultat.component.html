@@ -1,0 +1,85 @@
+@if (resultat(); as r) {
+  <div class="res">
+    <ss-courbe-marque class="res__courbe" />
+
+    <header class="res__entete">
+      <img class="res__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
+    </header>
+
+    <main class="res__contenu">
+      <ss-gauge [valeur]="r.score_de_tendance" />
+      <h1 class="res__titre">{{ titre() }}</h1>
+
+      <section class="res__carte res__interpretation">
+        <p>{{ r.texte_interpretation }}</p>
+        <p class="res__avertissement">{{ r.avertissement }}</p>
+      </section>
+
+      @if (r.professionnels_suggeres.length) {
+        <section class="res__pros" aria-labelledby="titre-pros">
+          <div class="res__pros-entete">
+            <h2 id="titre-pros">Des professionnels qui peuvent vous accompagner</h2>
+            <span class="res__glisser" aria-hidden="true">Faites glisser <ss-icon nom="fleche" taille="sm" /></span>
+          </div>
+
+          <ul class="res__liste">
+            @for (pro of r.professionnels_suggeres; track pro.id) {
+              <li class="res__pro">
+                @if (portrait(pro); as image) {
+                  <img class="res__portrait" [src]="image" [alt]="'Portrait illustratif de ' + pro.nom" />
+                } @else {
+                  <span class="res__portrait res__portrait--initiales" aria-hidden="true">{{ initiales(pro) }}</span>
+                }
+                <h3>{{ pro.nom }}</h3>
+                <span class="res__specialite">{{ pro.specialite_affichee }}</span>
+                <p class="res__ville"><ss-icon nom="lieux" taille="sm" /> {{ pro.ville }}</p>
+                <ul class="res__langues">
+                  @for (langue of langues(pro); track langue) {
+                    <li>{{ langue }}</li>
+                  }
+                </ul>
+                <p class="res__tarif"><strong>{{ tarif(pro) }}</strong> <span>/ séance</span></p>
+                <button type="button" class="res__bouton-contour" title="Écran à venir">Voir le profil</button>
+              </li>
+            }
+          </ul>
+        </section>
+      } @else {
+        <section class="res__carte res__sans-pros">
+          <img src="/images/illustrations/etat-vide-demandes.svg" alt="" width="160" height="160" />
+          @if (niveauFaible()) {
+            <h2>Des ressources pour continuer à prendre soin de vous</h2>
+            <p>Nos ressources guidées vous aident à garder votre équilibre au quotidien.</p>
+          } @else {
+            <h2>Aucun professionnel disponible pour ce besoin pour le moment</h2>
+            <p>
+              {{ r.message }} Nous élargissons constamment notre réseau. En attendant, vous pouvez
+              consulter nos ressources guidées pour vous accompagner.
+            </p>
+          }
+          <button type="button" class="res__bouton-plein" title="Écran à venir">Découvrir les ressources</button>
+        </section>
+      }
+
+      <p class="res__liens">
+        @if (r.professionnels_suggeres.length) {
+          <span class="res__lien-fort" title="Écran à venir">Voir mes ressources recommandées</span>
+        }
+        <a routerLink="/app">Refaire le test plus tard</a>
+      </p>
+    </main>
+
+    <footer class="res__pied">
+      <span>© 2026 Sen Suivi — Tous droits réservés.</span>
+      <button type="button" class="res__urgence" (click)="modaleUrgenceOuverte.set(true)">
+        <ss-icon nom="alerte" taille="sm" /> Besoin d'aide tout de suite ?
+      </button>
+    </footer>
+
+    <button type="button" class="res__chat" title="Chatbot — bientôt disponible">
+      <ss-icon nom="chat" taille="lg" />
+    </button>
+
+    <ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />
+  </div>
+}

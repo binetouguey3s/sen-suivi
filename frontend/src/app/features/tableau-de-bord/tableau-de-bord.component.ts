@@ -1,5 +1,6 @@
 import { httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { IconComponent } from '../../shared/icon/icon.component';
 import { MoodChartComponent, PointHumeur } from '../../shared/mood-chart/mood-chart.component';
@@ -29,7 +30,7 @@ function scoreDe(niveau: NiveauHumeur): number {
 @Component({
   selector: 'ss-tableau-de-bord',
   standalone: true,
-  imports: [IconComponent, MoodSelectorComponent, MoodChartComponent],
+  imports: [RouterLink, IconComponent, MoodSelectorComponent, MoodChartComponent],
   templateUrl: './tableau-de-bord.component.html',
   styleUrl: './tableau-de-bord.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

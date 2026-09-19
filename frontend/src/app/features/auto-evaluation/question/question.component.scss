@@ -1,0 +1,226 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--ss-fond-public);
+}
+
+.q {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.q__progression {
+  order: 2;
+  height: 6px;
+  margin: 0 var(--ss-marge-mobile);
+  background: var(--ss-gris-clair);
+  border-radius: var(--ss-rayon-pilule);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--ss-menthe);
+    border-radius: var(--ss-rayon-pilule);
+    transition: width 0.25s ease;
+  }
+
+  @media (min-width: 900px) {
+    order: 0;
+    margin: 0;
+    border-radius: 0;
+
+    span {
+      border-radius: 0;
+    }
+  }
+}
+
+.q__entete {
+  order: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ss-espace-3) var(--ss-marge-mobile) var(--ss-espace-2);
+  font-size: 14px;
+  color: var(--ss-gris-ardoise);
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-3) var(--ss-espace-6);
+  }
+}
+
+.q__compteur {
+  margin: 0;
+}
+
+.q__quitter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ss-gris-ardoise);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ss-bleu-sen-suivi);
+  }
+}
+
+.q__contenu {
+  order: 3;
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  position: relative;
+  z-index: 1;
+}
+
+.q__question {
+  font-size: 26px;
+  font-weight: var(--ss-poids-titre);
+  color: var(--ss-bleu-sen-suivi);
+  margin-bottom: var(--ss-espace-4);
+
+  @media (min-width: 900px) {
+    font-size: 40px;
+    letter-spacing: var(--ss-interlettrage-moyen);
+  }
+}
+
+.q__options {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+}
+
+.q__legende {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.q__option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ss-espace-3);
+  background: var(--ss-sable);
+  border: 2px solid transparent;
+  border-radius: var(--ss-rayon-champ);
+  color: var(--ss-bleu-profond);
+  font-size: 16px;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline-offset: 2px;
+  }
+}
+
+.q__option--choisie {
+  background: var(--ss-menthe-pale);
+  border-color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.q__radio {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--ss-menthe);
+  background: var(--ss-blanc);
+  flex-shrink: 0;
+}
+
+.q__option--choisie .q__radio {
+  border-color: var(--ss-bleu-sen-suivi);
+  background: radial-gradient(var(--ss-blanc) 0 22%, var(--ss-bleu-sen-suivi) 25%);
+}
+
+.q__pied {
+  order: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  border-top: 1px solid var(--ss-gris-clair);
+  background: var(--ss-blanc);
+  position: relative;
+  z-index: 1;
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-3) var(--ss-espace-6);
+  }
+}
+
+.q__precedent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  background: none;
+  border: none;
+  color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 15px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.q__suivant {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+  border: none;
+  border-radius: var(--ss-rayon-pilule);
+  padding: var(--ss-espace-2) var(--ss-espace-4);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 15px;
+  box-shadow: var(--ss-ombre-carte);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.q__etat {
+  color: var(--ss-gris-ardoise);
+}
+
+.q__etat--erreur {
+  color: var(--ss-rouge-alerte);
+}
+
+.q__courbe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 96px;
+  height: 90px;
+  z-index: 0;
+}

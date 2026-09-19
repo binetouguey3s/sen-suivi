@@ -2,6 +2,7 @@
 // Seul ce fichier importe depuis @lucide/angular : tout le reste de
 // l'application passe par <ss-icon>, jamais par un import Lucide direct.
 import {
+  LucideArrowLeft,
   LucideArrowRight,
   LucideBookOpen,
   LucideChartLine,
@@ -13,6 +14,7 @@ import {
   LucideMessageCircle,
   LucidePhone,
   LucideSettings,
+  LucideX,
 } from '@lucide/angular';
 
 export const ICONES = {
@@ -27,6 +29,8 @@ export const ICONES = {
   chat: LucideMessageCircle,
   fleche: LucideArrowRight,
   telephone: LucidePhone,
+  'fleche-gauche': LucideArrowLeft,
+  fermer: LucideX,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

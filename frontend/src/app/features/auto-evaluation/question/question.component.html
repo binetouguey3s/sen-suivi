@@ -1,0 +1,65 @@
+<div class="q">
+  <div class="q__progression" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progression()">
+    <span [style.width.%]="progression()"></span>
+  </div>
+
+  <header class="q__entete">
+    <p class="q__compteur">
+      @if (courante()) {
+        Question {{ index() + 1 }} sur {{ total() }}
+      }
+    </p>
+    <a class="q__quitter" routerLink="/app">
+      Quitter <ss-icon nom="fermer" taille="sm" />
+    </a>
+  </header>
+
+  <main class="q__contenu">
+    @if (!typeValide()) {
+      <p class="q__etat">Ce test n'existe pas. <a routerLink="/app">Retour à l'accueil</a></p>
+    } @else if (questions.isLoading()) {
+      <p class="q__etat">Chargement des questions…</p>
+    } @else if (questions.error() || !courante()) {
+      <p class="q__etat q__etat--erreur">Impossible de charger les questions pour le moment.</p>
+    } @else if (courante(); as question) {
+      <h1 class="q__question">{{ question.libelle }}</h1>
+
+      <fieldset class="q__options">
+        <legend class="q__legende">Votre réponse</legend>
+        @for (option of question.options; track option.id) {
+          <label class="q__option" [class.q__option--choisie]="optionChoisie() === option.id">
+            <span>{{ option.libelle }}</span>
+            <input
+              type="radio"
+              name="reponse"
+              [value]="option.id"
+              [checked]="optionChoisie() === option.id"
+              (change)="choisir(option.id)"
+            />
+            <span class="q__radio" aria-hidden="true"></span>
+          </label>
+        }
+      </fieldset>
+
+      @if (erreur()) {
+        <p class="q__etat q__etat--erreur" role="alert">{{ erreur() }}</p>
+      }
+    }
+  </main>
+
+  <footer class="q__pied">
+    <button type="button" class="q__precedent" [disabled]="index() === 0" (click)="precedent()">
+      <ss-icon nom="fleche-gauche" taille="sm" /> Précédent
+    </button>
+    <button
+      type="button"
+      class="q__suivant"
+      [disabled]="optionChoisie() === null || envoiEnCours()"
+      (click)="suivant()"
+    >
+      {{ estDerniere() ? 'Voir mon résultat' : 'Suivant' }} <ss-icon nom="fleche" taille="sm" />
+    </button>
+  </footer>
+
+  <ss-courbe-marque class="q__courbe" />
+</div>

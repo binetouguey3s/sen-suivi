@@ -9,6 +9,22 @@ export const routes: Routes = [
       import('./features/auth/connexion/connexion.component').then((m) => m.ConnexionComponent),
   },
   {
+    path: 'app/evaluation/:type',
+    canActivate: [estConnecteGuard],
+    loadComponent: () =>
+      import('./features/auto-evaluation/question/question.component').then(
+        (m) => m.QuestionComponent,
+      ),
+  },
+  {
+    path: 'app/evaluation/:type/resultat',
+    canActivate: [estConnecteGuard],
+    loadComponent: () =>
+      import('./features/auto-evaluation/resultat/resultat.component').then(
+        (m) => m.ResultatComponent,
+      ),
+  },
+  {
     path: 'app',
     canActivate: [estConnecteGuard],
     loadComponent: () =>

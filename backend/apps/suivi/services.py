@@ -22,12 +22,40 @@ def interpreter_score(score):
     return 'Niveau élevé'
 
 
-def suggerer_professionnels(utilisateur):
-    """Jusqu'à 3 professionnels VALIDE, en priorité dans la ville de l'utilisateur.
+SEUIL_SUGGESTION_PROFESSIONNELS = 33  # au-dessus : niveau modéré ou élevé
 
-    Utilisateur n'a pas de champ ville dans le modèle actuel : en son
-    absence, la priorisation par ville n'est pas appliquée ici (voir la
-    note remontée après l'exécution de ce plan). On se contente donc du
-    filtre VALIDE, limité à 3.
+
+def texte_interpretation(score):
+    """Texte affiché sous la jauge (sans jamais parler de diagnostic)."""
+    if score <= 33:
+        return (
+            "Vos réponses indiquent que vous traversez une période plutôt sereine. "
+            "Continuez à prendre soin de vous : quelques minutes de respiration ou "
+            "de marche chaque jour aident à garder cet équilibre."
+        )
+    if score <= 66:
+        return (
+            "Vos réponses indiquent que vous traversez actuellement une période de "
+            "tensions qui impacte votre équilibre quotidien. Il est tout à fait normal "
+            "de se sentir parfois dépassé face aux défis de la vie, et reconnaître ces "
+            "signes est le premier pas vers un mieux-être. Prenez le temps d'écouter "
+            "vos besoins et n'hésitez pas à solliciter un soutien bienveillant pour "
+            "vous accompagner."
+        )
+    return (
+        "Vos réponses indiquent une période particulièrement chargée. Vous n'êtes pas "
+        "seul : échanger avec un professionnel peut vous soulager. Si vous avez besoin "
+        "d'être écouté maintenant, le numéro vert d'écoute 800 805 805 est disponible."
+    )
+
+
+def suggerer_professionnels(utilisateur, score):
+    """Jusqu'à 3 professionnels VALIDE ; aucun si le niveau est faible.
+
+    Utilisateur n'a pas encore de champ ville : la priorité à la ville de
+    l'utilisateur n'est pas appliquée (à faire avec la synchronisation du
+    diagramme de classes).
     """
-    return Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE)[:3]
+    if score <= SEUIL_SUGGESTION_PROFESSIONNELS:
+        return []
+    return list(Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE)[:3])

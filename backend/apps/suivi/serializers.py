@@ -4,7 +4,13 @@ from rest_framework import serializers
 from apps.comptes.serializers import ProfessionnelLectureSerializer
 
 from .models import AutoEvaluation, OptionReponse, QuestionEvaluation, SuiviHumeur, TypeEvaluation
-from .services import calculer_score_de_tendance, interpreter_score, suggerer_professionnels
+from .services import (
+    SEUIL_SUGGESTION_PROFESSIONNELS,
+    calculer_score_de_tendance,
+    interpreter_score,
+    suggerer_professionnels,
+    texte_interpretation,
+)
 
 
 class SuiviHumeurSerializer(serializers.ModelSerializer):
@@ -94,12 +100,20 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
         return auto_evaluation
 
     def to_representation(self, instance):
-        professionnels = suggerer_professionnels(instance.utilisateur)
+        score = instance.score_de_tendance
+        professionnels = suggerer_professionnels(instance.utilisateur, score)
+        # Niveau faible : ressources uniquement. Sinon, si aucun professionnel
+        # n'est disponible, liste vide + message (docs/SPECIFICATIONS.md section 2).
+        message = ''
+        if score > SEUIL_SUGGESTION_PROFESSIONNELS and not professionnels:
+            message = 'Aucun professionnel disponible pour ce besoin pour le moment.'
         return {
             'id': instance.id,
             'type_evaluation': instance.type_evaluation,
-            'score_de_tendance': instance.score_de_tendance,
-            'interpretation': interpreter_score(instance.score_de_tendance),
-            'texte_complementaire': "Ce résultat n'est pas un diagnostic.",
+            'score_de_tendance': score,
+            'interpretation': interpreter_score(score),
+            'texte_interpretation': texte_interpretation(score),
+            'avertissement': "Ce résultat n'est pas un diagnostic.",
             'professionnels_suggeres': ProfessionnelLectureSerializer(professionnels, many=True).data,
+            'message': message,
         }

@@ -168,6 +168,10 @@
   border: 1px solid var(--ss-bleu-sen-suivi);
   color: var(--ss-bleu-sen-suivi);
   width: 100%;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .tdb__lieu-actions {
