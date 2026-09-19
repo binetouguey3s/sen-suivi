@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from apps.comptes.serializers import ProfessionnelLectureSerializer
+from apps.comptes.serializers import ProfessionnelPublicSerializer
 
 from .models import AutoEvaluation, OptionReponse, QuestionEvaluation, SuiviHumeur, TypeEvaluation
 from .services import (
@@ -114,6 +114,6 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
             'interpretation': interpreter_score(score),
             'texte_interpretation': texte_interpretation(score),
             'avertissement': "Ce résultat n'est pas un diagnostic.",
-            'professionnels_suggeres': ProfessionnelLectureSerializer(professionnels, many=True).data,
+            'professionnels_suggeres': ProfessionnelPublicSerializer(professionnels, many=True).data,
             'message': message,
         }

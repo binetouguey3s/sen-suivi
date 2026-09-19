@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import Professionnel
+from .models import Professionnel, StatutValidationPro
 from .permissions import EstAdministrateur
 from .services import confirmer_reinitialisation, demander_reinitialisation
 from .serializers import (
@@ -20,6 +20,7 @@ from .serializers import (
     InscriptionUtilisateurSerializer,
     LoginSerializer,
     ProfessionnelLectureSerializer,
+    ProfessionnelPublicSerializer,
     ProfessionnelValidationSerializer,
 )
 
@@ -91,3 +92,13 @@ class ConfirmationReinitialisationView(APIView):
         if not confirmer_reinitialisation(**serializer.validated_data):
             raise serializers.ValidationError('Ce lien est invalide ou a expiré.')
         return Response({'detail': 'Votre mot de passe a été modifié.'}, status=status.HTTP_200_OK)
+
+
+class ProfessionnelPublicListView(generics.ListAPIView):
+    """GET /api/professionnels/valides — profils validés uniquement, accès public."""
+
+    permission_classes = [AllowAny]
+    serializer_class = ProfessionnelPublicSerializer
+
+    def get_queryset(self):
+        return Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE)

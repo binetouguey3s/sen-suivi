@@ -14,6 +14,12 @@ export const routes: Routes = [
       import('./shared/layout-public/layout-public.component').then((m) => m.LayoutPublicComponent),
     children: [
       {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/accueil/accueil.component').then((m) => m.AccueilComponent),
+      },
+      {
         path: 'ressources',
         loadComponent: () =>
           import('./features/ressources/bibliotheque.component').then((m) => m.BibliothequeComponent),
@@ -102,6 +108,5 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '', redirectTo: 'connexion', pathMatch: 'full' },
-  { path: '**', redirectTo: 'connexion' },
+  { path: '**', redirectTo: '' },
 ];

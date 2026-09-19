@@ -46,6 +46,19 @@ class InscriptionProfessionnelSerializer(serializers.ModelSerializer):
         return professionnel
 
 
+class ProfessionnelPublicSerializer(serializers.ModelSerializer):
+    """Profil affichable publiquement : jamais d'e-mail ni de statut interne."""
+
+    specialite_affichee = serializers.CharField(source='get_specialite_display', read_only=True)
+
+    class Meta:
+        model = Professionnel
+        fields = [
+            'id', 'nom', 'specialite', 'specialite_affichee',
+            'ville', 'langue', 'tarif_indicatif', 'presentation',
+        ]
+
+
 class ProfessionnelLectureSerializer(serializers.ModelSerializer):
     specialite_affichee = serializers.CharField(source='get_specialite_display', read_only=True)
     statut_validation_affiche = serializers.CharField(

@@ -1,9 +1,10 @@
 <header class="lp__entete">
-  <a class="lp__marque" routerLink="/ressources" aria-label="Sen Suivi">
+  <a class="lp__marque" routerLink="/" aria-label="Sen Suivi">
     <img src="/logo-sen-suivi.png" alt="Sen Suivi" />
   </a>
 
   <nav class="lp__nav" aria-label="Navigation principale">
+    <a routerLink="/" routerLinkActive="lp__lien--actif" [routerLinkActiveOptions]="{ exact: true }">Découvrir</a>
     <a routerLink="/ressources" routerLinkActive="lp__lien--actif">Ressources</a>
     <a routerLink="/lieux" routerLinkActive="lp__lien--actif">Lieux</a>
     <a [routerLink]="auth.estConnecte() ? '/app' : '/connexion'">Mon Suivi</a>

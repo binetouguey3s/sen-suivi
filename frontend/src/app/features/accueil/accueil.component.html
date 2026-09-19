@@ -1,0 +1,128 @@
+<section class="ac__hero">
+  <div class="ac__hero-texte">
+    <h1>Votre bien-être mérite un espace à lui.</h1>
+    <p>Un accompagnement doux, confidentiel et adapté à notre culture, pour prendre soin de votre équilibre mental au quotidien.</p>
+    <div class="ac__actions">
+      <a class="ac__bouton-plein" routerLink="/inscription">Commencer gratuitement</a>
+      <a class="ac__bouton-contour" routerLink="/chatbot">Parler au chatbot</a>
+    </div>
+    <p class="ac__mention">Sen Suivi ne remplace pas un professionnel de santé.</p>
+  </div>
+
+  <div class="ac__apercu" aria-hidden="true">
+    <div class="ac__apercu-humeur">
+      <p>Comment vous sentez-vous ?</p>
+      <span>😫</span><span>🙁</span><span>😐</span><span>🙂</span><span>😊</span>
+    </div>
+    <div class="ac__apercu-courbe">
+      <p>Votre évolution</p>
+      <ss-mood-chart [points]="apercu" />
+    </div>
+  </div>
+</section>
+
+<section class="ac__piliers">
+  <div><ss-icon nom="cadenas" /><h2>Confidentiel</h2><p>Votre journal et vos résultats ne sont visibles que par vous.</p></div>
+  <div><ss-icon nom="coeur" /><h2>Sans jugement</h2><p>Exprimez-vous librement, nous sommes là pour vous comprendre.</p></div>
+  <div><ss-icon nom="verifie" /><h2>Gratuit</h2><p>Toutes les fonctionnalités de Sen Suivi sont accessibles gratuitement.</p></div>
+</section>
+
+<section class="ac__section">
+  <h2 class="ac__titre">Mieux vous accompagner.</h2>
+  <p class="ac__sous-titre">Une approche pensée pour votre rythme et vos besoins.</p>
+
+  <div class="ac__bento">
+    <article class="ac__carte ac__carte--menthe">
+      <h3>Un journal de bord intuitif</h3>
+      <p>Notez vos pensées et suivez l'évolution de votre météo intérieure au fil des jours.</p>
+      <ss-mood-chart [points]="apercu" aria-hidden="true" />
+      <a class="ac__lien" routerLink="/inscription">Commencer mon journal <ss-icon nom="fleche" taille="sm" /></a>
+    </article>
+    <article class="ac__carte ac__carte--sable">
+      <ss-icon nom="exercice" taille="lg" />
+      <h3>Exercices de respiration</h3>
+      <p>Retrouvez le calme avec des techniques simples, à faire en quelques minutes.</p>
+      <a class="ac__lien" routerLink="/ressources" [queryParams]="{ format: 'EXERCICE' }">Voir les exercices <ss-icon nom="fleche" taille="sm" /></a>
+    </article>
+    <article class="ac__carte ac__carte--profond">
+      <ss-icon nom="article" taille="lg" />
+      <h3>Une bibliothèque de ressources</h3>
+      <p>Articles et podcasts pensés pour les étudiants et actifs sénégalais.</p>
+      <a class="ac__lien ac__lien--clair" routerLink="/ressources">Explorer la bibliothèque <ss-icon nom="fleche" taille="sm" /></a>
+    </article>
+  </div>
+</section>
+
+<section class="ac__chatbot">
+  <div class="ac__conversation" aria-hidden="true">
+    <p class="ac__bulle">Bonjour, comment puis-je vous accompagner aujourd'hui ?</p>
+    <p class="ac__bulle ac__bulle--moi">Je me sens un peu stressé par le travail ces derniers temps.</p>
+    <p class="ac__bulle">C'est tout à fait compréhensible. Prenons un instant pour évacuer cette tension ensemble.</p>
+  </div>
+  <div class="ac__chatbot-texte">
+    <h2>Une oreille attentive, quand vous en avez besoin.</h2>
+    <ul>
+      <li><ss-icon nom="cadenas" taille="sm" /> <span><strong>Confidentialité</strong> Vos échanges ne sont jamais partagés.</span></li>
+      <li><ss-icon nom="chat" taille="sm" /> <span><strong>Réponses validées</strong> Le chatbot s'appuie uniquement sur des contenus de la plateforme.</span></li>
+      <li><ss-icon nom="lieux" taille="sm" /> <span><strong>Orientation</strong> Il peut vous recommander des exercices ou des lieux de détente.</span></li>
+    </ul>
+    <a class="ac__bouton-contour" routerLink="/chatbot">Parler au chatbot</a>
+  </div>
+</section>
+
+<section class="ac__section">
+  <h2 class="ac__titre ac__titre--centre">Retrouvez la sérénité.</h2>
+  <p class="ac__sous-titre ac__sous-titre--centre">Notre sélection de lieux apaisants à travers le Sénégal pour vous ressourcer.</p>
+
+  @defer (on viewport) {
+    <div class="ac__lieux">
+      @for (lieu of lieux(); track lieu.id) {
+        <a class="ac__lieu" [routerLink]="['/lieux', lieu.id]">
+          <img [src]="image(lieu)" [alt]="lieu.nom" loading="lazy" />
+          <span>{{ lieu.nom }}, {{ lieu.ville }}</span>
+        </a>
+      }
+    </div>
+  } @placeholder {
+    <div class="ac__attente">Chargement des lieux…</div>
+  }
+</section>
+
+<section class="ac__pros">
+  <h2>Des professionnels à votre écoute.</h2>
+  <p>Échangez avec des professionnels validés qui comprennent nos réalités sociales et culturelles.</p>
+
+  @defer (on viewport) {
+    <div class="ac__pros-grille">
+      @for (pro of professionnels(); track pro.id) {
+        <article class="ac__pro">
+          @if (portrait(pro); as src) {
+            <img [src]="src" [alt]="'Portrait illustratif de ' + pro.nom" />
+          } @else {
+            <span class="ac__pro-initiales" aria-hidden="true">{{ initiales(pro) }}</span>
+          }
+          <h3>{{ pro.nom }}</h3>
+          <p>{{ pro.specialite_affichee }} · {{ pro.ville }}</p>
+          <strong>{{ tarif(pro) }}</strong>
+        </article>
+      }
+    </div>
+  } @placeholder {
+    <div class="ac__attente ac__attente--clair">Chargement des professionnels…</div>
+  }
+</section>
+
+<section class="ac__garanties">
+  <div><ss-icon nom="verifie" /><h3>Sans publicité</h3><p>Votre bien-être n'est pas une marchandise : aucune publicité, jamais.</p></div>
+  <div><ss-icon nom="cadenas" /><h3>Données protégées</h3><p>Vos entrées de journal et vos résultats ne sont lisibles que par vous.</p></div>
+  <div><ss-icon nom="journal" /><h3>Prévention</h3><p>Des auto-évaluations pour repérer les signaux avant qu'ils ne s'installent.</p></div>
+</section>
+
+<section class="ac__final">
+  <h2>Le premier pas peut se faire aujourd'hui.</h2>
+  <p>Rejoignez Sen Suivi et commencez à prendre soin de vous, un jour après l'autre.</p>
+  <div class="ac__actions ac__actions--centre">
+    <a class="ac__bouton-plein" routerLink="/inscription">Créer mon espace gratuit</a>
+    <a class="ac__bouton-contour" routerLink="/ressources">En savoir plus</a>
+  </div>
+</section>
