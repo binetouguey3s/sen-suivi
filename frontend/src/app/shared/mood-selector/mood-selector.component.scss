@@ -1,0 +1,51 @@
+.mood-selector {
+  display: flex;
+  gap: var(--ss-espace-3);
+  flex-wrap: wrap;
+}
+
+.mood-selector__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  background: none;
+  border: none;
+  border-radius: var(--ss-rayon-pilule);
+  padding: var(--ss-espace-1);
+  cursor: pointer;
+  color: var(--ss-gris-ardoise);
+  font-size: 13px;
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.7;
+  }
+}
+
+.mood-selector__emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  font-size: 28px;
+  border-radius: 50%;
+  background: var(--ss-menthe-tres-pale);
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.mood-selector__item--actif {
+  color: var(--ss-bleu-profond);
+  font-weight: var(--ss-poids-texte-fort);
+
+  .mood-selector__emoji {
+    border-color: var(--ss-menthe);
+    background: var(--ss-menthe-pale);
+  }
+}
+
+.mood-selector__item:hover:not(:disabled) .mood-selector__emoji {
+  border-color: var(--ss-menthe);
+}

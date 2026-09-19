@@ -1,0 +1,68 @@
+// Sen Suivi — Design tokens
+// Toute valeur hexadécimale ou de mesure utilisée dans un composant doit
+// passer par une variable définie ici. Aucune valeur en dur ailleurs.
+
+:root {
+  // Couleurs — aucune autre que celles-ci
+  --ss-bleu-sen-suivi: #1b4b6e;
+  --ss-bleu-profond: #12354f;
+  --ss-menthe: #a9d6c4;
+  --ss-menthe-pale: #e9f4ef;
+  --ss-menthe-tres-pale: #f4faf7;
+  --ss-sable: #fbf8f3;
+  --ss-blanc: #ffffff;
+  --ss-gris-ardoise: #6b7280;
+  --ss-gris-clair: #edeef1;
+  --ss-rouge-alerte: #e4572e; // urgence et suppression de compte uniquement
+
+  // Fonds par zone
+  --ss-fond-public: var(--ss-blanc);
+  --ss-fond-app: var(--ss-sable);
+  --ss-fond-admin: var(--ss-blanc);
+  --ss-fond-carte: var(--ss-blanc);
+
+  // Typographie
+  // Polices auto-hébergées prévues (docs/SPECIFICATIONS.md section 7) ; en
+  // attendant les fichiers de police réels, pile de secours système fidèle
+  // au style (grotesque géométrique / humaniste).
+  --ss-police-titres: 'Schibsted Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --ss-police-texte: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  --ss-poids-titre-fort: 700;
+  --ss-poids-titre: 600;
+  --ss-poids-texte: 400;
+  --ss-poids-texte-fort: 500;
+
+  --ss-interlettrage-grand: -0.03em; // au-delà de 40px
+  --ss-interlettrage-moyen: -0.02em; // 20 à 40px
+  --ss-hauteur-ligne-titre: 1.1;
+  --ss-hauteur-ligne-texte: 1.6;
+
+  --ss-texte-taille-min: 13px;
+
+  // Rayons
+  --ss-rayon-champ: 12px;
+  --ss-rayon-bouton: 12px;
+  --ss-rayon-carte: 24px;
+  --ss-rayon-grande-carte: 32px;
+  --ss-rayon-pilule: 999px;
+
+  // Espacement (base 8)
+  --ss-espace-1: 8px;
+  --ss-espace-2: 16px;
+  --ss-espace-3: 24px;
+  --ss-espace-4: 32px;
+  --ss-espace-5: 40px;
+  --ss-espace-6: 48px;
+  --ss-espace-8: 64px;
+
+  // Grille
+  --ss-marge-desktop: 80px;
+  --ss-gouttiere-desktop: 24px;
+  --ss-marge-mobile: 20px;
+  --ss-gouttiere-mobile: 16px;
+
+  // Ombres — toujours teintées bleu, jamais grises
+  --ss-ombre-carte: 0 8px 24px rgba(18, 53, 79, 0.08);
+  --ss-ombre-carte-forte: 0 16px 40px rgba(18, 53, 79, 0.14);
+}

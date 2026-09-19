@@ -1,0 +1,14 @@
+<div class="mood-selector">
+  @for (niveau of niveaux; track niveau.valeur) {
+    <button
+      type="button"
+      class="mood-selector__item"
+      [class.mood-selector__item--actif]="selection() === niveau.valeur"
+      [disabled]="desactive()"
+      (click)="choisi.emit(niveau.valeur)"
+    >
+      <span class="mood-selector__emoji" aria-hidden="true">{{ niveau.emoji }}</span>
+      <span class="mood-selector__libelle">{{ niveau.libelle }}</span>
+    </button>
+  }
+</div>

@@ -1,0 +1,82 @@
+<div class="connexion">
+  <aside class="connexion__illustration" aria-hidden="true">
+    <div class="connexion__image">
+      <svg viewBox="0 0 100 100" class="connexion__image-silhouette" focusable="false">
+        <circle cx="50" cy="30" r="16" />
+        <path d="M20 92 C20 60 35 46 50 46 C65 46 80 60 80 92 Z" />
+      </svg>
+    </div>
+    <p class="connexion__citation">« Votre espace de sérénité, en toute discrétion. »</p>
+  </aside>
+
+  <main class="connexion__contenu">
+    <div class="connexion__carte">
+      <img class="connexion__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
+
+      <h1 class="connexion__titre">Content de vous revoir</h1>
+
+      <form class="connexion__formulaire" (submit)="valider($event)" novalidate>
+          <label class="connexion__champ">
+            <span>Email</span>
+            <input
+              type="email"
+              name="email"
+              [value]="email()"
+              (input)="saisirEmail($event)"
+              placeholder="nom@exemple.com"
+              autocomplete="email"
+              required
+            />
+          </label>
+
+          <label class="connexion__champ">
+            <div class="connexion__ligne-label">
+              <span>Mot de passe</span>
+              <a routerLink="/mot-de-passe-oublie">Mot de passe oublié ?</a>
+            </div>
+            <div class="connexion__champ-mdp">
+              <input
+                [type]="afficherMotDePasse() ? 'text' : 'password'"
+                name="motDePasse"
+                [value]="motDePasse()"
+                (input)="saisirMotDePasse($event)"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                class="connexion__bouton-oeil"
+                (click)="afficherMotDePasse.set(!afficherMotDePasse())"
+                [attr.aria-label]="afficherMotDePasse() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+              >
+                <ss-icon [nom]="afficherMotDePasse() ? 'oeil-barre' : 'oeil'" taille="sm" />
+              </button>
+            </div>
+          </label>
+
+          @if (erreur()) {
+            <p class="connexion__erreur" role="alert">
+              <ss-icon nom="alerte" taille="sm" />
+              {{ erreur() }}
+            </p>
+          }
+
+          <button type="submit" class="connexion__bouton-principal" [disabled]="enCours()">
+            {{ enCours() ? 'Connexion…' : 'Se connecter' }}
+          </button>
+        </form>
+
+      <p class="connexion__lien-secondaire">
+        Pas encore de compte ? <a routerLink="/inscription">Créer un compte</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="connexion__pied">
+    <span>© 2026 Sen Suivi</span>
+    <div class="connexion__pied-liens">
+      <a href="#">Mentions légales</a>
+      <a href="#">Confidentialité</a>
+    </div>
+  </footer>
+</div>

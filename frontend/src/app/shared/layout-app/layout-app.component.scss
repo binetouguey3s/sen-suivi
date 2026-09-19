@@ -1,0 +1,224 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--ss-fond-app);
+}
+
+.layout-app {
+  display: flex;
+  min-height: 100vh;
+}
+
+// --- Barre latérale desktop ---------------------------------------------
+
+.layout-app__sidebar {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--ss-blanc);
+    border-right: 1px solid var(--ss-gris-clair);
+    padding: var(--ss-espace-3) var(--ss-espace-2);
+  }
+}
+
+.layout-app__logo {
+  height: 40px;
+  width: auto;
+  margin: 0 auto var(--ss-espace-4);
+}
+
+.layout-app__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-1);
+  flex: 1;
+}
+
+.layout-app__lien {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-2);
+  border-radius: var(--ss-rayon-champ);
+  color: var(--ss-gris-ardoise);
+  text-decoration: none;
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 15px;
+}
+
+.layout-app__lien--actif {
+  background: var(--ss-menthe-pale);
+  color: var(--ss-bleu-sen-suivi);
+}
+
+.layout-app__lien--a-venir {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.layout-app__profil {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  border-top: 1px solid var(--ss-gris-clair);
+  padding-top: var(--ss-espace-3);
+}
+
+.layout-app__profil-nom {
+  margin: 0;
+  font-weight: var(--ss-poids-texte-fort);
+  color: var(--ss-bleu-profond);
+  font-size: 14px;
+}
+
+.layout-app__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+  font-weight: var(--ss-poids-titre);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+// --- Zone principale -----------------------------------------------------
+
+.layout-app__zone {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-app__topbar-mobile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ss-espace-2) var(--ss-marge-mobile);
+  background: var(--ss-fond-app);
+
+  @media (min-width: 900px) {
+    display: none;
+  }
+}
+
+.layout-app__logo--mobile {
+  height: 28px;
+  margin: 0;
+}
+
+.layout-app__avatar--mobile {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.layout-app__contenu {
+  flex: 1;
+  padding: var(--ss-espace-2) var(--ss-marge-mobile) calc(var(--ss-espace-8) + var(--ss-espace-4));
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-4) var(--ss-marge-desktop);
+  }
+}
+
+.layout-app__urgence {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  margin: var(--ss-espace-4) 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--ss-rouge-alerte);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 13px;
+  cursor: pointer;
+  padding: var(--ss-espace-1);
+}
+
+// --- Bulle de chat ---------------------------------------------------------
+
+.layout-app__chat {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ss-bleu-profond);
+  color: var(--ss-blanc);
+  box-shadow: var(--ss-ombre-carte-forte);
+  cursor: pointer;
+
+  right: var(--ss-espace-3);
+  bottom: calc(72px + var(--ss-espace-2));
+
+  @media (min-width: 900px) {
+    bottom: var(--ss-espace-4);
+  }
+}
+
+.layout-app__chat-point {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ss-rouge-alerte);
+  border: 2px solid var(--ss-blanc);
+}
+
+// --- Navigation basse mobile ------------------------------------------------
+
+.layout-app__nav-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--ss-blanc);
+  border-top: 1px solid var(--ss-gris-clair);
+  padding: var(--ss-espace-1) 0 max(var(--ss-espace-1), env(safe-area-inset-bottom, 0px));
+
+  @media (min-width: 900px) {
+    display: none;
+  }
+}
+
+.layout-app__nav-mobile-espace {
+  width: 56px;
+}
+
+.layout-app__lien-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--ss-gris-ardoise);
+  text-decoration: none;
+}
+
+.layout-app__lien-mobile--actif {
+  color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.layout-app__lien-mobile--a-venir {
+  opacity: 0.45;
+}

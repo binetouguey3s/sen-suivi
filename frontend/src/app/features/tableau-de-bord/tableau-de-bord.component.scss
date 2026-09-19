@@ -1,0 +1,189 @@
+:host {
+  display: block;
+}
+
+.tdb__entete {
+  margin-bottom: var(--ss-espace-3);
+}
+
+.tdb__entete h1 {
+  font-size: 28px;
+  color: var(--ss-bleu-sen-suivi);
+
+  @media (min-width: 900px) {
+    font-size: 34px;
+  }
+}
+
+.tdb__date {
+  color: var(--ss-gris-ardoise);
+  margin: var(--ss-espace-1) 0 0;
+}
+
+.tdb__grille {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ss-espace-3);
+
+  @media (min-width: 900px) {
+    grid-template-columns: 1.7fr 1fr;
+    align-items: start;
+  }
+}
+
+.tdb__colonne-principale,
+.tdb__colonne-laterale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-3);
+}
+
+.tdb__carte {
+  background: var(--ss-fond-carte);
+  border-radius: var(--ss-rayon-carte);
+  padding: var(--ss-espace-3);
+  box-shadow: var(--ss-ombre-carte);
+}
+
+.tdb__carte--lieu {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  padding: 0;
+
+  @media (min-width: 900px) {
+    display: flex;
+    align-items: stretch;
+  }
+}
+
+.tdb__lieu-image {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+
+  @media (min-width: 900px) {
+    width: 320px;
+    height: auto;
+    flex-shrink: 0;
+  }
+}
+
+.tdb__lieu-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-1);
+  padding: var(--ss-espace-3);
+}
+
+.tdb__titre-carte {
+  font-size: 18px;
+  margin-bottom: var(--ss-espace-3);
+}
+
+.tdb__etat {
+  color: var(--ss-gris-ardoise);
+  font-size: 14px;
+}
+
+.tdb__etat--erreur {
+  color: var(--ss-rouge-alerte);
+}
+
+.tdb__erreur {
+  color: var(--ss-rouge-alerte);
+  font-size: 14px;
+  margin: var(--ss-espace-2) 0 0;
+}
+
+.tdb__carte--serie {
+  background: var(--ss-menthe-tres-pale);
+}
+
+.tdb__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte-fort);
+  letter-spacing: var(--ss-interlettrage-moyen);
+  color: var(--ss-bleu-sen-suivi);
+  margin: 0 0 var(--ss-espace-2);
+}
+
+.tdb__serie-nombre {
+  font-family: var(--ss-police-titres);
+  font-size: 40px;
+  font-weight: var(--ss-poids-titre-fort);
+  color: var(--ss-bleu-profond);
+  margin: 0;
+
+  span {
+    font-size: 16px;
+    font-weight: var(--ss-poids-texte);
+  }
+}
+
+.tdb__serie-texte {
+  color: var(--ss-bleu-profond);
+  font-size: 14px;
+  margin: var(--ss-espace-2) 0 0;
+}
+
+.tdb__ressource-titre,
+.tdb__lieu-titre {
+  font-size: 17px;
+  margin: 0 0 var(--ss-espace-1);
+}
+
+.tdb__texte-secondaire {
+  color: var(--ss-gris-ardoise);
+  font-size: 14px;
+  margin: 0 0 var(--ss-espace-2);
+}
+
+.tdb__lien-decouvrir {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+  text-decoration: none;
+  cursor: default;
+}
+
+.tdb__bouton-contour,
+.tdb__bouton-principal,
+.tdb__bouton-texte {
+  border-radius: var(--ss-rayon-bouton);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 14px;
+  padding: var(--ss-espace-2) var(--ss-espace-3);
+  cursor: default;
+}
+
+.tdb__bouton-contour {
+  background: var(--ss-blanc);
+  border: 1px solid var(--ss-bleu-sen-suivi);
+  color: var(--ss-bleu-sen-suivi);
+  width: 100%;
+}
+
+.tdb__lieu-actions {
+  display: flex;
+  gap: var(--ss-espace-2);
+  margin-top: var(--ss-espace-2);
+}
+
+.tdb__bouton-principal {
+  background: var(--ss-bleu-profond);
+  color: var(--ss-blanc);
+  border: none;
+}
+
+.tdb__bouton-texte {
+  background: var(--ss-gris-clair);
+  color: var(--ss-bleu-profond);
+  border: none;
+}

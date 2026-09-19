@@ -1,0 +1,36 @@
+@use 'app/styles/tokens';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--ss-fond-public);
+  color: var(--ss-bleu-profond);
+  font-family: var(--ss-police-texte);
+  font-weight: var(--ss-poids-texte);
+  line-height: var(--ss-hauteur-ligne-texte);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--ss-police-titres);
+  line-height: var(--ss-hauteur-ligne-titre);
+  margin: 0;
+  color: var(--ss-bleu-profond);
+}
+
+button {
+  font-family: inherit;
+}

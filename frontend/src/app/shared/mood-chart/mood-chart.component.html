@@ -1,0 +1,19 @@
+<svg [attr.viewBox]="viewBox" class="mood-chart" preserveAspectRatio="none" role="img" aria-label="Évolution de l'humeur sur la période">
+  @if (yMoyenne(); as y) {
+    <line class="mood-chart__moyenne" x1="0" [attr.y1]="y" x2="700" [attr.y2]="y" />
+  }
+
+  @for (segment of segments(); track segment) {
+    <path class="mood-chart__ligne" [attr.d]="segment" fill="none" />
+  }
+
+  @for (point of pointsVisibles(); track point.x) {
+    <circle class="mood-chart__point" [attr.cx]="point.x" [attr.cy]="point.y" r="4" />
+  }
+</svg>
+
+<div class="mood-chart__etiquettes">
+  @for (point of etiquettes(); track point.x) {
+    <span>{{ point.libelle }}</span>
+  }
+</div>

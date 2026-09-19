@@ -1,0 +1,85 @@
+<header class="journal__entete">
+  <h1>Comment s'est passée votre journée ?</h1>
+  <p class="journal__date">{{ aujourdHui }}</p>
+</header>
+
+<section class="journal__carte">
+  <ss-mood-selector [selection]="humeurChoisie()" (choisi)="humeurChoisie.set($event)" />
+
+  <label class="journal__label" for="journal-note">Ajouter un mot sur votre journée (facultatif)</label>
+  <textarea
+    id="journal-note"
+    class="journal__note"
+    rows="4"
+    maxlength="500"
+    placeholder="Écrivez ce que vous avez sur le cœur…"
+    [value]="note()"
+    (input)="note.set($any($event.target).value)"
+  ></textarea>
+  <p class="journal__compteur">{{ note().length }} / 500</p>
+
+  <p class="journal__label">Qu'est-ce qui a influencé votre humeur ?</p>
+  <div class="journal__chips">
+    @for (influence of influences; track influence) {
+      <button
+        type="button"
+        class="journal__chip"
+        [class.journal__chip--actif]="etiquettesChoisies().includes(influence)"
+        (click)="basculerEtiquette(influence)"
+      >
+        {{ influence }}
+      </button>
+    }
+  </div>
+
+  @if (erreur()) {
+    <p class="journal__erreur" role="alert">{{ erreur() }}</p>
+  }
+  @if (confirmation()) {
+    <p class="journal__confirmation" role="status">Entrée enregistrée.</p>
+  }
+
+  <div class="journal__actions">
+    <button
+      type="button"
+      class="journal__bouton-principal"
+      [disabled]="!humeurChoisie() || enregistrementEnCours()"
+      (click)="enregistrer()"
+    >
+      {{ enregistrementEnCours() ? 'Enregistrement…' : "Enregistrer l'entrée" }}
+    </button>
+  </div>
+</section>
+
+<section class="journal__historique">
+  <div class="journal__historique-entete">
+    <h2>Vos dernières entrées</h2>
+    <span class="journal__lien-a-venir" title="Écran à venir">Voir tout l'historique</span>
+  </div>
+
+  @if (suivi.isLoading()) {
+    <p class="journal__etat">Chargement…</p>
+  } @else if (!entreesRecentes().length) {
+    <p class="journal__etat">Aucune entrée pour le moment : notez votre première humeur ci-dessus.</p>
+  } @else {
+    <ul class="journal__liste">
+      @for (entree of entreesRecentes(); track entree.id) {
+        <li class="journal__entree">
+          <div class="journal__entree-date">
+            <span>{{ formaterDate(entree.date).jour }}</span>
+            <span class="journal__entree-jour">{{ formaterDate(entree.date).libelle }}</span>
+          </div>
+          <span class="journal__entree-emoji" aria-hidden="true">{{ emojiDe(entree.score_humeur) }}</span>
+          <p class="journal__entree-note">{{ entree.note || '—' }}</p>
+          @if (entree.etiquettes) {
+            <div class="journal__entree-chips">
+              @for (etiquette of entree.etiquettes.split(','); track etiquette) {
+                <span class="journal__chip journal__chip--lecture">{{ etiquette }}</span>
+              }
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

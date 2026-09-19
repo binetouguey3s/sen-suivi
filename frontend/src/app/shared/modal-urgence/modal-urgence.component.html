@@ -1,0 +1,39 @@
+@if (ouverte()) {
+  <div class="modal-urgence__fond" (click)="fermer()"></div>
+
+  <div class="modal-urgence" role="dialog" aria-modal="true" aria-labelledby="titre-urgence">
+    <div class="modal-urgence__barre" aria-hidden="true"></div>
+
+    <div class="modal-urgence__entete">
+      <h2 id="titre-urgence">Vous n'êtes pas seul.</h2>
+      <p>Voici des personnes disponibles pour vous parler maintenant.</p>
+    </div>
+
+    <ul class="modal-urgence__liste">
+      @for (contact of contacts; track contact.libelle) {
+        <li class="modal-urgence__contact" [class.modal-urgence__contact--principal]="contact.misEnAvant">
+          <div>
+            <p class="modal-urgence__libelle">{{ contact.libelle }}</p>
+            <p class="modal-urgence__valeur">{{ contact.valeur }}</p>
+          </div>
+          @if (contact.telephone) {
+            <a class="modal-urgence__appeler" [href]="'tel:' + contact.telephone">
+              <ss-icon nom="telephone" taille="sm" /> Appeler
+            </a>
+          } @else {
+            <span class="modal-urgence__appeler modal-urgence__appeler--indisponible" title="Numéro non communiqué">
+              <ss-icon nom="telephone" taille="sm" /> Appeler
+            </span>
+          }
+        </li>
+      }
+    </ul>
+
+    <div class="modal-urgence__actions">
+      <button type="button" class="modal-urgence__lien" (click)="fermer()">Revenir à la conversation</button>
+      <span class="modal-urgence__lien modal-urgence__lien--a-venir" title="Écran à venir">
+        Voir les associations près de chez moi
+      </span>
+    </div>
+  </div>
+}

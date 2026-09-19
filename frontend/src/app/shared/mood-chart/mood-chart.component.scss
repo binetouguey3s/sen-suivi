@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+
+.mood-chart {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+.mood-chart__moyenne {
+  stroke: var(--ss-menthe);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.mood-chart__ligne {
+  stroke: var(--ss-menthe);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mood-chart__point {
+  fill: var(--ss-bleu-profond);
+}
+
+.mood-chart__etiquettes {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ss-gris-ardoise);
+  font-size: 13px;
+  padding: 0 var(--ss-espace-1);
+}

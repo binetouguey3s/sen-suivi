@@ -1,0 +1,91 @@
+<header class="tdb__entete">
+  <h1>Bonjour {{ auth.prenom() ?? auth.nom() }}</h1>
+  <p class="tdb__date">{{ aujourdHui }}</p>
+</header>
+
+<div class="tdb__grille">
+  <div class="tdb__colonne-principale">
+    <section class="tdb__carte">
+      <h2 class="tdb__titre-carte">Comment vous sentez-vous aujourd'hui ?</h2>
+      <ss-mood-selector
+        [selection]="humeurDuJour()"
+        [desactive]="enregistrementEnCours()"
+        (choisi)="choisirHumeur($event)"
+      />
+      @if (erreurEnregistrement()) {
+        <p class="tdb__erreur" role="alert">{{ erreurEnregistrement() }}</p>
+      }
+    </section>
+
+    <section class="tdb__carte">
+      <h2 class="tdb__titre-carte">Évolution de votre humeur</h2>
+      @if (suivi.isLoading()) {
+        <p class="tdb__etat">Chargement de votre historique…</p>
+      } @else if (suivi.error()) {
+        <p class="tdb__etat tdb__etat--erreur">Impossible de charger votre historique pour le moment.</p>
+      } @else {
+        <ss-mood-chart [points]="pointsGraphique()" [moyenne]="moyenne()" />
+      }
+    </section>
+  </div>
+
+  <div class="tdb__colonne-laterale">
+    <section class="tdb__carte tdb__carte--serie">
+      <p class="tdb__eyebrow">Votre série</p>
+      <p class="tdb__serie-nombre">{{ serie() }} <span>jours</span></p>
+      <p class="tdb__serie-texte">
+        @if (serie() > 0) {
+          Bravo {{ auth.prenom() }} ! Vous prenez soin de vous avec constance. Continuez ainsi !
+        } @else {
+          Commencez votre série dès aujourd'hui en notant votre humeur.
+        }
+      </p>
+    </section>
+
+    @if (ressources.isLoading()) {
+      <section class="tdb__carte"><p class="tdb__etat">Chargement…</p></section>
+    } @else if (ressourceDuJour(); as ressource) {
+      <section class="tdb__carte tdb__carte--ressource">
+        <p class="tdb__eyebrow">Ressource du jour</p>
+        <h3 class="tdb__ressource-titre">{{ ressource.titre }}</h3>
+        <a class="tdb__lien-decouvrir" title="Écran de détail à venir">
+          Découvrir <ss-icon nom="fleche" taille="sm" />
+        </a>
+      </section>
+    } @else {
+      <section class="tdb__carte"><p class="tdb__etat">Aucune ressource disponible pour le moment.</p></section>
+    }
+
+    <section class="tdb__carte">
+      <p class="tdb__eyebrow">Auto-évaluation suggérée</p>
+      <h3 class="tdb__ressource-titre">Test de niveau de stress actuel</h3>
+      <p class="tdb__texte-secondaire">
+        Faites le point en 2 minutes pour mieux adapter vos exercices.
+      </p>
+      <button type="button" class="tdb__bouton-contour" title="Écran à venir">Démarrer le test</button>
+    </section>
+  </div>
+
+  @if (lieux.isLoading()) {
+    <section class="tdb__carte tdb__carte--lieu"><p class="tdb__etat">Chargement…</p></section>
+  } @else if (lieuProche(); as lieu) {
+    <section class="tdb__carte tdb__carte--lieu">
+      @if (imageLieuProche(); as image) {
+        <img class="tdb__lieu-image" [src]="image" [alt]="lieu.nom" />
+      }
+      <div class="tdb__lieu-contenu">
+        <p class="tdb__eyebrow">
+          <ss-icon nom="lieux" taille="sm" /> Un lieu pour souffler près de vous
+        </p>
+        <h3 class="tdb__lieu-titre">{{ lieu.nom }}, {{ lieu.ville }}</h3>
+        <p class="tdb__texte-secondaire">{{ lieu.description }}</p>
+        <div class="tdb__lieu-actions">
+          <button type="button" class="tdb__bouton-principal" title="Écran à venir">M'y rendre</button>
+          <button type="button" class="tdb__bouton-texte" title="Écran à venir">Plus d'infos</button>
+        </div>
+      </div>
+    </section>
+  } @else {
+    <section class="tdb__carte tdb__carte--lieu"><p class="tdb__etat">Aucun lieu disponible pour le moment.</p></section>
+  }
+</div>
