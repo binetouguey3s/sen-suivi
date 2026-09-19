@@ -26,6 +26,38 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'inscription',
+    loadComponent: () =>
+      import('./features/auth/inscription/inscription.component').then((m) => m.InscriptionComponent),
+  },
+  {
+    path: 'inscription-professionnel',
+    loadComponent: () =>
+      import('./features/auth/inscription-pro/inscription-pro.component').then(
+        (m) => m.InscriptionProComponent,
+      ),
+  },
+  {
+    path: 'mot-de-passe-oublie',
+    loadComponent: () =>
+      import('./features/auth/mot-de-passe-oublie/mot-de-passe-oublie.component').then(
+        (m) => m.MotDePasseOublieComponent,
+      ),
+  },
+  {
+    path: 'nouveau-mot-de-passe',
+    loadComponent: () =>
+      import('./features/auth/nouveau-mot-de-passe/nouveau-mot-de-passe.component').then(
+        (m) => m.NouveauMotDePasseComponent,
+      ),
+  },
+  {
+    path: 'bienvenue',
+    canActivate: [estConnecteGuard],
+    loadComponent: () =>
+      import('./features/onboarding/onboarding.component').then((m) => m.OnboardingComponent),
+  },
+  {
     path: 'lieux',
     loadComponent: () =>
       import('./features/lieux/repertoire.component').then((m) => m.RepertoireComponent),

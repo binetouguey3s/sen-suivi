@@ -1,0 +1,76 @@
+<ss-layout-auth citation="Accompagnez et soutenez avec sérénité." [large]="true">
+  <div class="ip__onglets" role="tablist">
+    <a class="ip__onglet" routerLink="/inscription" role="tab" aria-selected="false">Je suis un particulier</a>
+    <a class="ip__onglet ip__onglet--actif" routerLink="/inscription-professionnel" role="tab" aria-selected="true">Je suis un professionnel</a>
+  </div>
+
+  <h1 class="ip__titre">Rejoindre le réseau Sen Suivi</h1>
+
+  <form class="ip__formulaire" (submit)="valider($event)" novalidate>
+    <div class="ip__ligne">
+      <ss-champ libelle="Prénom" [(valeur)]="prenom" placeholder="Ex : Moussa" autocomplete="given-name" [erreur]="erreurs()['prenom'] ?? null" />
+      <ss-champ libelle="Nom" [(valeur)]="nom" placeholder="Ex : Diallo" autocomplete="family-name" [erreur]="erreurs()['nom'] ?? null" />
+    </div>
+    <div class="ip__ligne">
+      <ss-champ libelle="Email" type="email" [(valeur)]="email" placeholder="moussa.diallo@example.sn" autocomplete="email" [erreur]="erreurs()['email'] ?? null" />
+      <ss-champ libelle="Mot de passe" type="password" [(valeur)]="motDePasse" autocomplete="new-password" [erreur]="erreurs()['password'] ?? null" />
+    </div>
+
+    <div class="ip__ligne">
+      <div class="ip__select" [class.ip__select--erreur]="erreurs()['specialite']">
+        <label for="ip-specialite">Spécialité</label>
+        <select id="ip-specialite" [value]="specialite()" (change)="specialite.set($any($event.target).value)">
+          <option value="">Choisir une spécialité</option>
+          @for (s of specialites; track s.valeur) {
+            <option [value]="s.valeur">{{ s.libelle }}</option>
+          }
+        </select>
+        @if (erreurs()['specialite']) { <p role="alert">{{ erreurs()['specialite'] }}</p> }
+      </div>
+      <div class="ip__select" [class.ip__select--erreur]="erreurs()['ville']">
+        <label for="ip-ville">Ville</label>
+        <select id="ip-ville" [value]="ville()" (change)="ville.set($any($event.target).value)">
+          <option value="">Sélectionner votre ville</option>
+          @for (v of villes; track v) {
+            <option [value]="v">{{ v }}</option>
+          }
+        </select>
+        @if (erreurs()['ville']) { <p role="alert">{{ erreurs()['ville'] }}</p> }
+      </div>
+    </div>
+
+    <div class="ip__ligne">
+      <fieldset class="ip__langues">
+        <legend>Langues parlées</legend>
+        <div class="ip__chips">
+          @for (langue of languesDisponibles; track langue) {
+            <button type="button" class="ip__chip" [class.ip__chip--actif]="langues().includes(langue)" [attr.aria-pressed]="langues().includes(langue)" (click)="basculerLangue(langue)">
+              {{ langue }} {{ langues().includes(langue) ? '×' : '+' }}
+            </button>
+          }
+        </div>
+        @if (erreurs()['langue']) { <p role="alert">{{ erreurs()['langue'] }}</p> }
+      </fieldset>
+      <ss-champ libelle="Tarif indicatif (FCFA/séance)" type="number" [(valeur)]="tarif" placeholder="Ex : 15 000" [erreur]="erreurs()['tarif_indicatif'] ?? null" />
+    </div>
+
+    <ss-champ libelle="Présentation" type="textarea" [(valeur)]="presentation" [maxlength]="500" [lignes]="4" placeholder="Décrivez votre parcours, votre approche et vos domaines d'expertise…" [erreur]="erreurs()['presentation'] ?? null" />
+
+    @if (erreurs()['general']) {
+      <p class="ip__erreur" role="alert"><ss-icon nom="alerte" taille="sm" /> {{ erreurs()['general'] }}</p>
+    }
+
+    <button type="submit" class="ip__bouton" [disabled]="enCours()">{{ enCours() ? 'Envoi…' : 'Soumettre ma demande' }}</button>
+
+    <p class="ip__note"><ss-icon nom="horloge" taille="sm" /> Votre profil sera vérifié par notre équipe avant d'être visible sur la plateforme.</p>
+  </form>
+</ss-layout-auth>
+
+<ss-modal [(ouverte)]="confirmation">
+  <div class="ip__modale">
+    <span class="ip__modale-icone"><ss-icon nom="horloge" taille="lg" /></span>
+    <h2>Inscription reçue</h2>
+    <p>Votre demande est en cours de traitement. Vous recevrez un e-mail dès que votre profil sera validé par nos équipes.</p>
+    <button type="button" class="ip__bouton" (click)="retourAccueil()">Retour à l'accueil</button>
+  </div>
+</ss-modal>

@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router, RouterLink } from '@angular/router';
 
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { LayoutAuthComponent } from '../../../shared/layout-auth/layout-auth.component';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'ss-connexion',
   standalone: true,
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, LayoutAuthComponent],
   templateUrl: './connexion.component.html',
   styleUrl: './connexion.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

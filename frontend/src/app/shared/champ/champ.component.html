@@ -1,0 +1,52 @@
+<div class="champ" [class.champ--erreur]="erreur()">
+  <label [for]="id" class="champ__libelle">
+    <span>{{ libelle() }}</span>
+    @if (type() === 'textarea' && maxlength()) {
+      <span class="champ__compteur">{{ valeur().length }} / {{ maxlength() }}</span>
+    }
+  </label>
+
+  @if (type() === 'textarea') {
+    <textarea
+      [id]="id"
+      class="champ__saisie"
+      [rows]="lignes()"
+      [attr.maxlength]="maxlength()"
+      [placeholder]="placeholder()"
+      [value]="valeur()"
+      [attr.aria-invalid]="!!erreur()"
+      (input)="saisir($event)"
+    ></textarea>
+  } @else {
+    <div class="champ__zone">
+      @if (icone(); as nomIcone) {
+        <ss-icon class="champ__icone" [nom]="nomIcone" taille="sm" />
+      }
+      <input
+        [id]="id"
+        class="champ__saisie"
+        [class.champ__saisie--icone]="icone()"
+        [type]="typeEffectif()"
+        [placeholder]="placeholder()"
+        [value]="valeur()"
+        [attr.autocomplete]="autocomplete()"
+        [attr.aria-invalid]="!!erreur()"
+        (input)="saisir($event)"
+      />
+      @if (type() === 'password') {
+        <button
+          type="button"
+          class="champ__oeil"
+          [attr.aria-label]="visible() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+          (click)="visible.set(!visible())"
+        >
+          <ss-icon [nom]="visible() ? 'oeil-barre' : 'oeil'" taille="sm" />
+        </button>
+      }
+    </div>
+  }
+
+  @if (erreur()) {
+    <p class="champ__message" role="alert">{{ erreur() }}</p>
+  }
+</div>

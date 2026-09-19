@@ -1,0 +1,28 @@
+<div class="ob">
+  <header class="ob__entete">
+    <img src="/logo-sen-suivi.png" alt="Sen Suivi" />
+    @if (!derniere()) {
+      <button type="button" class="ob__passer" (click)="terminer()">Passer</button>
+    }
+  </header>
+
+  <main class="ob__carte">
+    <div class="ob__visuel"><img [src]="etape().image" alt="" /></div>
+    <div class="ob__texte">
+      <span class="ob__badge">Étape {{ index() + 1 }} sur {{ etapes.length }}</span>
+      <h1>{{ etape().titre }}</h1>
+      <p>{{ etape().texte }}</p>
+
+      <div class="ob__pied">
+        <div class="ob__points" aria-hidden="true">
+          @for (e of etapes; track $index) {
+            <span [class.ob__point--actif]="$index === index()"></span>
+          }
+        </div>
+        <button type="button" class="ob__suivant" (click)="suivant()">
+          {{ derniere() ? 'Commencer' : 'Suivant' }} <ss-icon [nom]="derniere() ? 'verifie' : 'fleche'" taille="sm" />
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

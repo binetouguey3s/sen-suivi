@@ -1,0 +1,43 @@
+<ss-layout-auth citation="Votre espace de paix commence ici.">
+  <div class="ins__onglets" role="tablist">
+    <a class="ins__onglet ins__onglet--actif" routerLink="/inscription" role="tab" aria-selected="true">Je suis un particulier</a>
+    <a class="ins__onglet" routerLink="/inscription-professionnel" role="tab" aria-selected="false">Je suis un professionnel</a>
+  </div>
+
+  <h1 class="ins__titre">Créer mon compte</h1>
+
+  <form class="ins__formulaire" (submit)="valider($event)" novalidate>
+    <div class="ins__ligne">
+      <ss-champ libelle="Prénom" [(valeur)]="prenom" placeholder="Awa" autocomplete="given-name" [erreur]="erreurs()['prenom'] ?? null" />
+      <ss-champ libelle="Nom" [(valeur)]="nom" placeholder="Ndiaye" autocomplete="family-name" [erreur]="erreurs()['nom'] ?? null" />
+    </div>
+    <ss-champ libelle="Email" type="email" [(valeur)]="email" placeholder="awa.ndiaye@example.sn" autocomplete="email" [erreur]="erreurs()['email'] ?? null" />
+    <div>
+      <ss-champ libelle="Mot de passe" type="password" [(valeur)]="motDePasse" autocomplete="new-password" [erreur]="erreurs()['password'] ?? null" />
+      <div class="ins__force" aria-hidden="true">
+        @for (segment of [1, 2, 3]; track segment) {
+          <span [class.ins__force--actif]="force() >= segment"></span>
+        }
+      </div>
+    </div>
+
+    <label class="ins__conditions">
+      <input type="checkbox" [checked]="conditions()" (change)="conditions.set($any($event.target).checked)" />
+      <span>J'accepte les <strong>conditions d'utilisation</strong> et la <strong>politique de confidentialité</strong></span>
+    </label>
+    @if (erreurs()['conditions']) {
+      <p class="ins__erreur" role="alert">{{ erreurs()['conditions'] }}</p>
+    }
+    @if (erreurs()['general']) {
+      <p class="ins__erreur" role="alert"><ss-icon nom="alerte" taille="sm" /> {{ erreurs()['general'] }}</p>
+    }
+
+    <button type="submit" class="ins__bouton" [disabled]="enCours()">
+      {{ enCours() ? 'Création du compte…' : 'Créer mon compte' }}
+    </button>
+
+    <p class="ins__note"><ss-icon nom="cadenas" taille="sm" /> Votre journal d'humeur et vos résultats ne sont visibles que par vous.</p>
+  </form>
+
+  <p class="ins__lien">Déjà un compte ? <a routerLink="/connexion">Se connecter</a></p>
+</ss-layout-auth>

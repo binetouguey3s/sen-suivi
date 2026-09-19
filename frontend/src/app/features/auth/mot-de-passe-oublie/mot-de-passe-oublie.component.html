@@ -1,0 +1,20 @@
+<ss-layout-auth citation="Votre espace de sérénité, en toute discrétion.">
+  @if (envoye()) {
+    <div class="mdp__envoye">
+      <span class="mdp__icone"><ss-icon nom="courriel" taille="lg" /></span>
+      <h1>Lien envoyé</h1>
+      <p>Consultez la boîte mail associée à votre compte.</p>
+      <p class="mdp__relance">Vous n'avez rien reçu ? <button type="button" (click)="envoyer()" [disabled]="enCours()">Renvoyer le lien</button></p>
+      <a class="mdp__retour" routerLink="/connexion"><ss-icon nom="fleche-gauche" taille="sm" /> Retour à la connexion</a>
+    </div>
+  } @else {
+    <h1 class="mdp__titre">Réinitialiser votre mot de passe</h1>
+    <p class="mdp__intro">Entrez votre adresse email ci-dessous. Nous vous enverrons un lien pour réinitialiser votre accès.</p>
+
+    <form class="mdp__formulaire" (submit)="envoyer($event)" novalidate>
+      <ss-champ libelle="Email" type="email" [(valeur)]="email" placeholder="votre@email.com" icone="courriel" autocomplete="email" [erreur]="erreur()" />
+      <button type="submit" class="mdp__bouton" [disabled]="enCours()">{{ enCours() ? 'Envoi…' : 'Envoyer le lien' }}</button>
+    </form>
+    <a class="mdp__retour" routerLink="/connexion"><ss-icon nom="fleche-gauche" taille="sm" /> Retour à la connexion</a>
+  }
+</ss-layout-auth>

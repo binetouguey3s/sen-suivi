@@ -1,0 +1,118 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--ss-fond-public);
+}
+
+.la {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  min-height: 100vh;
+
+  @media (min-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.la__illustration {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ss-espace-4);
+    padding: var(--ss-espace-6);
+    background: linear-gradient(160deg, var(--ss-bleu-profond) 0%, var(--ss-bleu-sen-suivi) 100%);
+  }
+}
+
+.la__image {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-sable);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+// Silhouette de substitution : l'illustration de la maquette est une œuvre
+// dessinée dont je n'ai pas le fichier source.
+.la__silhouette {
+  width: 55%;
+  height: 55%;
+  fill: var(--ss-bleu-sen-suivi);
+}
+
+.la__citation {
+  max-width: 320px;
+  text-align: center;
+  color: var(--ss-blanc);
+  font-family: var(--ss-police-titres);
+  font-weight: var(--ss-poids-titre);
+  font-size: 22px;
+  line-height: var(--ss-hauteur-ligne-titre);
+  margin: 0;
+}
+
+.la__contenu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ss-espace-4) var(--ss-marge-mobile);
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-5) var(--ss-marge-desktop);
+  }
+}
+
+.la__carte {
+  width: 100%;
+  max-width: 400px;
+
+  @media (min-width: 900px) {
+    background: var(--ss-fond-carte);
+    border-radius: var(--ss-rayon-carte);
+    box-shadow: var(--ss-ombre-carte);
+    padding: var(--ss-espace-5);
+  }
+}
+
+.la__carte--large {
+  max-width: 560px;
+}
+
+.la__logo {
+  display: block;
+  height: 64px;
+  width: auto;
+  margin: 0 auto var(--ss-espace-3);
+}
+
+.la__pied {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  border-top: 1px solid var(--ss-gris-clair);
+  font-size: 13px;
+  color: var(--ss-gris-ardoise);
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+  }
+}
+
+.la__pied-liens {
+  display: flex;
+  gap: var(--ss-espace-3);
+}

@@ -1,0 +1,156 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--ss-menthe-tres-pale), var(--ss-blanc) 55%, var(--ss-sable));
+}
+
+.ob {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+  }
+}
+
+.ob__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  img {
+    height: 52px;
+    width: auto;
+  }
+}
+
+.ob__passer {
+  background: none;
+  border: none;
+  color: var(--ss-gris-ardoise);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ob__carte {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  width: 100%;
+  max-width: 1040px;
+  margin: var(--ss-espace-3) 0;
+  background: var(--ss-blanc);
+  border-radius: var(--ss-rayon-grande-carte);
+  box-shadow: var(--ss-ombre-carte);
+  overflow: hidden;
+
+  @media (min-width: 900px) {
+    flex: 0 0 auto;
+    flex-direction: row;
+    margin: auto;
+    min-height: 480px;
+  }
+}
+
+.ob__visuel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ss-espace-4);
+  background: var(--ss-menthe-tres-pale);
+
+  @media (min-width: 900px) {
+    flex: 1;
+  }
+
+  img {
+    width: 100%;
+    max-width: 360px;
+    max-height: 320px;
+    object-fit: contain;
+  }
+}
+
+.ob__texte {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-4);
+
+  @media (min-width: 900px) {
+    flex: 1;
+    padding: var(--ss-espace-6);
+  }
+
+  h1 {
+    font-size: 28px;
+    color: var(--ss-bleu-sen-suivi);
+    letter-spacing: var(--ss-interlettrage-moyen);
+
+    @media (min-width: 900px) {
+      font-size: 38px;
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--ss-gris-ardoise);
+  }
+}
+
+.ob__badge {
+  background: var(--ss-menthe-pale);
+  color: var(--ss-bleu-sen-suivi);
+  border-radius: var(--ss-rayon-pilule);
+  padding: 4px var(--ss-espace-2);
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte-fort);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ob__pied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+  padding-top: var(--ss-espace-3);
+}
+
+.ob__points {
+  display: flex;
+  gap: 6px;
+
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-gris-clair);
+  }
+
+  .ob__point--actif {
+    width: 24px;
+    background: var(--ss-menthe);
+  }
+}
+
+.ob__suivant {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+  border: none;
+  border-radius: var(--ss-rayon-bouton);
+  padding: var(--ss-espace-2) var(--ss-espace-4);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 15px;
+  box-shadow: var(--ss-ombre-carte);
+  cursor: pointer;
+}

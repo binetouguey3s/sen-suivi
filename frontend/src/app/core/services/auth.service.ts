@@ -43,6 +43,36 @@ export class AuthService {
     }
   }
 
+  async inscrireUtilisateur(donnees: {
+    prenom: string;
+    nom: string;
+    email: string;
+    password: string;
+  }): Promise<void> {
+    await this.envoyer(`${API_BASE_URL}/auth/register`, donnees);
+  }
+
+  async inscrireProfessionnel(donnees: Record<string, unknown>): Promise<void> {
+    await this.envoyer(`${API_BASE_URL}/professionnels/inscription`, donnees);
+  }
+
+  async demanderReinitialisation(email: string): Promise<void> {
+    await this.envoyer(`${API_BASE_URL}/auth/mot-de-passe-oublie`, { email });
+  }
+
+  async confirmerReinitialisation(uid: string, token: string, password: string): Promise<void> {
+    await this.envoyer(`${API_BASE_URL}/auth/mot-de-passe-oublie/confirmer`, { uid, token, password });
+  }
+
+  // POST public : en cas d'erreur 400, lève une ErreurFormulaire avec les messages par champ.
+  private async envoyer(url: string, corps: unknown): Promise<void> {
+    try {
+      await firstValueFrom(this.http.post(url, corps));
+    } catch (erreur) {
+      throw new ErreurFormulaire(erreur);
+    }
+  }
+
   deconnecter(): void {
     localStorage.removeItem(CLE_ACCES);
     localStorage.removeItem(CLE_RAFRAICHISSEMENT);
@@ -64,4 +94,27 @@ function extraireMessageErreur(erreur: unknown): string {
     if (corps?.detail) return 'Email ou mot de passe incorrect';
   }
   return "Une erreur est survenue. Réessayez dans un instant.";
+}
+
+export class ErreurFormulaire extends Error {
+  /** Messages par champ (clé « general » pour les erreurs non liées à un champ). */
+  readonly champs: Record<string, string> = {};
+
+  constructor(erreur: unknown) {
+    super('Erreur de formulaire');
+    if (erreur instanceof HttpErrorResponse && erreur.status === 400 && erreur.error) {
+      const corps = erreur.error as unknown;
+      if (Array.isArray(corps)) {
+        this.champs['general'] = String(corps[0]);
+      } else if (typeof corps === 'object') {
+        for (const [cle, valeur] of Object.entries(corps as Record<string, unknown>)) {
+          const message = Array.isArray(valeur) ? String(valeur[0]) : String(valeur);
+          this.champs[cle === 'non_field_errors' || cle === 'detail' ? 'general' : cle] = message;
+        }
+      }
+    }
+    if (!Object.keys(this.champs).length) {
+      this.champs['general'] = 'Une erreur est survenue. Réessayez dans un instant.';
+    }
+  }
 }

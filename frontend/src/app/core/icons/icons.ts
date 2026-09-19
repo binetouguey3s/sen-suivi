@@ -4,6 +4,8 @@
 import {
   LucideActivity,
   LucideArrowLeft,
+  LucideLock,
+  LucideMail,
   LucideArrowRight,
   LucideBookOpen,
   LucideBookmark,
@@ -69,6 +71,8 @@ export const ICONES = {
   moins: LucideMinus,
   localiser: LucideLocateFixed,
   utilisateur: LucideUser,
+  courriel: LucideMail,
+  cadenas: LucideLock,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

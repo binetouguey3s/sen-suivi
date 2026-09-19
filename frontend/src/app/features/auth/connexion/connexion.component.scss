@@ -1,96 +1,5 @@
 :host {
   display: block;
-  min-height: 100vh;
-  background: var(--ss-fond-public);
-}
-
-.connexion {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto;
-  min-height: 100vh;
-
-  @media (min-width: 900px) {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-// Panneau d'illustration — visible uniquement à partir du desktop (la
-// maquette mobile ne le montre pas).
-.connexion__illustration {
-  display: none;
-
-  @media (min-width: 900px) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--ss-espace-4);
-    padding: var(--ss-espace-6);
-    background: linear-gradient(160deg, var(--ss-bleu-profond) 0%, var(--ss-bleu-sen-suivi) 100%);
-  }
-}
-
-.connexion__image {
-  width: 100%;
-  max-width: 320px;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--ss-rayon-carte);
-  background: var(--ss-sable);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-// Silhouette de substitution : l'illustration originale de la maquette est
-// une œuvre dessinée que je n'ai pas comme fichier source. À remplacer par
-// le vrai visuel dès qu'il est disponible.
-.connexion__image-silhouette {
-  width: 55%;
-  height: 55%;
-  fill: var(--ss-bleu-sen-suivi);
-}
-
-.connexion__citation {
-  max-width: 320px;
-  text-align: center;
-  color: var(--ss-blanc);
-  font-family: var(--ss-police-titres);
-  font-weight: var(--ss-poids-titre);
-  font-size: 22px;
-  line-height: var(--ss-hauteur-ligne-titre);
-  margin: 0;
-}
-
-.connexion__contenu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--ss-espace-4) var(--ss-marge-mobile);
-
-  @media (min-width: 900px) {
-    padding: var(--ss-espace-6) var(--ss-marge-desktop);
-  }
-}
-
-.connexion__carte {
-  width: 100%;
-  max-width: 400px;
-
-  @media (min-width: 900px) {
-    background: var(--ss-fond-carte);
-    border-radius: var(--ss-rayon-carte);
-    box-shadow: var(--ss-ombre-carte);
-    padding: var(--ss-espace-5);
-  }
-}
-
-.connexion__logo {
-  display: block;
-  height: 64px;
-  width: auto;
-  margin: 0 auto var(--ss-espace-4);
 }
 
 .connexion__titre {
@@ -99,11 +8,6 @@
   font-weight: var(--ss-poids-titre);
   color: var(--ss-bleu-sen-suivi);
   margin-bottom: var(--ss-espace-4);
-}
-
-.connexion__confirmation {
-  text-align: center;
-  color: var(--ss-gris-ardoise);
 }
 
 .connexion__formulaire {
@@ -212,38 +116,6 @@
   a {
     color: var(--ss-bleu-sen-suivi);
     font-weight: var(--ss-poids-texte-fort);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-.connexion__pied {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ss-espace-1);
-  padding: var(--ss-espace-3) var(--ss-marge-mobile);
-  border-top: 1px solid var(--ss-gris-clair);
-  font-size: 13px;
-  color: var(--ss-gris-ardoise);
-
-  @media (min-width: 900px) {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: var(--ss-espace-3) var(--ss-marge-desktop);
-  }
-}
-
-.connexion__pied-liens {
-  display: flex;
-  gap: var(--ss-espace-3);
-
-  a {
-    color: inherit;
     text-decoration: none;
 
     &:hover {

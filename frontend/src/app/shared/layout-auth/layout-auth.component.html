@@ -1,0 +1,26 @@
+<div class="la">
+  <aside class="la__illustration" aria-hidden="true">
+    <div class="la__image">
+      <svg viewBox="0 0 100 100" class="la__silhouette" focusable="false">
+        <circle cx="50" cy="30" r="16" />
+        <path d="M20 92 C20 60 35 46 50 46 C65 46 80 60 80 92 Z" />
+      </svg>
+    </div>
+    <p class="la__citation">« {{ citation() }} »</p>
+  </aside>
+
+  <main class="la__contenu">
+    <div class="la__carte" [class.la__carte--large]="large()">
+      <img class="la__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
+      <ng-content />
+    </div>
+  </main>
+
+  <footer class="la__pied">
+    <span>© 2026 Sen Suivi</span>
+    <div class="la__pied-liens">
+      <span>Mentions légales</span>
+      <span>Confidentialité</span>
+    </div>
+  </footer>
+</div>
