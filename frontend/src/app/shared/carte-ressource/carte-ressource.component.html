@@ -1,0 +1,32 @@
+<article class="cr" [class.cr--vedette]="vedette()">
+  <a class="cr__lien" [routerLink]="['/ressources', ressource().id]">
+    <div class="cr__visuel" [attr.data-type]="ressource().type_ressource">
+      <ss-icon [nom]="icone()" taille="xl" />
+      @if (vedette()) {
+        <span class="cr__badge">À lire aujourd'hui</span>
+      }
+    </div>
+
+    <div class="cr__corps">
+      <span class="cr__thematique">{{ ressource().thematique }}</span>
+      <h3 class="cr__titre">{{ ressource().titre }}</h3>
+      <p class="cr__meta">
+        <span><ss-icon nom="horloge" taille="sm" /> {{ ressource().duree_lecture }} min</span>
+        @if (vedette()) {
+          <span><ss-icon nom="calendrier" taille="sm" /> {{ ajout() }}</span>
+        }
+      </p>
+    </div>
+  </a>
+
+  <button
+    type="button"
+    class="cr__coeur"
+    [class.cr__coeur--actif]="estFavori()"
+    [attr.aria-pressed]="estFavori()"
+    [attr.aria-label]="estFavori() ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+    (click)="basculerFavori($event)"
+  >
+    <ss-icon nom="coeur" taille="sm" />
+  </button>
+</article>

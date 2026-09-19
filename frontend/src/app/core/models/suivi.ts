@@ -37,6 +37,8 @@ export interface Ressource {
   type_ressource: 'ARTICLE' | 'EXERCICE' | 'PODCAST';
   contenu: string;
   thematique: string;
+  duree_lecture: number;
+  date_publication: string;
 }
 
 export interface LieuDetente {
@@ -45,4 +47,7 @@ export interface LieuDetente {
   ville: string;
   description: string;
   categorie: string;
+  latitude: number | null;
+  longitude: number | null;
+  acces_libre: boolean;
 }

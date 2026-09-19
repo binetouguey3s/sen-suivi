@@ -1,0 +1,203 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--ss-fond-public);
+}
+
+.lp__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ss-espace-1) var(--ss-espace-3);
+  padding: var(--ss-espace-2) var(--ss-marge-mobile);
+  border-bottom: 1px solid var(--ss-gris-clair);
+  background: var(--ss-blanc);
+
+  @media (min-width: 900px) {
+    flex-wrap: nowrap;
+    padding: var(--ss-espace-2) var(--ss-marge-desktop);
+  }
+}
+
+.lp__marque img {
+  display: block;
+  height: 48px;
+  width: auto;
+}
+
+.lp__nav {
+  order: 3;
+  display: flex;
+  gap: var(--ss-espace-3);
+  width: 100%;
+  overflow-x: auto;
+  padding-top: var(--ss-espace-1);
+
+  @media (min-width: 900px) {
+    order: 0;
+    width: auto;
+    padding-top: 0;
+  }
+
+  a {
+    color: var(--ss-gris-ardoise);
+    text-decoration: none;
+    font-weight: var(--ss-poids-texte-fort);
+    font-size: 15px;
+    padding: var(--ss-espace-1) 0;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--ss-bleu-sen-suivi);
+    }
+  }
+}
+
+.lp__lien--actif {
+  color: var(--ss-bleu-sen-suivi) !important;
+  border-bottom-color: var(--ss-menthe) !important;
+}
+
+.lp__compte {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-2);
+}
+
+.lp__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+  font-weight: var(--ss-poids-titre);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.lp__bouton-texte {
+  color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.lp__bouton-plein {
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+  border-radius: var(--ss-rayon-bouton);
+  padding: var(--ss-espace-1) var(--ss-espace-2);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.lp__pied {
+  margin-top: var(--ss-espace-8);
+  background: var(--ss-bleu-profond);
+  color: var(--ss-blanc);
+}
+
+.lp__urgence {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  background: var(--ss-bleu-sen-suivi);
+  border-left: 4px solid var(--ss-rouge-alerte);
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  button {
+    background: none;
+    border: 1px solid var(--ss-menthe);
+    color: var(--ss-blanc);
+    border-radius: var(--ss-rayon-pilule);
+    padding: var(--ss-espace-1) var(--ss-espace-2);
+    font-size: 13px;
+    cursor: pointer;
+  }
+}
+
+.lp__urgence-etiquette {
+  color: var(--ss-rouge-alerte);
+  margin-right: 4px;
+}
+
+.lp__colonnes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ss-espace-4);
+  padding: var(--ss-espace-6) var(--ss-marge-mobile) var(--ss-espace-3);
+
+  @media (min-width: 900px) {
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: var(--ss-espace-6) var(--ss-marge-desktop) var(--ss-espace-3);
+  }
+}
+
+.lp__colonne {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-1);
+
+  h2 {
+    color: var(--ss-blanc);
+    font-size: 16px;
+    margin-bottom: var(--ss-espace-1);
+  }
+
+  a {
+    color: var(--ss-menthe-pale);
+    text-decoration: none;
+    font-size: 14px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--ss-menthe-pale);
+    font-size: 14px;
+    max-width: 380px;
+  }
+}
+
+.lp__nom {
+  font-family: var(--ss-police-titres);
+  font-weight: var(--ss-poids-titre-fort);
+  font-size: 20px !important;
+  color: var(--ss-blanc) !important;
+}
+
+.lp__legal {
+  margin: 0;
+  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  border-top: 1px solid var(--ss-bleu-sen-suivi);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ss-menthe-pale);
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+  }
+}

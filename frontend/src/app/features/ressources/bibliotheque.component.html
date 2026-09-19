@@ -1,0 +1,71 @@
+<section class="bib__hero">
+  <h1>Trouvez les clés de votre équilibre intérieur.</h1>
+  <p>Une bibliothèque pensée pour les étudiants et actifs sénégalais : articles, podcasts et exercices pratiques.</p>
+
+  <label class="bib__recherche">
+    <ss-icon nom="recherche" />
+    <span class="bib__sr">Rechercher une ressource</span>
+    <input type="search" placeholder="Rechercher un sujet, un format…" (input)="saisirRecherche($event)" />
+  </label>
+</section>
+
+<section class="bib__filtres" aria-label="Filtres">
+  <div class="bib__chips">
+    <button type="button" class="bib__chip" [class.bib__chip--actif]="!thematiqueChoisie()" (click)="choisirThematique(null)">
+      Tous les thèmes
+    </button>
+    @for (thematique of thematiques(); track thematique) {
+      <button
+        type="button"
+        class="bib__chip"
+        [class.bib__chip--actif]="thematiqueChoisie() === thematique"
+        (click)="choisirThematique(thematique)"
+      >
+        {{ thematique }}
+      </button>
+    }
+  </div>
+
+  <div class="bib__formats" role="group" aria-label="Format">
+    @for (format of formats; track format.valeur) {
+      <button
+        type="button"
+        class="bib__format"
+        [class.bib__format--actif]="formatChoisi() === format.valeur"
+        [attr.aria-pressed]="formatChoisi() === format.valeur"
+        (click)="choisirFormat(format.valeur)"
+      >
+        <ss-icon [nom]="format.icone" taille="sm" /> {{ format.libelle }}
+      </button>
+    }
+  </div>
+</section>
+
+<section class="bib__resultats" aria-live="polite">
+  @if (ressources.isLoading()) {
+    <div class="bib__grille">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="bib__squelette"></div>
+      }
+    </div>
+  } @else if (ressources.error()) {
+    <p class="bib__etat bib__etat--erreur">Impossible de charger les ressources pour le moment.</p>
+  } @else if (!visibles().length) {
+    <div class="bib__etat">
+      <img src="/images/illustrations/etat-vide-favoris.svg" alt="" width="180" height="180" />
+      <p>Aucune ressource ne correspond à votre recherche.</p>
+    </div>
+  } @else {
+    <div class="bib__grille">
+      @for (ressource of visibles(); track ressource.id; let premier = $first) {
+        <ss-carte-ressource [ressource]="ressource" [vedette]="premier && visibles().length > 1" [class.bib__vedette]="premier && visibles().length > 1" />
+      }
+    </div>
+
+    @if (resteAVoir()) {
+      <div class="bib__plus">
+        <button type="button" (click)="voirPlus()">Charger plus de ressources</button>
+      </div>
+    }
+  }
+</section>

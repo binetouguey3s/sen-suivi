@@ -1,0 +1,58 @@
+<header class="lp__entete">
+  <a class="lp__marque" routerLink="/ressources" aria-label="Sen Suivi">
+    <img src="/logo-sen-suivi.png" alt="Sen Suivi" />
+  </a>
+
+  <nav class="lp__nav" aria-label="Navigation principale">
+    <a routerLink="/ressources" routerLinkActive="lp__lien--actif">Ressources</a>
+    <a routerLink="/lieux" routerLinkActive="lp__lien--actif">Lieux</a>
+    <a [routerLink]="auth.estConnecte() ? '/app' : '/connexion'">Mon Suivi</a>
+  </nav>
+
+  <div class="lp__compte">
+    @if (auth.estConnecte()) {
+      <a class="lp__avatar" routerLink="/app" [attr.aria-label]="'Mon espace, ' + auth.prenom()">{{ initiales() }}</a>
+    } @else {
+      <a class="lp__bouton-texte" routerLink="/connexion">Se connecter</a>
+      <a class="lp__bouton-plein" routerLink="/inscription">Créer un compte</a>
+    }
+  </div>
+</header>
+
+<main class="lp__contenu">
+  <router-outlet />
+</main>
+
+<footer class="lp__pied">
+  <div class="lp__urgence">
+    <p>
+      <strong class="lp__urgence-etiquette">Urgent :</strong>
+      En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>.
+    </p>
+    <button type="button" (click)="modaleUrgenceOuverte.set(true)">Liste des numéros d'urgence</button>
+  </div>
+
+  <div class="lp__colonnes">
+    <div class="lp__colonne lp__colonne--marque">
+      <p class="lp__nom">Sen Suivi</p>
+      <p>Prévention et suivi du bien-être mental, pensés pour la jeunesse sénégalaise. Sen Suivi ne remplace pas un professionnel de santé.</p>
+    </div>
+    <div class="lp__colonne">
+      <h2>Plateforme</h2>
+      <a routerLink="/ressources">Bibliothèque</a>
+      <a routerLink="/lieux">Lieux de détente</a>
+      <a [routerLink]="auth.estConnecte() ? '/app' : '/connexion'">Journal d'humeur</a>
+      <a [routerLink]="auth.estConnecte() ? '/app/evaluation/STRESS' : '/connexion'">Auto-évaluation</a>
+    </div>
+    <div class="lp__colonne">
+      <h2>Ressources</h2>
+      <a routerLink="/ressources" [queryParams]="{ format: 'ARTICLE' }">Articles</a>
+      <a routerLink="/ressources" [queryParams]="{ format: 'EXERCICE' }">Exercices pratiques</a>
+      <a routerLink="/ressources" [queryParams]="{ format: 'PODCAST' }">Podcasts</a>
+    </div>
+  </div>
+
+  <p class="lp__legal">© 2026 Sen Suivi — Projet de certification, Simplon Sénégal, Promo 9</p>
+</footer>
+
+<ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />

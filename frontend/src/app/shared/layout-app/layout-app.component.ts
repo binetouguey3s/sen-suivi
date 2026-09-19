@@ -19,7 +19,7 @@ interface LienNav {
 const LIENS_NAV: LienNav[] = [
   { route: '/app', libelle: 'Accueil', icone: 'accueil', disponible: true },
   { route: '/app/journal', libelle: 'Mon Journal', icone: 'journal', disponible: true },
-  { route: '/app/ressources', libelle: 'Ressources', icone: 'ressources', disponible: false },
+  { route: '/ressources', libelle: 'Ressources', icone: 'ressources', disponible: true },
   { route: '/app/lieux', libelle: 'Lieux & Soins', icone: 'lieux', disponible: false },
   { route: '/app/parametres', libelle: 'Paramètres', icone: 'parametres', disponible: false },
 ];

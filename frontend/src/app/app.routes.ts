@@ -9,6 +9,23 @@ export const routes: Routes = [
       import('./features/auth/connexion/connexion.component').then((m) => m.ConnexionComponent),
   },
   {
+    path: '',
+    loadComponent: () =>
+      import('./shared/layout-public/layout-public.component').then((m) => m.LayoutPublicComponent),
+    children: [
+      {
+        path: 'ressources',
+        loadComponent: () =>
+          import('./features/ressources/bibliotheque.component').then((m) => m.BibliothequeComponent),
+      },
+      {
+        path: 'ressources/:id',
+        loadComponent: () =>
+          import('./features/ressources/article.component').then((m) => m.ArticleComponent),
+      },
+    ],
+  },
+  {
     path: 'app/evaluation/:type',
     canActivate: [estConnecteGuard],
     loadComponent: () =>

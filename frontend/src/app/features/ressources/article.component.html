@@ -1,0 +1,99 @@
+@if (ressource.isLoading()) {
+  <div class="art__etat">Chargement de la ressource…</div>
+} @else if (ressource.error() || !ressource.hasValue()) {
+  <div class="art__etat art__etat--erreur">
+    <p>Cette ressource est introuvable.</p>
+    <a routerLink="/ressources">Retour à la bibliothèque</a>
+  </div>
+} @else if (ressource.value(); as r) {
+  <div class="art">
+    <nav class="art__fil" aria-label="Fil d'Ariane">
+      <a routerLink="/ressources">Ressources</a>
+      <ss-icon nom="chevron-droite" taille="sm" />
+      <a routerLink="/ressources" [queryParams]="{ thematique: r.thematique }">{{ r.thematique }}</a>
+      <ss-icon nom="chevron-droite" taille="sm" />
+      <span aria-current="page">{{ typeLibelle() }}</span>
+    </nav>
+
+    <div class="art__hero" [attr.data-type]="r.type_ressource">
+      <ss-icon [nom]="icone()" taille="xl" />
+    </div>
+
+    <div class="art__mise-en-page">
+      <article class="art__texte">
+        <span class="art__thematique">{{ r.thematique }}</span>
+        <h1>{{ r.titre }}</h1>
+
+        <div class="art__meta">
+          <span><ss-icon nom="horloge" taille="sm" /> {{ r.duree_lecture }} min</span>
+          <span><ss-icon nom="calendrier" taille="sm" /> {{ ajout() }}</span>
+          <span class="art__actions">
+            <button type="button" [class.art__actif]="estFavori()" [attr.aria-pressed]="estFavori()" aria-label="Ajouter aux favoris" (click)="basculerFavori()">
+              <ss-icon nom="coeur" taille="sm" />
+            </button>
+            <button type="button" aria-label="Partager" (click)="partager()"><ss-icon nom="partage" taille="sm" /></button>
+          </span>
+        </div>
+        @if (lienCopie()) {
+          <p class="art__confirmation" role="status">Lien copié dans le presse-papiers.</p>
+        }
+
+        @if (introduction(); as intro) {
+          <p class="art__intro">{{ intro }}</p>
+        }
+
+        @for (bloc of corps(); track $index) {
+          @switch (bloc.genre) {
+            @case ('titre') {
+              <h2 [id]="bloc.id">{{ bloc.texte }}</h2>
+            }
+            @case ('citation') {
+              <blockquote>{{ bloc.texte }}</blockquote>
+            }
+            @default {
+              <p>{{ bloc.texte }}</p>
+            }
+          }
+        }
+      </article>
+
+      <aside class="art__lateral">
+        @if (sommaire().length) {
+          <section class="art__carte">
+            <h2>Sommaire</h2>
+            <ol>
+              @for (titre of sommaire(); track titre.id) {
+                <li><button type="button" (click)="allerA(titre.id)">{{ titre.texte }}</button></li>
+              }
+            </ol>
+            <button type="button" class="art__bouton-plein" [attr.aria-pressed]="estFavori()" (click)="basculerFavori()">
+              <ss-icon nom="marque-page" taille="sm" />
+              {{ estFavori() ? 'Article sauvegardé' : "Sauvegarder l'article" }}
+            </button>
+            <button type="button" class="art__bouton-contour" (click)="partager()">
+              <ss-icon nom="partage" taille="sm" /> Partager
+            </button>
+          </section>
+        }
+        <section class="art__carte art__carte--aide">
+          <h2>Besoin d'aide ?</h2>
+          <p>En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>. Sen Suivi ne remplace pas un professionnel de santé.</p>
+        </section>
+      </aside>
+    </div>
+
+    @if (suggestions().length) {
+      <section class="art__suite">
+        <div class="art__suite-entete">
+          <h2>À lire ensuite</h2>
+          <a routerLink="/ressources">Voir toute la bibliothèque</a>
+        </div>
+        <div class="art__suite-grille">
+          @for (suggestion of suggestions(); track suggestion.id) {
+            <ss-carte-ressource [ressource]="suggestion" />
+          }
+        </div>
+      </section>
+    }
+  </div>
+}

@@ -48,7 +48,7 @@
       <section class="tdb__carte tdb__carte--ressource">
         <p class="tdb__eyebrow">Ressource du jour</p>
         <h3 class="tdb__ressource-titre">{{ ressource.titre }}</h3>
-        <a class="tdb__lien-decouvrir" title="Écran de détail à venir">
+        <a class="tdb__lien-decouvrir" [routerLink]="['/ressources', ressource.id]">
           Découvrir <ss-icon nom="fleche" taille="sm" />
         </a>
       </section>
