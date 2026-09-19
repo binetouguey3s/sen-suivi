@@ -114,3 +114,6 @@ CORS_ALLOWED_ORIGINS = env.list(
     'CORS_ALLOWED_ORIGINS',
     default=['http://localhost:4200'],
 )
+
+# Adresse du front-end, utilisée dans les liens envoyés par e-mail.
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')

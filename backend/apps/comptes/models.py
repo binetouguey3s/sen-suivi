@@ -15,6 +15,7 @@ import random
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+from django.utils import timezone
 
 # Mots à consonance sénégalaise (contenu sénégalais uniquement),
 # combinés à un nombre pour générer un pseudonyme de forum lisible et anonyme.
@@ -146,6 +147,9 @@ class Professionnel(CompteUtilisateur):
     ville = models.CharField('ville', max_length=100)
     langue = models.CharField('langue', max_length=100)
     tarif_indicatif = models.FloatField('tarif indicatif (FCFA)')
+    # Ajoutés suite à la correction du diagramme de classes.
+    presentation = models.TextField('présentation', blank=True, max_length=500)
+    date_validation = models.DateTimeField('date de validation', null=True, blank=True)
     statut_validation = models.CharField(
         'statut de validation',
         max_length=12,
@@ -166,7 +170,8 @@ class Professionnel(CompteUtilisateur):
         if self.statut_validation == StatutValidationPro.REFUSE:
             raise ValueError('Un compte professionnel refusé ne peut plus changer de statut.')
         self.statut_validation = StatutValidationPro.VALIDE
-        self.save(update_fields=['statut_validation'])
+        self.date_validation = timezone.now()
+        self.save(update_fields=['statut_validation', 'date_validation'])
 
         from apps.notifications.models import NotificationEmail
 

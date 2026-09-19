@@ -33,7 +33,7 @@ class InscriptionProfessionnelSerializer(serializers.ModelSerializer):
         model = Professionnel
         fields = [
             'id', 'nom', 'email', 'password',
-            'specialite', 'ville', 'langue', 'tarif_indicatif',
+            'specialite', 'ville', 'langue', 'tarif_indicatif', 'presentation',
         ]
 
     def create(self, validated_data):
@@ -56,7 +56,7 @@ class ProfessionnelLectureSerializer(serializers.ModelSerializer):
         model = Professionnel
         fields = [
             'id', 'nom', 'email', 'specialite', 'specialite_affichee',
-            'ville', 'langue', 'tarif_indicatif',
+            'ville', 'langue', 'tarif_indicatif', 'presentation',
             'statut_validation', 'statut_validation_affiche', 'date_creation',
         ]
 
@@ -113,3 +113,13 @@ class LoginSerializer(TokenObtainPairSerializer):
                 )
 
         return data
+
+
+class DemandeReinitialisationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class ConfirmationReinitialisationSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, validators=[validate_password])
