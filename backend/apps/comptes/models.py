@@ -89,6 +89,9 @@ class CompteUtilisateur(AbstractBaseUser, PermissionsMixin):
     # pas par choix de conception.
     date_creation = models.DateTimeField('date de création', auto_now_add=True)
 
+    # Préférences de notification (rappel du journal, réponses, etc.), par canal.
+    preferences = models.JSONField('préférences', default=dict, blank=True)
+
     is_active = models.BooleanField('actif', default=True)
     is_staff = models.BooleanField('accès admin Django', default=False)
 
@@ -127,6 +130,9 @@ class Utilisateur(CompteUtilisateur):
     # Utilisé par le forum à la place de nom/prenom/email.
     # Généré automatiquement à la création (voir save()), jamais modifiable ensuite.
     pseudonyme = models.CharField('pseudonyme', max_length=50, unique=True, editable=False)
+    # Ajouté suite à la correction du diagramme de classes : sert à prioriser
+    # les professionnels de la même ville dans les suggestions.
+    ville = models.CharField('ville', max_length=100, blank=True)
 
     class Meta:
         verbose_name = 'utilisateur'

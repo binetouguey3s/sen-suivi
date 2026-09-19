@@ -52,10 +52,13 @@ def texte_interpretation(score):
 def suggerer_professionnels(utilisateur, score):
     """Jusqu'à 3 professionnels VALIDE ; aucun si le niveau est faible.
 
-    Utilisateur n'a pas encore de champ ville : la priorité à la ville de
-    l'utilisateur n'est pas appliquée (à faire avec la synchronisation du
-    diagramme de classes).
+    Priorité aux professionnels de la ville de l'utilisateur (docs/SPECIFICATIONS.md
+    section 2), puis aux autres.
     """
     if score <= SEUIL_SUGGESTION_PROFESSIONNELS:
         return []
-    return list(Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE)[:3])
+    valides = list(Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE))
+    ville = (utilisateur.ville or '').strip().lower()
+    if ville:
+        valides.sort(key=lambda p: ville not in p.ville.lower())
+    return valides[:3]

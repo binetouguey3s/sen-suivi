@@ -8,7 +8,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Professionnel, StatutValidationPro, Utilisateur
+from .models import CompteUtilisateur, Professionnel, StatutValidationPro, Utilisateur
 
 
 class InscriptionUtilisateurSerializer(serializers.ModelSerializer):
@@ -136,3 +136,65 @@ class ConfirmationReinitialisationSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
     password = serializers.CharField(write_only=True, validators=[validate_password])
+
+
+class CompteMoiSerializer(serializers.ModelSerializer):
+    """Compte connecté (GET/PATCH /api/comptes/moi)."""
+
+    type_compte = serializers.CharField(read_only=True)
+    prenom = serializers.CharField(required=False, allow_blank=False)
+    ville = serializers.CharField(required=False, allow_blank=True)
+    pseudonyme = serializers.CharField(read_only=True, required=False)
+
+    class Meta:
+        model = CompteUtilisateur
+        fields = ['id', 'type_compte', 'nom', 'prenom', 'email', 'ville', 'pseudonyme', 'preferences']
+
+    def to_representation(self, instance):
+        donnees = super().to_representation(instance)
+        if instance.type_compte == 'utilisateur':
+            donnees['prenom'] = instance.utilisateur.prenom
+            donnees['ville'] = instance.utilisateur.ville
+            donnees['pseudonyme'] = instance.utilisateur.pseudonyme
+        elif instance.type_compte == 'professionnel':
+            donnees['prenom'] = None
+            donnees['ville'] = instance.professionnel.ville
+            donnees['pseudonyme'] = None
+        else:
+            donnees['prenom'] = donnees['ville'] = donnees['pseudonyme'] = None
+        return donnees
+
+    def update(self, instance, validated_data):
+        prenom = validated_data.pop('prenom', None)
+        ville = validated_data.pop('ville', None)
+        instance = super().update(instance, validated_data)
+        if instance.type_compte == 'utilisateur':
+            utilisateur = instance.utilisateur
+            if prenom is not None:
+                utilisateur.prenom = prenom
+            if ville is not None:
+                utilisateur.ville = ville
+            utilisateur.save()
+        elif instance.type_compte == 'professionnel' and ville is not None:
+            instance.professionnel.ville = ville
+            instance.professionnel.save(update_fields=['ville'])
+        return instance
+
+
+class ChangementMotDePasseSerializer(serializers.Serializer):
+    ancien = serializers.CharField(write_only=True)
+    nouveau = serializers.CharField(write_only=True, validators=[validate_password])
+
+    def validate_ancien(self, valeur):
+        if not self.context['request'].user.check_password(valeur):
+            raise serializers.ValidationError('Le mot de passe actuel est incorrect.')
+        return valeur
+
+
+class SuppressionCompteSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True)
+
+    def validate_password(self, valeur):
+        if not self.context['request'].user.check_password(valeur):
+            raise serializers.ValidationError('Mot de passe incorrect.')
+        return valeur

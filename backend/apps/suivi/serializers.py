@@ -117,3 +117,9 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
             'professionnels_suggeres': ProfessionnelPublicSerializer(professionnels, many=True).data,
             'message': message,
         }
+
+
+class AutoEvaluationListeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AutoEvaluation
+        fields = ['id', 'date', 'type_evaluation', 'score_de_tendance']

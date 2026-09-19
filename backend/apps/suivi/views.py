@@ -5,9 +5,10 @@ from rest_framework import generics
 
 from apps.comptes.permissions import EstUtilisateur
 
-from .models import QuestionEvaluation, SuiviHumeur
+from .models import AutoEvaluation, QuestionEvaluation, SuiviHumeur
 from .serializers import (
     AutoEvaluationEcritureSerializer,
+    AutoEvaluationListeSerializer,
     QuestionEvaluationSerializer,
     SuiviHumeurSerializer,
 )
@@ -44,8 +45,15 @@ class QuestionsEvaluationView(generics.ListAPIView):
         ).prefetch_related('options')
 
 
-class AutoEvaluationView(generics.CreateAPIView):
-    """POST /api/auto-evaluations : calcule le score et suggère des professionnels."""
+class AutoEvaluationView(generics.ListCreateAPIView):
+    """POST /api/auto-evaluations : calcule le score et suggère des professionnels ; GET : historique."""
 
     permission_classes = [EstUtilisateur]
-    serializer_class = AutoEvaluationEcritureSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AutoEvaluationEcritureSerializer
+        return AutoEvaluationListeSerializer
+
+    def get_queryset(self):
+        return AutoEvaluation.objects.filter(utilisateur=self.request.user.utilisateur)
