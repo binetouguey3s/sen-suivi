@@ -93,6 +93,8 @@ class LoginSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['type_compte'] = user.type_compte
         token['nom'] = user.nom
+        if user.type_compte == 'utilisateur':
+            token['prenom'] = user.utilisateur.prenom
         return token
 
     def validate(self, attrs):

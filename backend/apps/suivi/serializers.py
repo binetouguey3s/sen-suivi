@@ -13,7 +13,7 @@ class SuiviHumeurSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SuiviHumeur
-        fields = ['id', 'date', 'score_humeur', 'note']
+        fields = ['id', 'date', 'score_humeur', 'note', 'etiquettes']
 
     def create(self, validated_data):
         utilisateur = self.context['request'].user.utilisateur
@@ -26,6 +26,7 @@ class SuiviHumeurSerializer(serializers.ModelSerializer):
             defaults={
                 'score_humeur': validated_data['score_humeur'],
                 'note': validated_data.get('note', ''),
+                'etiquettes': validated_data.get('etiquettes', ''),
             },
         )
         return suivi

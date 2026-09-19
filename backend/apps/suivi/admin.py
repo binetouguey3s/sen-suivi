@@ -5,7 +5,7 @@ from .models import AutoEvaluation, OptionReponse, QuestionEvaluation, SuiviHume
 
 @admin.register(SuiviHumeur)
 class SuiviHumeurAdmin(admin.ModelAdmin):
-    list_display = ('utilisateur', 'date', 'score_humeur')
+    list_display = ('utilisateur', 'date', 'score_humeur', 'etiquettes')
     list_filter = ('score_humeur',)
     date_hierarchy = 'date'
 

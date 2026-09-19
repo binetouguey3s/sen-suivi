@@ -27,6 +27,10 @@ class SuiviHumeur(models.Model):
     date = models.DateField('date')
     score_humeur = models.CharField('humeur', max_length=10, choices=NiveauHumeur.choices)
     note = models.TextField('note', blank=True)
+    # Ajouté suite à la correction du diagramme de classes : facteurs
+    # d'influence choisis par l'utilisateur (ex. "Travail,Sommeil"), stockés
+    # en une seule chaîne comme le prévoit le diagramme (+String etiquettes).
+    etiquettes = models.CharField('étiquettes', max_length=255, blank=True)
 
     class Meta:
         verbose_name = "suivi d'humeur"
