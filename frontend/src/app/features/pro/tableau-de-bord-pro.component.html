@@ -1,0 +1,56 @@
+<header class="tp__entete">
+  <h1>Bonjour {{ auth.nom() }}</h1>
+  <p>Heureux de vous revoir. Voici l'état de vos demandes aujourd'hui.</p>
+</header>
+
+<div class="tp__stats">
+  <section class="tp__stat"><p>Demandes en attente</p><strong>{{ enAttente().length }}</strong></section>
+  <section class="tp__stat"><p>Demandes acceptées ce mois</p><strong>{{ accepteesCeMois() }}</strong></section>
+  <section class="tp__stat"><p>Statut du profil</p><span class="tp__verifie"><ss-icon nom="verifie" taille="sm" /> Vérifié</span></section>
+</div>
+
+<div class="tp__onglets" role="tablist">
+  @for (o of onglets; track o.valeur) {
+    <button type="button" role="tab" [attr.aria-selected]="onglet() === o.valeur" [class.tp__onglet--actif]="onglet() === o.valeur" (click)="onglet.set(o.valeur)">
+      {{ o.libelle }} ({{ compte(o.valeur) }})
+    </button>
+  }
+</div>
+
+@if (erreur()) { <p class="tp__erreur" role="alert">{{ erreur() }}</p> }
+
+@if (demandes.isLoading()) {
+  <p class="tp__etat">Chargement des demandes…</p>
+} @else if (demandes.error()) {
+  <p class="tp__etat tp__etat--erreur">Impossible de charger vos demandes pour le moment.</p>
+} @else if (!affichees().length) {
+  <div class="tp__etat">
+    <img src="/images/illustrations/etat-vide-demandes.svg" alt="" width="150" height="150" />
+    <p>Aucune demande dans cette catégorie.</p>
+  </div>
+} @else {
+  <ul class="tp__liste">
+    @for (d of affichees(); track d.id) {
+      <li class="tp__demande">
+        <div class="tp__contenu">
+          <p class="tp__identite">
+            <strong>{{ d.nom ?? d.pseudonyme }}</strong>
+            @if (d.ville) { <span><ss-icon nom="lieux" taille="sm" /> {{ d.ville }}</span> }
+            <span><ss-icon nom="horloge" taille="sm" /> {{ depuis(d.date) }}</span>
+          </p>
+          <p class="tp__message">{{ d.message ? '« ' + d.message + ' »' : 'Aucun message joint.' }}</p>
+          @if (d.statut === 'ACCEPTEE' && d.email) {
+            <p class="tp__contact"><ss-icon nom="courriel" taille="sm" /> {{ d.email }}</p>
+          }
+        </div>
+        @if (d.statut === 'EN_ATTENTE') {
+          <div class="tp__actions">
+            <button type="button" class="tp__bouton tp__bouton--contour" [disabled]="enCours() === d.id" (click)="repondre(d, 'REFUSEE')">Décliner</button>
+            <button type="button" class="tp__bouton" [disabled]="enCours() === d.id" (click)="repondre(d, 'ACCEPTEE')">Accepter</button>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+  <p class="tp__aide">L'identité complète d'un utilisateur n'est révélée qu'après l'acceptation de sa demande.</p>
+}

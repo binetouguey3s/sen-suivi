@@ -222,3 +222,29 @@
 .layout-app__lien-mobile--a-venir {
   opacity: 0.45;
 }
+
+.layout-app__actions-mobile {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+}
+
+.layout-app__cloche-desktop {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: block;
+    position: absolute;
+    top: var(--ss-espace-3);
+    right: var(--ss-marge-desktop);
+    z-index: 5;
+  }
+}
+
+.layout-app__zone {
+  position: relative;
+}
+
+.layout-app__chat {
+  text-decoration: none;
+}

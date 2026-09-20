@@ -1,32 +1,25 @@
 <div class="layout-app">
   <aside class="layout-app__sidebar">
-    <img class="layout-app__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
+    <a routerLink="/"><img class="layout-app__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" /></a>
 
-    <nav class="layout-app__nav">
-      @for (lien of liens; track lien.route) {
-        @if (lien.disponible) {
-          <a
-            class="layout-app__lien"
-            [routerLink]="lien.route"
-            routerLinkActive="layout-app__lien--actif"
-            [routerLinkActiveOptions]="{ exact: lien.route === '/app' }"
-          >
-            <ss-icon [nom]="lien.icone" />
-            {{ lien.libelle }}
-          </a>
-        } @else {
-          <span class="layout-app__lien layout-app__lien--a-venir" title="Écran à venir">
-            <ss-icon [nom]="lien.icone" />
-            {{ lien.libelle }}
-          </span>
-        }
+    <nav class="layout-app__nav" aria-label="Navigation principale">
+      @for (lien of liens(); track lien.route) {
+        <a
+          class="layout-app__lien"
+          [routerLink]="lien.route"
+          routerLinkActive="layout-app__lien--actif"
+          [routerLinkActiveOptions]="{ exact: !!lien.exact }"
+        >
+          <ss-icon [nom]="lien.icone" />
+          {{ lien.libelle }}
+        </a>
       }
     </nav>
 
     <div class="layout-app__profil">
       <span class="layout-app__avatar">{{ initiales() }}</span>
       <div>
-        <p class="layout-app__profil-nom">{{ auth.prenom() }} {{ auth.nom() }}</p>
+        <p class="layout-app__profil-nom">{{ nomAffiche() }}</p>
       </div>
     </div>
   </aside>
@@ -34,8 +27,13 @@
   <div class="layout-app__zone">
     <header class="layout-app__topbar-mobile">
       <img class="layout-app__logo layout-app__logo--mobile" src="/logo-sen-suivi.png" alt="Sen Suivi" />
-      <span class="layout-app__avatar layout-app__avatar--mobile">{{ initiales() }}</span>
+      <span class="layout-app__actions-mobile">
+        <ss-cloche-notifications />
+        <span class="layout-app__avatar layout-app__avatar--mobile">{{ initiales() }}</span>
+      </span>
     </header>
+
+    <div class="layout-app__cloche-desktop"><ss-cloche-notifications /></div>
 
     <main class="layout-app__contenu">
       <router-outlet />
@@ -46,30 +44,26 @@
     </main>
   </div>
 
-  <button type="button" class="layout-app__chat" title="Chatbot — bientôt disponible">
+  <a class="layout-app__chat" routerLink="/chatbot" aria-label="Parler au chatbot">
     <ss-icon nom="chat" taille="lg" />
     <span class="layout-app__chat-point" aria-hidden="true"></span>
-  </button>
+  </a>
 
   <ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />
 
-  <nav class="layout-app__nav-mobile">
-    <a class="layout-app__lien-mobile" routerLink="/app" routerLinkActive="layout-app__lien-mobile--actif" [routerLinkActiveOptions]="{ exact: true }">
-      <ss-icon nom="accueil" />
-      <span>Accueil</span>
-    </a>
-    <a class="layout-app__lien-mobile" routerLink="/app/journal" routerLinkActive="layout-app__lien-mobile--actif">
-      <ss-icon nom="journal" />
-      <span>Journal</span>
-    </a>
+  <nav class="layout-app__nav-mobile" aria-label="Navigation principale">
+    @for (lien of liensMobile().gauche; track lien.route) {
+      <a class="layout-app__lien-mobile" [routerLink]="lien.route" routerLinkActive="layout-app__lien-mobile--actif" [routerLinkActiveOptions]="{ exact: !!lien.exact }">
+        <ss-icon [nom]="lien.icone" />
+        <span>{{ lien.libelleMobile ?? lien.libelle }}</span>
+      </a>
+    }
     <span class="layout-app__nav-mobile-espace" aria-hidden="true"></span>
-    <a class="layout-app__lien-mobile" routerLink="/ressources">
-      <ss-icon nom="ressources" />
-      <span>Ressources</span>
-    </a>
-    <a class="layout-app__lien-mobile" routerLink="/app/parametres" routerLinkActive="layout-app__lien-mobile--actif">
-      <ss-icon nom="parametres" />
-      <span>Réglages</span>
-    </a>
+    @for (lien of liensMobile().droite; track lien.route) {
+      <a class="layout-app__lien-mobile" [routerLink]="lien.route" routerLinkActive="layout-app__lien-mobile--actif" [routerLinkActiveOptions]="{ exact: !!lien.exact }">
+        <ss-icon [nom]="lien.icone" />
+        <span>{{ lien.libelleMobile ?? lien.libelle }}</span>
+      </a>
+    }
   </nav>
 </div>

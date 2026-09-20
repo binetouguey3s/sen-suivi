@@ -1,0 +1,37 @@
+<button type="button" class="cn__cloche" [attr.aria-label]="'Notifications' + (service.nonLues() ? ', ' + service.nonLues() + ' non lues' : '')" [attr.aria-expanded]="ouvert()" (click)="bascule()">
+  <ss-icon nom="cloche" />
+  @if (service.nonLues()) { <span class="cn__point" aria-hidden="true"></span> }
+</button>
+
+@if (ouvert()) {
+  <div class="cn__fond" (click)="ouvert.set(false)"></div>
+  <section class="cn__panneau" role="dialog" aria-label="Notifications">
+    <header>
+      <h2>Notifications</h2>
+      @if (service.nonLues()) {
+        <button type="button" (click)="service.toutLire()">Tout marquer comme lu</button>
+      }
+    </header>
+
+    @if (!service.liste().length) {
+      <p class="cn__vide">Aucune notification pour le moment.</p>
+    } @else {
+      <ul>
+        @for (n of toutAfficher() ? service.liste() : service.liste().slice(0, 5); track n.id + n.canal) {
+          <li [class.cn__non-lue]="!n.lue">
+            <span class="cn__icone"><ss-icon [nom]="n.canal === 'email' ? 'courriel' : 'chat'" taille="sm" /></span>
+            <div>
+              @if (n.titre) { <strong>{{ n.titre }}</strong> }
+              <p>{{ n.contenu }}</p>
+              <span class="cn__date">{{ depuis(n.date_envoi) }}</span>
+            </div>
+            @if (!n.lue) { <span class="cn__pastille" aria-label="Non lue"></span> }
+          </li>
+        }
+      </ul>
+      @if (service.liste().length > 5 && !toutAfficher()) {
+        <footer><button type="button" (click)="toutAfficher.set(true)">Voir toutes les notifications</button></footer>
+      }
+    }
+  </section>
+}

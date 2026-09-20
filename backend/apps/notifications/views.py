@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 
 from .models import NotificationEmail, NotificationPush, StatutNotification
 from .serializers import NotificationLectureSerializer
+from .services import OBJET_REINITIALISATION
 
 
 class NotificationListView(APIView):
@@ -13,7 +14,9 @@ class NotificationListView(APIView):
 
     def get(self, request):
         notifications = [
-            *NotificationEmail.objects.filter(destinataire=request.user),
+            *NotificationEmail.objects.filter(destinataire=request.user).exclude(
+                objet=OBJET_REINITIALISATION
+            ),
             *NotificationPush.objects.filter(destinataire=request.user),
         ]
         notifications.sort(key=lambda n: n.date_envoi, reverse=True)

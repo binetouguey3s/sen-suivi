@@ -8,6 +8,7 @@ import { LieuDetente } from '../../core/models/suivi';
 import { AuthService } from '../../core/services/auth.service';
 import { CarteLieuxComponent } from '../../shared/carte-lieux/carte-lieux.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { valeurs } from '../../core/utils/ressource';
 
 @Component({
   selector: 'ss-repertoire-lieux',
@@ -31,10 +32,10 @@ export class RepertoireComponent {
 
   private readonly tous = httpResource<LieuDetente[]>(() => `${API_BASE_URL}/lieux`, { defaultValue: [] });
   protected readonly villes = computed(() =>
-    [...new Set(this.tous.value().map((l) => l.ville))].sort((a, b) => a.localeCompare(b, 'fr')),
+    [...new Set(valeurs(this.tous).map((l) => l.ville))].sort((a, b) => a.localeCompare(b, 'fr')),
   );
   protected readonly categories = computed(() =>
-    [...new Set(this.tous.value().map((l) => l.categorie))].sort((a, b) => a.localeCompare(b, 'fr')),
+    [...new Set(valeurs(this.tous).map((l) => l.categorie))].sort((a, b) => a.localeCompare(b, 'fr')),
   );
 
   // Filtres appliqués côté serveur : la requête repart à chaque changement

@@ -8,6 +8,7 @@ import { IMAGE_PAR_PROFESSIONNEL } from '../../core/config/images-professionnels
 import { LieuDetente } from '../../core/models/suivi';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { MoodChartComponent, PointHumeur } from '../../shared/mood-chart/mood-chart.component';
+import { valeurs } from '../../core/utils/ressource';
 
 interface ProfessionnelPublic {
   id: number;
@@ -47,9 +48,9 @@ export class AccueilComponent {
 
   // Uniquement les lieux dont on dispose d'une vraie photo
   protected readonly lieux = computed(() =>
-    this.tousLesLieux.value().filter((l) => l.nom in IMAGE_PAR_LIEU).slice(0, 4),
+    valeurs(this.tousLesLieux).filter((l) => l.nom in IMAGE_PAR_LIEU).slice(0, 4),
   );
-  protected readonly professionnels = computed(() => this.tousLesPros.value().slice(0, 3));
+  protected readonly professionnels = computed(() => valeurs(this.tousLesPros).slice(0, 3));
 
   protected image(lieu: LieuDetente): string {
     return IMAGE_PAR_LIEU[lieu.nom];

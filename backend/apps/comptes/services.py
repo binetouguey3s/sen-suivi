@@ -6,6 +6,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from apps.notifications.models import NotificationEmail
+from apps.notifications.services import OBJET_REINITIALISATION
 
 from .models import CompteUtilisateur
 
@@ -24,7 +25,7 @@ def demander_reinitialisation(email):
     NotificationEmail.objects.create(
         destinataire=compte,
         adresse_email=compte.email,
-        objet='Réinitialisation de votre mot de passe Sen Suivi',
+        objet=OBJET_REINITIALISATION,
         contenu=f'Pour choisir un nouveau mot de passe, ouvrez ce lien : {lien}',
     )
     # Pas de serveur SMTP en développement : le lien s'affiche dans les journaux du back-end.

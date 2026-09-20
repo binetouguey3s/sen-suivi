@@ -7,6 +7,7 @@ import { LIBELLE_TYPE_EVALUATION, TypeEvaluation } from '../../core/models/evalu
 import { NIVEAUX_HUMEUR, NiveauHumeur, SuiviHumeur } from '../../core/models/suivi';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { MoodChartComponent, PointHumeur } from '../../shared/mood-chart/mood-chart.component';
+import { valeurs } from '../../core/utils/ressource';
 
 interface AutoEvaluationListe {
   id: number;
@@ -53,7 +54,7 @@ export class StatistiquesComponent {
     defaultValue: [],
   });
 
-  private readonly parDate = computed(() => new Map(this.suivi.value().map((e) => [e.date, scoreDe(e.score_humeur)])));
+  private readonly parDate = computed(() => new Map(valeurs(this.suivi).map((e) => [e.date, scoreDe(e.score_humeur)])));
 
   protected readonly points = computed<PointHumeur[]>(() => {
     const n = this.periode();
@@ -88,7 +89,7 @@ export class StatistiquesComponent {
 
   // Observations calculées sur les données de la personne uniquement
   protected readonly observations = computed<string[]>(() => {
-    const entrees = [...this.suivi.value()].sort((a, b) => (a.date < b.date ? -1 : 1));
+    const entrees = [...valeurs(this.suivi)].sort((a, b) => (a.date < b.date ? -1 : 1));
     const resultats: string[] = [];
 
     const scores = entrees.map((e) => ({ date: e.date, score: scoreDe(e.score_humeur) }));

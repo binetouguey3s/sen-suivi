@@ -7,6 +7,7 @@ import { MoodSelectorComponent } from '../../shared/mood-selector/mood-selector.
 import { API_BASE_URL } from '../../core/config/api.config';
 import { SuiviHumeurService } from '../../core/services/suivi-humeur.service';
 import { INFLUENCES_HUMEUR, NIVEAUX_HUMEUR, NiveauHumeur, SuiviHumeur } from '../../core/models/suivi';
+import { valeurs } from '../../core/utils/ressource';
 
 @Component({
   selector: 'ss-journal',
@@ -41,7 +42,7 @@ export class JournalComponent {
   protected readonly confirmation = signal(false);
 
   protected readonly entreesRecentes = computed(() =>
-    [...this.suivi.value()].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 5),
+    [...valeurs(this.suivi)].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 5),
   );
 
   protected basculerEtiquette(etiquette: string): void {

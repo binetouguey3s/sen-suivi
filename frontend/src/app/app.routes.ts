@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { estConnecteGuard } from './core/guards/est-connecte.guard';
+import { typeCompteGuard } from './core/guards/type-compte.guard';
 
 export const routes: Routes = [
   {
@@ -25,9 +26,33 @@ export const routes: Routes = [
           import('./features/ressources/bibliotheque.component').then((m) => m.BibliothequeComponent),
       },
       {
+        path: 'professionnels/:id',
+        canActivate: [estConnecteGuard],
+        loadComponent: () =>
+          import('./features/professionnel/profil.component').then((m) => m.ProfilProfessionnelComponent),
+      },
+      {
         path: 'ressources/:id',
         loadComponent: () =>
           import('./features/ressources/article.component').then((m) => m.ArticleComponent),
+      },
+    ],
+  },
+  {
+    path: 'pro',
+    canActivate: [typeCompteGuard('professionnel')],
+    loadComponent: () =>
+      import('./shared/layout-app/layout-app.component').then((m) => m.LayoutAppComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/pro/tableau-de-bord-pro.component').then((m) => m.TableauDeBordProComponent),
+      },
+      {
+        path: 'parametres',
+        loadComponent: () =>
+          import('./features/parametres/parametres.component').then((m) => m.ParametresComponent),
       },
     ],
   },
@@ -90,7 +115,7 @@ export const routes: Routes = [
   },
   {
     path: 'app',
-    canActivate: [estConnecteGuard],
+    canActivate: [typeCompteGuard('utilisateur')],
     loadComponent: () =>
       import('./shared/layout-app/layout-app.component').then((m) => m.LayoutAppComponent),
     children: [

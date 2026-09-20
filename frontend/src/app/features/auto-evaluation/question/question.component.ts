@@ -7,6 +7,7 @@ import { QuestionEvaluation, estTypeEvaluation } from '../../../core/models/eval
 import { AutoEvaluationService } from '../../../core/services/auto-evaluation.service';
 import { CourbeMarqueComponent } from '../../../shared/courbe-marque/courbe-marque.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { valeurs } from '../../../core/utils/ressource';
 
 @Component({
   selector: 'ss-evaluation-question',
@@ -42,8 +43,8 @@ export class QuestionComponent {
   protected readonly envoiEnCours = signal(false);
   protected readonly erreur = signal<string | null>(null);
 
-  protected readonly total = computed(() => this.questions.value().length);
-  protected readonly courante = computed(() => this.questions.value()[this.index()] ?? null);
+  protected readonly total = computed(() => valeurs(this.questions).length);
+  protected readonly courante = computed(() => valeurs(this.questions)[this.index()] ?? null);
   protected readonly optionChoisie = computed(() => {
     const q = this.courante();
     return q ? (this.reponses()[q.id] ?? null) : null;

@@ -2,6 +2,10 @@
 
 from .models import NotificationEmail
 
+# Les e-mails de sécurité contiennent un lien secret : ils ne s'affichent jamais
+# dans le panneau de notifications de l'application.
+OBJET_REINITIALISATION = 'Réinitialisation de votre mot de passe Sen Suivi'
+
 
 def notifier(compte, objet, contenu):
     return NotificationEmail.objects.create(

@@ -234,6 +234,9 @@
 }
 
 .res__bouton-contour {
+  display: block;
+  text-align: center;
+  text-decoration: none;
   width: 100%;
   background: var(--ss-blanc);
   border: 2px solid var(--ss-bleu-sen-suivi);

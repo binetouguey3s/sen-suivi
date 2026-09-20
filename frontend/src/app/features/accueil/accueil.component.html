@@ -95,7 +95,7 @@
   @defer (on viewport) {
     <div class="ac__pros-grille">
       @for (pro of professionnels(); track pro.id) {
-        <article class="ac__pro">
+        <a class="ac__pro" [routerLink]="['/professionnels', pro.id]">
           @if (portrait(pro); as src) {
             <img [src]="src" [alt]="'Portrait illustratif de ' + pro.nom" />
           } @else {
@@ -104,7 +104,7 @@
           <h3>{{ pro.nom }}</h3>
           <p>{{ pro.specialite_affichee }} · {{ pro.ville }}</p>
           <strong>{{ tarif(pro) }}</strong>
-        </article>
+        </a>
       }
     </div>
   } @placeholder {

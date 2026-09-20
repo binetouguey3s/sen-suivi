@@ -37,7 +37,7 @@ export class ConnexionComponent {
     this.enCours.set(true);
     try {
       await this.auth.connecter(this.email(), this.motDePasse());
-      await this.router.navigateByUrl('/app');
+      await this.router.navigateByUrl(this.auth.espaceAccueil());
     } catch (erreur) {
       this.erreur.set((erreur as Error).message);
     } finally {

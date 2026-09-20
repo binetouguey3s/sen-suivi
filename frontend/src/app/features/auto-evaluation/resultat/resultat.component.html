@@ -39,7 +39,7 @@
                   }
                 </ul>
                 <p class="res__tarif"><strong>{{ tarif(pro) }}</strong> <span>/ séance</span></p>
-                <button type="button" class="res__bouton-contour" title="Écran à venir">Voir le profil</button>
+                <a class="res__bouton-contour" [routerLink]="['/professionnels', pro.id]">Voir le profil</a>
               </li>
             }
           </ul>

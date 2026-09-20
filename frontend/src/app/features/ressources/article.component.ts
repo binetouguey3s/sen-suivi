@@ -14,6 +14,7 @@ import {
 } from '../../core/utils/ressources';
 import { CarteRessourceComponent } from '../../shared/carte-ressource/carte-ressource.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { valeurs } from '../../core/utils/ressource';
 
 @Component({
   selector: 'ss-article',
@@ -54,7 +55,7 @@ export class ArticleComponent {
   protected readonly suggestions = computed(() => {
     const r = this.ressource.value();
     if (!r) return [];
-    const autres = this.toutes.value().filter((x) => x.id !== r.id);
+    const autres = valeurs(this.toutes).filter((x) => x.id !== r.id);
     const memeTheme = autres.filter((x) => x.thematique === r.thematique);
     return [...memeTheme, ...autres.filter((x) => x.thematique !== r.thematique)].slice(0, 3);
   });

@@ -1,0 +1,202 @@
+:host {
+  display: block;
+}
+
+.tp__entete {
+  margin-bottom: var(--ss-espace-3);
+
+  h1 {
+    font-size: 30px;
+    color: var(--ss-bleu-sen-suivi);
+
+    @media (min-width: 900px) {
+      font-size: 38px;
+    }
+  }
+
+  p {
+    margin: var(--ss-espace-1) 0 0;
+    color: var(--ss-gris-ardoise);
+  }
+}
+
+.tp__stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ss-espace-2);
+  margin-bottom: var(--ss-espace-4);
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tp__stat {
+  padding: var(--ss-espace-3);
+  background: var(--ss-fond-carte);
+  border-radius: var(--ss-rayon-carte);
+  box-shadow: var(--ss-ombre-carte);
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ss-gris-ardoise);
+  }
+
+  strong {
+    font-family: var(--ss-police-titres);
+    font-size: 40px;
+    color: var(--ss-bleu-sen-suivi);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tp__verifie {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  margin-top: var(--ss-espace-1);
+  background: var(--ss-menthe-pale);
+  color: var(--ss-bleu-sen-suivi);
+  border-radius: var(--ss-rayon-pilule);
+  padding: 4px var(--ss-espace-2);
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.tp__onglets {
+  display: flex;
+  gap: var(--ss-espace-3);
+  border-bottom: 1px solid var(--ss-gris-clair);
+  margin-bottom: var(--ss-espace-3);
+  overflow-x: auto;
+
+  button {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: var(--ss-espace-1) 0 var(--ss-espace-2);
+    font-size: 17px;
+    color: var(--ss-gris-ardoise);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .tp__onglet--actif {
+    color: var(--ss-bleu-sen-suivi);
+    border-bottom-color: var(--ss-bleu-sen-suivi);
+    font-weight: var(--ss-poids-texte-fort);
+  }
+}
+
+.tp__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+}
+
+.tp__demande {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-3);
+  background: var(--ss-fond-carte);
+  border-radius: var(--ss-rayon-carte);
+  box-shadow: var(--ss-ombre-carte);
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.tp__contenu {
+  flex: 1;
+}
+
+.tp__identite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  margin: 0 0 var(--ss-espace-1);
+  color: var(--ss-gris-ardoise);
+  font-size: 14px;
+
+  strong {
+    font-size: 20px;
+    color: var(--ss-bleu-sen-suivi);
+  }
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.tp__message {
+  margin: 0;
+  font-style: italic;
+  color: var(--ss-bleu-profond);
+}
+
+.tp__contact {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  margin: var(--ss-espace-1) 0 0;
+  color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.tp__actions {
+  display: flex;
+  gap: var(--ss-espace-2);
+}
+
+.tp__bouton {
+  border: 2px solid var(--ss-bleu-sen-suivi);
+  border-radius: var(--ss-rayon-bouton);
+  background: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+  padding: var(--ss-espace-1) var(--ss-espace-3);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 15px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: progress;
+  }
+}
+
+.tp__bouton--contour {
+  background: var(--ss-blanc);
+  color: var(--ss-bleu-profond);
+  border-color: var(--ss-gris-clair);
+}
+
+.tp__etat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-5) 0;
+  color: var(--ss-gris-ardoise);
+  text-align: center;
+}
+
+.tp__etat--erreur,
+.tp__erreur {
+  color: var(--ss-rouge-alerte);
+}
+
+.tp__aide {
+  margin-top: var(--ss-espace-3);
+  font-size: 13px;
+  color: var(--ss-gris-ardoise);
+}

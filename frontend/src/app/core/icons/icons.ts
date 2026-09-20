@@ -4,7 +4,11 @@
 import {
   LucideActivity,
   LucideArrowLeft,
+  LucideBell,
+  LucideInbox,
   LucideLock,
+  LucideSend,
+  LucideUserRound,
   LucideLogOut,
   LucideTrash2,
   LucideTriangleAlert,
@@ -79,6 +83,10 @@ export const ICONES = {
   deconnexion: LucideLogOut,
   corbeille: LucideTrash2,
   danger: LucideTriangleAlert,
+  cloche: LucideBell,
+  demandes: LucideInbox,
+  envoyer: LucideSend,
+  profil: LucideUserRound,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

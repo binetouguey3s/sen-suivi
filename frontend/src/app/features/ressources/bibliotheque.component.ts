@@ -6,6 +6,7 @@ import { Ressource } from '../../core/models/suivi';
 import { ICONE_PAR_TYPE, LIBELLE_PAR_TYPE } from '../../core/utils/ressources';
 import { CarteRessourceComponent } from '../../shared/carte-ressource/carte-ressource.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { valeurs } from '../../core/utils/ressource';
 
 type Format = Ressource['type_ressource'];
 const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST'];
@@ -45,7 +46,7 @@ export class BibliothequeComponent {
     defaultValue: [],
   });
   protected readonly thematiques = computed(() =>
-    [...new Set(this.toutes.value().map((r) => r.thematique))].sort((a, b) => a.localeCompare(b, 'fr')),
+    [...new Set(valeurs(this.toutes).map((r) => r.thematique))].sort((a, b) => a.localeCompare(b, 'fr')),
   );
 
   // Ressources filtrées côté serveur : la requête repart à chaque changement de filtre
@@ -64,8 +65,8 @@ export class BibliothequeComponent {
     { defaultValue: [] },
   );
 
-  protected readonly visibles = computed(() => this.ressources.value().slice(0, this.limite()));
-  protected readonly resteAVoir = computed(() => this.ressources.value().length > this.limite());
+  protected readonly visibles = computed(() => valeurs(this.ressources).slice(0, this.limite()));
+  protected readonly resteAVoir = computed(() => valeurs(this.ressources).length > this.limite());
 
   protected saisirRecherche(evenement: Event): void {
     const valeur = (evenement.target as HTMLInputElement).value;
@@ -87,6 +88,6 @@ export class BibliothequeComponent {
   }
 
   protected voirPlus(): void {
-    this.limite.set(this.ressources.value().length);
+    this.limite.set(valeurs(this.ressources).length);
   }
 }

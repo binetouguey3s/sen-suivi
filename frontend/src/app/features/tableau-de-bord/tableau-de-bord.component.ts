@@ -9,6 +9,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
 import { IMAGE_PAR_LIEU } from '../../core/config/images-lieux';
 import { AuthService } from '../../core/services/auth.service';
 import { SuiviHumeurService } from '../../core/services/suivi-humeur.service';
+import { valeurs } from '../../core/utils/ressource';
 import {
   LieuDetente,
   NIVEAUX_HUMEUR,
@@ -62,11 +63,11 @@ export class TableauDeBordComponent {
 
   protected readonly humeurDuJour = computed<NiveauHumeur | null>(() => {
     const auj = formatDateISO(new Date());
-    return this.suivi.value().find((e) => e.date === auj)?.score_humeur ?? null;
+    return valeurs(this.suivi).find((e) => e.date === auj)?.score_humeur ?? null;
   });
 
   protected readonly pointsGraphique = computed<PointHumeur[]>(() => {
-    const entrees = this.suivi.value();
+    const entrees = valeurs(this.suivi);
     const parDate = new Map(entrees.map((e) => [e.date, e.score_humeur]));
     const points: PointHumeur[] = [];
     for (let i = 6; i >= 0; i--) {
@@ -94,7 +95,7 @@ export class TableauDeBordComponent {
   // un jour manqué (docs/SPECIFICATIONS.md section 2). Si rien n'est encore
   // saisi aujourd'hui, on part d'hier pour ne pas casser une série existante.
   protected readonly serie = computed<number>(() => {
-    const dates = new Set(this.suivi.value().map((e) => e.date));
+    const dates = new Set(valeurs(this.suivi).map((e) => e.date));
     const curseur = new Date();
     if (!dates.has(formatDateISO(curseur))) {
       curseur.setDate(curseur.getDate() - 1);
@@ -108,13 +109,13 @@ export class TableauDeBordComponent {
   });
 
   protected readonly ressourceDuJour = computed<Ressource | null>(
-    () => this.ressources.value()[0] ?? null,
+    () => valeurs(this.ressources)[0] ?? null,
   );
 
   // Priorité à un lieu dont on a une vraie photo (docs/CREDITS-IMAGES.md) ;
   // à défaut, le premier lieu renvoyé par l'API.
   protected readonly lieuProche = computed<LieuDetente | null>(() => {
-    const tous = this.lieux.value();
+    const tous = valeurs(this.lieux);
     return tous.find((l) => l.nom in IMAGE_PAR_LIEU) ?? tous[0] ?? null;
   });
 

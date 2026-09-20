@@ -26,6 +26,19 @@ export class AuthService {
   readonly typeCompte = computed(() => this.claims()?.type_compte ?? null);
   readonly nom = computed(() => this.claims()?.nom ?? null);
   readonly prenom = computed(() => this.claims()?.prenom ?? null);
+  readonly identifiant = computed(() => this.claims()?.user_id ?? null);
+
+  /** Page d'accueil de l'espace du compte connecté. */
+  espaceAccueil(): string {
+    switch (this.typeCompte()) {
+      case 'professionnel':
+        return '/pro';
+      case 'administrateur':
+        return '/admin';
+      default:
+        return '/app';
+    }
+  }
 
   async connecter(email: string, password: string): Promise<void> {
     try {
@@ -79,8 +92,40 @@ export class AuthService {
     this.claims.set(null);
   }
 
-  jetonAcces(): string | null {
-    return localStorage.getItem(CLE_ACCES);
+  private renouvellement: Promise<string | null> | null = null;
+
+  /**
+   * Jeton d'accès utilisable : celui en cours s'il n'expire pas dans les 10 prochaines
+   * secondes, sinon un nouveau obtenu avec le jeton de rafraîchissement. Renvoie null
+   * (et ferme la session) si plus rien n'est valide : on n'envoie jamais un jeton
+   * expiré, car Django répondrait 401 même sur les routes publiques.
+   */
+  async jetonAccesValide(forcer = false): Promise<string | null> {
+    const acces = localStorage.getItem(CLE_ACCES);
+    const claims = acces ? decoderJeton(acces) : null;
+    if (!forcer && acces && claims && claims.exp * 1000 > Date.now() + 10_000) return acces;
+
+    const rafraichissement = localStorage.getItem(CLE_RAFRAICHISSEMENT);
+    const claimsRafraichissement = rafraichissement ? decoderJeton(rafraichissement) : null;
+    if (!rafraichissement || !claimsRafraichissement || claimsRafraichissement.exp * 1000 < Date.now()) {
+      if (acces || rafraichissement) this.deconnecter();
+      return null;
+    }
+    this.renouvellement ??= firstValueFrom(
+      this.http.post<{ access: string; refresh?: string }>(`${API_BASE_URL}/auth/refresh`, { refresh: rafraichissement }),
+    )
+      .then((r) => {
+        localStorage.setItem(CLE_ACCES, r.access);
+        if (r.refresh) localStorage.setItem(CLE_RAFRAICHISSEMENT, r.refresh);
+        this.claims.set(decoderJeton(r.access));
+        return r.access;
+      })
+      .catch(() => {
+        this.deconnecter();
+        return null;
+      })
+      .finally(() => (this.renouvellement = null));
+    return this.renouvellement;
   }
 }
 
