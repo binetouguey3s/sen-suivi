@@ -1,0 +1,89 @@
+<header class="ap__entete">
+  <h1>Validation des professionnels</h1>
+</header>
+
+<div class="ap__barre">
+  <label class="ap__recherche">
+    <ss-icon nom="recherche" taille="sm" />
+    <span class="ap__sr">Rechercher un professionnel</span>
+    <input type="search" placeholder="Rechercher un professionnel…" (input)="saisirRecherche($event)" />
+  </label>
+
+  <div class="ap__onglets" role="tablist">
+    @for (o of onglets; track o.valeur) {
+      <button type="button" role="tab" [class.ap__onglet--actif]="onglet() === o.valeur" (click)="changerOnglet(o.valeur)">
+        {{ o.libelle }}
+      </button>
+    }
+  </div>
+</div>
+
+@if (erreur()) { <p class="ap__erreur" role="alert">{{ erreur() }}</p> }
+
+@if (professionnels.isLoading()) {
+  <p class="ap__etat">Chargement…</p>
+} @else if (professionnels.error()) {
+  <p class="ap__etat ap__etat--erreur">Impossible de charger les professionnels pour le moment.</p>
+} @else if (!liste().length) {
+  <p class="ap__etat">Aucun professionnel ne correspond à ces critères.</p>
+} @else {
+  <table class="ap__tableau">
+    <thead>
+      <tr>
+        <th class="ap__case">
+          <input type="checkbox" aria-label="Sélectionner tous les profils en attente" (change)="toutSelectionner($any($event.target).checked)" />
+        </th>
+        <th>Professionnel</th>
+        <th>Spécialité</th>
+        <th>Ville</th>
+        <th>Date d'inscription</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (p of liste(); track p.id) {
+        <tr>
+          <td class="ap__case">
+            @if (p.statut_validation === 'EN_ATTENTE') {
+              <input type="checkbox" [attr.aria-label]="'Sélectionner ' + p.nom" [checked]="selection().has(p.id)" (change)="basculerSelection(p.id)" />
+            }
+          </td>
+          <td>
+            <div class="ap__professionnel">
+              <span class="ap__avatar">{{ p.nom.slice(0, 2).toUpperCase() }}</span>
+              <strong>{{ p.nom }}</strong>
+            </div>
+          </td>
+          <td>{{ p.specialite_affichee }}</td>
+          <td>{{ p.ville }}</td>
+          <td>{{ dateInscription(p.date_creation) }}</td>
+          <td>
+            <span class="ap__badge" [class]="'ap__badge--' + p.statut_validation">{{ p.statut_validation_affiche }}</span>
+          </td>
+          <td>
+            <div class="ap__actions">
+              <a class="ap__lien" [routerLink]="['/professionnels', p.id]">Voir le profil</a>
+              @if (p.statut_validation === 'EN_ATTENTE') {
+                <button type="button" class="ap__bouton" [disabled]="enCours() === p.id" (click)="decider(p, 'VALIDE')">Valider</button>
+                <button type="button" class="ap__bouton ap__bouton--contour" [disabled]="enCours() === p.id" (click)="decider(p, 'REFUSE')">Refuser</button>
+              } @else if (p.statut_validation === 'VALIDE') {
+                <button type="button" class="ap__bouton ap__bouton--contour" [disabled]="enCours() === p.id" (click)="decider(p, 'REFUSE')">Révoquer</button>
+              }
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@if (nombreSelectionnes()) {
+  <div class="ap__barre-selection">
+    <span><strong>{{ nombreSelectionnes() }}</strong> professionnel(s) sélectionné(s)</span>
+    <div class="ap__barre-selection-actions">
+      <button type="button" class="ap__bouton" [disabled]="enCoursSelection()" (click)="deciderSelection('VALIDE')">Valider la sélection</button>
+      <button type="button" class="ap__bouton ap__bouton--contour" [disabled]="enCoursSelection()" (click)="deciderSelection('REFUSE')">Refuser la sélection</button>
+    </div>
+  </div>
+}

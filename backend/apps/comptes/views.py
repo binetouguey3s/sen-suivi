@@ -4,6 +4,7 @@ Vues basées sur les classes uniquement : vues
 génériques DRF, jamais de @api_view.
 """
 
+from django.db.models import Q
 from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -50,7 +51,7 @@ class InscriptionProfessionnelView(generics.CreateAPIView):
 
 
 class ProfessionnelListView(generics.ListAPIView):
-    """GET /api/professionnels?statut=EN_ATTENTE — réservé aux administrateurs."""
+    """GET /api/professionnels?statut=EN_ATTENTE&q=texte — réservé aux administrateurs."""
 
     permission_classes = [EstAdministrateur]
     serializer_class = ProfessionnelLectureSerializer
@@ -60,6 +61,11 @@ class ProfessionnelListView(generics.ListAPIView):
         statut = self.request.query_params.get('statut')
         if statut:
             queryset = queryset.filter(statut_validation=statut)
+        recherche = self.request.query_params.get('q')
+        if recherche:
+            queryset = queryset.filter(
+                Q(nom__icontains=recherche) | Q(email__icontains=recherche) | Q(ville__icontains=recherche)
+            )
         return queryset
 
 
@@ -135,6 +141,35 @@ class CompteMoiView(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         self.get_object().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class VueEnsembleAdminView(APIView):
+    """GET /api/administration/vue-ensemble — actions en attente pour l'administrateur.
+
+    Volontairement dépourvue de tout chiffre d'usage ou de performance
+ : uniquement les actions réelles qui attendent une
+    décision, comptées dans la base, jamais une tendance ou un pourcentage.
+    """
+
+    permission_classes = [EstAdministrateur]
+
+    def get(self, request):
+        from apps.forum.models import CommentaireForum, PublicationForum
+        from apps.forum.models import StatutModeration as StatutModerationForum
+
+        return Response(
+            {
+                'professionnels_en_attente': Professionnel.objects.filter(
+                    statut_validation=StatutValidationPro.EN_ATTENTE
+                ).count(),
+                'publications_en_attente': PublicationForum.objects.filter(
+                    statut_moderation=StatutModerationForum.EN_ATTENTE
+                ).count(),
+                'commentaires_en_attente': CommentaireForum.objects.filter(
+                    statut_moderation=StatutModerationForum.EN_ATTENTE
+                ).count(),
+            }
+        )
 
 
 class ChangementMotDePasseView(APIView):

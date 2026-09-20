@@ -1,0 +1,92 @@
+<header class="ar__entete">
+  <div>
+    <h1>Gestion des ressources</h1>
+    <p>Gérez le catalogue de contenus de la bibliothèque.</p>
+  </div>
+  <button type="button" class="ar__bouton" (click)="ouvrirCreation()"><ss-icon nom="plus" taille="sm" /> Ajouter une ressource</button>
+</header>
+
+@if (erreur()) { <p class="ar__erreur" role="alert">{{ erreur() }}</p> }
+
+@if (ressources.isLoading()) {
+  <p class="ar__etat">Chargement…</p>
+} @else if (ressources.error()) {
+  <p class="ar__etat ar__etat--erreur">Impossible de charger les ressources pour le moment.</p>
+} @else if (!liste().length) {
+  <p class="ar__etat">Aucune ressource pour le moment.</p>
+} @else {
+  <table class="ar__tableau">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Format</th>
+        <th>Thématique</th>
+        <th>Date de publication</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of liste(); track r.id) {
+        <tr>
+          <td class="ar__titre">{{ r.titre }}</td>
+          <td><span class="ar__chip"><ss-icon [nom]="iconeType(r.type_ressource)" taille="sm" /> {{ libelleType(r.type_ressource) }}</span></td>
+          <td>{{ r.thematique }}</td>
+          <td>{{ r.date_publication }}</td>
+          <td>
+            <div class="ar__actions">
+              <button type="button" class="ar__lien" (click)="ouvrirEdition(r)"><ss-icon nom="parametres" taille="sm" /> Modifier</button>
+              <button type="button" class="ar__lien ar__lien--danger" (click)="demanderSuppression(r)"><ss-icon nom="corbeille" taille="sm" /> Supprimer</button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+<ss-modal [(ouverte)]="modaleOuverte">
+  <div class="ar__modale">
+    <h2>{{ enEdition() ? 'Modifier la ressource' : 'Nouvelle ressource' }}</h2>
+    <ss-champ libelle="Titre de la ressource" [(valeur)]="titre" placeholder="Ex : Gérer le stress au quotidien" [maxlength]="200" />
+
+    <p class="ar__libelle-champ">Format</p>
+    <div class="ar__formats">
+      @for (f of formats; track f.valeur) {
+        <button type="button" class="ar__format" [class.ar__format--actif]="formatChoisi() === f.valeur" (click)="formatChoisi.set(f.valeur)">
+          <ss-icon [nom]="f.icone" taille="sm" /> {{ f.libelle }}
+        </button>
+      }
+    </div>
+
+    <ss-champ libelle="Thématique" [(valeur)]="thematique" placeholder="Ex : Anxiété, Sommeil, Méditation…" [maxlength]="100" />
+
+    <label class="ar__duree">
+      <span>Durée de lecture (minutes)</span>
+      <input type="number" min="1" max="120" [value]="dureeLecture()" (input)="saisirDuree($event)" />
+    </label>
+
+    <ss-champ libelle="Contenu" type="textarea" [(valeur)]="contenu" [lignes]="6" placeholder="Rédigez le contenu de la ressource…" />
+
+    @if (erreur()) { <p class="ar__erreur-modale" role="alert">{{ erreur() }}</p> }
+
+    <div class="ar__modale-actions">
+      <button type="button" class="ar__bouton-secondaire" (click)="modaleOuverte.set(false)">Annuler</button>
+      <button type="button" class="ar__bouton" [disabled]="envoiEnCours()" (click)="enregistrer()">
+        {{ envoiEnCours() ? 'Enregistrement…' : 'Enregistrer' }}
+      </button>
+    </div>
+  </div>
+</ss-modal>
+
+<ss-modal [(ouverte)]="suppressionOuverte">
+  <div class="ar__modale">
+    <h2>Supprimer cette ressource ?</h2>
+    <p>« {{ aSupprimer()?.titre }} » sera retirée définitivement de la bibliothèque.</p>
+    <div class="ar__modale-actions">
+      <button type="button" class="ar__bouton-secondaire" (click)="suppressionOuverte.set(false)">Annuler</button>
+      <button type="button" class="ar__bouton ar__bouton--danger" [disabled]="suppressionEnCours()" (click)="confirmerSuppression()">
+        {{ suppressionEnCours() ? 'Suppression…' : 'Supprimer' }}
+      </button>
+    </div>
+  </div>
+</ss-modal>

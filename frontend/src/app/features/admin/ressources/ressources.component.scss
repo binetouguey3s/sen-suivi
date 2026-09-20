@@ -1,0 +1,215 @@
+:host {
+  display: block;
+}
+
+.ar__entete {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+  margin-bottom: var(--ss-espace-4);
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    color: var(--ss-bleu-profond);
+  }
+
+  p {
+    margin: var(--ss-espace-1) 0 0;
+    color: var(--ss-gris-ardoise);
+  }
+}
+
+.ar__erreur {
+  color: var(--ss-rouge-alerte);
+  margin-bottom: var(--ss-espace-2);
+}
+
+.ar__etat {
+  color: var(--ss-gris-ardoise);
+  padding: var(--ss-espace-4) 0;
+}
+
+.ar__etat--erreur {
+  color: var(--ss-rouge-alerte);
+}
+
+.ar__tableau {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--ss-blanc);
+
+  th {
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ss-gris-ardoise);
+    padding: var(--ss-espace-2);
+    border-bottom: 1px solid var(--ss-gris-clair);
+  }
+
+  td {
+    padding: var(--ss-espace-2);
+    border-bottom: 1px solid var(--ss-gris-clair);
+    font-size: 14px;
+    color: var(--ss-bleu-profond);
+    vertical-align: middle;
+  }
+}
+
+.ar__titre {
+  font-weight: var(--ss-poids-texte-fort);
+  max-width: 320px;
+}
+
+.ar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px var(--ss-espace-2);
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-menthe-pale);
+  color: var(--ss-bleu-sen-suivi);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.ar__actions {
+  display: flex;
+  gap: var(--ss-espace-3);
+}
+
+.ar__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ar__lien--danger {
+  color: var(--ss-rouge-alerte);
+}
+
+.ar__bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  border: none;
+  border-radius: var(--ss-rayon-bouton);
+  padding: var(--ss-espace-2) var(--ss-espace-3);
+  font-weight: var(--ss-poids-texte-fort);
+  background: var(--ss-bleu-profond);
+  color: var(--ss-blanc);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.ar__bouton--danger {
+  background: var(--ss-rouge-alerte);
+}
+
+.ar__bouton-secondaire {
+  border: 1px solid var(--ss-gris-clair);
+  border-radius: var(--ss-rayon-bouton);
+  padding: var(--ss-espace-2) var(--ss-espace-3);
+  font-weight: var(--ss-poids-texte-fort);
+  background: var(--ss-blanc);
+  color: var(--ss-bleu-profond);
+  cursor: pointer;
+}
+
+// --- Modale ---------------------------------------------------------------
+
+.ar__modale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+  width: 100%;
+
+  h2 {
+    margin: 0;
+    color: var(--ss-bleu-profond);
+  }
+}
+
+.ar__libelle-champ {
+  margin: 0 0 calc(var(--ss-espace-1) * -1);
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  color: var(--ss-bleu-profond);
+}
+
+.ar__formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ss-espace-1);
+}
+
+.ar__format {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--ss-gris-clair);
+  background: var(--ss-blanc);
+  color: var(--ss-bleu-profond);
+  border-radius: var(--ss-rayon-pilule);
+  padding: var(--ss-espace-1) var(--ss-espace-2);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ar__format--actif {
+  background: var(--ss-bleu-sen-suivi);
+  border-color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-blanc);
+}
+
+.ar__duree {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  color: var(--ss-bleu-profond);
+
+  input {
+    border: 1px solid var(--ss-gris-clair);
+    border-radius: var(--ss-rayon-champ);
+    padding: var(--ss-espace-2);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--ss-bleu-profond);
+    width: 120px;
+  }
+}
+
+.ar__erreur-modale {
+  margin: 0;
+  color: var(--ss-rouge-alerte);
+  font-size: 14px;
+}
+
+.ar__modale-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ss-espace-2);
+  margin-top: var(--ss-espace-1);
+}

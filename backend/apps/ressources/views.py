@@ -2,17 +2,22 @@ from django.db.models import Q
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from apps.comptes.permissions import EstUtilisateur
+from apps.comptes.permissions import EstAdministrateur, EstUtilisateur
 
 from .models import Favori, LieuDetente, Ressource
 from .serializers import FavoriEcritureSerializer, LieuDetenteSerializer, RessourceSerializer
 
 
-class RessourceListView(generics.ListAPIView):
-    """GET /api/ressources — filtres thématique, format et recherche, accès public."""
+class RessourceListView(generics.ListCreateAPIView):
+    """GET /api/ressources — filtres thématique, format et recherche, accès public.
+    POST — création réservée à l'administration (Gestion des ressources)."""
 
-    permission_classes = [AllowAny]
     serializer_class = RessourceSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [EstAdministrateur()]
+        return [AllowAny()]
 
     def get_queryset(self):
         queryset = Ressource.objects.all()
@@ -32,12 +37,17 @@ class RessourceListView(generics.ListAPIView):
         return queryset
 
 
-class RessourceDetailView(generics.RetrieveAPIView):
-    """GET /api/ressources/{id}, accès public."""
+class RessourceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """GET /api/ressources/{id}, accès public.
+    PATCH/DELETE — réservés à l'administration (Gestion des ressources)."""
 
-    permission_classes = [AllowAny]
     serializer_class = RessourceSerializer
     queryset = Ressource.objects.all()
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [EstAdministrateur()]
 
 
 class LieuDetenteListView(generics.ListAPIView):

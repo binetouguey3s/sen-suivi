@@ -1,0 +1,46 @@
+<div class="la">
+  <header class="la__topbar-mobile">
+    <span class="la__logo" aria-hidden="true">SS</span>
+    <button type="button" class="la__menu-bouton" aria-label="Ouvrir le menu" (click)="menuOuvert.set(true)">
+      <ss-icon nom="menu" taille="sm" />
+    </button>
+  </header>
+
+  @if (menuOuvert()) {
+    <div class="la__voile" (click)="menuOuvert.set(false)"></div>
+  }
+
+  <aside class="la__sidebar" [class.la__sidebar--ouverte]="menuOuvert()">
+    <span class="la__logo la__logo--desktop" aria-hidden="true">SS</span>
+
+    <nav class="la__nav" aria-label="Navigation administration">
+      @for (lien of liens; track lien.route) {
+        <a
+          class="la__lien"
+          [routerLink]="lien.route"
+          routerLinkActive="la__lien--actif"
+          [routerLinkActiveOptions]="{ exact: !!lien.exact }"
+          (click)="menuOuvert.set(false)"
+        >
+          <ss-icon [nom]="lien.icone" />
+          {{ lien.libelle }}
+        </a>
+      }
+    </nav>
+
+    <div class="la__profil">
+      <span class="la__avatar">{{ initiales() }}</span>
+      <div class="la__identite">
+        <p class="la__nom">{{ auth.nom() }}</p>
+        <span class="la__role">Administrateur</span>
+      </div>
+      <button type="button" class="la__deconnexion" aria-label="Se déconnecter" (click)="deconnecter()">
+        <ss-icon nom="deconnexion" taille="sm" />
+      </button>
+    </div>
+  </aside>
+
+  <main class="la__contenu">
+    <router-outlet />
+  </main>
+</div>

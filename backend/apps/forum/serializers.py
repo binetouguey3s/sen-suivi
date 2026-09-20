@@ -83,3 +83,41 @@ class PublicationForumEcritureSerializer(serializers.ModelSerializer):
         # (docs/SPECIFICATIONS.md section 1), déjà le défaut du modèle.
         validated_data['statut_moderation'] = StatutModeration.EN_ATTENTE
         return super().create(validated_data)
+
+
+# --- Modération (écran d'administration) ------------------------------------
+
+
+class PublicationForumModerationSerializer(serializers.ModelSerializer):
+    """Vue administrateur : toutes les publications, quel que soit leur statut."""
+
+    pseudonyme = serializers.CharField(source='utilisateur.pseudonyme', read_only=True)
+    thematique_affichee = serializers.CharField(source='get_thematique_display', read_only=True)
+
+    class Meta:
+        model = PublicationForum
+        fields = ['id', 'pseudonyme', 'titre', 'contenu', 'thematique', 'thematique_affichee', 'date', 'statut_moderation']
+
+
+class ModerationSerializer(serializers.Serializer):
+    """PATCH générique de modération : fait uniquement transiter le statut."""
+
+    statut_moderation = serializers.ChoiceField(choices=StatutModeration.choices)
+
+    def save(self, **kwargs):
+        objet = self.instance
+        objet.statut_moderation = self.validated_data['statut_moderation']
+        objet.moderateur = self.context['request'].user.administrateur
+        objet.save(update_fields=['statut_moderation', 'moderateur'])
+        return objet
+
+
+class CommentaireForumModerationSerializer(serializers.ModelSerializer):
+    """Vue administrateur : tous les commentaires, quel que soit leur statut."""
+
+    pseudonyme = serializers.CharField(source='utilisateur.pseudonyme', read_only=True)
+    publication_titre = serializers.CharField(source='publication.titre', read_only=True)
+
+    class Meta:
+        model = CommentaireForum
+        fields = ['id', 'pseudonyme', 'publication', 'publication_titre', 'contenu', 'date', 'statut_moderation']

@@ -154,6 +154,42 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'admin',
+    canActivate: [typeCompteGuard('administrateur')],
+    loadComponent: () =>
+      import('./shared/layout-admin/layout-admin.component').then((m) => m.LayoutAdminComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/admin/vue-ensemble/vue-ensemble.component').then(
+            (m) => m.AdminVueEnsembleComponent,
+          ),
+      },
+      {
+        path: 'professionnels',
+        loadComponent: () =>
+          import('./features/admin/professionnels/professionnels.component').then(
+            (m) => m.AdminProfessionnelsComponent,
+          ),
+      },
+      {
+        path: 'forum',
+        loadComponent: () =>
+          import('./features/admin/forum/moderation.component').then(
+            (m) => m.AdminModerationForumComponent,
+          ),
+      },
+      {
+        path: 'ressources',
+        loadComponent: () =>
+          import('./features/admin/ressources/ressources.component').then(
+            (m) => m.AdminRessourcesComponent,
+          ),
+      },
+    ],
+  },
+  {
     // Toute adresse inconnue : page 404 dans le layout public (doit rester la dernière route)
     path: '**',
     loadComponent: () =>

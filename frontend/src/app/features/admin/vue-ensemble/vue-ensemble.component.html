@@ -1,0 +1,38 @@
+<header class="ve__entete">
+  <h1>Supervision générale</h1>
+  <p>Les actions qui attendent votre décision.</p>
+</header>
+
+@if (vue.isLoading()) {
+  <p class="ve__etat">Chargement…</p>
+} @else if (vue.error()) {
+  <p class="ve__etat ve__etat--erreur">Impossible de charger la vue d'ensemble pour le moment.</p>
+} @else if (vue.value(); as v) {
+  <div class="ve__grille">
+    <a class="ve__carte" routerLink="/admin/professionnels">
+      <ss-icon nom="utilisateur" taille="lg" />
+      <div>
+        <strong>{{ v.professionnels_en_attente }}</strong>
+        <span>professionnel(s) en attente de validation</span>
+      </div>
+    </a>
+    <a class="ve__carte" routerLink="/admin/forum">
+      <ss-icon nom="forum" taille="lg" />
+      <div>
+        <strong>{{ v.publications_en_attente }}</strong>
+        <span>publication(s) du forum en attente de modération</span>
+      </div>
+    </a>
+    <a class="ve__carte" routerLink="/admin/forum">
+      <ss-icon nom="chat" taille="lg" />
+      <div>
+        <strong>{{ v.commentaires_en_attente }}</strong>
+        <span>réponse(s) du forum en attente de modération</span>
+      </div>
+    </a>
+  </div>
+
+  @if (!v.professionnels_en_attente && !v.publications_en_attente && !v.commentaires_en_attente) {
+    <p class="ve__vide"><ss-icon nom="verifie" taille="sm" /> Aucune action en attente pour le moment.</p>
+  }
+}

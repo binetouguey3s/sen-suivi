@@ -3,14 +3,17 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 
-from apps.comptes.permissions import EstUtilisateur
+from apps.comptes.permissions import EstAdministrateur, EstUtilisateur
 
-from .models import PublicationForum, StatutModeration
+from .models import CommentaireForum, PublicationForum, StatutModeration
 from .serializers import (
     CommentaireForumEcritureSerializer,
+    CommentaireForumModerationSerializer,
+    ModerationSerializer,
     PublicationForumDetailSerializer,
     PublicationForumEcritureSerializer,
     PublicationForumLectureSerializer,
+    PublicationForumModerationSerializer,
 )
 
 
@@ -87,3 +90,52 @@ class CommentaireForumCreateView(generics.CreateAPIView):
             {'detail': "Votre message a été envoyé. Il sera visible après relecture par un modérateur."},
             status=201,
         )
+
+
+# --- Modération (écran d'administration) ------------------------------------
+
+
+class PublicationForumModerationListView(generics.ListAPIView):
+    """GET /api/forum/moderation/publications?statut=EN_ATTENTE — toutes, réservé à l'administration."""
+
+    permission_classes = [EstAdministrateur]
+    serializer_class = PublicationForumModerationSerializer
+
+    def get_queryset(self):
+        queryset = PublicationForum.objects.select_related('utilisateur').all()
+        statut = self.request.query_params.get('statut')
+        if statut:
+            queryset = queryset.filter(statut_moderation=statut)
+        return queryset
+
+
+class PublicationForumModerationDetailView(generics.UpdateAPIView):
+    """PATCH /api/forum/moderation/publications/{id} — change le statut de modération."""
+
+    permission_classes = [EstAdministrateur]
+    serializer_class = ModerationSerializer
+    http_method_names = ['patch']
+    queryset = PublicationForum.objects.all()
+
+
+class CommentaireForumModerationListView(generics.ListAPIView):
+    """GET /api/forum/moderation/commentaires?statut=EN_ATTENTE — tous, réservé à l'administration."""
+
+    permission_classes = [EstAdministrateur]
+    serializer_class = CommentaireForumModerationSerializer
+
+    def get_queryset(self):
+        queryset = CommentaireForum.objects.select_related('utilisateur', 'publication').all()
+        statut = self.request.query_params.get('statut')
+        if statut:
+            queryset = queryset.filter(statut_moderation=statut)
+        return queryset
+
+
+class CommentaireForumModerationDetailView(generics.UpdateAPIView):
+    """PATCH /api/forum/moderation/commentaires/{id} — change le statut de modération."""
+
+    permission_classes = [EstAdministrateur]
+    serializer_class = ModerationSerializer
+    http_method_names = ['patch']
+    queryset = CommentaireForum.objects.all()

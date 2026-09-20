@@ -1,0 +1,128 @@
+<header class="mf__entete">
+  <h1>Modération du forum</h1>
+</header>
+
+<div class="mf__contenu-choix" role="tablist">
+  <button type="button" [class.mf__contenu-choix-item--actif]="contenu() === 'PUBLICATIONS'" (click)="changerContenu('PUBLICATIONS')">
+    Publications
+  </button>
+  <button type="button" [class.mf__contenu-choix-item--actif]="contenu() === 'COMMENTAIRES'" (click)="changerContenu('COMMENTAIRES')">
+    Réponses
+  </button>
+</div>
+
+<div class="mf__onglets" role="tablist">
+  @for (o of onglets; track o.valeur) {
+    <button type="button" role="tab" [class.mf__onglet--actif]="onglet() === o.valeur" (click)="changerOnglet(o.valeur)">
+      {{ o.libelle }}
+    </button>
+  }
+</div>
+
+@if (erreur()) { <p class="mf__erreur" role="alert">{{ erreur() }}</p> }
+
+@if (enChargement()) {
+  <p class="mf__etat">Chargement…</p>
+} @else if (enErreur()) {
+  <p class="mf__etat mf__etat--erreur">Impossible de charger le forum pour le moment.</p>
+} @else if (contenu() === 'PUBLICATIONS') {
+  @if (!listePublications().length) {
+    <p class="mf__etat">Aucune publication dans cette catégorie.</p>
+  } @else {
+    <table class="mf__tableau">
+      <thead>
+        <tr>
+          <th class="mf__case"><input type="checkbox" aria-label="Tout sélectionner" (change)="toutSelectionner($any($event.target).checked)" /></th>
+          <th>Utilisateur</th>
+          <th>Thématique</th>
+          <th>Date</th>
+          <th>Contenu</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of listePublications(); track p.id) {
+          <tr>
+            <td class="mf__case"><input type="checkbox" [attr.aria-label]="'Sélectionner ' + p.titre" [checked]="selection().has(p.id)" (change)="basculerSelection(p.id)" /></td>
+            <td><span class="mf__pseudo">{{ p.pseudonyme }}</span></td>
+            <td><span class="mf__chip">{{ p.thematique_affichee }}</span></td>
+            <td class="mf__date">{{ depuis(p.date) }}</td>
+            <td class="mf__extrait">
+              <strong>{{ p.titre }}</strong>
+              <p>{{ p.contenu }}</p>
+            </td>
+            <td><span class="mf__badge" [class]="'mf__badge--' + p.statut_moderation">{{ libelle(p.statut_moderation) }}</span></td>
+            <td>
+              <div class="mf__actions">
+                @if (p.statut_moderation !== 'VISIBLE') {
+                  <button type="button" class="mf__bouton" [disabled]="enCours() === p.id" (click)="agir(p.id, 'VISIBLE')">Laisser visible</button>
+                }
+                @if (p.statut_moderation !== 'MASQUE') {
+                  <button type="button" class="mf__bouton mf__bouton--contour" [disabled]="enCours() === p.id" (click)="agir(p.id, 'MASQUE')">Masquer</button>
+                }
+                @if (p.statut_moderation !== 'SUPPRIME') {
+                  <button type="button" class="mf__bouton mf__bouton--danger" [disabled]="enCours() === p.id" (click)="agir(p.id, 'SUPPRIME')">Supprimer</button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+} @else {
+  @if (!listeCommentaires().length) {
+    <p class="mf__etat">Aucune réponse dans cette catégorie.</p>
+  } @else {
+    <table class="mf__tableau">
+      <thead>
+        <tr>
+          <th class="mf__case"><input type="checkbox" aria-label="Tout sélectionner" (change)="toutSelectionner($any($event.target).checked)" /></th>
+          <th>Utilisateur</th>
+          <th>Publication concernée</th>
+          <th>Date</th>
+          <th>Contenu</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of listeCommentaires(); track c.id) {
+          <tr>
+            <td class="mf__case"><input type="checkbox" [attr.aria-label]="'Sélectionner la réponse de ' + c.pseudonyme" [checked]="selection().has(c.id)" (change)="basculerSelection(c.id)" /></td>
+            <td><span class="mf__pseudo">{{ c.pseudonyme }}</span></td>
+            <td class="mf__extrait"><em>{{ c.publication_titre }}</em></td>
+            <td class="mf__date">{{ depuis(c.date) }}</td>
+            <td class="mf__extrait"><p>{{ c.contenu }}</p></td>
+            <td><span class="mf__badge" [class]="'mf__badge--' + c.statut_moderation">{{ libelle(c.statut_moderation) }}</span></td>
+            <td>
+              <div class="mf__actions">
+                @if (c.statut_moderation !== 'VISIBLE') {
+                  <button type="button" class="mf__bouton" [disabled]="enCours() === c.id" (click)="agir(c.id, 'VISIBLE')">Laisser visible</button>
+                }
+                @if (c.statut_moderation !== 'MASQUE') {
+                  <button type="button" class="mf__bouton mf__bouton--contour" [disabled]="enCours() === c.id" (click)="agir(c.id, 'MASQUE')">Masquer</button>
+                }
+                @if (c.statut_moderation !== 'SUPPRIME') {
+                  <button type="button" class="mf__bouton mf__bouton--danger" [disabled]="enCours() === c.id" (click)="agir(c.id, 'SUPPRIME')">Supprimer</button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}
+
+@if (nombreSelectionnes()) {
+  <div class="mf__barre-selection">
+    <span><strong>{{ nombreSelectionnes() }}</strong> élément(s) sélectionné(s)</span>
+    <div class="mf__barre-selection-actions">
+      <button type="button" class="mf__bouton" [disabled]="enCoursSelection()" (click)="agirSurSelection('VISIBLE')">Laisser visible</button>
+      <button type="button" class="mf__bouton mf__bouton--contour" [disabled]="enCoursSelection()" (click)="agirSurSelection('MASQUE')">Masquer la sélection</button>
+      <button type="button" class="mf__bouton mf__bouton--danger" [disabled]="enCoursSelection()" (click)="agirSurSelection('SUPPRIME')">Supprimer la sélection</button>
+    </div>
+  </div>
+}

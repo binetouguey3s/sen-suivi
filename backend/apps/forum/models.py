@@ -84,6 +84,14 @@ class CommentaireForum(models.Model):
         related_name='commentaires_forum',
         verbose_name='utilisateur',
     )
+    moderateur = models.ForeignKey(
+        'comptes.Administrateur',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='commentaires_moderes',
+        verbose_name='modérateur',
+    )
     contenu = models.TextField('contenu')
     date = models.DateTimeField('date', auto_now_add=True)
     statut_moderation = models.CharField(
