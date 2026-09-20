@@ -18,6 +18,7 @@ interface LienNav {
 const LIENS_UTILISATEUR: LienNav[] = [
   { route: '/app', libelle: 'Accueil', icone: 'accueil', exact: true },
   { route: '/app/journal', libelle: 'Mon Journal', libelleMobile: 'Journal', icone: 'journal' },
+  { route: '/app/forum', libelle: 'Forum', icone: 'forum' },
   { route: '/ressources', libelle: 'Ressources', icone: 'ressources' },
   { route: '/lieux', libelle: 'Lieux & Soins', icone: 'lieux' },
   { route: '/app/parametres', libelle: 'Paramètres', libelleMobile: 'Réglages', icone: 'parametres' },
@@ -49,10 +50,13 @@ export class LayoutAppComponent {
       : LIENS_UTILISATEUR,
   );
 
-  // Navigation basse mobile : 2 liens, l'espace du chat, 2 liens
+  // Navigation basse mobile : 2 liens, l'espace du chat, 2 liens. Sur
+  // mobile, Ressources et Lieux & Soins restent accessibles depuis le
+  // tableau de bord et la barre latérale desktop plutôt que de surcharger
+  // la barre du bas à 6 entrées.
   protected readonly liensMobile = computed(() => {
     const l = this.liens();
-    const choisis = this.estProfessionnel() ? l : [l[0], l[1], l[2], l[4]];
+    const choisis = this.estProfessionnel() ? l : [l[0], l[1], l[2], l[5]];
     return { gauche: choisis.slice(0, 2), droite: choisis.slice(2) };
   });
 

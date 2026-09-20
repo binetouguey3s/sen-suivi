@@ -32,6 +32,7 @@ import {
   LucideMap,
   LucideMapPin,
   LucideMessageCircle,
+  LucideMessagesSquare,
   LucideMic,
   LucideMinus,
   LucideNavigation,
@@ -40,6 +41,8 @@ import {
   LucideSearch,
   LucideSettings,
   LucideShare2,
+  LucideShield,
+  LucideSquarePen,
   LucideTicket,
   LucideUser,
   LucideX,
@@ -87,6 +90,9 @@ export const ICONES = {
   demandes: LucideInbox,
   envoyer: LucideSend,
   profil: LucideUserRound,
+  forum: LucideMessagesSquare,
+  bouclier: LucideShield,
+  ecrire: LucideSquarePen,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

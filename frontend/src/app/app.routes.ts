@@ -141,6 +141,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/journal/journal.component').then((m) => m.JournalComponent),
       },
+      {
+        path: 'forum',
+        loadComponent: () =>
+          import('./features/forum/liste.component').then((m) => m.ForumListeComponent),
+      },
+      {
+        path: 'forum/:id',
+        loadComponent: () =>
+          import('./features/forum/detail.component').then((m) => m.ForumDetailComponent),
+      },
     ],
   },
   {

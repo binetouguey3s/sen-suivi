@@ -1,0 +1,95 @@
+<ss-banniere-forum />
+
+<a routerLink="/app/forum" class="fd__retour"><ss-icon nom="fleche-gauche" taille="sm" /> Retour au forum</a>
+
+@if (publication.isLoading()) {
+  <p class="fd__etat">Chargement de la publication…</p>
+} @else if (publication.error() || !publication.hasValue()) {
+  <div class="fd__etat">
+    <p>Cette publication est introuvable ou n'est plus visible.</p>
+    <button type="button" class="fd__bouton" (click)="retourAuForum()">Retour au forum</button>
+  </div>
+} @else if (publication.value(); as p) {
+  <div class="fd__grille">
+    <div class="fd__colonne">
+      <article class="fd__carte">
+        <div class="fd__auteur">
+          <span class="fd__avatar">{{ initiales(p.pseudonyme) }}</span>
+          <div>
+            <strong>{{ p.pseudonyme }}</strong>
+            <span class="fd__date">Publié {{ depuis(p.date) }} · {{ libelleThematique(p.thematique) }}</span>
+          </div>
+        </div>
+        <h1>{{ p.titre }}</h1>
+        <p class="fd__contenu">{{ p.contenu }}</p>
+        <div class="fd__meta">
+          <span><ss-icon nom="chat" taille="sm" /> {{ p.nb_reponses }} réponses</span>
+        </div>
+      </article>
+
+      <section class="fd__reponses">
+        <h2>Réponses et témoignages</h2>
+
+        @if (!p.commentaires.length) {
+          <p class="fd__vide">Aucune réponse pour le moment. Soyez la première personne à apporter votre soutien.</p>
+        } @else {
+          <ul class="fd__fil">
+            @for (c of p.commentaires; track c.id) {
+              <li class="fd__reponse">
+                <span class="fd__avatar fd__avatar--petit">{{ initiales(c.pseudonyme) }}</span>
+                <div class="fd__bulle">
+                  <div class="fd__bulle-entete">
+                    <strong>{{ c.pseudonyme }}</strong>
+                    <span>{{ depuis(c.date) }}</span>
+                  </div>
+                  <p>{{ c.contenu }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+
+        <div class="fd__composer">
+          @if (envoye()) {
+            <p class="fd__envoye"><ss-icon nom="verifie" taille="sm" /> Votre message a été envoyé. Il sera visible après relecture par un modérateur.</p>
+          } @else {
+            @if (moi.value(); as compte) {
+              <p class="fd__pseudo">Vous publiez sous le pseudonyme <strong>{{ compte.pseudonyme }}</strong></p>
+            }
+            @if (erreur()) { <p class="fd__erreur" role="alert">{{ erreur() }}</p> }
+            <div class="fd__champ">
+              <input
+                type="text"
+                placeholder="Apporter votre soutien ou un conseil…"
+                [value]="reponse()"
+                (input)="reponse.set($any($event.target).value)"
+                (keydown.enter)="envoyer()"
+                maxlength="1000"
+              />
+              <button type="button" [disabled]="envoiEnCours() || !reponse().trim()" (click)="envoyer()">
+                <ss-icon nom="envoyer" taille="sm" />
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+
+    <aside class="fd__aside">
+      @if (p.sujets_similaires.length) {
+        <section class="fd__encart">
+          <h2>Sujets similaires</h2>
+          <ul>
+            @for (s of p.sujets_similaires; track s.id) {
+              <li><a [routerLink]="['/app/forum', s.id]">{{ s.titre }}</a><span>{{ s.nb_reponses }} réponses</span></li>
+            }
+          </ul>
+        </section>
+      }
+      <section class="fd__encart">
+        <h2>Besoin d'aide ?</h2>
+        <p>Si vous ressentez une détresse importante, parlez-en à un professionnel. En urgence, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>.</p>
+      </section>
+    </aside>
+  </div>
+}

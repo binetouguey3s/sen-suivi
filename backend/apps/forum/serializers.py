@@ -1,22 +1,81 @@
 from rest_framework import serializers
 
-from .models import PublicationForum, StatutModeration
+from .models import CommentaireForum, PublicationForum, StatutModeration
 
 
-class PublicationForumLectureSerializer(serializers.ModelSerializer):
+class CommentaireForumLectureSerializer(serializers.ModelSerializer):
     # Anonymat du forum : jamais nom, prenom ni email dans un sérialiseur
     # de publication. Uniquement le pseudonyme.
     pseudonyme = serializers.CharField(source='utilisateur.pseudonyme', read_only=True)
 
     class Meta:
+        model = CommentaireForum
+        fields = ['id', 'pseudonyme', 'contenu', 'date']
+
+
+class CommentaireForumEcritureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentaireForum
+        fields = ['id', 'contenu']
+
+    def create(self, validated_data):
+        validated_data['utilisateur'] = self.context['request'].user.utilisateur
+        validated_data['publication'] = self.context['publication']
+        # Modération a priori, comme pour les publications : le commentaire
+        # n'est visible des autres membres qu'après validation.
+        validated_data['statut_moderation'] = StatutModeration.EN_ATTENTE
+        return super().create(validated_data)
+
+
+class PublicationSimilaireSerializer(serializers.ModelSerializer):
+    nb_reponses = serializers.SerializerMethodField()
+
+    class Meta:
         model = PublicationForum
-        fields = ['id', 'pseudonyme', 'contenu', 'date', 'statut_moderation']
+        fields = ['id', 'titre', 'nb_reponses']
+
+    def get_nb_reponses(self, publication):
+        return publication.commentaires.filter(statut_moderation=StatutModeration.VISIBLE).count()
+
+
+class PublicationForumLectureSerializer(serializers.ModelSerializer):
+    pseudonyme = serializers.CharField(source='utilisateur.pseudonyme', read_only=True)
+    nb_reponses = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PublicationForum
+        fields = ['id', 'pseudonyme', 'titre', 'contenu', 'thematique', 'date', 'nb_reponses']
+
+    def get_nb_reponses(self, publication):
+        return publication.commentaires.filter(statut_moderation=StatutModeration.VISIBLE).count()
+
+
+class PublicationForumDetailSerializer(PublicationForumLectureSerializer):
+    commentaires = serializers.SerializerMethodField()
+    sujets_similaires = serializers.SerializerMethodField()
+
+    class Meta(PublicationForumLectureSerializer.Meta):
+        fields = PublicationForumLectureSerializer.Meta.fields + ['commentaires', 'sujets_similaires']
+
+    def get_commentaires(self, publication):
+        visibles = publication.commentaires.filter(statut_moderation=StatutModeration.VISIBLE)
+        return CommentaireForumLectureSerializer(visibles, many=True).data
+
+    def get_sujets_similaires(self, publication):
+        autres = (
+            PublicationForum.objects.filter(
+                thematique=publication.thematique, statut_moderation=StatutModeration.VISIBLE
+            )
+            .exclude(pk=publication.pk)
+            .order_by('-date')[:3]
+        )
+        return PublicationSimilaireSerializer(autres, many=True).data
 
 
 class PublicationForumEcritureSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicationForum
-        fields = ['id', 'contenu']
+        fields = ['id', 'titre', 'contenu', 'thematique']
 
     def create(self, validated_data):
         validated_data['utilisateur'] = self.context['request'].user.utilisateur

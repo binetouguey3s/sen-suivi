@@ -1,0 +1,124 @@
+<ss-banniere-forum />
+
+<header class="fo__entete">
+  <h1>Espace d'échange</h1>
+  <label class="fo__recherche">
+    <ss-icon nom="recherche" />
+    <span class="fo__sr">Rechercher une publication</span>
+    <input type="search" placeholder="Rechercher une publication…" (input)="saisirRecherche($event)" />
+  </label>
+</header>
+
+<div class="fo__grille">
+  <div class="fo__colonne">
+    <div class="fo__chips">
+      <button type="button" class="fo__chip" [class.fo__chip--actif]="!thematiqueChoisie()" (click)="thematiqueChoisie.set(null)">
+        Tout
+      </button>
+      @for (t of thematiques; track t.valeur) {
+        <button
+          type="button"
+          class="fo__chip"
+          [class.fo__chip--actif]="thematiqueChoisie() === t.valeur"
+          (click)="thematiqueChoisie.set(t.valeur)"
+        >
+          {{ t.libelle }}
+        </button>
+      }
+    </div>
+
+    @if (publications.isLoading()) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="fo__squelette"></div>
+      }
+    } @else if (publications.error()) {
+      <p class="fo__etat fo__etat--erreur">Impossible de charger le forum pour le moment.</p>
+    } @else if (!liste().length) {
+      <div class="fo__etat">
+        <img src="/images/illustrations/etat-vide-favoris.svg" alt="" width="150" height="150" />
+        <p>Aucune publication ne correspond à votre recherche.</p>
+      </div>
+    } @else {
+      @for (p of liste(); track p.id) {
+        <article class="fo__carte" (click)="ouvrirPublication(p.id)">
+          <div class="fo__auteur">
+            <span class="fo__avatar">{{ initiales(p.pseudonyme) }}</span>
+            <div>
+              <strong>{{ p.pseudonyme }}</strong>
+              <span class="fo__date">{{ depuis(p.date) }}</span>
+            </div>
+          </div>
+          <h2>{{ p.titre }}</h2>
+          <p class="fo__extrait">{{ p.contenu }}</p>
+          <div class="fo__meta">
+            <span><ss-icon nom="chat" taille="sm" /> {{ p.nb_reponses }} réponses</span>
+          </div>
+        </article>
+      }
+    }
+  </div>
+
+  <aside class="fo__aside">
+    <section class="fo__encart">
+      <h2>Règles du forum</h2>
+      <ul>
+        <li><strong>Respect :</strong> soyez courtois avec les autres membres.</li>
+        <li><strong>Anonymat :</strong> ne partagez pas d'informations personnelles identifiables.</li>
+        <li><strong>Bienveillance :</strong> cet espace est dédié au soutien mutuel.</li>
+      </ul>
+    </section>
+    <section class="fo__encart">
+      <h2>Besoin d'aide tout de suite ?</h2>
+      <p>Si vous êtes en situation de détresse immédiate, contactez le <strong>800 805 805</strong> ou le <strong>1515</strong>.</p>
+    </section>
+  </aside>
+</div>
+
+<button type="button" class="fo__ecrire" (click)="ouvrirModale()">
+  <ss-icon nom="ecrire" taille="sm" /> Écrire une publication
+</button>
+
+<ss-modal [(ouverte)]="modaleOuverte">
+  <div class="fo__modale">
+    <h2>Nouvelle publication</h2>
+    <ss-champ libelle="Titre" [(valeur)]="titre" placeholder="De quoi souhaitez-vous parler ?" [maxlength]="150" />
+    <ss-champ
+      libelle="Contenu de la publication"
+      type="textarea"
+      [(valeur)]="contenu"
+      [lignes]="5"
+      [maxlength]="2000"
+      placeholder="Exprimez-vous ici en toute bienveillance…"
+    />
+    <p class="fo__libelle-champ">Choisir une thématique</p>
+    <div class="fo__chips">
+      @for (t of thematiques; track t.valeur) {
+        <button
+          type="button"
+          class="fo__chip"
+          [class.fo__chip--actif]="thematiqueNouvelle() === t.valeur"
+          (click)="thematiqueNouvelle.set(t.valeur)"
+        >
+          {{ t.libelle }}
+        </button>
+      }
+    </div>
+    @if (erreur()) { <p class="fo__erreur" role="alert">{{ erreur() }}</p> }
+    <p class="fo__note"><ss-icon nom="bouclier" taille="sm" /> Votre message est relu par un modérateur avant publication pour garantir un espace sûr et bienveillant.</p>
+    <div class="fo__modale-actions">
+      <button type="button" class="fo__bouton fo__bouton--contour" (click)="modaleOuverte.set(false)">Annuler</button>
+      <button type="button" class="fo__bouton" [disabled]="envoiEnCours()" (click)="publier()">
+        {{ envoiEnCours() ? 'Envoi…' : 'Publier' }}
+      </button>
+    </div>
+  </div>
+</ss-modal>
+
+<ss-modal [(ouverte)]="confirmationOuverte">
+  <div class="fo__confirmation">
+    <span class="fo__confirmation-icone"><ss-icon nom="verifie" taille="lg" /></span>
+    <h2>Publication envoyée</h2>
+    <p>Elle sera visible dès qu'un modérateur l'aura validée.</p>
+    <button type="button" class="fo__bouton" (click)="confirmationOuverte.set(false)">Fermer</button>
+  </div>
+</ss-modal>

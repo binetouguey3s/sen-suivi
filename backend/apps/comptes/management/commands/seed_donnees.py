@@ -15,7 +15,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from apps.comptes.models import Administrateur, Professionnel, StatutValidationPro, Utilisateur
-from apps.forum.models import PublicationForum, StatutModeration
+from apps.forum.models import CommentaireForum, PublicationForum, StatutModeration, ThematiqueForum
 from apps.ressources.contenus_demo import LIEUX as LIEUX_DETAILS, RESSOURCES as RESSOURCES_DEMO
 from apps.ressources.models import LieuDetente, Ressource
 from apps.suivi.models import (
@@ -91,12 +91,59 @@ LIEUX = [
 ]
 
 PUBLICATIONS_FORUM = [
-    ('Teranga221', "Je trouve que parler ici m'aide déjà à y voir plus clair.", StatutModeration.VISIBLE),
-    ('Jàmm_rekk', "Quelqu'un a des conseils pour mieux dormir avant les examens ?", StatutModeration.VISIBLE),
-    ('Etudiante_UCAD', "La charge de travail est énorme ce semestre, je me sens débordée.", StatutModeration.VISIBLE),
-    ('Soleil_de_Thiès', "Une petite marche le soir m'a beaucoup aidé cette semaine.", StatutModeration.VISIBLE),
-    ('Sama_xel', "Message retiré par la modération.", StatutModeration.MASQUE),
-    ('Anonyme_Dakar', "Je viens de m'inscrire, je découvre encore la plateforme.", StatutModeration.EN_ATTENTE),
+    {
+        'pseudonyme': 'Teranga221',
+        'titre': "Parler ici m'aide déjà à y voir plus clair",
+        'contenu': "Je traverse une période difficile en ce moment et j'ai l'impression que ce forum m'aide déjà à y voir plus clair. Merci à celles et ceux qui prennent le temps de répondre.",
+        'thematique': ThematiqueForum.STRESS,
+        'statut': StatutModeration.VISIBLE,
+        'commentaires': [
+            ('Jàmm_rekk', "Content de lire ça. Le simple fait d'écrire ce qu'on ressent aide déjà beaucoup.", StatutModeration.VISIBLE),
+            ('Soleil_de_Thiès', "Courage à vous, cet espace est justement fait pour ça.", StatutModeration.VISIBLE),
+        ],
+    },
+    {
+        'pseudonyme': 'Jàmm_rekk',
+        'titre': 'Conseils pour mieux dormir avant les examens ?',
+        'contenu': "Quelqu'un a des conseils pour mieux dormir avant les examens ? Je me couche fatigué mais j'ai du mal à trouver le sommeil.",
+        'thematique': ThematiqueForum.SOMMEIL,
+        'statut': StatutModeration.VISIBLE,
+        'commentaires': [
+            ('Etudiante_UCAD', "Éviter l'écran une heure avant de dormir m'a beaucoup aidé, personnellement.", StatutModeration.VISIBLE),
+        ],
+    },
+    {
+        'pseudonyme': 'Etudiante_UCAD',
+        'titre': 'La charge de travail est énorme ce semestre',
+        'contenu': "La charge de travail est énorme ce semestre, je me sens débordée. J'aimerais savoir comment les autres organisent leur temps.",
+        'thematique': ThematiqueForum.TRAVAIL,
+        'statut': StatutModeration.VISIBLE,
+        'commentaires': [],
+    },
+    {
+        'pseudonyme': 'Soleil_de_Thiès',
+        'titre': "Une petite marche le soir m'a beaucoup aidé",
+        'contenu': "Une petite marche le soir m'a beaucoup aidé cette semaine. Je la recommande à qui se sent tendu en rentrant du travail.",
+        'thematique': ThematiqueForum.STRESS,
+        'statut': StatutModeration.VISIBLE,
+        'commentaires': [],
+    },
+    {
+        'pseudonyme': 'Sama_xel',
+        'titre': 'Message retiré par la modération',
+        'contenu': 'Message retiré par la modération.',
+        'thematique': ThematiqueForum.RELATIONS,
+        'statut': StatutModeration.MASQUE,
+        'commentaires': [],
+    },
+    {
+        'pseudonyme': 'Anonyme_Dakar',
+        'titre': "Je viens de m'inscrire",
+        'contenu': "Je viens de m'inscrire, je découvre encore la plateforme. Bonjour à toutes et à tous.",
+        'thematique': ThematiqueForum.RELATIONS,
+        'statut': StatutModeration.EN_ATTENTE,
+        'commentaires': [],
+    },
 ]
 
 
@@ -210,17 +257,34 @@ class Command(BaseCommand):
         return utilisateur
 
     def _creer_forum(self, utilisateur_demo):
-        for pseudonyme, contenu, statut in PUBLICATIONS_FORUM:
-            auteur, cree = Utilisateur.objects.get_or_create(
-                email=f'{pseudonyme.lower()}@sensuivi.sn',
-                defaults={'nom': pseudonyme, 'prenom': pseudonyme},
-            )
-            if cree:
-                auteur.set_password(MOT_DE_PASSE_DEMO)
-                auteur.pseudonyme = pseudonyme
-                auteur.save()
-            PublicationForum.objects.get_or_create(
+        for donnee in PUBLICATIONS_FORUM:
+            auteur = self._compte_forum(donnee['pseudonyme'])
+            publication, _ = PublicationForum.objects.get_or_create(
                 utilisateur=auteur,
-                contenu=contenu,
-                defaults={'statut_moderation': statut},
+                titre=donnee['titre'],
+                defaults={
+                    'contenu': donnee['contenu'],
+                    'thematique': donnee['thematique'],
+                    'statut_moderation': donnee['statut'],
+                },
             )
+            for pseudonyme_commentateur, contenu, statut in donnee['commentaires']:
+                commentateur = self._compte_forum(pseudonyme_commentateur)
+                CommentaireForum.objects.get_or_create(
+                    publication=publication,
+                    utilisateur=commentateur,
+                    contenu=contenu,
+                    defaults={'statut_moderation': statut},
+                )
+
+    def _compte_forum(self, pseudonyme):
+        """Un compte Utilisateur de démonstration, avec ce pseudonyme précis."""
+        auteur, cree = Utilisateur.objects.get_or_create(
+            email=f'{pseudonyme.lower()}@sensuivi.sn',
+            defaults={'nom': pseudonyme, 'prenom': pseudonyme},
+        )
+        if cree:
+            auteur.set_password(MOT_DE_PASSE_DEMO)
+            auteur.pseudonyme = pseudonyme
+            auteur.save()
+        return auteur
