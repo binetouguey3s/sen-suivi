@@ -3,6 +3,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
 from apps.comptes.permissions import EstAdministrateur, EstUtilisateur
+from apps.notifications.services import declencher_workflow
 
 from .models import Favori, LieuDetente, Ressource
 from .serializers import FavoriEcritureSerializer, LieuDetenteSerializer, RessourceSerializer
@@ -18,6 +19,10 @@ class RessourceListView(generics.ListCreateAPIView):
         if self.request.method == 'POST':
             return [EstAdministrateur()]
         return [AllowAny()]
+
+    def perform_create(self, serializer):
+        serializer.save()
+        declencher_workflow('ressource-modifiee')  # réindexation RAG (n8n)
 
     def get_queryset(self):
         queryset = Ressource.objects.all()
@@ -48,6 +53,14 @@ class RessourceDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return [AllowAny()]
         return [EstAdministrateur()]
+
+    def perform_update(self, serializer):
+        serializer.save()
+        declencher_workflow('ressource-modifiee')  # réindexation RAG (n8n)
+
+    def perform_destroy(self, instance):
+        instance.delete()
+        declencher_workflow('ressource-modifiee')
 
 
 class LieuDetenteListView(generics.ListAPIView):

@@ -11,6 +11,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from apps.notifications.services import declencher_workflow
+
 from .models import Professionnel, StatutValidationPro
 from .permissions import EstAdministrateur
 from .services import confirmer_reinitialisation, demander_reinitialisation
@@ -48,6 +50,14 @@ class InscriptionProfessionnelView(generics.CreateAPIView):
 
     permission_classes = [AllowAny]
     serializer_class = InscriptionProfessionnelSerializer
+
+    def perform_create(self, serializer):
+        professionnel = serializer.save()
+        # Prévient les administrateurs via le workflow n8n (best-effort)
+        declencher_workflow(
+            'nouveau-professionnel',
+            {'nom': professionnel.nom, 'specialite': professionnel.get_specialite_display(), 'ville': professionnel.ville},
+        )
 
 
 class ProfessionnelListView(generics.ListAPIView):

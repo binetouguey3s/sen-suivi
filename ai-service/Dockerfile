@@ -1,6 +1,4 @@
 # Sen Suivi — Microservice IA FastAPI
-# Le code applicatif (app/main.py, requirements.txt) sera ajouté à l'étape
-# dédiée au chatbot. Ce Dockerfile deviendra fonctionnel à ce moment-là.
 
 FROM python:3.12-slim
 
@@ -11,6 +9,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Télécharge dès la construction le modèle d'embeddings par défaut de ChromaDB
+# (all-MiniLM-L6-v2, licence Apache 2.0, aucune clé requise) : le service
+# n'a ainsi plus besoin d'Internet au démarrage ni après un redémarrage.
+RUN python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction; DefaultEmbeddingFunction()(['amorce'])"
 
 COPY . .
 

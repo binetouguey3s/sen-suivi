@@ -32,16 +32,21 @@ def _obtenir_collection():
 
 
 def indexer_ressources(ressources: list[dict]) -> int:
-    """(Ré)indexe les ressources fournies (id, titre, contenu, thematique).
+    """Synchronise l'index avec la liste fournie (id, titre, contenu, thematique).
 
-    Appelée par POST /reindexer (déclenchable manuellement ou par le workflow
-    n8n « indexation RAG » quand une ressource est ajoutée ou modifiée).
+    Les ressources supprimées côté Django disparaissent aussi de l'index :
+    appelée par POST /reindexer (workflow n8n « indexation RAG » ou commande
+    manuelle) avec la liste complète des ressources.
     """
+    collection = _obtenir_collection()
+    ids = [str(r['id']) for r in ressources]
+    obsoletes = [i for i in collection.get()['ids'] if i not in ids]
+    if obsoletes:
+        collection.delete(ids=obsoletes)
     if not ressources:
         return 0
-    collection = _obtenir_collection()
     collection.upsert(
-        ids=[str(r['id']) for r in ressources],
+        ids=ids,
         documents=[f"{r['titre']}\n{r['contenu']}" for r in ressources],
         metadatas=[
             {'titre': r['titre'], 'thematique': r['thematique'], 'ressource_id': r['id']}

@@ -38,23 +38,48 @@ Pour arrêter les services : `docker compose down`.
 Pour arrêter et supprimer les données persistées (base de données, base vectorielle,
 workflows n8n) : `docker compose down -v`.
 
-> État actuel : le **back-end Django est fonctionnel** (API REST, JWT, admin).
-> Le **front-end Angular** est initialisé (projet Angular 22 créé) mais pas encore
-> connecté au back-end. Le **microservice IA** et les **workflows n8n** ne sont pas
-> encore implémentés : `docker compose up --build` démarre déjà PostgreSQL et Django
-> correctement, mais `ai-service` n'a pas encore de code applicatif.
+> **Aucune clé d'API externe n'est nécessaire** : le chatbot ne s'appuie sur aucun LLM
+> ni service payant (règles validées + recherche dans les ressources de la plateforme).
+> Le seul secret à créer soi-même est `N8N_API_KEY`, une clé partagée entre Django et n8n
+> pour leurs échanges internes : `python3 -c "import secrets; print(secrets.token_urlsafe(32))"`,
+> puis à coller dans `.env`.
 
 ### Premières commandes après le démarrage
 
-Une fois les conteneurs `db` et `backend` lancés, préparez la base de données :
+Une fois les conteneurs lancés, préparez la base de données et l'index du chatbot :
 
 ```bash
 docker compose exec backend python manage.py migrate
 docker compose exec backend python manage.py seed_donnees
+docker compose exec backend python manage.py reindexer_ressources
 ```
 
 La commande de seed affiche le mot de passe commun à tous les comptes de
 démonstration. Interface d'administration Django : `http://localhost:8000/admin/`.
+
+Le front-end Angular se lance en développement avec `cd frontend && npm install && npm start`.
+
+### Automatisations n8n
+
+Les trois workflows (rappel d'inactivité après 3 jours, notification des administrateurs
+à chaque inscription professionnelle, réindexation du RAG à chaque modification d'une
+ressource) sont exportés dans [`automations/`](./automations). Pour les charger dans n8n :
+
+```bash
+docker compose exec n8n n8n import:workflow --separate --input=/automations
+for id in $(docker compose exec -T n8n n8n list:workflow | cut -d'|' -f1); do
+  docker compose exec -T n8n n8n publish:workflow --id=$id
+done
+docker compose restart n8n
+```
+
+### Tests
+
+```bash
+docker compose exec backend python manage.py test   # score de tendance, refus de connexion pro non validé
+cd ai-service && python -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m pytest   # détection de détresse, intentions
+cd frontend && npm test -- --watch=false            # Vitest
+```
 
 ---
 

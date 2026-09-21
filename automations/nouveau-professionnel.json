@@ -1,0 +1,97 @@
+{
+  "name": "Nouvelle inscription professionnelle",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nouveau-professionnel",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook nouveau professionnel",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "nouveau-professionnel"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://backend:8000/api/interne/administrateurs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Cle-Interne",
+              "value": "={{ $env.N8N_API_KEY }}"
+            }
+          ]
+        }
+      },
+      "id": "administrateurs",
+      "name": "Administrateurs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:8000/api/interne/notifications-email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Cle-Interne",
+              "value": "={{ $env.N8N_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ destinataire_id: $json.id, objet: \"Nouvelle inscription professionnelle à valider\", contenu: $('Webhook nouveau professionnel').item.json.body.nom + \" (\" + $('Webhook nouveau professionnel').item.json.body.specialite + \", \" + $('Webhook nouveau professionnel').item.json.body.ville + \") vient de s'inscrire. Rendez-vous dans Administration > Professionnels pour valider ou refuser ce profil.\" }) }}"
+      },
+      "id": "notifier-l'administrateur",
+      "name": "Notifier l'administrateur",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook nouveau professionnel": {
+      "main": [
+        [
+          {
+            "node": "Administrateurs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Administrateurs": {
+      "main": [
+        [
+          {
+            "node": "Notifier l'administrateur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

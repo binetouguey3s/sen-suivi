@@ -1,0 +1,110 @@
+{
+  "name": "Rappel d'inactivité",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "declencheur",
+      "name": "Chaque jour à 9 h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://backend:8000/api/interne/utilisateurs-inactifs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Cle-Interne",
+              "value": "={{ $env.N8N_API_KEY }}"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "jours",
+              "value": "3"
+            }
+          ]
+        }
+      },
+      "id": "utilisateurs-inactifs",
+      "name": "Utilisateurs inactifs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:8000/api/interne/notifications-email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Cle-Interne",
+              "value": "={{ $env.N8N_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ destinataire_id: $json.id, objet: \"Un moment pour prendre soin de vous\", contenu: \"Bonjour \" + $json.prenom + \", cela fait quelques jours que vous n'avez pas pris un moment pour vous. Quelques secondes suffisent pour noter votre humeur du jour dans Sen Suivi. Sen Suivi ne remplace pas un professionnel de santé.\" }) }}"
+      },
+      "id": "créer-la-notification",
+      "name": "Créer la notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Chaque jour à 9 h": {
+      "main": [
+        [
+          {
+            "node": "Utilisateurs inactifs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Utilisateurs inactifs": {
+      "main": [
+        [
+          {
+            "node": "Créer la notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

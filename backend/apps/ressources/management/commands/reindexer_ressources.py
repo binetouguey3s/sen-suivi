@@ -19,10 +19,6 @@ class Command(BaseCommand):
         ressources = list(
             Ressource.objects.values('id', 'titre', 'contenu', 'thematique')
         )
-        if not ressources:
-            self.stdout.write('Aucune ressource à indexer.')
-            return
-
         try:
             reponse = httpx.post(
                 f'{settings.AI_SERVICE_URL}/reindexer', json=ressources, timeout=120

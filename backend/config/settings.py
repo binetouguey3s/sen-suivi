@@ -120,3 +120,9 @@ FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 
 # Microservice IA (FastAPI), séparé du back-end.
 AI_SERVICE_URL = env('AI_SERVICE_URL', default='http://localhost:8001')
+
+# Automatisation n8n : adresse des webhooks et clé partagée pour les
+# endpoints internes (/api/interne/...). La clé est générée par l'équipe
+# (jamais une clé d'un service externe) : voir .env.example.
+N8N_WEBHOOK_URL = env('N8N_WEBHOOK_URL', default='http://n8n:5678')
+N8N_API_KEY = env('N8N_API_KEY', default='')

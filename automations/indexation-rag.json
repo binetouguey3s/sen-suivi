@@ -1,0 +1,105 @@
+{
+  "name": "Indexation RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ressource-modifiee",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook ressource modifiée",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "ressource-modifiee"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://backend:8000/api/ressources"
+      },
+      "id": "ressources",
+      "name": "Toutes les ressources",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "data",
+        "options": {}
+      },
+      "id": "regrouper",
+      "name": "Regrouper",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ai-service:8001/reindexer",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.data.map(r => ({ id: r.id, titre: r.titre, contenu: r.contenu, thematique: r.thematique }))) }}"
+      },
+      "id": "reindexer",
+      "name": "Réindexer dans le RAG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook ressource modifiée": {
+      "main": [
+        [
+          {
+            "node": "Toutes les ressources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Toutes les ressources": {
+      "main": [
+        [
+          {
+            "node": "Regrouper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Regrouper": {
+      "main": [
+        [
+          {
+            "node": "Réindexer dans le RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

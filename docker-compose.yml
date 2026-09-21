@@ -61,10 +61,15 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      # Permet aux workflows de lire N8N_API_KEY (clé interne partagée avec Django)
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
     ports:
       - "5678:5678"
     volumes:
       - n8n_data:/home/node/.n8n
+      # Workflows exportés, importables avec : n8n import:workflow --separate --input=/automations
+      - ./automations:/automations:ro
     networks:
       - sensuivi_network
 
