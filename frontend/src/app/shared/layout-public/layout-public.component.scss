@@ -201,3 +201,39 @@
     padding: var(--ss-espace-3) var(--ss-marge-desktop);
   }
 }
+
+// --- Bulle de chat ---------------------------------------------------------
+
+.lp__chat {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  right: var(--ss-espace-3);
+  bottom: var(--ss-espace-3);
+  border-radius: 50%;
+  border: none;
+  background: var(--ss-bleu-profond);
+  color: var(--ss-blanc);
+  box-shadow: var(--ss-ombre-carte-forte);
+  cursor: pointer;
+  text-decoration: none;
+
+  @media (min-width: 900px) {
+    bottom: var(--ss-espace-4);
+  }
+}
+
+.lp__chat-point {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ss-rouge-alerte);
+  border: 2px solid var(--ss-blanc);
+}

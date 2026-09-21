@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
+import { IconComponent } from '../icon/icon.component';
 import { ModalUrgenceComponent } from '../modal-urgence/modal-urgence.component';
 
 @Component({
   selector: 'ss-layout-public',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ModalUrgenceComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ModalUrgenceComponent, IconComponent],
   templateUrl: './layout-public.component.html',
   styleUrl: './layout-public.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -95,6 +95,7 @@ export const ICONES = {
   bouclier: LucideShield,
   ecrire: LucideSquarePen,
   menu: LucideMenu,
+  micro: LucideMic,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

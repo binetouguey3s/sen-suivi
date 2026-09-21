@@ -117,3 +117,6 @@ CORS_ALLOWED_ORIGINS = env.list(
 
 # Adresse du front-end, utilisée dans les liens envoyés par e-mail.
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
+
+# Microservice IA (FastAPI), séparé du back-end.
+AI_SERVICE_URL = env('AI_SERVICE_URL', default='http://localhost:8001')

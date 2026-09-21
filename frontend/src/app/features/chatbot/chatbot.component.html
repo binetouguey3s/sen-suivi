@@ -1,0 +1,101 @@
+<div class="cb">
+  <header class="cb__entete">
+    <a class="cb__retour" routerLink="/" aria-label="Retour à l'accueil"><ss-icon nom="fleche-gauche" taille="sm" /></a>
+    <p class="cb__confidentiel">
+      <ss-icon nom="cadenas" taille="sm" />
+      <span class="cb__texte-long">Échange anonyme et confidentiel, disponible 24h/24</span>
+      <span class="cb__texte-court">Échange confidentiel 24h/24</span>
+    </p>
+    <button type="button" class="cb__urgence" (click)="modaleUrgenceOuverte.set(true)">
+      <ss-icon nom="telephone" taille="sm" /> <span class="cb__urgence-texte">Besoin d'aide tout de suite</span>
+    </button>
+    <div class="cb__marque">
+      <span class="cb__avatar cb__avatar--marque">SS</span>
+      <div class="cb__marque-texte">
+        <strong>Sen Suivi</strong>
+        <span class="cb__en-ligne">● En ligne</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="cb__zone" #zoneMessages>
+    @for (m of messages(); track m.id) {
+      @if (m.auteur === 'BOT') {
+        <div class="cb__ligne cb__ligne--bot">
+          <span class="cb__avatar">SS</span>
+          <div class="cb__colonne">
+            <div class="cb__bulle cb__bulle--bot" [class.cb__bulle--urgence]="m.urgence">
+              <p>{{ m.contenu }}</p>
+              @if (m.ressource) {
+                <a class="cb__ressource" [routerLink]="['/ressources', m.ressource.ressource_id]">
+                  <span class="cb__ressource-icone"><ss-icon nom="marque-page" taille="sm" /></span>
+                  <span class="cb__ressource-texte">
+                    <strong>{{ m.ressource.titre }}</strong>
+                    <span>{{ m.ressource.thematique }}</span>
+                  </span>
+                </a>
+              }
+            </div>
+            <span class="cb__heure">{{ m.heure }}</span>
+          </div>
+        </div>
+      } @else {
+        <div class="cb__ligne cb__ligne--utilisateur">
+          <div class="cb__colonne cb__colonne--utilisateur">
+            <div class="cb__bulle cb__bulle--utilisateur"><p>{{ m.contenu }}</p></div>
+            <span class="cb__heure">{{ m.heure }}</span>
+          </div>
+        </div>
+      }
+    }
+
+    @if (enCours()) {
+      <div class="cb__ligne cb__ligne--bot">
+        <span class="cb__avatar">SS</span>
+        <div class="cb__bulle cb__bulle--bot cb__bulle--typing" aria-label="Sen Suivi écrit…">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    }
+
+    @if (afficherReponsesRapides() && !enCours()) {
+      <div class="cb__rapides">
+        @for (r of reponsesRapides; track r) {
+          <button type="button" (click)="envoyerRapide(r)">{{ r }}</button>
+        }
+      </div>
+    }
+  </div>
+
+  <footer class="cb__pied">
+    @if (estUtilisateur()) {
+      <label class="cb__consentement">
+        <input
+          type="checkbox"
+          [checked]="consentementConservation()"
+          (change)="consentementConservation.set($any($event.target).checked)"
+        />
+        Conserver cet échange dans mon historique
+      </label>
+    }
+    <div class="cb__champ">
+      <button type="button" class="cb__micro" aria-label="Message vocal (bientôt disponible)" disabled>
+        <ss-icon nom="micro" taille="sm" />
+      </button>
+      <input
+        type="text"
+        placeholder="Répondez à Sen Suivi…"
+        [value]="saisie()"
+        (input)="saisir($event)"
+        (keydown.enter)="envoyerDepuisChamp()"
+        maxlength="2000"
+      />
+      <button type="button" class="cb__envoyer" [disabled]="enCours() || !saisie().trim()" (click)="envoyerDepuisChamp()">
+        <ss-icon nom="envoyer" taille="sm" />
+      </button>
+    </div>
+    <p class="cb__mention">Sen Suivi ne remplace pas un professionnel de santé.</p>
+  </footer>
+</div>
+
+<ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />

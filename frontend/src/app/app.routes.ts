@@ -83,6 +83,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'chatbot',
+    loadComponent: () =>
+      import('./features/chatbot/chatbot.component').then((m) => m.ChatbotComponent),
+  },
+  {
     path: 'bienvenue',
     canActivate: [estConnecteGuard],
     loadComponent: () =>

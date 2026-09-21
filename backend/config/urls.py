@@ -1,8 +1,4 @@
-"""Routes du back-end Sen Suivi.
-
-POST /api/chatbot/message n'est pas encore branché : il dépend du
-microservice IA, ajouté à l'étape 4 avec le chatbot lui-même.
-"""
+"""Routes du back-end Sen Suivi."""
 
 from django.contrib import admin
 from django.urls import include, path
@@ -15,4 +11,5 @@ urlpatterns = [
     path('api/', include('apps.relations.urls')),
     path('api/', include('apps.forum.urls')),
     path('api/', include('apps.notifications.urls')),
+    path('api/', include('apps.chatbot.urls')),
 ]
