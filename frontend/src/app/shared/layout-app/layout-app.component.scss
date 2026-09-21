@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: var(--ss-fond-app);
+  background: var(--ss-fond-application);
 }
 
 .layout-app {
@@ -103,7 +103,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--ss-espace-2) var(--ss-marge-mobile);
-  background: var(--ss-fond-app);
+  background: var(--ss-fond-application);
 
   @media (min-width: 900px) {
     display: none;

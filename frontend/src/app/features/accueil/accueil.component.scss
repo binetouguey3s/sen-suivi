@@ -135,7 +135,7 @@
 }
 
 .ac__piliers {
-  background: var(--ss-sable);
+  background: var(--ss-fond-application);
   padding-top: var(--ss-espace-5);
   padding-bottom: var(--ss-espace-5);
 }
@@ -201,8 +201,8 @@
   color: var(--ss-bleu-profond);
 }
 
-.ac__carte--sable {
-  background: var(--ss-sable);
+.ac__carte--fond-application {
+  background: var(--ss-fond-application);
   color: var(--ss-bleu-profond);
 }
 
@@ -418,7 +418,7 @@
   @include section;
   margin: var(--ss-espace-5) var(--ss-marge-mobile) 0;
   border-radius: var(--ss-rayon-grande-carte);
-  background: var(--ss-sable);
+  background: var(--ss-fond-application);
   text-align: center;
 
   @media (min-width: 900px) {

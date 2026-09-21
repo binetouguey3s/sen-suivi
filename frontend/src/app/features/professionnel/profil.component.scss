@@ -99,7 +99,7 @@
   gap: var(--ss-espace-1);
 
   li {
-    background: var(--ss-sable);
+    background: var(--ss-fond-application);
     border-radius: var(--ss-rayon-champ);
     padding: 2px var(--ss-espace-1);
     font-size: 13px;
@@ -200,7 +200,7 @@
   display: flex;
   flex-direction: column;
   padding: var(--ss-espace-2);
-  background: var(--ss-sable);
+  background: var(--ss-fond-application);
   border-radius: var(--ss-rayon-champ);
   color: var(--ss-bleu-profond);
 

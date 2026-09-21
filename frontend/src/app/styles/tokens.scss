@@ -9,7 +9,7 @@
   --ss-menthe: #a9d6c4;
   --ss-menthe-pale: #e9f4ef;
   --ss-menthe-tres-pale: #f4faf7;
-  --ss-sable: #fbf8f3;
+  --ss-fond-application: #eef5f2; // Menthe voilée : fond de l'application connectée
   --ss-blanc: #ffffff;
   --ss-gris-ardoise: #6b7280;
   --ss-gris-clair: #edeef1;
@@ -17,7 +17,6 @@
 
   // Fonds par zone
   --ss-fond-public: var(--ss-blanc);
-  --ss-fond-app: var(--ss-sable);
   --ss-fond-admin: var(--ss-blanc);
   --ss-fond-carte: var(--ss-blanc);
 

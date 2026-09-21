@@ -62,7 +62,7 @@
   }
 
   &[data-type='PODCAST'] {
-    background: linear-gradient(135deg, var(--ss-sable), var(--ss-menthe-pale));
+    background: linear-gradient(135deg, var(--ss-fond-application), var(--ss-menthe-pale));
   }
 }
 
@@ -190,7 +190,7 @@ blockquote {
 }
 
 .art__carte {
-  background: var(--ss-sable);
+  background: var(--ss-fond-application);
   border-radius: var(--ss-rayon-carte);
   padding: var(--ss-espace-3);
 
