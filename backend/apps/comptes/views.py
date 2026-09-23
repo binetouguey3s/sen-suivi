@@ -13,6 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.notifications.services import declencher_workflow
 
+from .mixins import LimitationTentativesConnexionMixin
 from .models import Professionnel, StatutValidationPro
 from .permissions import EstAdministrateur
 from .services import confirmer_reinitialisation, demander_reinitialisation
@@ -38,8 +39,9 @@ class InscriptionUtilisateurView(generics.CreateAPIView):
     serializer_class = InscriptionUtilisateurSerializer
 
 
-class LoginView(TokenObtainPairView):
-    """POST /api/auth/login — refuse un professionnel dont le compte n'est pas VALIDE."""
+class LoginView(LimitationTentativesConnexionMixin, TokenObtainPairView):
+    """POST /api/auth/login — refuse un professionnel dont le compte n'est pas VALIDE
+    et bloque la connexion après trop d'échecs (voir protection_connexion.py)."""
 
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer

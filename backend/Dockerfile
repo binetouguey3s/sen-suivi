@@ -16,4 +16,6 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# createcachetable crée la table du cache (compteurs d'échecs de connexion) si
+# elle n'existe pas encore ; la commande ne fait rien si elle existe déjà.
+CMD ["sh", "-c", "python manage.py createcachetable && python manage.py runserver 0.0.0.0:8000"]

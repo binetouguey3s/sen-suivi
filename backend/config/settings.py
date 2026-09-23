@@ -79,12 +79,35 @@ DATABASES = {
 # du modèle User natif de Django n'est utilisé (voir apps/comptes/models.py).
 AUTH_USER_MODEL = 'comptes.CompteUtilisateur'
 
+# Robustesse des mots de passe (directive de sécurité, section 2A) :
+# 8 caractères minimum, 3 catégories sur 4, aucun mot de passe compromis
+# connu (liste locale de Django, sans appel à un service externe), aucune
+# suite évidente. Voir docs/securite.md.
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},
+    },
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {'NAME': 'apps.comptes.validateurs.ComplexiteValidator'},
+    {'NAME': 'apps.comptes.validateurs.SuiteEvidenteValidator'},
 ]
+
+# Cache partagé par tous les processus, stocké dans PostgreSQL : il garde les
+# compteurs d'échecs de connexion sans ajouter de conteneur Redis. La table
+# est créée au démarrage par « python manage.py createcachetable ».
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache_sen_suivi',
+    }
+}
+
+# Protection contre la force brute (directive de sécurité, section 2C).
+CONNEXION_TENTATIVES_MAX = env.int('CONNEXION_TENTATIVES_MAX', default=5)
+CONNEXION_BLOCAGE_MINUTES = env.int('CONNEXION_BLOCAGE_MINUTES', default=15)
 
 LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'Africa/Dakar'
