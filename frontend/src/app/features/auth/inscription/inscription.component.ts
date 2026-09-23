@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, untracked, computed, inject
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService, ErreurFormulaire } from '../../../core/services/auth.service';
+import { verifierMotDePasse } from '../../../core/utils/mot-de-passe';
 import { ChampComponent } from '../../../shared/champ/champ.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { LayoutAuthComponent } from '../../../shared/layout-auth/layout-auth.component';
@@ -51,7 +52,8 @@ export class InscriptionComponent {
     if (!this.prenom().trim()) erreurs['prenom'] = 'Indiquez votre prénom.';
     if (!this.nom().trim()) erreurs['nom'] = 'Indiquez votre nom.';
     if (!/^\S+@\S+\.\S+$/.test(this.email())) erreurs['email'] = 'Indiquez une adresse e-mail valide.';
-    if (this.motDePasse().length < 8) erreurs['password'] = 'Le mot de passe doit contenir au moins 8 caractères.';
+    const erreurMdp = verifierMotDePasse(this.motDePasse());
+    if (erreurMdp) erreurs['password'] = erreurMdp;
     if (!this.conditions()) erreurs['conditions'] = "Acceptez les conditions d'utilisation pour continuer.";
     this.erreurs.set(erreurs);
     if (Object.keys(erreurs).length) return;

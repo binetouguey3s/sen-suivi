@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { VILLES_SENEGAL } from '../../core/models/comptes';
 import { AuthService, ErreurFormulaire } from '../../core/services/auth.service';
 import { Compte, CompteService } from '../../core/services/compte.service';
+import { verifierMotDePasse } from '../../core/utils/mot-de-passe';
 import { ChampComponent } from '../../shared/champ/champ.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { InterrupteurComponent } from '../../shared/interrupteur/interrupteur.component';
@@ -113,8 +114,9 @@ export class ParametresComponent {
   protected async changerMotDePasse(evenement: Event): Promise<void> {
     evenement.preventDefault();
     this.mdpModifie.set(false);
-    if (this.nouveau().length < 8) {
-      this.erreursMdp.set({ nouveau: 'Le mot de passe doit contenir au moins 8 caractères.' });
+    const erreurMdp = verifierMotDePasse(this.nouveau());
+    if (erreurMdp) {
+      this.erreursMdp.set({ nouveau: erreurMdp });
       return;
     }
     try {

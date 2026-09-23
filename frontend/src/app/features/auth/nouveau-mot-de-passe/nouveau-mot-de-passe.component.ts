@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angu
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService, ErreurFormulaire } from '../../../core/services/auth.service';
+import { verifierMotDePasse } from '../../../core/utils/mot-de-passe';
 import { ChampComponent } from '../../../shared/champ/champ.component';
 import { LayoutAuthComponent } from '../../../shared/layout-auth/layout-auth.component';
 
@@ -52,8 +53,9 @@ export class NouveauMotDePasseComponent {
 
   protected async valider(evenement: Event): Promise<void> {
     evenement.preventDefault();
-    if (this.motDePasse().length < 8) {
-      this.erreur.set('Le mot de passe doit contenir au moins 8 caractères.');
+    const erreurMdp = verifierMotDePasse(this.motDePasse());
+    if (erreurMdp) {
+      this.erreur.set(erreurMdp);
       return;
     }
     if (this.motDePasse() !== this.confirmation()) {

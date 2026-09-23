@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { LANGUES_PRO, SPECIALITES_PRO, VILLES_SENEGAL } from '../../../core/models/comptes';
 import { AuthService, ErreurFormulaire } from '../../../core/services/auth.service';
+import { verifierMotDePasse } from '../../../core/utils/mot-de-passe';
 import { ChampComponent } from '../../../shared/champ/champ.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { LayoutAuthComponent } from '../../../shared/layout-auth/layout-auth.component';
@@ -56,7 +57,8 @@ export class InscriptionProComponent {
     if (!this.prenom().trim()) e['prenom'] = 'Indiquez votre prénom.';
     if (!this.nom().trim()) e['nom'] = 'Indiquez votre nom.';
     if (!/^\S+@\S+\.\S+$/.test(this.email())) e['email'] = 'Indiquez une adresse e-mail valide.';
-    if (this.motDePasse().length < 8) e['password'] = 'Le mot de passe doit contenir au moins 8 caractères.';
+    const erreurMdp = verifierMotDePasse(this.motDePasse());
+    if (erreurMdp) e['password'] = erreurMdp;
     if (!this.specialite()) e['specialite'] = 'Choisissez une spécialité.';
     if (!this.ville()) e['ville'] = 'Sélectionnez votre ville.';
     if (!this.langues().length) e['langue'] = 'Choisissez au moins une langue.';

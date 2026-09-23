@@ -132,6 +132,8 @@ export class AuthService {
 function extraireMessageErreur(erreur: unknown): string {
   if (erreur instanceof HttpErrorResponse) {
     const corps = erreur.error as { non_field_errors?: string[]; detail?: string } | null;
+    // Blocage après trop d'échecs (protection contre la force brute) : message du serveur.
+    if (erreur.status === 429 && corps?.detail) return corps.detail;
     // Messages métier explicites (ex. professionnel non validé) : gardés tels quels.
     if (corps?.non_field_errors?.length) return corps.non_field_errors[0];
     // Échec d'authentification générique de simplejwt : libellé de la maquette
