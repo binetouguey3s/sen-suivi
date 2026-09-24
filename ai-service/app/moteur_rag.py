@@ -10,7 +10,7 @@ import os
 import chromadb
 
 CHROMA_PERSIST_DIR = os.environ.get('CHROMA_PERSIST_DIR', '/data/chroma')
-SEUIL_SIMILARITE_RAG = float(os.environ.get('SEUIL_SIMILARITE_RAG', '0.40'))
+SEUIL_SIMILARITE_RAG = float(os.environ.get('SEUIL_SIMILARITE_RAG', '0.45'))
 NOMBRE_MAX_RESULTATS = 3
 
 _client = None

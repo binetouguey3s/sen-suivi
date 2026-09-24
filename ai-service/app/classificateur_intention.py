@@ -9,10 +9,11 @@ Chaque intention reconnue avec confiance a une réponse validée prédéfinie.
 Si aucune ne dépasse le seuil de confiance, on passe au RAG (niveau 2).
 """
 
+import os
 import unicodedata
 from dataclasses import dataclass
 
-SEUIL_CONFIANCE_INTENTION = 0.70
+SEUIL_CONFIANCE_INTENTION = float(os.environ.get('SEUIL_CONFIANCE_INTENTION', '0.70'))
 
 # (expression, poids) : une expression explicite pèse plus qu'un simple mot.
 _MOTS_CLES: dict[str, list[tuple[str, float]]] = {
