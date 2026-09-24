@@ -1,4 +1,4 @@
-"""Microservice IA (FastAPI), séparé du back-end Django.
+"""Microservice IA (FastAPI), séparé du back-end Django (docs/CONTEXTE.md section 2).
 
 Trois niveaux, toujours dans cet ordre :
 1. Détection de détresse (sécurité) — si déclenchée, on s'arrête là.

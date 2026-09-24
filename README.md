@@ -4,7 +4,7 @@ Plateforme sénégalaise de prévention, suivi et orientation vers le bien-être
 Projet de certification, Simplon Sénégal, Promo 9 (2025-2026). Autrice : Binetou Gueye.
 
 Le contexte complet du projet (positionnement, stack, modèle de données, routes API,
-charte graphique) est décrit dans la documentation de conception. Les spécifications
+charte graphique) est décrit dans [`docs/CONTEXTE.md`](./docs/CONTEXTE.md). Les spécifications
 complémentaires (règles métier chiffrées, fixtures, correspondance écran → route →
 endpoint) sont dans [`docs/SPECIFICATIONS.md`](./docs/SPECIFICATIONS.md).
 
@@ -38,8 +38,10 @@ Pour arrêter les services : `docker compose down`.
 Pour arrêter et supprimer les données persistées (base de données, base vectorielle,
 workflows n8n) : `docker compose down -v`.
 
-> **Aucune clé d'API externe n'est nécessaire** : le chatbot ne s'appuie sur aucun LLM
-> ni service payant (règles validées + recherche dans les ressources de la plateforme).
+> **Clés externes** : le chatbot actuel fonctionne sans aucune clé (règles validées et
+> recherche dans les ressources de la plateforme). La génération encadrée par un modèle de
+> langage (Groq) est en cours d'intégration : ses variables `LLM_*` sont déjà prévues dans
+> `.env.example` (voir [`docs/etat-ai-service.md`](./docs/etat-ai-service.md)).
 > Le seul secret à créer soi-même est `N8N_API_KEY`, une clé partagée entre Django et n8n
 > pour leurs échanges internes : `python3 -c "import secrets; print(secrets.token_urlsafe(32))"`,
 > puis à coller dans `.env`.

@@ -17,7 +17,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
-# Mots à consonance sénégalaise (contenu sénégalais uniquement),
+# Mots à consonance sénégalaise (docs/CONTEXTE.md : contenu sénégalais uniquement),
 # combinés à un nombre pour générer un pseudonyme de forum lisible et anonyme.
 _MOTS_PSEUDONYME = [
     'Teranga', 'Jamm', 'Baobab', 'Sahel', 'Ngor', 'Sine', 'Saloum',
@@ -62,7 +62,7 @@ class StatutValidationPro(models.TextChoices):
 
 
 class SpecialitePro(models.TextChoices):
-    """Les six spécialités autorisées.
+    """Les six spécialités autorisées (docs/CONTEXTE.md section 4).
 
     Le diagramme de classes type ce champ en simple string ; cette énumération
     ajoute la contrainte métier explicite : exactement ces six valeurs, pas

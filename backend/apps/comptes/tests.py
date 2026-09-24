@@ -1,6 +1,6 @@
 """Tests des comptes.
 
-- Test exigé : refus de connexion d'un
+- Test minimal requis par docs/CONTEXTE.md section 7 : refus de connexion d'un
   professionnel non validé (route POST /api/auth/login).
 - Directive de sécurité : robustesse des mots de passe et protection
   contre la force brute (voir docs/securite.md).

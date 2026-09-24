@@ -1,7 +1,7 @@
 """Logique métier de l'auto-évaluation (docs/SPECIFICATIONS.md section 2).
 
 Isolée des vues et des sérialiseurs : une vue orchestre, elle ne calcule pas
-.
+(docs/CONTEXTE.md section 7, style de code back-end).
 """
 
 from apps.comptes.models import Professionnel, StatutValidationPro

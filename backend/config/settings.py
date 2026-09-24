@@ -122,7 +122,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    # Le paramètre ?format= sert de filtre de la bibliothèque : on désactive l'usage qu'en fait DRF pour le rendu.
+    # Le paramètre ?format= sert de filtre de la bibliothèque (docs/CONTEXTE.md
+    # section 5) : on désactive l'usage qu'en fait DRF pour le rendu.
     'URL_FORMAT_OVERRIDE': None,
 }
 
@@ -131,7 +132,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=env.int('JWT_REFRESH_DAYS', default=7)),
 }
 
-# Nécessité technique : le front-end Angular (port 4200)
+# Nécessité technique non listée dans docs/CONTEXTE.md : le front-end Angular (port 4200)
 # et le back-end Django (port 8000) sont deux origines distinctes.
 CORS_ALLOWED_ORIGINS = env.list(
     'CORS_ALLOWED_ORIGINS',
@@ -141,7 +142,7 @@ CORS_ALLOWED_ORIGINS = env.list(
 # Adresse du front-end, utilisée dans les liens envoyés par e-mail.
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 
-# Microservice IA (FastAPI), séparé du back-end.
+# Microservice IA (FastAPI), séparé du back-end (docs/CONTEXTE.md section 2).
 AI_SERVICE_URL = env('AI_SERVICE_URL', default='http://localhost:8001')
 
 # Automatisation n8n : adresse des webhooks et clé partagée pour les

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-// Signature de marque : courbe d'humeur menthe, trait
+// Signature de marque (docs/CONTEXTE.md section 6) : courbe d'humeur menthe, trait
 // plein de 3px aux extrémités arrondies. Décorative, absente des écrans de données.
 @Component({
   selector: 'ss-courbe-marque',

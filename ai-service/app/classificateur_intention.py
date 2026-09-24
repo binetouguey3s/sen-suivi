@@ -1,4 +1,4 @@
-"""Niveau 1 du chatbot : classification d'intention.
+"""Niveau 1 du chatbot : classification d'intention (docs/CONTEXTE.md section 2).
 
 Approche par mots-clés pondérés plutôt que par modèle entraîné : le chatbot
 ne répond qu'à partir de contenus validés (jamais de LLM génératif libre),

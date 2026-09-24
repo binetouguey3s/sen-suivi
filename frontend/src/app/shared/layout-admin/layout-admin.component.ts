@@ -19,7 +19,7 @@ const LIENS: LienNavAdmin[] = [
   { route: '/admin/ressources', libelle: 'Ressources', icone: 'ressources' },
 ];
 
-// Écrans d'administration : fond blanc pur, aucun
+// Écrans d'administration (docs/CONTEXTE.md section 6) : fond blanc pur, aucun
 // dégradé côté contenu ; la barre latérale sombre reprend la structure de
 // la maquette « Sen Suivi - Administration » pour distinguer cet espace.
 @Component({

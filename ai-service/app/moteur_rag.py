@@ -1,4 +1,4 @@
-"""Niveau 2 du chatbot : RAG.
+"""Niveau 2 du chatbot : RAG (docs/CONTEXTE.md section 2 et section 2 du stack : ChromaDB).
 
 Recherche par similarité dans les ressources validées de la plateforme.
 Le chatbot ne construit jamais de texte libre à ce niveau : il renvoie la

@@ -39,8 +39,8 @@ class PublicationForum(models.Model):
         related_name='publications_moderees',
         verbose_name='modérateur',
     )
-    # Ajouté suite à la correction du diagramme de classes (docs/Correction sur
-    # le diagramme de classe Sen Suivi.png) : titre et thématique.
+    # Ajouté suite à la correction du diagramme de classes (docs/Correction du
+    # diagramme de classe Sen Suivi.png) : titre et thématique.
     titre = models.CharField('titre', max_length=150)
     contenu = models.TextField('contenu')
     thematique = models.CharField(

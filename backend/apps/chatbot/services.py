@@ -1,4 +1,4 @@
-"""Appel au microservice IA : ce module ne calcule
+"""Appel au microservice IA (docs/CONTEXTE.md section 2) : ce module ne calcule
 rien lui-même, il transmet le message et renvoie la réponse déjà construite
 par ai-service (règle validée ou ressource trouvée par le RAG)."""
 

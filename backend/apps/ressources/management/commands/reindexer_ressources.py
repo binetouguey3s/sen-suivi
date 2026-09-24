@@ -1,7 +1,7 @@
 """Indexe (ou réindexe) toutes les ressources dans le RAG du microservice IA.
 
 À lancer après un import massif de ressources, ou par le workflow n8n
-« indexation RAG » quand une ressource est ajoutée ou
+« indexation RAG » (docs/CONTEXTE.md section 2) quand une ressource est ajoutée ou
 modifiée — pour l'instant, cette commande le fait à la demande.
 """
 

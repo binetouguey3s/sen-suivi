@@ -1,4 +1,4 @@
-"""Niveau 0 du chatbot — sécurité.
+"""Niveau 0 du chatbot — sécurité (docs/CONTEXTE.md section 2).
 
 Ces expressions déclenchent une réponse d'urgence immédiate, avant toute
 classification d'intention ou recherche RAG. La liste vise des expressions

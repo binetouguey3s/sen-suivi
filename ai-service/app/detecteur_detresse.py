@@ -1,4 +1,4 @@
-"""Niveau 0 du chatbot : détection de détresse.
+"""Niveau 0 du chatbot : détection de détresse (docs/CONTEXTE.md section 2).
 
 Toujours exécuté en premier, avant la classification d'intention et le RAG.
 Si un signal de détresse est détecté, la réponse est immédiatement les

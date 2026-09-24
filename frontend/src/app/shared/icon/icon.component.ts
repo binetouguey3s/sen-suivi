@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Type, computed, input } from '@angu
 
 import { ICONES, NomIcone } from '../../core/icons/icons';
 
-// 4 tailles, couleur héritée du texte environnant.
+// docs/CONTEXTE.md section 6 : 4 tailles, couleur héritée du texte environnant.
 const TAILLES_PIXELS = { sm: 16, md: 20, lg: 24, xl: 32 } as const;
 export type TailleIcone = keyof typeof TAILLES_PIXELS;
 

@@ -1,6 +1,4 @@
 # Sen Suivi — Back-end Django + DRF
-# Le code applicatif (manage.py, requirements.txt, config/, apps/) sera
-# ajouté à l'étape suivante. Ce Dockerfile deviendra fonctionnel à ce moment-là.
 
 FROM python:3.12-slim
 

@@ -1,4 +1,4 @@
-"""Test exigé : détection de détresse.
+"""Test minimal requis par docs/CONTEXTE.md section 7 : détection de détresse.
 
 Le niveau 0 est une fonctionnalité de sécurité : un faux négatif (une
 détresse réelle non détectée) est le risque le plus grave du projet.

@@ -1,6 +1,4 @@
 # Sen Suivi — Front-end Angular
-# Le projet Angular (package.json, angular.json, src/) sera initialisé à
-# l'étape dédiée au front-end. Ce Dockerfile deviendra fonctionnel à ce moment-là.
 
 FROM node:24-alpine
 
