@@ -10,6 +10,36 @@ endpoint) sont dans [`docs/SPECIFICATIONS.md`](./docs/SPECIFICATIONS.md).
 
 ---
 
+## Structure du dépôt
+
+```
+sen-suivi/
+├── frontend/          # Angular 22 : interface web (composants standalone, signals)
+├── backend/           # Django 5.1 + DRF : API REST, JWT, 7 applications métier
+├── ai-service/        # FastAPI : chatbot (détresse, intention, RAG avec ChromaDB)
+├── automations/       # Workflows n8n exportés (JSON)
+├── docs/              # Contexte, spécifications, sécurité, diagrammes, maquettes
+├── docker-compose.yml # Orchestration des cinq services
+└── .env.example       # Modèle des variables d'environnement
+```
+
+Les applications Django (`backend/apps/`) : `comptes`, `suivi`, `ressources`,
+`relations`, `forum`, `chatbot`, `notifications`.
+
+## Documentation
+
+| Document | Contenu |
+|---|---|
+| [`docs/CONTEXTE.md`](./docs/CONTEXTE.md) | Positionnement, stack, modèle de données, routes API, charte graphique, règles de code |
+| [`docs/SPECIFICATIONS.md`](./docs/SPECIFICATIONS.md) | Règles métier chiffrées, composants partagés, correspondance écran → route → endpoint |
+| [`docs/securite.md`](./docs/securite.md) | Sécurité des authentifications et des saisies, avec les tests qui la prouvent |
+| [`docs/EXPLICATIONS.md`](./docs/EXPLICATIONS.md) | Choix de conception et arbitrages entre maquettes et règles |
+| [`docs/etat-ai-service.md`](./docs/etat-ai-service.md) | État du chatbot face à l'architecture cible de LLM encadré |
+| [`docs/CREDITS-IMAGES.md`](./docs/CREDITS-IMAGES.md) | Auteurs et licences des images |
+| `docs/maquettes/` | Les 68 écrans de la maquette |
+
+---
+
 ## Prérequis
 
 - Docker
@@ -78,7 +108,7 @@ docker compose restart n8n
 ### Tests
 
 ```bash
-docker compose exec backend python manage.py test   # score de tendance, refus de connexion pro non validé
+docker compose exec backend python manage.py test   # comptes (mots de passe, force brute, pro non validé), forum, score de tendance
 cd ai-service && python -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m pytest   # détection de détresse, intentions
 cd frontend && npm test -- --watch=false            # Vitest
 ```
@@ -129,6 +159,19 @@ connexion à la base, relancez-le simplement :
 docker compose up backend
 ```
 
-Si le problème persiste régulièrement, une solution durable (à mettre en place lors de
-l'étape back-end) consiste à ajouter un `healthcheck` sur le service `db` et une
-condition `depends_on: condition: service_healthy` sur `backend`.
+Si le problème persiste régulièrement, une solution durable (amélioration prévue)
+consiste à ajouter un `healthcheck` sur le service `db` et une condition
+`depends_on: condition: service_healthy` sur `backend`.
+
+---
+
+## Branches
+
+| Branche | Rôle |
+|---|---|
+| `main` | Version stable |
+| `dev` | Intégration : reçoit chaque fonctionnalité terminée |
+| `feat/<nom>` | Une branche par fonctionnalité, fusionnée dans `dev` |
+
+Messages de commit en *conventional commits*, en français :
+`feat(chatbot): ajoute la détection de détresse`.
