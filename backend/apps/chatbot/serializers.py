@@ -5,8 +5,8 @@ class MessageEntreeSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=2000, trim_whitespace=True)
     conversation_id = serializers.IntegerField(required=False, allow_null=True)
     # Vrai uniquement si l'utilisateur connecté a explicitement accepté de
-    # conserver cet échange dans son historique (docs/EXPLICATIONS.md,
-    # ConversationChatbot.consentement_conservation).
+    # conserver cet échange dans son historique
+    # (voir ConversationChatbot.consentement_conservation).
     consentement_conservation = serializers.BooleanField(required=False, default=False)
 
     def validate_message(self, valeur):

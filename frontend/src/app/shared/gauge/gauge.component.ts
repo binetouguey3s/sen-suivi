@@ -3,8 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 const RAYON = 90;
 const CIRCONFERENCE = 2 * Math.PI * RAYON;
 
-// Jauge circulaire (ss-gauge). Jamais rouge, quel que soit le score
-// (docs/SPECIFICATIONS.md section 2).
+// Jauge circulaire (ss-gauge). Jamais rouge, quel que soit le score.
 @Component({
   selector: 'ss-gauge',
   standalone: true,

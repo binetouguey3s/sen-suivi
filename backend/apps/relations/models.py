@@ -50,7 +50,7 @@ class DemandeContact(models.Model):
         self.save(update_fields=['statut', 'date_reponse'])
 
     def accepter(self):
-        """Le professionnel accepte : son identité reste masquée jusque-là (SPECIFICATIONS.md section 8)."""
+        """Le professionnel accepte : son identité reste masquée jusque-là."""
         from apps.notifications.services import notifier
 
         self._repondre(StatutDemandeContact.ACCEPTEE)

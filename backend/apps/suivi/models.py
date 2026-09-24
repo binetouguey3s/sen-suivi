@@ -37,9 +37,9 @@ class SuiviHumeur(models.Model):
         verbose_name_plural = "suivis d'humeur"
         ordering = ['-date']
         constraints = [
-            # Une seule entrée par jour et par utilisateur (docs/SPECIFICATIONS.md
-            # section 2) ; une seconde saisie le même jour met à jour l'existante,
-            # ce que la vue traduira par un update_or_create.
+            # Une seule entrée par jour et par utilisateur ; une seconde saisie
+            # le même jour met à jour l'existante, ce que la vue traduit par un
+            # update_or_create.
             models.UniqueConstraint(
                 fields=['utilisateur', 'date'],
                 name='une_entree_par_jour_et_par_utilisateur',
@@ -110,9 +110,9 @@ class AutoEvaluation(models.Model):
     type_evaluation = models.CharField(
         "type d'évaluation", max_length=10, choices=TypeEvaluation.choices
     )
-    # Score sur 100 ; docs/SPECIFICATIONS.md section 2 précise qu'il est arrondi
-    # à l'entier au calcul. Type FloatField pour rester fidèle au diagramme de
-    # classes : l'arrondi est une règle appliquée à l'écriture, pas au schéma.
+    # Score sur 100, arrondi à l'entier au calcul. Type FloatField pour rester
+    # fidèle au diagramme de classes : l'arrondi est une règle appliquée à
+    # l'écriture, pas au schéma.
     score_de_tendance = models.FloatField('score de tendance')
 
     class Meta:

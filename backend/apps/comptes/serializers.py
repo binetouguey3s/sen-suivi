@@ -1,8 +1,7 @@
 """Sérialiseurs de comptes.
 
 Un sérialiseur par usage : inscription (écriture) et lecture sont séparées
-dès que les champs exposés diffèrent (règle du style de code back-end,
-docs/CONTEXTE.md section 7).
+dès que les champs exposés diffèrent (règle du style de code back-end).
 """
 
 from django.contrib.auth.password_validation import validate_password
@@ -40,7 +39,7 @@ class InscriptionProfessionnelSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password')
         # statut_validation n'est jamais accepté en entrée : le modèle le
-        # place déjà à EN_ATTENTE par défaut (docs/CONTEXTE.md section 5).
+        # place déjà à EN_ATTENTE par défaut.
         professionnel = Professionnel(**validated_data)
         professionnel.set_password(password)
         professionnel.save()

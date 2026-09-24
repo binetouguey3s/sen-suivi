@@ -1,4 +1,4 @@
-"""Test minimal requis par docs/CONTEXTE.md section 7 : calcul du score de tendance."""
+"""Test exigé : calcul du score de tendance."""
 
 from django.test import SimpleTestCase
 

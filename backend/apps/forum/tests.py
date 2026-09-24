@@ -2,7 +2,7 @@
 
 Le back-end ne transforme pas le texte : il l'enregistre tel quel via l'ORM
 (requêtes paramétrées) et le renvoie en JSON. L'échappement HTML a lieu à
-l'affichage, dans Angular (voir docs/securite.md).
+l'affichage, dans Angular.
 """
 
 from rest_framework.test import APITestCase

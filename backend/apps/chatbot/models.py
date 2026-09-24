@@ -29,8 +29,7 @@ class ConversationChatbot(models.Model):
         help_text='Vide pour une conversation anonyme : le chatbot est accessible sans compte.',
     )
     date = models.DateTimeField('date', auto_now_add=True)
-    # L'historique n'est conservé que si l'utilisateur est connecté ET l'accepte
-    # (docs/SPECIFICATIONS.md section 1).
+    # L'historique n'est conservé que si l'utilisateur est connecté ET l'accepte.
     consentement_conservation = models.BooleanField(
         'consentement à la conservation', default=False
     )

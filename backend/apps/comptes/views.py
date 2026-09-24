@@ -1,6 +1,6 @@
 """Vues de comptes : inscription, connexion, validation des professionnels.
 
-Vues basées sur les classes uniquement (docs/CONTEXTE.md section 7) : vues
+Vues basées sur les classes uniquement : vues
 génériques DRF, jamais de @api_view.
 """
 
@@ -158,9 +158,9 @@ class CompteMoiView(generics.RetrieveUpdateDestroyAPIView):
 class VueEnsembleAdminView(APIView):
     """GET /api/administration/vue-ensemble — actions en attente pour l'administrateur.
 
-    Volontairement dépourvue de tout chiffre d'usage ou de performance
-    (docs/CONTEXTE.md section 1, « aucun chiffre d'usage ou de performance dans
-    l'interface ») : uniquement les actions réelles qui attendent une
+    Volontairement dépourvue de tout chiffre d'usage ou de performance (règle :
+    « aucun chiffre d'usage ou de performance dans l'interface ») : uniquement
+    les actions réelles qui attendent une
     décision, comptées dans la base, jamais une tendance ou un pourcentage.
     """
 

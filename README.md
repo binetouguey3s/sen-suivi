@@ -3,10 +3,26 @@
 Plateforme sénégalaise de prévention, suivi et orientation vers le bien-être mental.
 Projet de certification, Simplon Sénégal, Promo 9 (2025-2026). Autrice : Binetou Gueye.
 
-Le contexte complet du projet (positionnement, stack, modèle de données, routes API,
-charte graphique) est décrit dans [`docs/CONTEXTE.md`](./docs/CONTEXTE.md). Les spécifications
-complémentaires (règles métier chiffrées, fixtures, correspondance écran → route →
-endpoint) sont dans [`docs/SPECIFICATIONS.md`](./docs/SPECIFICATIONS.md).
+## Fonctionnalités
+
+- **Journal d'humeur** et tableau de bord : suivi quotidien, courbe sur 7 jours, statistiques personnelles
+- **Auto-évaluation** (stress, anxiété, fatigue) : score de tendance et suggestion de professionnels validés
+- **Chatbot** accessible sans compte, qui oriente vers des ressources validées
+- **Bibliothèque de ressources** (articles, exercices, podcasts) et **répertoire de lieux** de détente au Sénégal
+- **Mise en relation** avec des professionnels, dont l'inscription est validée par un administrateur
+- **Forum anonyme** (pseudonymes), avec modération a priori
+- **Administration** : validation des professionnels, modération du forum, gestion des ressources
+- **Ressources d'urgence** : numéros du Sénégal uniquement (800 805 805, 1515, 18)
+
+Sen Suivi ne remplace pas un professionnel de santé.
+
+### Le chatbot en trois niveaux
+
+1. **Détection de détresse** (règles et mots-clés) : renvoi immédiat vers les ressources d'urgence.
+2. **Classification d'intention** : réponse validée pour les intentions reconnues avec confiance.
+3. **Recherche RAG** dans les ressources de la plateforme (ChromaDB) : le chatbot propose la ressource la plus proche.
+
+La génération encadrée par un modèle de langage (Groq), à partir des seules ressources retrouvées, est en cours d'intégration.
 
 ---
 
@@ -18,25 +34,13 @@ sen-suivi/
 ├── backend/           # Django 5.1 + DRF : API REST, JWT, 7 applications métier
 ├── ai-service/        # FastAPI : chatbot (détresse, intention, RAG avec ChromaDB)
 ├── automations/       # Workflows n8n exportés (JSON)
-├── docs/              # Contexte, spécifications, sécurité, diagrammes, maquettes
+├── docs/              # Crédits et licences des images
 ├── docker-compose.yml # Orchestration des cinq services
 └── .env.example       # Modèle des variables d'environnement
 ```
 
 Les applications Django (`backend/apps/`) : `comptes`, `suivi`, `ressources`,
 `relations`, `forum`, `chatbot`, `notifications`.
-
-## Documentation
-
-| Document | Contenu |
-|---|---|
-| [`docs/CONTEXTE.md`](./docs/CONTEXTE.md) | Positionnement, stack, modèle de données, routes API, charte graphique, règles de code |
-| [`docs/SPECIFICATIONS.md`](./docs/SPECIFICATIONS.md) | Règles métier chiffrées, composants partagés, correspondance écran → route → endpoint |
-| [`docs/securite.md`](./docs/securite.md) | Sécurité des authentifications et des saisies, avec les tests qui la prouvent |
-| [`docs/EXPLICATIONS.md`](./docs/EXPLICATIONS.md) | Choix de conception et arbitrages entre maquettes et règles |
-| [`docs/etat-ai-service.md`](./docs/etat-ai-service.md) | État du chatbot face à l'architecture cible de LLM encadré |
-| [`docs/CREDITS-IMAGES.md`](./docs/CREDITS-IMAGES.md) | Auteurs et licences des images |
-| `docs/maquettes/` | Les 68 écrans de la maquette |
 
 ---
 
@@ -71,7 +75,7 @@ workflows n8n) : `docker compose down -v`.
 > **Clés externes** : le chatbot actuel fonctionne sans aucune clé (règles validées et
 > recherche dans les ressources de la plateforme). La génération encadrée par un modèle de
 > langage (Groq) est en cours d'intégration : ses variables `LLM_*` sont déjà prévues dans
-> `.env.example` (voir [`docs/etat-ai-service.md`](./docs/etat-ai-service.md)).
+> `.env.example`.
 > Le seul secret à créer soi-même est `N8N_API_KEY`, une clé partagée entre Django et n8n
 > pour leurs échanges internes : `python3 -c "import secrets; print(secrets.token_urlsafe(32))"`,
 > puis à coller dans `.env`.
@@ -162,6 +166,13 @@ docker compose up backend
 Si le problème persiste régulièrement, une solution durable (amélioration prévue)
 consiste à ajouter un `healthcheck` sur le service `db` et une condition
 `depends_on: condition: service_healthy` sur `backend`.
+
+---
+
+## Crédits des images
+
+Les photographies proviennent de banques d'images libres de droits ; auteurs et licences
+dans [`docs/CREDITS-IMAGES.md`](./docs/CREDITS-IMAGES.md).
 
 ---
 

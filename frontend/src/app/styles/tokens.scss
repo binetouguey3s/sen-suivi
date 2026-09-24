@@ -1,4 +1,4 @@
-// Sen Suivi — Design tokens (docs/CONTEXTE.md section 6)
+// Sen Suivi — Design tokens
 // Toute valeur hexadécimale ou de mesure utilisée dans un composant doit
 // passer par une variable définie ici. Aucune valeur en dur ailleurs.
 
@@ -21,7 +21,7 @@
   --ss-fond-carte: var(--ss-blanc);
 
   // Typographie
-  // Polices auto-hébergées prévues (docs/SPECIFICATIONS.md section 7) ; en
+  // Polices auto-hébergées prévues ; en
   // attendant les fichiers de police réels, pile de secours système fidèle
   // au style (grotesque géométrique / humaniste).
   --ss-police-titres: 'Schibsted Grotesk', 'Segoe UI', system-ui, sans-serif;

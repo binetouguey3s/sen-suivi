@@ -92,7 +92,7 @@ export class TableauDeBordComponent {
   });
 
   // La série en cours : jours consécutifs avec une entrée, remise à zéro après
-  // un jour manqué (docs/SPECIFICATIONS.md section 2). Si rien n'est encore
+  // un jour manqué. Si rien n'est encore
   // saisi aujourd'hui, on part d'hier pour ne pas casser une série existante.
   protected readonly serie = computed<number>(() => {
     const dates = new Set(valeurs(this.suivi).map((e) => e.date));

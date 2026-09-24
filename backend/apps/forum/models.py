@@ -6,8 +6,8 @@ from django.db import models
 class StatutModeration(models.TextChoices):
     # EN_ATTENTE ajoutée le 17/09/2026 : MASQUE signifie « retiré par un
     # modérateur », ce qui n'est pas la même chose qu'« en attente de
-    # relecture ». La modération est a priori (docs/SPECIFICATIONS.md
-    # section 1) : rien n'est visible avant validation.
+    # relecture ». La modération est a priori : rien n'est visible avant
+    # validation.
     EN_ATTENTE = 'EN_ATTENTE', 'En attente'
     VISIBLE = 'VISIBLE', 'Visible'
     MASQUE = 'MASQUE', 'Masqué'
@@ -39,8 +39,7 @@ class PublicationForum(models.Model):
         related_name='publications_moderees',
         verbose_name='modérateur',
     )
-    # Ajouté suite à la correction du diagramme de classes (docs/Correction du
-    # diagramme de classe Sen Suivi.png) : titre et thématique.
+    # Ajouté suite à la correction du diagramme de classes : titre et thématique.
     titre = models.CharField('titre', max_length=150)
     contenu = models.TextField('contenu')
     thematique = models.CharField(

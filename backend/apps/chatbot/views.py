@@ -8,7 +8,7 @@ from .services import MicroserviceIAIndisponible, traiter_message
 
 
 class ChatbotMessageView(APIView):
-    """POST /api/chatbot/message — accessible sans authentification (docs/CONTEXTE.md section 5).
+    """POST /api/chatbot/message — accessible sans authentification.
 
     L'historique n'est enregistré que si le compte est connecté ET a
     explicitement accepté la conservation (ConversationChatbot.consentement_conservation).

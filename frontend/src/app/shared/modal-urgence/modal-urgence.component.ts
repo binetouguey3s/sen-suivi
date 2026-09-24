@@ -5,11 +5,11 @@ import { IconComponent } from '../icon/icon.component';
 interface ContactUrgence {
   libelle: string;
   valeur: string;
-  telephone: string | null; // null : aucun numéro documenté, jamais inventé (docs/CONTEXTE.md section 1)
+  telephone: string | null; // null : aucun numéro documenté, jamais inventé
   misEnAvant?: boolean;
 }
 
-// docs/CONTEXTE.md section 1 : numéros du Sénégal uniquement, jamais 15, 112 ni un autre.
+// Numéros du Sénégal uniquement, jamais 15, 112 ni un autre.
 const CONTACTS_URGENCE: ContactUrgence[] = [
   {
     libelle: "Numéro vert d'écoute AJS",

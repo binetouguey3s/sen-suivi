@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 export interface PointHumeur {
   libelle: string;
-  score: number | null; // 1 à 5, null = jour sans saisie (docs/SPECIFICATIONS.md section 2 : un trou, jamais un zéro)
+  score: number | null; // 1 à 5, null = jour sans saisie (un trou, jamais un zéro)
 }
 
 const LARGEUR = 700;

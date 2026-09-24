@@ -1,4 +1,4 @@
-"""Données de test (docs/SPECIFICATIONS.md section 5).
+"""Données de démonstration.
 
 Une commande de gestion plutôt qu'une fixture JSON : les mots de passe
 doivent être hachés via set_password() et les pseudonymes générés/forcés
@@ -148,7 +148,7 @@ PUBLICATIONS_FORUM = [
 
 
 class Command(BaseCommand):
-    help = "Crée les données de test de docs/SPECIFICATIONS.md (professionnels, lieux, ressources, comptes, forum, questions)."
+    help = "Crée les données de démonstration (professionnels, lieux, ressources, comptes, forum, questions)."
 
     def handle(self, *args, **options):
         self._creer_questions()

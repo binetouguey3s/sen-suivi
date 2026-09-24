@@ -1,7 +1,7 @@
-"""Logique métier de l'auto-évaluation (docs/SPECIFICATIONS.md section 2).
+"""Logique métier de l'auto-évaluation.
 
 Isolée des vues et des sérialiseurs : une vue orchestre, elle ne calcule pas
-(docs/CONTEXTE.md section 7, style de code back-end).
+(style de code back-end).
 """
 
 from apps.comptes.models import Professionnel, StatutValidationPro
@@ -52,8 +52,7 @@ def texte_interpretation(score):
 def suggerer_professionnels(utilisateur, score):
     """Jusqu'à 3 professionnels VALIDE ; aucun si le niveau est faible.
 
-    Priorité aux professionnels de la ville de l'utilisateur (docs/SPECIFICATIONS.md
-    section 2), puis aux autres.
+    Priorité aux professionnels de la ville de l'utilisateur, puis aux autres.
     """
     if score <= SEUIL_SUGGESTION_PROFESSIONNELS:
         return []

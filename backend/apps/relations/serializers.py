@@ -33,7 +33,7 @@ class DemandeContactUtilisateurSerializer(serializers.ModelSerializer):
 
 class DemandeContactProfessionnelSerializer(serializers.ModelSerializer):
     """Vue du professionnel : l'identité de l'utilisateur reste masquée tant que la
-    demande n'est pas ACCEPTEE (docs/SPECIFICATIONS.md section 8). Seul le pseudonyme
+    demande n'est pas ACCEPTEE. Seul le pseudonyme
     est visible avant."""
 
     pseudonyme = serializers.CharField(source='utilisateur.pseudonyme', read_only=True)

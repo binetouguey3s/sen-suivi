@@ -25,7 +25,7 @@ class SuiviHumeurSerializer(serializers.ModelSerializer):
         utilisateur = self.context['request'].user.utilisateur
         validated_data.setdefault('date', timezone.localdate())
         # Une seule entrée par jour et par utilisateur : une seconde saisie le
-        # même jour met à jour l'existante (docs/SPECIFICATIONS.md section 2).
+        # même jour met à jour l'existante.
         suivi, _ = SuiviHumeur.objects.update_or_create(
             utilisateur=utilisateur,
             date=validated_data['date'],
@@ -103,7 +103,7 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
         score = instance.score_de_tendance
         professionnels = suggerer_professionnels(instance.utilisateur, score)
         # Niveau faible : ressources uniquement. Sinon, si aucun professionnel
-        # n'est disponible, liste vide + message (docs/SPECIFICATIONS.md section 2).
+        # n'est disponible, liste vide + message.
         message = ''
         if score > SEUIL_SUGGESTION_PROFESSIONNELS and not professionnels:
             message = 'Aucun professionnel disponible pour ce besoin pour le moment.'

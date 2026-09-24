@@ -79,8 +79,8 @@ class PublicationForumEcritureSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['utilisateur'] = self.context['request'].user.utilisateur
-        # Modération a priori : rien n'est visible avant validation
-        # (docs/SPECIFICATIONS.md section 1), déjà le défaut du modèle.
+        # Modération a priori : rien n'est visible avant validation, déjà le
+        # défaut du modèle.
         validated_data['statut_moderation'] = StatutModeration.EN_ATTENTE
         return super().create(validated_data)
 

@@ -21,3 +21,7 @@ dist/
 .DS_Store
 *~
 images-brutes/
+
+# Documents de conception (maquettes, diagrammes, notes) : conservés en local uniquement
+docs/*
+!docs/CREDITS-IMAGES.md

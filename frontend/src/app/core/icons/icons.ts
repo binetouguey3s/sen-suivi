@@ -1,4 +1,4 @@
-// Registre figé des icônes (docs/CONTEXTE.md section 7).
+// Registre figé des icônes.
 // Seul ce fichier importe depuis @lucide/angular : tout le reste de
 // l'application passe par <ss-icon>, jamais par un import Lucide direct.
 import {

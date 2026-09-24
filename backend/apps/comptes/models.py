@@ -17,7 +17,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
-# Mots à consonance sénégalaise (docs/CONTEXTE.md : contenu sénégalais uniquement),
+# Mots à consonance sénégalaise (contenu sénégalais uniquement),
 # combinés à un nombre pour générer un pseudonyme de forum lisible et anonyme.
 _MOTS_PSEUDONYME = [
     'Teranga', 'Jamm', 'Baobab', 'Sahel', 'Ngor', 'Sine', 'Saloum',
@@ -62,7 +62,7 @@ class StatutValidationPro(models.TextChoices):
 
 
 class SpecialitePro(models.TextChoices):
-    """Les six spécialités autorisées (docs/CONTEXTE.md section 4).
+    """Les six spécialités autorisées.
 
     Le diagramme de classes type ce champ en simple string ; cette énumération
     ajoute la contrainte métier explicite : exactement ces six valeurs, pas
@@ -172,7 +172,7 @@ class Professionnel(CompteUtilisateur):
         return f'{self.nom} — {self.get_specialite_display()}'
 
     def valider(self):
-        """Passe le compte à VALIDE et notifie le professionnel (SPECIFICATIONS.md section 2)."""
+        """Passe le compte à VALIDE et notifie le professionnel."""
         if self.statut_validation == StatutValidationPro.REFUSE:
             raise ValueError('Un compte professionnel refusé ne peut plus changer de statut.')
         self.statut_validation = StatutValidationPro.VALIDE
@@ -192,7 +192,7 @@ class Professionnel(CompteUtilisateur):
         )
 
     def refuser(self):
-        """Passe le compte à REFUSE : définitif (SPECIFICATIONS.md section 2)."""
+        """Passe le compte à REFUSE : définitif."""
         if self.statut_validation == StatutValidationPro.REFUSE:
             raise ValueError('Un compte professionnel refusé ne peut plus changer de statut.')
         self.statut_validation = StatutValidationPro.REFUSE
