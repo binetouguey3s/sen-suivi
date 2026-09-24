@@ -6,11 +6,20 @@
     }
   </header>
 
-  <main class="ob__carte">
-    <div class="ob__visuel"><img [src]="etape().image" alt="" /></div>
-    <div class="ob__texte">
+  <main
+    #carte
+    class="ob__carte"
+    [class.ob--entree]="phase() === 'entree'"
+    [class.ob--sortie]="phase() === 'sortie'"
+    [class.ob--avant]="sens() === 'avant'"
+    [class.ob--arriere]="sens() === 'arriere'"
+  >
+    <div class="ob__visuel">
+      <div #illustration class="ob__illustration"><img [src]="etape().image" alt="" /></div>
+    </div>
+    <div #texte class="ob__texte">
       <span class="ob__badge">Étape {{ index() + 1 }} sur {{ etapes.length }}</span>
-      <h1>{{ etape().titre }}</h1>
+      <h1 #titre tabindex="-1">{{ etape().titre }}</h1>
       <p>{{ etape().texte }}</p>
 
       <div class="ob__pied">
@@ -19,10 +28,12 @@
             <span [class.ob__point--actif]="$index === index()"></span>
           }
         </div>
-        <button type="button" class="ob__suivant" (click)="suivant()">
+        <button type="button" class="ob__suivant" [class.ob__suivant--final]="derniere()" (click)="suivant()">
           {{ derniere() ? 'Commencer' : 'Suivant' }} <ss-icon [nom]="derniere() ? 'verifie' : 'fleche'" taille="sm" />
         </button>
       </div>
     </div>
   </main>
+
+  <p class="ob__annonce" aria-live="polite">{{ annonce() }}</p>
 </div>

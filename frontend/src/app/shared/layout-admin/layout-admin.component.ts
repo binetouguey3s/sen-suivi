@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { NomIcone } from '../../core/icons/icons';
@@ -29,17 +30,27 @@ const LIENS: LienNavAdmin[] = [
   templateUrl: './layout-admin.component.html',
   styleUrl: './layout-admin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown.escape)': 'menuOuvert.set(false)' },
 })
 export class LayoutAdminComponent {
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
   protected readonly auth = inject(AuthService);
 
   protected readonly liens = LIENS;
   protected readonly menuOuvert = signal(false);
 
+  constructor() {
+    // La page derrière le tiroir ne défile pas tant qu'il est ouvert
+    effect(() => {
+      this.document.body.style.overflow = this.menuOuvert() ? 'hidden' : '';
+    });
+  }
+
   protected readonly initiales = computed(() => (this.auth.nom() ?? '?').slice(0, 2).toUpperCase());
 
   protected deconnecter(): void {
+    this.menuOuvert.set(false);
     this.auth.deconnecter();
     void this.router.navigateByUrl('/connexion');
   }

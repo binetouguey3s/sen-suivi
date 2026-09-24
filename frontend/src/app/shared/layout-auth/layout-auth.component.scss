@@ -34,19 +34,13 @@
   max-width: 320px;
   aspect-ratio: 1 / 1;
   border-radius: var(--ss-rayon-carte);
-  background: var(--ss-fond-application);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
 }
 
-// Silhouette de substitution : l'illustration de la maquette est une œuvre
-// dessinée dont je n'ai pas le fichier source.
-.la__silhouette {
-  width: 55%;
-  height: 55%;
-  fill: var(--ss-bleu-sen-suivi);
+.la__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .la__citation {

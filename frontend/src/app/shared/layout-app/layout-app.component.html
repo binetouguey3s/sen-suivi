@@ -1,5 +1,9 @@
 <div class="layout-app">
-  <aside class="layout-app__sidebar">
+  @if (menuOuvert()) {
+    <div class="layout-app__voile" (click)="menuOuvert.set(false)"></div>
+  }
+
+  <aside id="menu-app" class="layout-app__sidebar" [class.layout-app__sidebar--ouverte]="menuOuvert()">
     <a routerLink="/"><img class="layout-app__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" /></a>
 
     <nav class="layout-app__nav" aria-label="Navigation principale">
@@ -9,6 +13,7 @@
           [routerLink]="lien.route"
           routerLinkActive="layout-app__lien--actif"
           [routerLinkActiveOptions]="{ exact: !!lien.exact }"
+          (click)="menuOuvert.set(false)"
         >
           <ss-icon [nom]="lien.icone" />
           {{ lien.libelle }}
@@ -18,9 +23,13 @@
 
     <div class="layout-app__profil">
       <span class="layout-app__avatar">{{ initiales() }}</span>
-      <div>
+      <div class="layout-app__identite">
         <p class="layout-app__profil-nom">{{ nomAffiche() }}</p>
+        <span class="layout-app__role">{{ estProfessionnel() ? 'Professionnel' : 'Utilisateur' }}</span>
       </div>
+      <button type="button" class="layout-app__deconnexion" aria-label="Se déconnecter" (click)="deconnecter()">
+        <ss-icon nom="deconnexion" taille="sm" />
+      </button>
     </div>
   </aside>
 
@@ -30,6 +39,16 @@
       <span class="layout-app__actions-mobile">
         <ss-cloche-notifications />
         <span class="layout-app__avatar layout-app__avatar--mobile">{{ initiales() }}</span>
+        <button
+          type="button"
+          class="layout-app__menu-bouton"
+          aria-controls="menu-app"
+          [attr.aria-expanded]="menuOuvert()"
+          [attr.aria-label]="menuOuvert() ? 'Fermer le menu' : 'Ouvrir le menu'"
+          (click)="menuOuvert.set(!menuOuvert())"
+        >
+          <ss-icon [nom]="menuOuvert() ? 'fermer' : 'menu'" taille="sm" />
+        </button>
       </span>
     </header>
 

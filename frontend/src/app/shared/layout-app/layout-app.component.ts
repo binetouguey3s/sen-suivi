@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 import { NomIcone } from '../../core/icons/icons';
@@ -31,10 +32,23 @@ const LIENS_UTILISATEUR: LienNav[] = [
   templateUrl: './layout-app.component.html',
   styleUrl: './layout-app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown.escape)': 'menuOuvert.set(false)' },
 })
 export class LayoutAppComponent {
+  private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
   protected readonly auth = inject(AuthService);
   protected readonly modaleUrgenceOuverte = signal(false);
+
+  // Menu burger mobile : la barre latérale s'ouvre en tiroir
+  protected readonly menuOuvert = signal(false);
+
+  constructor() {
+    // La page derrière le tiroir ne défile pas tant qu'il est ouvert
+    effect(() => {
+      this.document.body.style.overflow = this.menuOuvert() ? 'hidden' : '';
+    });
+  }
 
   protected readonly estProfessionnel = computed(() => this.auth.typeCompte() === 'professionnel');
 
@@ -52,8 +66,7 @@ export class LayoutAppComponent {
 
   // Navigation basse mobile : 2 liens, l'espace du chat, 2 liens. Sur
   // mobile, Ressources et Lieux & Soins restent accessibles depuis le
-  // tableau de bord et la barre latérale desktop plutôt que de surcharger
-  // la barre du bas à 6 entrées.
+  // menu burger plutôt que de surcharger la barre du bas à 6 entrées.
   protected readonly liensMobile = computed(() => {
     const l = this.liens();
     const choisis = this.estProfessionnel() ? l : [l[0], l[1], l[2], l[5]];
@@ -67,4 +80,10 @@ export class LayoutAppComponent {
   });
 
   protected readonly nomAffiche = computed(() => [this.auth.prenom(), this.auth.nom()].filter(Boolean).join(' '));
+
+  protected deconnecter(): void {
+    this.menuOuvert.set(false);
+    this.auth.deconnecter();
+    void this.router.navigateByUrl('/connexion');
+  }
 }

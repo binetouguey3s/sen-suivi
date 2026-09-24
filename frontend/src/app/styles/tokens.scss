@@ -65,4 +65,8 @@
   --ss-ombre-carte: 0 8px 24px rgba(18, 53, 79, 0.08);
   --ss-voile: rgba(18, 53, 79, 0.55); // fond des modales
   --ss-ombre-carte-forte: 0 16px 40px rgba(18, 53, 79, 0.14);
+
+  // Mouvement — courbe unique : départ vif, arrivée tout en douceur
+  --ss-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ss-duree: 320ms;
 }

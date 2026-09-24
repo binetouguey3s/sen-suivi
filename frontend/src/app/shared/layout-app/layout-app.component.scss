@@ -12,17 +12,63 @@
 // --- Barre latérale desktop ---------------------------------------------
 
 .layout-app__sidebar {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--ss-blanc);
+  border-right: 1px solid var(--ss-gris-clair);
+  padding: var(--ss-espace-3) var(--ss-espace-2);
+
+  // Mobile : la barre latérale devient un tiroir ouvert par le burger
+  @media (max-width: 899px) {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 31;
+    width: min(280px, 85vw);
+    overflow-y: auto;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease, visibility 0.2s;
+
+    &.layout-app__sidebar--ouverte {
+      visibility: visible;
+      transform: translateX(0);
+      box-shadow: var(--ss-ombre-carte-forte);
+    }
+  }
 
   @media (min-width: 900px) {
-    display: flex;
-    flex-direction: column;
-    width: 260px;
-    flex-shrink: 0;
-    background: var(--ss-blanc);
-    border-right: 1px solid var(--ss-gris-clair);
-    padding: var(--ss-espace-3) var(--ss-espace-2);
+    position: sticky;
+    top: 0;
+    height: 100vh;
   }
+}
+
+.layout-app__voile {
+  position: fixed;
+  inset: 0;
+  background: var(--ss-voile);
+  z-index: 30;
+
+  @media (min-width: 900px) {
+    display: none;
+  }
+}
+
+.layout-app__menu-bouton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ss-gris-clair);
+  background: var(--ss-blanc);
+  color: var(--ss-bleu-sen-suivi);
+  border-radius: var(--ss-rayon-champ);
+  cursor: pointer;
 }
 
 .layout-app__logo {
@@ -68,11 +114,40 @@
   padding-top: var(--ss-espace-3);
 }
 
+.layout-app__identite {
+  flex: 1;
+  min-width: 0;
+}
+
 .layout-app__profil-nom {
   margin: 0;
   font-weight: var(--ss-poids-texte-fort);
   color: var(--ss-bleu-profond);
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.layout-app__role {
+  font-size: 13px;
+  color: var(--ss-gris-ardoise);
+}
+
+.layout-app__deconnexion {
+  display: flex;
+  border: none;
+  background: none;
+  color: var(--ss-gris-ardoise);
+  border-radius: var(--ss-rayon-champ);
+  cursor: pointer;
+  padding: var(--ss-espace-1);
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--ss-menthe-pale);
+    color: var(--ss-bleu-sen-suivi);
+  }
 }
 
 .layout-app__avatar {

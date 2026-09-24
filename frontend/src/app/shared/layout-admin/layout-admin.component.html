@@ -1,8 +1,15 @@
 <div class="la">
   <header class="la__topbar-mobile">
     <span class="la__logo" aria-hidden="true">SS</span>
-    <button type="button" class="la__menu-bouton" aria-label="Ouvrir le menu" (click)="menuOuvert.set(true)">
-      <ss-icon nom="menu" taille="sm" />
+    <button
+      type="button"
+      class="la__menu-bouton"
+      aria-controls="menu-admin"
+      [attr.aria-expanded]="menuOuvert()"
+      [attr.aria-label]="menuOuvert() ? 'Fermer le menu' : 'Ouvrir le menu'"
+      (click)="menuOuvert.set(!menuOuvert())"
+    >
+      <ss-icon [nom]="menuOuvert() ? 'fermer' : 'menu'" taille="sm" />
     </button>
   </header>
 
@@ -10,7 +17,7 @@
     <div class="la__voile" (click)="menuOuvert.set(false)"></div>
   }
 
-  <aside class="la__sidebar" [class.la__sidebar--ouverte]="menuOuvert()">
+  <aside id="menu-admin" class="la__sidebar" [class.la__sidebar--ouverte]="menuOuvert()">
     <span class="la__logo la__logo--desktop" aria-hidden="true">SS</span>
 
     <nav class="la__nav" aria-label="Navigation administration">

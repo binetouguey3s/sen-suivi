@@ -32,6 +32,12 @@
   color: var(--ss-gris-ardoise);
   font-size: 14px;
   cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline-offset: 4px;
+    border-radius: var(--ss-rayon-champ);
+  }
 }
 
 .ob__carte {
@@ -47,6 +53,8 @@
   border-radius: var(--ss-rayon-grande-carte);
   box-shadow: var(--ss-ombre-carte);
   overflow: hidden;
+  // Le navigateur garde le défilement vertical, le TS gère le balayage horizontal
+  touch-action: pan-y;
 
   @media (min-width: 900px) {
     flex: 0 0 auto;
@@ -75,6 +83,13 @@
   }
 }
 
+// Enveloppe de l'image : porte l'entrée et le glissement, l'image porte le flottement
+.ob__illustration {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .ob__texte {
   display: flex;
   flex-direction: column;
@@ -91,6 +106,11 @@
     font-size: 28px;
     color: var(--ss-bleu-sen-suivi);
     letter-spacing: var(--ss-interlettrage-moyen);
+
+    // Focus déplacé par le code à chaque étape : pas d'anneau sur un titre
+    &:focus {
+      outline: none;
+    }
 
     @media (min-width: 900px) {
       font-size: 38px;
@@ -123,24 +143,63 @@
   padding-top: var(--ss-espace-3);
 }
 
+// Chaque point occupe 8px ; le point actif s'étire à 24px par scaleX,
+// les points suivants se décalent de 16px par translateX.
 .ob__points {
   display: flex;
   gap: 6px;
+  padding-inline-end: 16px; // place réservée à l'étirement du point actif
 
   span {
+    position: relative;
     width: 8px;
     height: 8px;
-    border-radius: var(--ss-rayon-pilule);
-    background: var(--ss-gris-clair);
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 8px;
+      border-radius: var(--ss-rayon-pilule);
+    }
+
+    // Point gris
+    &::before {
+      width: 8px;
+      background: var(--ss-gris-ardoise);
+      opacity: 0.4;
+    }
+
+    // Pilule menthe, largeur fixe de 24px, ramenée à 8px par scaleX
+    &::after {
+      width: 24px;
+      background: var(--ss-menthe);
+      opacity: 0;
+      transform: scaleX(0.3333);
+      transform-origin: left center;
+    }
   }
 
   .ob__point--actif {
-    width: 24px;
-    background: var(--ss-menthe);
+    &::before {
+      opacity: 0;
+    }
+
+    &::after {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .ob__point--actif ~ span {
+    transform: translateX(16px);
   }
 }
 
 .ob__suivant {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
@@ -153,4 +212,218 @@
   font-size: 15px;
   box-shadow: var(--ss-ombre-carte);
   cursor: pointer;
+
+  // Ombre renforcée préparée à l'avance : au survol, seule son opacité change
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--ss-ombre-carte-forte);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline-offset: 3px;
+  }
+}
+
+@media (hover: hover) {
+  .ob__suivant:hover::after {
+    opacity: 1;
+  }
+}
+
+// Zone lue par les lecteurs d'écran, invisible à l'écran
+.ob__annonce {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ─── Animations ──────────────────────────────────────────────────────────────
+// Tout le mouvement est ici. Il ne s'applique que si la personne n'a pas
+// demandé à réduire les animations ET si le TS n'a pas posé .sans-animation.
+// Seules transform et opacity sont animées.
+
+@media (prefers-reduced-motion: no-preference) {
+  :host(:not(.sans-animation)) {
+    // Sens du glissement : on avance, le contenu part à gauche et arrive de la droite
+    .ob--avant {
+      --ob-entree-x: 24px;
+      --ob-sortie-x: -24px;
+    }
+
+    .ob--arriere {
+      --ob-entree-x: -24px;
+      --ob-sortie-x: 24px;
+    }
+
+    // 1. Entrée en cascade : badge, titre, description, points, bouton
+    .ob__badge {
+      --ob-rang: 0;
+    }
+
+    h1 {
+      --ob-rang: 1;
+    }
+
+    p {
+      --ob-rang: 2;
+    }
+
+    .ob__points {
+      --ob-rang: 3;
+    }
+
+    .ob__suivant {
+      --ob-rang: 4;
+    }
+
+    .ob--entree {
+      .ob__illustration {
+        animation: ob-apparition-visuel 420ms var(--ss-ease) both;
+      }
+
+      .ob__texte {
+        animation: ob-glisse-entree var(--ss-duree) var(--ss-ease) both;
+      }
+
+      .ob__badge,
+      h1,
+      p,
+      .ob__points,
+      .ob__suivant {
+        animation: ob-monte var(--ss-duree) var(--ss-ease) calc(var(--ob-rang) * 80ms) both;
+      }
+    }
+
+    // 2. Sortie de l'étape, repart de la position du doigt s'il y a eu balayage
+    .ob--sortie {
+      .ob__illustration,
+      .ob__texte {
+        animation: ob-sortie calc(var(--ss-duree) * 0.75) var(--ss-ease) both;
+      }
+    }
+
+    // 3. Retour élastique quand le balayage n'atteint pas le seuil
+    .ob--retour {
+      .ob__illustration,
+      .ob__texte {
+        transition: transform var(--ss-duree) var(--ss-ease);
+      }
+    }
+
+    // will-change seulement pendant un mouvement, retiré dès la phase de repos
+    .ob--entree,
+    .ob--sortie,
+    .ob--glisse,
+    .ob--retour {
+      .ob__illustration,
+      .ob__texte {
+        will-change: transform, opacity;
+      }
+    }
+
+    // 4. Points de progression : étirement et fondu gris → menthe
+    .ob__points span,
+    .ob__points span::before,
+    .ob__points span::after {
+      transition:
+        transform var(--ss-duree) var(--ss-ease),
+        opacity var(--ss-duree) var(--ss-ease);
+    }
+
+    // Pendant l'entrée, l'étirement attend que la rangée de points apparaisse
+    .ob--entree .ob__points span,
+    .ob--entree .ob__points span::before,
+    .ob--entree .ob__points span::after {
+      transition-delay: calc(3 * 80ms);
+    }
+
+    // 6. Boutons : soulèvement au survol, enfoncement à l'appui
+    .ob__suivant {
+      transition: transform 180ms var(--ss-ease);
+
+      &::after {
+        transition: opacity 180ms var(--ss-ease);
+      }
+
+      ss-icon {
+        transition: transform 180ms var(--ss-ease);
+      }
+
+      &:active {
+        transform: scale(0.97);
+      }
+    }
+
+    @media (hover: hover) {
+      .ob__suivant:hover {
+        transform: translateY(-2px);
+
+        ss-icon {
+          transform: translateX(3px);
+        }
+
+        &:active {
+          transform: translateY(-2px) scale(0.97);
+        }
+      }
+
+      .ob__suivant--final:hover ss-icon {
+        transform: rotate(-8deg) scale(1.15);
+      }
+    }
+  }
+
+  // 5. Flottement de l'illustration, coupé si l'économiseur de données est actif
+  :host(:not(.sans-animation):not(.economie-donnees)) .ob__illustration img {
+    animation: ob-flotte 6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes ob-monte {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes ob-apparition-visuel {
+  from {
+    opacity: 0;
+    transform: translateX(var(--ob-entree-x, 0px)) scale(0.98);
+  }
+}
+
+@keyframes ob-glisse-entree {
+  from {
+    transform: translateX(var(--ob-entree-x, 0px));
+  }
+}
+
+@keyframes ob-sortie {
+  from {
+    transform: translateX(var(--ob-depart, 0px));
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(calc(var(--ob-depart, 0px) + var(--ob-sortie-x, -24px)));
+  }
+}
+
+@keyframes ob-flotte {
+  to {
+    transform: translateY(-6px);
+  }
 }

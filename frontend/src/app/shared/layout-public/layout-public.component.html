@@ -18,7 +18,51 @@
       <a class="lp__bouton-plein" routerLink="/inscription">Créer un compte</a>
     }
   </div>
+
+  <button
+    type="button"
+    class="lp__menu-bouton"
+    aria-controls="menu-public"
+    [attr.aria-expanded]="menuOuvert()"
+    [attr.aria-label]="menuOuvert() ? 'Fermer le menu' : 'Ouvrir le menu'"
+    (click)="menuOuvert.set(!menuOuvert())"
+  >
+    <ss-icon [nom]="menuOuvert() ? 'fermer' : 'menu'" taille="sm" />
+  </button>
 </header>
+
+<!-- Menu burger mobile -->
+@if (menuOuvert()) {
+  <div class="lp__voile" (click)="menuOuvert.set(false)"></div>
+}
+
+<aside id="menu-public" class="lp__tiroir" [class.lp__tiroir--ouvert]="menuOuvert()" aria-label="Menu">
+  <button type="button" class="lp__menu-bouton lp__tiroir-fermer" aria-label="Fermer le menu" (click)="menuOuvert.set(false)">
+    <ss-icon nom="fermer" taille="sm" />
+  </button>
+
+  <nav class="lp__tiroir-nav" aria-label="Navigation principale">
+    <a routerLink="/" routerLinkActive="lp__tiroir-lien--actif" [routerLinkActiveOptions]="{ exact: true }" (click)="menuOuvert.set(false)">Découvrir</a>
+    <a routerLink="/ressources" routerLinkActive="lp__tiroir-lien--actif" (click)="menuOuvert.set(false)">Ressources</a>
+    <a routerLink="/lieux" routerLinkActive="lp__tiroir-lien--actif" (click)="menuOuvert.set(false)">Lieux</a>
+    <a [routerLink]="auth.estConnecte() ? '/app' : '/connexion'" (click)="menuOuvert.set(false)">Mon Suivi</a>
+  </nav>
+
+  <div class="lp__tiroir-compte">
+    @if (auth.estConnecte()) {
+      <div class="lp__tiroir-profil">
+        <span class="lp__avatar">{{ initiales() }}</span>
+        <a class="lp__tiroir-nom" routerLink="/app" (click)="menuOuvert.set(false)">{{ nomAffiche() }}</a>
+        <button type="button" class="lp__deconnexion" aria-label="Se déconnecter" (click)="deconnecter()">
+          <ss-icon nom="deconnexion" taille="sm" />
+        </button>
+      </div>
+    } @else {
+      <a class="lp__bouton-plein" routerLink="/inscription" (click)="menuOuvert.set(false)">Créer un compte</a>
+      <a class="lp__bouton-contour" routerLink="/connexion" (click)="menuOuvert.set(false)">Se connecter</a>
+    }
+  </div>
+</aside>
 
 <main class="lp__contenu">
   <router-outlet />
