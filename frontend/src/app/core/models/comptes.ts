@@ -8,7 +8,7 @@ export const SPECIALITES_PRO = [
 ] as const;
 
 export const VILLES_SENEGAL = [
-  'Dakar', 'Thiès', 'Mbour', 'Saint-Louis', 'Ziguinchor', 'Kaolack', 'Touba', 'Louga', 'Tambacounda',
+  'Dakar', 'Thiès', 'Mbour', 'Saint-Louis', 'Ziguinchor', 'Kaolack', 'Louga', 'Tambacounda', 'Diourbel', 'Fatick', 'Kaffrine', 'Kédougou', 'Kolda', 'Matam', 'Sédhiou'
 ] as const;
 
 export const LANGUES_PRO = ['Français', 'Wolof', 'Pulaar', 'Sérère', 'Diola'] as const;
