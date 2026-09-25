@@ -97,9 +97,17 @@ Le front-end Angular se lance en développement avec `cd frontend && npm install
 
 ### Automatisations n8n
 
-Les trois workflows (rappel d'inactivité après 3 jours, notification des administrateurs
-à chaque inscription professionnelle, réindexation du RAG à chaque modification d'une
-ressource) sont exportés dans [`automations/`](./automations). Pour les charger dans n8n :
+Les quatre workflows sont exportés dans [`automations/`](./automations) :
+
+| Workflow | Déclencheur | Effet |
+|---|---|---|
+| Rappel d'inactivité | Chaque jour | Rappelle le journal aux utilisateurs inactifs depuis 3 jours |
+| Nouvelle inscription professionnelle | Inscription d'un professionnel | Prévient les administrateurs qu'un profil attend validation |
+| Nouvelle demande de mise en relation | Demande envoyée par un utilisateur | Prévient le professionnel (pseudonyme uniquement), sauf s'il a désactivé cette notification |
+| Indexation RAG | Création ou modification d'une ressource | Réindexe les ressources du chatbot |
+
+Chaque fichier porte un identifiant fixe (`id`) : relancer l'import met à jour les
+workflows existants au lieu de créer des doublons. Pour les charger dans n8n :
 
 ```bash
 docker compose exec n8n n8n import:workflow --separate --input=/automations
@@ -153,6 +161,16 @@ mapping `"hôte:conteneur"` correspondant dans `docker-compose.yml`.
 Si Docker Compose signale des variables vides ou refuse de démarrer un service, vérifiez
 que le fichier `.env` existe bien à la racine (`cp .env.example .env`). Le fichier
 `.env.example` est versionné à titre de référence, mais Docker Compose lit `.env`.
+
+**n8n ne trouve aucun fichier dans `/automations`**
+Le dossier `automations/` est monté dans le conteneur n8n au moment de sa création. Si le
+projet a changé d'emplacement depuis (disque externe remonté sous un autre nom, dossier
+déplacé), le conteneur pointe encore vers l'ancien chemin. Recréez-le, les workflows et
+identifiants n8n sont conservés dans le volume `n8n_data` :
+
+```bash
+docker compose up -d --force-recreate n8n
+```
 
 **Le backend démarre avant que PostgreSQL soit prêt**
 `depends_on` garantit seulement que le conteneur `db` est *démarré*, pas que PostgreSQL
