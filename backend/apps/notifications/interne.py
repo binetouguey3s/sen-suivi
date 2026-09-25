@@ -72,6 +72,9 @@ class NotificationInterneSerializer(serializers.Serializer):
     destinataire_id = serializers.IntegerField()
     objet = serializers.CharField(max_length=200)
     contenu = serializers.CharField()
+    # Clé de préférence (ex. « nouvelle_demande ») : si le destinataire a
+    # désactivé ce type de notification, rien n'est créé.
+    preference = serializers.CharField(max_length=50, required=False)
 
 
 class CreerNotificationView(APIView):
@@ -89,5 +92,8 @@ class CreerNotificationView(APIView):
             compte = CompteUtilisateur.objects.get(pk=donnees['destinataire_id'])
         except CompteUtilisateur.DoesNotExist:
             return Response({'detail': 'Destinataire introuvable.'}, status=404)
+        preference = donnees.get('preference')
+        if preference and not compte.preferences.get(preference, {}).get('email', True):
+            return Response({'ignoree': True, 'raison': 'Notification désactivée par le destinataire.'})
         notification = notifier(compte, donnees['objet'], donnees['contenu'])
         return Response({'id': notification.pk}, status=201)

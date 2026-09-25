@@ -1,0 +1,64 @@
+{
+  "id": "NouvelleDemande1",
+  "name": "Nouvelle demande de mise en relation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nouvelle-demande",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook nouvelle demande",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "nouvelle-demande"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:8000/api/interne/notifications-email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Cle-Interne",
+              "value": "={{ $env.N8N_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ destinataire_id: $json.body.professionnel_id, objet: \"Nouvelle demande de mise en relation\", contenu: $json.body.pseudonyme + \" vous a envoyé une demande de mise en relation. Rendez-vous dans Demandes pour l'accepter ou la décliner.\", preference: \"nouvelle_demande\" }) }}"
+      },
+      "id": "notifier-le-professionnel",
+      "name": "Notifier le professionnel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook nouvelle demande": {
+      "main": [
+        [
+          {
+            "node": "Notifier le professionnel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

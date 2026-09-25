@@ -1,6 +1,7 @@
 from rest_framework import generics
 
 from apps.comptes.permissions import EstProfessionnelValide, EstUtilisateur
+from apps.notifications.services import declencher_workflow
 
 from .models import DemandeContact
 from .serializers import (
@@ -26,6 +27,15 @@ class DemandeContactListCreateView(generics.ListCreateAPIView):
         if self.request.user.type_compte == 'professionnel':
             return DemandeContactProfessionnelSerializer
         return DemandeContactUtilisateurSerializer
+
+    def perform_create(self, serializer):
+        demande = serializer.save()
+        # Prévient le professionnel via le workflow n8n (best-effort). Seul le
+        # pseudonyme part : l'identité reste masquée jusqu'à l'acceptation.
+        declencher_workflow(
+            'nouvelle-demande',
+            {'professionnel_id': demande.professionnel_id, 'pseudonyme': demande.utilisateur.pseudonyme},
+        )
 
     def get_queryset(self):
         base = DemandeContact.objects.select_related('utilisateur', 'professionnel')
