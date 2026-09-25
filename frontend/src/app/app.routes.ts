@@ -50,6 +50,16 @@ export const routes: Routes = [
           import('./features/pro/tableau-de-bord-pro.component').then((m) => m.TableauDeBordProComponent),
       },
       {
+        path: 'profil',
+        loadComponent: () =>
+          import('./features/professionnel/profil.component').then((m) => m.ProfilProfessionnelComponent),
+      },
+      {
+        path: 'disponibilites',
+        loadComponent: () =>
+          import('./features/pro/disponibilites.component').then((m) => m.DisponibilitesComponent),
+      },
+      {
         path: 'parametres',
         loadComponent: () =>
           import('./features/parametres/parametres.component').then((m) => m.ParametresComponent),

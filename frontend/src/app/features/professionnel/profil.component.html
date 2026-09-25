@@ -4,39 +4,102 @@
   <div class="pp__etat"><p>Ce profil est introuvable.</p><a routerLink="/">Retour à l'accueil</a></div>
 } @else if (pro.value(); as p) {
   <div class="pp">
+    @if (estMaFiche()) {
+      <p class="pp__apercu">
+        <ss-icon nom="oeil" taille="sm" /> Votre fiche telle que les utilisateurs la voient.
+        <a routerLink="/pro/parametres" fragment="fiche">Modifier ma fiche</a>
+      </p>
+    }
+
     <section class="pp__entete">
-      @if (portrait(); as src) {
-        <img class="pp__photo" [src]="src" [alt]="'Portrait illustratif de ' + p.nom" />
-      } @else {
-        <span class="pp__photo pp__photo--initiales" aria-hidden="true">{{ initiales() }}</span>
-      }
+      <div class="pp__portrait">
+        @if (portrait(); as src) {
+          <img class="pp__photo" [src]="src" [alt]="'Portrait illustratif de ' + p.nom" />
+        } @else {
+          <span class="pp__photo pp__photo--initiales" aria-hidden="true">{{ initiales() }}</span>
+        }
+        <span class="pp__portrait-verifie" aria-hidden="true"><ss-icon nom="verifie" taille="sm" /></span>
+      </div>
+
       <div class="pp__identite">
         <h1>{{ p.nom }}</h1>
         <span class="pp__specialite">{{ p.specialite_affichee }}</span>
-        <p><ss-icon nom="lieux" taille="sm" /> {{ p.ville }}</p>
-        <p><ss-icon nom="verifie" taille="sm" /> <strong>{{ tarif() }}</strong> la séance</p>
-        <ul class="pp__langues">
-          @for (l of langues(); track l) { <li>{{ l }}</li> }
-        </ul>
+        <p class="pp__ligne"><ss-icon nom="lieux" taille="sm" /> {{ p.ville }}</p>
+        <p class="pp__ligne pp__desktop"><ss-icon nom="billet" taille="sm" /> <strong>{{ tarif() }}</strong> la séance</p>
+        @if (langues().length) {
+          <ul class="pp__langues">
+            @for (l of langues(); track l) { <li>{{ l }}</li> }
+          </ul>
+        }
       </div>
+
       <div class="pp__actions">
         <span class="pp__verifie"><ss-icon nom="verifie" taille="sm" /> Profil vérifié par Sen Suivi</span>
+        <p class="pp__tarif pp__mobile">
+          <span>Tarif habituel</span>
+          <strong>{{ tarif() }}</strong> / séance
+        </p>
         @if (peutDemander()) {
-          <button type="button" class="pp__demande" (click)="demandeOuverte.set(true)">
-            Demander une mise en relation <ss-icon nom="envoyer" taille="sm" />
-          </button>
+          <div class="pp__demande-zone">
+            <button type="button" class="pp__demande" (click)="demandeOuverte.set(true)">
+              Demander une mise en relation <ss-icon nom="envoyer" taille="sm" />
+            </button>
+          </div>
         }
       </div>
     </section>
 
-    <section class="pp__carte">
-      <h2>Présentation</h2>
-      @if (p.presentation) {
-        <p>{{ p.presentation }}</p>
-      } @else {
-        <p class="pp__vide">Ce professionnel n'a pas encore rédigé de présentation.</p>
+    <div class="pp__grille">
+      <div class="pp__colonne">
+        <section class="pp__carte">
+          <h2>Présentation</h2>
+          @if (p.presentation) {
+            <p class="pp__texte">{{ p.presentation }}</p>
+          } @else if (estMaFiche()) {
+            <p class="pp__vide">Vous n'avez pas encore rédigé de présentation.</p>
+          } @else {
+            <p class="pp__vide">Ce professionnel n'a pas encore rédigé de présentation.</p>
+          }
+        </section>
+
+        @if (p.domaines.length || estMaFiche()) {
+          <section class="pp__carte">
+            <h2>Domaines d'accompagnement</h2>
+            @if (p.domaines.length) {
+              <ul class="pp__domaines">
+                @for (d of p.domaines; track d) { <li>{{ d }}</li> }
+              </ul>
+            } @else {
+              <p class="pp__vide">Aucun domaine renseigné pour le moment.</p>
+            }
+          </section>
+        }
+      </div>
+
+      @if (aDesModalites() || estMaFiche()) {
+        <section class="pp__carte pp__carte--modalites">
+          <h2>Modalités</h2>
+          @if (aDesModalites()) {
+            <ul class="pp__modalites">
+              @if (p.consultation_cabinet) {
+                <li>
+                  <span class="pp__modalite-icone"><ss-icon nom="batiment" /></span>
+                  <span><strong>En cabinet</strong>@if (p.adresse_cabinet) { <em>{{ p.adresse_cabinet }}</em> }</span>
+                </li>
+              }
+              @if (p.consultation_distance) {
+                <li>
+                  <span class="pp__modalite-icone"><ss-icon nom="video" /></span>
+                  <span><strong>À distance</strong></span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="pp__vide">Aucune modalité renseignée pour le moment.</p>
+          }
+        </section>
       }
-    </section>
+    </div>
 
     <p class="pp__mention">Sen Suivi ne remplace pas un professionnel de santé. En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>.</p>
   </div>

@@ -1,202 +1,426 @@
+// Sur desktop, la page occupe au moins toute la hauteur de l'écran (moins
+// les marges du layout) pour que le pied de page reste en bas.
 :host {
   display: block;
+
+  @media (min-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - 2 * var(--ss-espace-4));
+  }
 }
 
-.tp__entete {
-  margin-bottom: var(--ss-espace-3);
+// Libellés propres à chaque format, comme sur les deux maquettes
+.tp__desktop {
+  @media (max-width: 899px) {
+    display: none;
+  }
+}
 
+.tp__mobile {
+  @media (min-width: 900px) {
+    display: none !important;
+  }
+}
+
+// --- En-tête -----------------------------------------------------------------
+
+.tp__entete {
   h1 {
-    font-size: 30px;
+    margin: 0;
+    font-family: var(--ss-police-titres);
+    font-weight: var(--ss-poids-texte-fort);
+    font-size: 28px;
+    line-height: var(--ss-hauteur-ligne-titre);
+    letter-spacing: var(--ss-interlettrage-moyen);
     color: var(--ss-bleu-sen-suivi);
 
     @media (min-width: 900px) {
-      font-size: 38px;
+      font-size: 42px;
+      letter-spacing: var(--ss-interlettrage-grand);
     }
   }
 
   p {
     margin: var(--ss-espace-1) 0 0;
     color: var(--ss-gris-ardoise);
+    font-size: 14px;
+
+    @media (min-width: 900px) {
+      margin-top: var(--ss-espace-2);
+      font-size: 16px;
+    }
   }
 }
 
+// --- Cartes de statistiques ------------------------------------------------------
+
 .tp__stats {
   display: grid;
-  grid-template-columns: 1fr;
   gap: var(--ss-espace-2);
-  margin-bottom: var(--ss-espace-4);
+  margin-top: var(--ss-espace-3);
 
   @media (min-width: 900px) {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--ss-espace-3);
+    margin-top: var(--ss-espace-5);
   }
 }
 
 .tp__stat {
-  padding: var(--ss-espace-3);
   background: var(--ss-fond-carte);
-  border-radius: var(--ss-rayon-carte);
+  border-radius: var(--ss-rayon-grande-carte);
   box-shadow: var(--ss-ombre-carte);
+  padding: var(--ss-espace-3) var(--ss-espace-3) var(--ss-espace-3);
+}
 
-  p {
-    margin: 0;
+.tp__stat-tete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.tp__stat-libelle {
+  margin: 0;
+  color: var(--ss-gris-ardoise);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  @media (min-width: 900px) {
     font-size: 14px;
-    color: var(--ss-gris-ardoise);
+    text-transform: none;
+    letter-spacing: normal;
   }
+}
 
-  strong {
-    font-family: var(--ss-police-titres);
-    font-size: 40px;
-    color: var(--ss-bleu-sen-suivi);
-    font-variant-numeric: tabular-nums;
+.tp__stat-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ss-rayon-champ);
+  background: var(--ss-menthe-pale);
+  color: var(--ss-bleu-sen-suivi);
+}
+
+.tp__stat-valeur {
+  display: block;
+  margin-top: var(--ss-espace-1);
+  font-family: var(--ss-police-titres);
+  font-weight: var(--ss-poids-texte);
+  font-size: 36px;
+  line-height: 1;
+  color: var(--ss-bleu-sen-suivi);
+  font-variant-numeric: tabular-nums;
+}
+
+.tp__courbe {
+  margin-top: 12px;
+}
+
+// Mobile : badge à gauche, ligne plate à droite
+.tp__stat--statut {
+  @media (max-width: 899px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ss-espace-2);
+
+    .tp__courbe {
+      flex: 0 0 45%;
+      margin-top: 0;
+    }
   }
 }
 
 .tp__verifie {
   display: inline-flex;
   align-items: center;
-  gap: var(--ss-espace-1);
+  gap: 6px;
   margin-top: var(--ss-espace-1);
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  padding: 2px var(--ss-espace-1);
+  border: 1px solid var(--ss-menthe);
   border-radius: var(--ss-rayon-pilule);
-  padding: 4px var(--ss-espace-2);
+  background: var(--ss-menthe-tres-pale);
+  color: var(--ss-bleu-sen-suivi);
+  font-size: 11px;
   font-weight: var(--ss-poids-texte-fort);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  @media (min-width: 900px) {
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: normal;
+    padding: 4px var(--ss-espace-1) 4px 12px;
+  }
 }
+
+.tp__verifie-point {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ss-bleu-sen-suivi);
+}
+
+// --- Onglets -------------------------------------------------------------------
 
 .tp__onglets {
   display: flex;
   gap: var(--ss-espace-3);
+  margin: var(--ss-espace-4) calc(-1 * var(--ss-marge-mobile)) 0;
+  padding: 0 var(--ss-marge-mobile);
   border-bottom: 1px solid var(--ss-gris-clair);
-  margin-bottom: var(--ss-espace-3);
-  overflow-x: auto;
 
-  button {
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    padding: var(--ss-espace-1) 0 var(--ss-espace-2);
-    font-size: 17px;
-    color: var(--ss-gris-ardoise);
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .tp__onglet--actif {
-    color: var(--ss-bleu-sen-suivi);
-    border-bottom-color: var(--ss-bleu-sen-suivi);
-    font-weight: var(--ss-poids-texte-fort);
+  @media (min-width: 900px) {
+    gap: var(--ss-espace-4);
+    margin: var(--ss-espace-6) 0 0;
+    padding: 0;
   }
 }
 
+.tp__onglet {
+  padding: var(--ss-espace-1) 0 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  color: var(--ss-gris-ardoise);
+  font-family: inherit;
+  font-size: 15px;
+  opacity: 0.75;
+  cursor: pointer;
+
+  @media (min-width: 900px) {
+    font-size: 18px;
+    padding-bottom: var(--ss-espace-2);
+  }
+}
+
+.tp__onglet--actif {
+  color: var(--ss-bleu-sen-suivi);
+  border-bottom-color: var(--ss-bleu-sen-suivi);
+  font-weight: var(--ss-poids-titre);
+  opacity: 1;
+
+  @media (min-width: 900px) {
+    font-weight: var(--ss-poids-texte);
+  }
+}
+
+// --- Demandes ----------------------------------------------------------------------
+
 .tp__liste {
   list-style: none;
-  margin: 0;
+  margin: var(--ss-espace-3) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--ss-espace-2);
+
+  @media (min-width: 900px) {
+    margin-top: var(--ss-espace-4);
+  }
 }
 
 .tp__demande {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ss-espace-2);
-  padding: var(--ss-espace-3);
   background: var(--ss-fond-carte);
   border-radius: var(--ss-rayon-carte);
   box-shadow: var(--ss-ombre-carte);
+  padding: var(--ss-espace-3) 20px;
 
   @media (min-width: 900px) {
-    flex-direction: row;
+    display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: var(--ss-espace-3);
+    padding: var(--ss-espace-3);
   }
 }
 
 .tp__contenu {
   flex: 1;
+  min-width: 0;
 }
 
+// Mobile : nom et date sur la même ligne, lieu dessous.
+// Desktop : tout sur une ligne, séparé par des points.
 .tp__identite {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: var(--ss-espace-1);
+
+  @media (min-width: 900px) {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+.tp__nom {
+  margin: 0;
+  font-family: var(--ss-police-titres);
+  font-weight: var(--ss-poids-texte-fort);
+  font-size: 20px;
+  color: var(--ss-bleu-sen-suivi);
+}
+
+.tp__meta {
+  display: inline-flex;
   align-items: center;
-  gap: var(--ss-espace-2);
-  margin: 0 0 var(--ss-espace-1);
+  gap: 6px;
   color: var(--ss-gris-ardoise);
   font-size: 14px;
 
-  strong {
-    font-size: 20px;
-    color: var(--ss-bleu-sen-suivi);
+  @media (min-width: 900px) {
+    &::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background: var(--ss-gris-clair);
+    }
   }
+}
 
-  span {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+.tp__meta--lieu {
+  @media (max-width: 899px) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 6px;
+    font-size: 13px;
+  }
+}
+
+.tp__meta--date {
+  @media (max-width: 899px) {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 }
 
 .tp__message {
-  margin: 0;
-  font-style: italic;
+  margin: 12px 0 0;
   color: var(--ss-bleu-profond);
+  font-style: italic;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @media (min-width: 900px) {
+    margin-top: var(--ss-espace-1);
+    font-size: 15px;
+    -webkit-line-clamp: 1;
+  }
 }
 
 .tp__contact {
   display: flex;
   align-items: center;
-  gap: var(--ss-espace-1);
+  gap: 6px;
   margin: var(--ss-espace-1) 0 0;
   color: var(--ss-bleu-sen-suivi);
-  font-weight: var(--ss-poids-texte-fort);
+  font-size: 14px;
 }
 
 .tp__actions {
-  display: flex;
-  gap: var(--ss-espace-2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+
+  @media (min-width: 900px) {
+    display: flex;
+    gap: var(--ss-espace-2);
+    margin-top: 0;
+    flex-shrink: 0;
+  }
 }
 
 .tp__bouton {
-  border: 2px solid var(--ss-bleu-sen-suivi);
+  height: 48px;
+  padding: 0 var(--ss-espace-3);
+  border: 1px solid var(--ss-bleu-sen-suivi);
   border-radius: var(--ss-rayon-bouton);
   background: var(--ss-bleu-sen-suivi);
   color: var(--ss-blanc);
-  padding: var(--ss-espace-1) var(--ss-espace-3);
-  font-weight: var(--ss-poids-texte-fort);
-  font-size: 15px;
+  font-family: inherit;
+  font-size: 16px;
+  box-shadow: var(--ss-ombre-carte);
   cursor: pointer;
 
   &:disabled {
-    opacity: 0.5;
-    cursor: progress;
+    opacity: 0.6;
+    cursor: default;
   }
 }
 
 .tp__bouton--contour {
+  border-color: var(--ss-gris-clair);
   background: var(--ss-blanc);
   color: var(--ss-bleu-profond);
-  border-color: var(--ss-gris-clair);
+  box-shadow: none;
+}
+
+// --- États -------------------------------------------------------------------------
+
+.tp__erreur {
+  margin: var(--ss-espace-2) 0 0;
+  color: var(--ss-rouge-alerte);
+  font-size: 14px;
 }
 
 .tp__etat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ss-espace-2);
-  padding: var(--ss-espace-5) 0;
-  color: var(--ss-gris-ardoise);
+  margin: var(--ss-espace-4) 0 0;
   text-align: center;
+  color: var(--ss-gris-ardoise);
+
+  p {
+    margin: var(--ss-espace-2) 0 0;
+  }
 }
 
-.tp__etat--erreur,
-.tp__erreur {
+.tp__etat--erreur {
   color: var(--ss-rouge-alerte);
 }
 
-.tp__aide {
-  margin-top: var(--ss-espace-3);
-  font-size: 13px;
-  color: var(--ss-gris-ardoise);
+// --- Pied de page (desktop) -----------------------------------------------------------
+
+.tp__pied {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ss-espace-3);
+    margin-top: auto;
+    padding-top: var(--ss-espace-6);
+    color: var(--ss-gris-ardoise);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.8;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.tp__pied-liens {
+  display: flex;
+  gap: var(--ss-espace-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

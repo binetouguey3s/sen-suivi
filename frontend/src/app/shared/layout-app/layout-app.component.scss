@@ -134,6 +134,17 @@
   color: var(--ss-gris-ardoise);
 }
 
+.layout-app__role--pro {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.layout-app__avatar--photo {
+  object-fit: cover;
+  background: var(--ss-gris-clair);
+}
+
 .layout-app__deconnexion {
   display: flex;
   border: none;

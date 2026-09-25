@@ -14,20 +14,50 @@
         }
         <ss-champ libelle="Nom" [(valeur)]="nom" autocomplete="family-name" [erreur]="erreurs()['nom'] ?? null" />
         <ss-champ libelle="Email" type="email" [(valeur)]="email" autocomplete="email" [erreur]="erreurs()['email'] ?? null" />
-        <div class="pa__select">
-          <label for="pa-ville">Ville</label>
-          <select id="pa-ville" [value]="ville()" (change)="ville.set($any($event.target).value)">
-            <option value="">Non renseignée</option>
-            @for (v of villes; track v) { <option [value]="v" [selected]="v === ville()">{{ v }}</option> }
-          </select>
-        </div>
         @if (estUtilisateur()) {
+          <div class="pa__select">
+            <label for="pa-ville">Ville</label>
+            <select id="pa-ville" [value]="ville()" (change)="ville.set($any($event.target).value)">
+              <option value="">Non renseignée</option>
+              @for (v of villes; track v) { <option [value]="v" [selected]="v === ville()">{{ v }}</option> }
+            </select>
+          </div>
           <p class="pa__aide">Votre ville sert à vous suggérer des professionnels près de chez vous.</p>
         }
         @if (infoEnregistre()) { <p class="pa__ok" role="status">Modifications enregistrées.</p> }
         <button type="submit" class="pa__bouton">Enregistrer les modifications</button>
       </form>
     </section>
+
+    @if (estProfessionnel()) {
+      <section class="pa__carte" id="fiche">
+        <h2>Ma fiche publique</h2>
+        <p class="pa__texte">Ces informations apparaissent sur votre profil, tel que les utilisateurs le voient.</p>
+        <form class="pa__formulaire" (submit)="enregistrerFiche($event)" novalidate>
+          <ss-champ libelle="Ville et quartier" [(valeur)]="ficheVille" placeholder="Ex. Dakar Point E" [erreur]="erreursFiche()['ville'] ?? null" />
+          <ss-champ libelle="Langues parlées" [(valeur)]="ficheLangue" placeholder="Ex. français, wolof" [erreur]="erreursFiche()['langue'] ?? null" />
+          <ss-champ libelle="Tarif indicatif par séance (FCFA)" type="number" [(valeur)]="ficheTarif" [erreur]="erreursFiche()['tarif_indicatif'] ?? null" />
+          <ss-champ libelle="Présentation" type="textarea" [(valeur)]="fichePresentation" [maxlength]="500" [lignes]="5" [erreur]="erreursFiche()['presentation'] ?? null" />
+          <ss-champ libelle="Domaines d'accompagnement" [(valeur)]="ficheDomaines" placeholder="Ex. Gestion du stress, Sommeil, Famille" [erreur]="erreursFiche()['domaines'] ?? null" />
+          <p class="pa__aide">Séparez les domaines par des virgules (8 au maximum).</p>
+
+          <div class="pa__modalite">
+            <div><strong>En cabinet</strong><p>Vous recevez en personne.</p></div>
+            <ss-interrupteur libelle="Consultation en cabinet" [(actif)]="ficheCabinet" />
+          </div>
+          @if (ficheCabinet()) {
+            <ss-champ libelle="Adresse du cabinet" [(valeur)]="ficheAdresse" placeholder="Ex. Quartier Point E, Dakar" [erreur]="erreursFiche()['adresse_cabinet'] ?? null" />
+          }
+          <div class="pa__modalite">
+            <div><strong>À distance</strong><p>Vous échangez en visio ou par téléphone.</p></div>
+            <ss-interrupteur libelle="Consultation à distance" [(actif)]="ficheDistance" />
+          </div>
+
+          @if (ficheEnregistree()) { <p class="pa__ok" role="status">Votre fiche a été mise à jour.</p> }
+          <button type="submit" class="pa__bouton">Enregistrer ma fiche</button>
+        </form>
+      </section>
+    }
 
     <section class="pa__carte" id="securite">
       <h2>Sécurité</h2>
@@ -42,12 +72,15 @@
     <section class="pa__carte" id="notifications">
       <h2>Notifications</h2>
       <div class="pa__notif-entete" aria-hidden="true"><span>E-mail</span><span>Push</span></div>
-      @for (n of notifications; track n.cle) {
+      @for (n of notifications(); track n.cle) {
         <div class="pa__notif">
           <div><strong>{{ n.titre }}</strong><p>{{ n.texte }}</p></div>
           <ss-interrupteur [libelle]="n.titre + ' par e-mail'" [actif]="actif(n.cle, 'email')" (actifChange)="basculer(n.cle, 'email', $event)" />
           <ss-interrupteur [libelle]="n.titre + ' en notification push'" [actif]="actif(n.cle, 'push')" (actifChange)="basculer(n.cle, 'push', $event)" />
         </div>
+      }
+      @if (estProfessionnel()) {
+        <p class="pa__aide">Les messages importants sur votre compte, comme la validation de votre profil, vous sont toujours envoyés.</p>
       }
     </section>
 
@@ -65,7 +98,11 @@
     <section class="pa__carte pa__carte--danger" id="suppression">
       <h2>Supprimer mon compte</h2>
       <div class="pa__danger">
-        <p>Cette action est irréversible. Toutes vos données, votre journal et votre historique seront définitivement supprimés.</p>
+        @if (estProfessionnel()) {
+          <p>Cette action est irréversible. Votre fiche, vos demandes et toutes vos données seront définitivement supprimées.</p>
+        } @else {
+          <p>Cette action est irréversible. Toutes vos données, votre journal et votre historique seront définitivement supprimés.</p>
+        }
         <button type="button" class="pa__bouton pa__bouton--danger" (click)="suppressionOuverte.set(true)">
           <ss-icon nom="danger" taille="sm" /> Supprimer définitivement mon compte
         </button>

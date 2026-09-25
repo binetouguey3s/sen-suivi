@@ -1,18 +1,44 @@
 <header class="tp__entete">
   <h1>Bonjour {{ auth.nom() }}</h1>
-  <p>Heureux de vous revoir. Voici l'état de vos demandes aujourd'hui.</p>
+  <p><span class="tp__desktop">Heureux de vous revoir. </span>Voici l'état de vos demandes aujourd'hui.</p>
 </header>
 
 <div class="tp__stats">
-  <section class="tp__stat"><p>Demandes en attente</p><strong>{{ enAttente().length }}</strong></section>
-  <section class="tp__stat"><p>Demandes acceptées ce mois</p><strong>{{ accepteesCeMois() }}</strong></section>
-  <section class="tp__stat"><p>Statut du profil</p><span class="tp__verifie"><ss-icon nom="verifie" taille="sm" /> Vérifié</span></section>
+  <section class="tp__stat">
+    <div class="tp__stat-tete">
+      <p class="tp__stat-libelle"><span class="tp__desktop">Demandes en attente</span><span class="tp__mobile">En attente</span></p>
+      <span class="tp__stat-icone tp__mobile" aria-hidden="true"><ss-icon nom="courriel" taille="sm" /></span>
+    </div>
+    <strong class="tp__stat-valeur">{{ enAttente().length }}</strong>
+    <ss-sparkline class="tp__courbe" [valeurs]="courbeAttente()" />
+  </section>
+
+  <section class="tp__stat">
+    <p class="tp__stat-libelle"><span class="tp__desktop">Demandes acceptées ce mois</span><span class="tp__mobile">Acceptées ce mois</span></p>
+    <strong class="tp__stat-valeur">{{ accepteesCeMois() }}</strong>
+    <ss-sparkline class="tp__courbe" [valeurs]="courbeAcceptees()" />
+  </section>
+
+  <section class="tp__stat tp__stat--statut">
+    <div>
+      <p class="tp__stat-libelle">Statut du profil</p>
+      <span class="tp__verifie"><span class="tp__verifie-point" aria-hidden="true"></span>Vérifié</span>
+    </div>
+    <ss-sparkline class="tp__courbe" [valeurs]="courbeStatut" />
+  </section>
 </div>
 
 <div class="tp__onglets" role="tablist">
   @for (o of onglets; track o.valeur) {
-    <button type="button" role="tab" [attr.aria-selected]="onglet() === o.valeur" [class.tp__onglet--actif]="onglet() === o.valeur" (click)="onglet.set(o.valeur)">
-      {{ o.libelle }} ({{ compte(o.valeur) }})
+    <button
+      type="button"
+      role="tab"
+      class="tp__onglet"
+      [attr.aria-selected]="onglet() === o.valeur"
+      [class.tp__onglet--actif]="onglet() === o.valeur"
+      (click)="onglet.set(o.valeur)"
+    >
+      {{ o.libelle }}@if (o.valeur === 'EN_ATTENTE') { ({{ enAttente().length }}) }
     </button>
   }
 </div>
@@ -33,12 +59,17 @@
     @for (d of affichees(); track d.id) {
       <li class="tp__demande">
         <div class="tp__contenu">
-          <p class="tp__identite">
-            <strong>{{ d.nom ?? d.pseudonyme }}</strong>
-            @if (d.ville) { <span><ss-icon nom="lieux" taille="sm" /> {{ d.ville }}</span> }
-            <span><ss-icon nom="horloge" taille="sm" /> {{ depuis(d.date) }}</span>
-          </p>
-          <p class="tp__message">{{ d.message ? '« ' + d.message + ' »' : 'Aucun message joint.' }}</p>
+          <div class="tp__identite">
+            <h2 class="tp__nom">{{ d.nom ?? d.pseudonyme }}</h2>
+            @if (d.ville) {
+              <span class="tp__meta tp__meta--lieu"><ss-icon nom="lieux" taille="sm" /> {{ d.ville }}</span>
+            }
+            <span class="tp__meta tp__meta--date">
+              <ss-icon nom="horloge" taille="sm" />
+              <span class="tp__desktop">{{ depuis(d.date) }}</span><span class="tp__mobile">{{ depuisCourt(d.date) }}</span>
+            </span>
+          </div>
+          <p class="tp__message">{{ d.message ? '"' + d.message + '"' : 'Aucun message joint.' }}</p>
           @if (d.statut === 'ACCEPTEE' && d.email) {
             <p class="tp__contact"><ss-icon nom="courriel" taille="sm" /> {{ d.email }}</p>
           }
@@ -52,5 +83,13 @@
       </li>
     }
   </ul>
-  <p class="tp__aide">L'identité complète d'un utilisateur n'est révélée qu'après l'acceptation de sa demande.</p>
 }
+
+<footer class="tp__pied">
+  <p>© {{ annee }} Sen Suivi — Espace professionnel</p>
+  <ul class="tp__pied-liens">
+    <li>Aide</li>
+    <li>Confidentialité</li>
+    <li>Conditions</li>
+  </ul>
+</footer>

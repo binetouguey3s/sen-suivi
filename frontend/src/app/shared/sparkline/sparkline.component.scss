@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  height: 64px;
+}
+
+.sparkline {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+// ngx-charts prend la taille du parent et y réserve une marge interne de 10px
+// en haut et en bas et de 20px sur les côtés : chaque calque déborde d'autant
+// pour que la courbe occupe toute la largeur de la carte.
+.sparkline__calque {
+  position: absolute;
+  inset: -10px -20px;
+}
+
+// Surface pleine et pâle, sans dégradé, comme sur la maquette
+:host ::ng-deep .sparkline__surface .area {
+  fill: var(--ss-menthe-pale);
+  opacity: 1;
+}
+
+:host ::ng-deep .sparkline__trait .line {
+  stroke: var(--ss-menthe);
+  stroke-width: 3px;
+  stroke-linecap: round;
+}

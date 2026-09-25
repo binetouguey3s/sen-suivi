@@ -351,8 +351,13 @@
   width: 56px;
   height: 56px;
   right: var(--ss-espace-3);
+  // Relevée par une page qui fixe sa propre barre en bas de l'écran (mobile)
   bottom: var(--ss-espace-3);
   border-radius: 50%;
+
+  @media (max-width: 899px) {
+    bottom: var(--ss-chat-decalage, var(--ss-espace-3));
+  }
   border: none;
   background: var(--ss-bleu-profond);
   color: var(--ss-blanc);

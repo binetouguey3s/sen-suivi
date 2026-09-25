@@ -22,10 +22,18 @@
     </nav>
 
     <div class="layout-app__profil">
-      <span class="layout-app__avatar">{{ initiales() }}</span>
+      @if (portrait(); as src) {
+        <img class="layout-app__avatar layout-app__avatar--photo" [src]="src" alt="" />
+      } @else {
+        <span class="layout-app__avatar">{{ initiales() }}</span>
+      }
       <div class="layout-app__identite">
         <p class="layout-app__profil-nom">{{ nomAffiche() }}</p>
-        <span class="layout-app__role">{{ estProfessionnel() ? 'Professionnel' : 'Utilisateur' }}</span>
+        @if (estProfessionnel()) {
+          <span class="layout-app__role layout-app__role--pro">{{ specialite() ?? 'Professionnel' }}</span>
+        } @else {
+          <span class="layout-app__role">Utilisateur</span>
+        }
       </div>
       <button type="button" class="layout-app__deconnexion" aria-label="Se déconnecter" (click)="deconnecter()">
         <ss-icon nom="deconnexion" taille="sm" />
@@ -38,7 +46,9 @@
       <img class="layout-app__logo layout-app__logo--mobile" src="/logo-sen-suivi.png" alt="Sen Suivi" />
       <span class="layout-app__actions-mobile">
         <ss-cloche-notifications />
-        <span class="layout-app__avatar layout-app__avatar--mobile">{{ initiales() }}</span>
+        @if (!estProfessionnel()) {
+          <span class="layout-app__avatar layout-app__avatar--mobile">{{ initiales() }}</span>
+        }
         <button
           type="button"
           class="layout-app__menu-bouton"
@@ -57,9 +67,11 @@
     <main class="layout-app__contenu">
       <router-outlet />
 
-      <button type="button" class="layout-app__urgence" (click)="modaleUrgenceOuverte.set(true)">
-        <ss-icon nom="telephone" taille="sm" /> Besoin d'aide tout de suite
-      </button>
+      @if (!estProfessionnel()) {
+        <button type="button" class="layout-app__urgence" (click)="modaleUrgenceOuverte.set(true)">
+          <ss-icon nom="telephone" taille="sm" /> Besoin d'aide tout de suite
+        </button>
+      }
     </main>
   </div>
 
@@ -77,7 +89,9 @@
         <span>{{ lien.libelleMobile ?? lien.libelle }}</span>
       </a>
     }
-    <span class="layout-app__nav-mobile-espace" aria-hidden="true"></span>
+    @if (!estProfessionnel()) {
+      <span class="layout-app__nav-mobile-espace" aria-hidden="true"></span>
+    }
     @for (lien of liensMobile().droite; track lien.route) {
       <a class="layout-app__lien-mobile" [routerLink]="lien.route" routerLinkActive="layout-app__lien-mobile--actif" [routerLinkActiveOptions]="{ exact: !!lien.exact }">
         <ss-icon [nom]="lien.icone" />

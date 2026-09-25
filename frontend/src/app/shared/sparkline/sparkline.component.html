@@ -1,0 +1,32 @@
+<div class="sparkline" aria-hidden="true">
+  <div class="sparkline__calque sparkline__surface">
+    <ngx-charts-area-chart
+      [results]="series()"
+      [scheme]="palette"
+      [curve]="courbe"
+      [xAxis]="false"
+      [yAxis]="false"
+      [legend]="false"
+      [tooltipDisabled]="true"
+      [animations]="false"
+      [autoScale]="false"
+      [yScaleMin]="0"
+      [yScaleMax]="maximum()"
+    />
+  </div>
+  <div class="sparkline__calque sparkline__trait">
+    <ngx-charts-line-chart
+      [results]="series()"
+      [scheme]="palette"
+      [curve]="courbe"
+      [xAxis]="false"
+      [yAxis]="false"
+      [legend]="false"
+      [tooltipDisabled]="true"
+      [animations]="false"
+      [autoScale]="false"
+      [yScaleMin]="0"
+      [yScaleMax]="maximum()"
+    />
+  </div>
+</div>

@@ -126,6 +126,26 @@
   }
 }
 
+// Fiche publique : modalités d'échange (libellé + interrupteur)
+.pa__modalite {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ss-espace-2);
+  padding: 12px 0;
+  border-top: 1px solid var(--ss-gris-clair);
+
+  strong {
+    color: var(--ss-bleu-profond);
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ss-gris-ardoise);
+  }
+}
+
 .pa__notif {
   display: grid;
   grid-template-columns: 1fr 56px 56px;
