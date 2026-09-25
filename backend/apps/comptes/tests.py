@@ -161,3 +161,50 @@ class ForceBruteConnexionTests(APITestCase):
                 HTTP_X_FORWARDED_FOR=f'192.168.1.{i}',
             )
         self.assertEqual(self.connecter(ip='10.0.0.7').status_code, 429)
+
+
+# ---------------------------------------------------------------------
+# Fiche publique du professionnel (GET/PATCH /api/professionnels/moi)
+# ---------------------------------------------------------------------
+
+
+class FicheProfessionnelTests(APITestCase):
+    url = '/api/professionnels/moi'
+
+    def setUp(self):
+        self.professionnel = creer_professionnel(StatutValidationPro.VALIDE, 'fiche@test.sn')
+        self.client.force_authenticate(self.professionnel)
+
+    def test_domaines_nettoyes_et_sans_doublon(self):
+        reponse = self.client.patch(
+            self.url, {'domaines': [' Gestion du stress ', '', 'gestion du stress', 'Famille']}, format='json'
+        )
+        self.assertEqual(reponse.status_code, 200)
+        self.assertEqual(reponse.data['domaines'], ['Gestion du stress', 'Famille'])
+
+    def test_cabinet_sans_adresse_refuse(self):
+        reponse = self.client.patch(self.url, {'consultation_cabinet': True, 'adresse_cabinet': ' '}, format='json')
+        self.assertEqual(reponse.status_code, 400)
+        self.assertIn('adresse_cabinet', reponse.data)
+
+    def test_nom_et_statut_non_modifiables(self):
+        self.client.patch(self.url, {'nom': 'Autre nom', 'statut_validation': 'REFUSE'}, format='json')
+        self.professionnel.refresh_from_db()
+        self.assertEqual(self.professionnel.nom, 'Test Pro')
+        self.assertEqual(self.professionnel.statut_validation, StatutValidationPro.VALIDE)
+
+    def test_fiche_publique_expose_les_modalites(self):
+        self.client.patch(
+            self.url,
+            {'domaines': ['Sommeil'], 'consultation_cabinet': True, 'adresse_cabinet': 'Point E, Dakar'},
+            format='json',
+        )
+        reponse = self.client.get(f'/api/professionnels/{self.professionnel.pk}')
+        self.assertEqual(reponse.data['domaines'], ['Sommeil'])
+        self.assertEqual(reponse.data['adresse_cabinet'], 'Point E, Dakar')
+        self.assertNotIn('email', reponse.data)
+
+    def test_reserve_aux_professionnels(self):
+        utilisateur = Utilisateur.objects.create(email='curieux@test.sn', nom='Test', prenom='User')
+        self.client.force_authenticate(utilisateur)
+        self.assertEqual(self.client.get(self.url).status_code, 403)

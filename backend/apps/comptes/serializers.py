@@ -56,7 +56,57 @@ class ProfessionnelPublicSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'nom', 'specialite', 'specialite_affichee',
             'ville', 'langue', 'tarif_indicatif', 'presentation',
+            'domaines', 'consultation_cabinet', 'adresse_cabinet', 'consultation_distance',
         ]
+
+
+DOMAINES_MAX = 8
+DOMAINE_LONGUEUR_MAX = 40
+
+
+class ProfessionnelProfilSerializer(serializers.ModelSerializer):
+    """GET/PATCH /api/professionnels/moi : le professionnel complète sa fiche publique.
+
+    Le nom, la spécialité et le statut de validation n'en font pas partie :
+    ils relèvent de l'inscription et de l'administration.
+    """
+
+    specialite_affichee = serializers.CharField(source='get_specialite_display', read_only=True)
+    domaines = serializers.ListField(
+        child=serializers.CharField(max_length=DOMAINE_LONGUEUR_MAX, allow_blank=True),
+        max_length=DOMAINES_MAX,
+        required=False,
+    )
+
+    class Meta:
+        model = Professionnel
+        fields = [
+            'id', 'nom', 'specialite_affichee',
+            'ville', 'langue', 'tarif_indicatif', 'presentation',
+            'domaines', 'consultation_cabinet', 'adresse_cabinet', 'consultation_distance',
+        ]
+        read_only_fields = ['id', 'nom']
+
+    def validate_domaines(self, domaines):
+        # Libellés nettoyés, sans vide ni doublon, dans l'ordre saisi
+        propres = []
+        for domaine in domaines:
+            domaine = domaine.strip()
+            if domaine and domaine.lower() not in (d.lower() for d in propres):
+                propres.append(domaine)
+        return propres
+
+    def validate_tarif_indicatif(self, tarif):
+        if tarif < 0:
+            raise serializers.ValidationError('Le tarif ne peut pas être négatif.')
+        return tarif
+
+    def validate(self, donnees):
+        cabinet = donnees.get('consultation_cabinet', getattr(self.instance, 'consultation_cabinet', False))
+        adresse = donnees.get('adresse_cabinet', getattr(self.instance, 'adresse_cabinet', ''))
+        if cabinet and not adresse.strip():
+            raise serializers.ValidationError({'adresse_cabinet': "Indiquez l'adresse du cabinet."})
+        return donnees
 
 
 class ProfessionnelLectureSerializer(serializers.ModelSerializer):

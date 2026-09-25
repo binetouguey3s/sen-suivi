@@ -14,6 +14,7 @@ urlpatterns = [
     path('professionnels/inscription', views.InscriptionProfessionnelView.as_view()),
     path('professionnels/valides', views.ProfessionnelPublicListView.as_view()),
     path('professionnels', views.ProfessionnelListView.as_view()),
+    path('professionnels/moi', views.ProfessionnelMoiView.as_view()),
     path('professionnels/<int:pk>', views.ProfessionnelDetailView.as_view()),
     path('administration/vue-ensemble', views.VueEnsembleAdminView.as_view()),
 ]

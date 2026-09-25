@@ -155,6 +155,12 @@ class Professionnel(CompteUtilisateur):
     tarif_indicatif = models.FloatField('tarif indicatif (FCFA)')
     # Ajoutés suite à la correction du diagramme de classes.
     presentation = models.TextField('présentation', blank=True, max_length=500)
+    # Ajoutés pour la fiche publique du professionnel : domaines
+    # d'accompagnement (liste de libellés courts) et modalités d'échange.
+    domaines = models.JSONField("domaines d'accompagnement", default=list, blank=True)
+    consultation_cabinet = models.BooleanField('consultation en cabinet', default=False)
+    adresse_cabinet = models.CharField('adresse du cabinet', max_length=150, blank=True)
+    consultation_distance = models.BooleanField('consultation à distance', default=False)
     date_validation = models.DateTimeField('date de validation', null=True, blank=True)
     statut_validation = models.CharField(
         'statut de validation',

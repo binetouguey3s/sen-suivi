@@ -79,6 +79,52 @@ PROFESSIONNELS = [
     ('Ibrahima Kane', 'Coach en développement personnel', 'Ziguinchor', 'français', 11000, StatutValidationPro.EN_ATTENTE),
 ]
 
+# Fiche publique des professionnels validés : complétée seulement si vide,
+# pour ne jamais écraser ce qu'un professionnel a modifié lui-même.
+FICHES_PROFESSIONNELS = {
+    'Aminata Ba': {
+        'presentation': (
+            "Psychologue, j'accompagne les adultes et les étudiants qui traversent une période "
+            "de stress ou de doute. Mon approche repose sur l'écoute active et la bienveillance, "
+            "dans un espace de parole confidentiel, attentif au contexte de vie au Sénégal."
+        ),
+        'domaines': ['Gestion du stress', 'Études', 'Famille', 'Confiance en soi'],
+        'consultation_cabinet': True,
+        'adresse_cabinet': 'Quartier Point E, Dakar',
+        'consultation_distance': True,
+    },
+    'Moussa Diop': {
+        'presentation': (
+            "Médiateur familial, j'aide les familles à renouer le dialogue et à trouver ensemble "
+            "des solutions apaisées, dans le respect de chacun."
+        ),
+        'domaines': ['Famille', 'Relations', 'Communication'],
+        'consultation_cabinet': True,
+        'adresse_cabinet': 'Centre-ville, Thiès',
+        'consultation_distance': False,
+    },
+    'Sokhna Mbaye': {
+        'presentation': (
+            "Sophrologue, je propose des exercices de respiration et de relaxation pour mieux "
+            "gérer le stress, retrouver un sommeil serein et reprendre confiance."
+        ),
+        'domaines': ['Gestion du stress', 'Sommeil', 'Respiration'],
+        'consultation_cabinet': False,
+        'adresse_cabinet': '',
+        'consultation_distance': True,
+    },
+    'Ousmane Sow': {
+        'presentation': (
+            "Coach sportif, j'accompagne chacun vers une activité physique régulière, adaptée "
+            "à son rythme, pour se sentir mieux dans son corps et dans sa tête."
+        ),
+        'domaines': ['Activité physique', 'Énergie', 'Confiance en soi'],
+        'consultation_cabinet': True,
+        'adresse_cabinet': 'Corniche Ouest, Dakar Ouakam',
+        'consultation_distance': True,
+    },
+}
+
 LIEUX = [
     ('Plage de Ngor', 'Dakar', 'Plage'),
     ('Île de Gorée', 'Dakar', 'Île'),
@@ -199,6 +245,12 @@ class Command(BaseCommand):
             if cree:
                 professionnel.set_password(MOT_DE_PASSE_DEMO)
                 professionnel.save()
+            fiche = FICHES_PROFESSIONNELS.get(nom, {})
+            a_completer = {champ: valeur for champ, valeur in fiche.items() if not getattr(professionnel, champ)}
+            if a_completer:
+                for champ, valeur in a_completer.items():
+                    setattr(professionnel, champ, valeur)
+                professionnel.save(update_fields=list(a_completer))
             if statut == StatutValidationPro.VALIDE and professionnel_valide is None:
                 professionnel_valide = professionnel
         return professionnel_valide

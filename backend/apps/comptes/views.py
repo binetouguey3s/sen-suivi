@@ -15,7 +15,7 @@ from apps.notifications.services import declencher_workflow
 
 from .mixins import LimitationTentativesConnexionMixin
 from .models import Professionnel, StatutValidationPro
-from .permissions import EstAdministrateur
+from .permissions import EstAdministrateur, EstProfessionnelValide
 from .services import confirmer_reinitialisation, demander_reinitialisation
 from .serializers import (
     ChangementMotDePasseSerializer,
@@ -27,6 +27,7 @@ from .serializers import (
     InscriptionUtilisateurSerializer,
     LoginSerializer,
     ProfessionnelLectureSerializer,
+    ProfessionnelProfilSerializer,
     ProfessionnelPublicSerializer,
     ProfessionnelValidationSerializer,
 )
@@ -79,6 +80,17 @@ class ProfessionnelListView(generics.ListAPIView):
                 Q(nom__icontains=recherche) | Q(email__icontains=recherche) | Q(ville__icontains=recherche)
             )
         return queryset
+
+
+class ProfessionnelMoiView(generics.RetrieveUpdateAPIView):
+    """GET/PATCH /api/professionnels/moi — la fiche publique du professionnel connecté."""
+
+    permission_classes = [EstProfessionnelValide]
+    serializer_class = ProfessionnelProfilSerializer
+    http_method_names = ['get', 'patch']
+
+    def get_object(self):
+        return self.request.user.professionnel
 
 
 class ProfessionnelDetailView(generics.RetrieveUpdateAPIView):
@@ -160,8 +172,8 @@ class VueEnsembleAdminView(APIView):
 
     Volontairement dépourvue de tout chiffre d'usage ou de performance (règle :
     « aucun chiffre d'usage ou de performance dans l'interface ») : uniquement
-    les actions réelles qui attendent une
-    décision, comptées dans la base, jamais une tendance ou un pourcentage.
+    les actions réelles qui attendent une décision, comptées dans la base,
+    jamais une tendance ou un pourcentage.
     """
 
     permission_classes = [EstAdministrateur]
