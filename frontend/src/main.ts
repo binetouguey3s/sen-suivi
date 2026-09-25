@@ -1,5 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { AppComponent } from './app/app.component';
@@ -10,5 +11,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([jwtInterceptor])),
+    // Requis par ngx-charts (graphiques du tableau de bord professionnel)
+    provideAnimationsAsync(),
   ],
 }).catch((error) => console.error(error));
