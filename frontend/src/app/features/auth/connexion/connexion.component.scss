@@ -4,8 +4,13 @@
 
 .connexion__titre {
   text-align: center;
-  font-size: 28px;
-  font-weight: var(--ss-poids-titre);
+  font-size: 26px;
+  font-weight: var(--ss-poids-texte-fort);
+  line-height: 1.15;
+
+  @media (min-width: 900px) {
+    font-size: 30px;
+  }
   color: var(--ss-bleu-sen-suivi);
   margin-bottom: var(--ss-espace-4);
 }

@@ -1,13 +1,11 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: var(--ss-fond-public);
+  background: var(--ss-gris-clair);
 }
 
 .la {
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto;
   min-height: 100vh;
 
   @media (min-width: 900px) {
@@ -15,70 +13,62 @@
   }
 }
 
+// Photo en pleine hauteur, fixe pendant que la colonne de droite défile
 .la__illustration {
   display: none;
 
   @media (min-width: 900px) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--ss-espace-4);
-    padding: var(--ss-espace-6);
-    background: linear-gradient(160deg, var(--ss-bleu-profond) 0%, var(--ss-bleu-sen-suivi) 100%);
+    display: block;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--ss-bleu-sen-suivi);
   }
 }
 
-.la__image {
-  width: 100%;
-  max-width: 320px;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--ss-rayon-carte);
-  overflow: hidden;
-}
-
 .la__photo {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 30%;
 }
 
-.la__citation {
-  max-width: 320px;
-  text-align: center;
-  color: var(--ss-blanc);
-  font-family: var(--ss-police-titres);
-  font-weight: var(--ss-poids-titre);
-  font-size: 22px;
-  line-height: var(--ss-hauteur-ligne-titre);
-  margin: 0;
+.la__colonne {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
 }
 
 .la__contenu {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--ss-espace-4) var(--ss-marge-mobile);
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-5) var(--ss-marge-desktop);
+    padding: var(--ss-espace-6) var(--ss-espace-5);
   }
 }
 
 .la__carte {
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
+  padding: var(--ss-espace-4) var(--ss-espace-3);
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-fond-carte);
+  box-shadow: var(--ss-ombre-carte);
 
   @media (min-width: 900px) {
-    background: var(--ss-fond-carte);
-    border-radius: var(--ss-rayon-carte);
-    box-shadow: var(--ss-ombre-carte);
-    padding: var(--ss-espace-5);
+    padding: var(--ss-espace-4) var(--ss-espace-5) var(--ss-espace-5);
   }
 }
 
 .la__carte--large {
-  max-width: 560px;
+  max-width: 640px;
 }
 
 .la__logo {
@@ -89,20 +79,20 @@
 }
 
 .la__pied {
-  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--ss-espace-1);
   padding: var(--ss-espace-3) var(--ss-marge-mobile);
-  border-top: 1px solid var(--ss-gris-clair);
+  border-top: 1px solid var(--ss-blanc);
   font-size: 13px;
   color: var(--ss-gris-ardoise);
 
   @media (min-width: 900px) {
     flex-direction: row;
     justify-content: space-between;
-    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+    padding: var(--ss-espace-3) var(--ss-espace-6);
+    font-size: 14px;
   }
 }
 

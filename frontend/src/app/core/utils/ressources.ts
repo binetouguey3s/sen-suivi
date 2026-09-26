@@ -29,6 +29,7 @@ export type BlocContenu =
   | { genre: 'citation'; texte: string }
   | { genre: 'paragraphe'; texte: string };
 
+// Permet de decouper le contenu d'une ressource en blocs.
 export function decouperContenu(contenu: string): BlocContenu[] {
   return contenu
     .split(/\n\s*\n/)

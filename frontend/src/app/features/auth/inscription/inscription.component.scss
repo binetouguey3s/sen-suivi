@@ -14,11 +14,16 @@
 .ins__onglet {
   flex: 1;
   text-align: center;
-  padding: var(--ss-espace-1) var(--ss-espace-2);
+  padding: var(--ss-espace-1) 6px;
   border-radius: var(--ss-rayon-champ);
   color: var(--ss-gris-ardoise);
   font-size: 14px;
   text-decoration: none;
+
+  // Sur une ligne dès que la carte est assez large
+  @media (min-width: 900px) {
+    white-space: nowrap;
+  }
 }
 
 .ins__onglet--actif {

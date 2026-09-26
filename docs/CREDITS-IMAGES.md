@@ -29,6 +29,19 @@ Profils des auteurs :
 Source du portrait Nappy :
 https://nappy.co/photo/women-in-tech-87%2B7FMjeU_s9bb_mZ-5NpaHo
 
+## Page d'accueil
+
+Originaux conservés dans images-brutes/accueil/.
+
+| Fichier | Original | Source | Licence |
+|---|---|---|---|
+| bandeau.webp | accueil.jpg | À compléter | À compléter |
+| stress.webp | belle.jpg | À compléter | À compléter |
+| anxiete.webp | femme joyeuse.jpg | À compléter | À compléter |
+| fatigue.webp | femme belle.jpg | À compléter | À compléter |
+| fonctionnement.webp | sourire.jpg | À compléter | À compléter |
+| appel.webp | joyeux.jpg | À compléter | À compléter |
+
 ## Illustrations
 
 Illustrations vectorielles issues d'unDraw (undraw.co), licence unDraw,

@@ -4,18 +4,22 @@
   </a>
 
   <nav class="lp__nav" aria-label="Navigation principale">
-    <a routerLink="/" routerLinkActive="lp__lien--actif" [routerLinkActiveOptions]="{ exact: true }">Découvrir</a>
-    <a routerLink="/ressources" routerLinkActive="lp__lien--actif">Ressources</a>
-    <a routerLink="/lieux" routerLinkActive="lp__lien--actif">Lieux</a>
-    <a [routerLink]="auth.estConnecte() ? '/app' : '/connexion'">Mon Suivi</a>
+    @for (lien of liens; track lien.libelle) {
+      <a
+        [routerLink]="lien.route"
+        [fragment]="lien.ancre"
+        routerLinkActive="lp__lien--actif"
+        [routerLinkActiveOptions]="lien.options"
+      >{{ lien.libelle }}</a>
+    }
   </nav>
 
   <div class="lp__compte">
     @if (auth.estConnecte()) {
-      <a class="lp__avatar" routerLink="/app" [attr.aria-label]="'Mon espace, ' + auth.prenom()">{{ initiales() }}</a>
+      <a class="lp__avatar" [routerLink]="auth.espaceAccueil()" [attr.aria-label]="'Mon espace, ' + nomAffiche()">{{ initiales() }}</a>
     } @else {
       <a class="lp__bouton-texte" routerLink="/connexion">Se connecter</a>
-      <a class="lp__bouton-plein" routerLink="/inscription">Créer un compte</a>
+      <a class="lp__bouton-plein" routerLink="/inscription">Commencer gratuitement</a>
     }
   </div>
 
@@ -42,23 +46,28 @@
   </button>
 
   <nav class="lp__tiroir-nav" aria-label="Navigation principale">
-    <a routerLink="/" routerLinkActive="lp__tiroir-lien--actif" [routerLinkActiveOptions]="{ exact: true }" (click)="menuOuvert.set(false)">Découvrir</a>
-    <a routerLink="/ressources" routerLinkActive="lp__tiroir-lien--actif" (click)="menuOuvert.set(false)">Ressources</a>
-    <a routerLink="/lieux" routerLinkActive="lp__tiroir-lien--actif" (click)="menuOuvert.set(false)">Lieux</a>
-    <a [routerLink]="auth.estConnecte() ? '/app' : '/connexion'" (click)="menuOuvert.set(false)">Mon Suivi</a>
+    @for (lien of liens; track lien.libelle) {
+      <a
+        [routerLink]="lien.route"
+        [fragment]="lien.ancre"
+        routerLinkActive="lp__tiroir-lien--actif"
+        [routerLinkActiveOptions]="lien.options"
+        (click)="menuOuvert.set(false)"
+      >{{ lien.libelle }}</a>
+    }
   </nav>
 
   <div class="lp__tiroir-compte">
     @if (auth.estConnecte()) {
       <div class="lp__tiroir-profil">
         <span class="lp__avatar">{{ initiales() }}</span>
-        <a class="lp__tiroir-nom" routerLink="/app" (click)="menuOuvert.set(false)">{{ nomAffiche() }}</a>
+        <a class="lp__tiroir-nom" [routerLink]="auth.espaceAccueil()" (click)="menuOuvert.set(false)">{{ nomAffiche() }}</a>
         <button type="button" class="lp__deconnexion" aria-label="Se déconnecter" (click)="deconnecter()">
           <ss-icon nom="deconnexion" taille="sm" />
         </button>
       </div>
     } @else {
-      <a class="lp__bouton-plein" routerLink="/inscription" (click)="menuOuvert.set(false)">Créer un compte</a>
+      <a class="lp__bouton-plein" routerLink="/inscription" (click)="menuOuvert.set(false)">Commencer gratuitement</a>
       <a class="lp__bouton-contour" routerLink="/connexion" (click)="menuOuvert.set(false)">Se connecter</a>
     }
   </div>
@@ -69,12 +78,23 @@
 </main>
 
 <footer class="lp__pied">
+  <!-- Urgence : bande sur desktop, carte sur mobile -->
   <div class="lp__urgence">
-    <p>
-      <strong class="lp__urgence-etiquette">Urgent :</strong>
-      En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>.
+    <p class="lp__urgence-texte">
+      <ss-icon nom="appel" taille="sm" />
+      <strong>Numéros d'urgence Sénégal :</strong>
+      <span>800 805 805 (écoute) · 1515 (SAMU) · 18 (sapeurs-pompiers)</span>
     </p>
-    <button type="button" (click)="modaleUrgenceOuverte.set(true)">Liste des numéros d'urgence</button>
+    <button type="button" class="lp__urgence-lien" (click)="modaleUrgenceOuverte.set(true)">Besoin d'aide immédiate ? Cliquez ici</button>
+  </div>
+
+  <div class="lp__urgence-carte">
+    <ss-icon nom="appel" taille="lg" />
+    <h2>Besoin d'une aide urgente ?</h2>
+    <p>Appelez gratuitement le numéro vert d'écoute ou le SAMU.</p>
+    <strong class="lp__urgence-numeros">800 805 805 / 1515</strong>
+    <a class="lp__urgence-appeler" href="tel:800805805">Appeler maintenant</a>
+    <button type="button" class="lp__urgence-tous" (click)="modaleUrgenceOuverte.set(true)">Tous les numéros d'urgence</button>
   </div>
 
   <div class="lp__colonnes">
@@ -82,22 +102,45 @@
       <p class="lp__nom">Sen Suivi</p>
       <p>Prévention et suivi du bien-être mental, pensés pour la jeunesse sénégalaise. Sen Suivi ne remplace pas un professionnel de santé.</p>
     </div>
-    <div class="lp__colonne">
-      <h2>Plateforme</h2>
-      <a routerLink="/ressources">Bibliothèque</a>
-      <a routerLink="/lieux">Lieux de détente</a>
-      <a [routerLink]="auth.estConnecte() ? '/app' : '/connexion'">Journal d'humeur</a>
-      <a [routerLink]="auth.estConnecte() ? '/app/evaluation/STRESS' : '/connexion'">Auto-évaluation</a>
-    </div>
-    <div class="lp__colonne">
-      <h2>Ressources</h2>
-      <a routerLink="/ressources" [queryParams]="{ format: 'ARTICLE' }">Articles</a>
-      <a routerLink="/ressources" [queryParams]="{ format: 'EXERCICE' }">Exercices pratiques</a>
-      <a routerLink="/ressources" [queryParams]="{ format: 'PODCAST' }">Podcasts</a>
-    </div>
+
+    <details class="lp__colonne" [open]="colonnesOuvertes">
+      <summary>Plateforme <ss-icon nom="chevron-bas" taille="sm" /></summary>
+      <div class="lp__liens">
+        <a routerLink="/ressources">Bibliothèque</a>
+        <a routerLink="/lieux">Lieux de détente</a>
+        <a [routerLink]="auth.estConnecte() ? '/app/journal' : '/connexion'">Journal d'humeur</a>
+        <a [routerLink]="auth.estConnecte() ? '/app/evaluation/STRESS' : '/connexion'">Auto-évaluation</a>
+      </div>
+    </details>
+
+    <details class="lp__colonne" [open]="colonnesOuvertes">
+      <summary>Ressources <ss-icon nom="chevron-bas" taille="sm" /></summary>
+      <div class="lp__liens">
+        <a routerLink="/ressources" [queryParams]="{ format: 'ARTICLE' }">Articles</a>
+        <a routerLink="/ressources" [queryParams]="{ format: 'EXERCICE' }">Exercices pratiques</a>
+        <a routerLink="/ressources" [queryParams]="{ format: 'PODCAST' }">Podcasts</a>
+      </div>
+    </details>
+
+    <!-- Pages à venir : affichées sans lien -->
+    <details class="lp__colonne" [open]="colonnesOuvertes">
+      <summary>Support &amp; Légal <ss-icon nom="chevron-bas" taille="sm" /></summary>
+      <div class="lp__liens">
+        <span>Contactez-nous</span>
+        <span>FAQ</span>
+        <span>Conditions d'utilisation</span>
+        <span>Politique de confidentialité</span>
+      </div>
+    </details>
   </div>
 
-  <p class="lp__legal">© 2026 Sen Suivi — Projet de certification, Simplon Sénégal, Promo 9</p>
+  <div class="lp__legal">
+    <p>© {{ annee }} Sen Suivi. Tous droits réservés.</p>
+    <ul>
+      <li>Politique cookies</li>
+      <li>Mentions légales</li>
+    </ul>
+  </div>
 </footer>
 
 <ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />

@@ -9,6 +9,7 @@ export interface ClaimsJeton {
   exp: number;
 }
 
+//Si le jeton est valide, retourne un objet ClaimsJeton, sinon null. 
 export function decoderJeton(jeton: string): ClaimsJeton | null {
   try {
     const [, payload] = jeton.split('.'); 

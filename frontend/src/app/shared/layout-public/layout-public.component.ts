@@ -1,10 +1,17 @@
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { IsActiveMatchOptions, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 import { IconComponent } from '../icon/icon.component';
 import { ModalUrgenceComponent } from '../modal-urgence/modal-urgence.component';
+
+interface LienPublic {
+  libelle: string;
+  route: string;
+  ancre?: string;
+  exact?: boolean;
+}
 
 @Component({
   selector: 'ss-layout-public',
@@ -20,6 +27,30 @@ export class LayoutPublicComponent {
   private readonly document = inject(DOCUMENT);
   protected readonly auth = inject(AuthService);
   protected readonly modaleUrgenceOuverte = signal(false);
+  protected readonly annee = new Date().getFullYear();
+
+  protected readonly liens: (LienPublic & { options: IsActiveMatchOptions })[] = (
+    [
+      { libelle: 'Découvrir', route: '/', exact: true },
+      { libelle: 'Ressources', route: '/ressources' },
+      { libelle: 'Lieux de détente', route: '/lieux' },
+      { libelle: 'Professionnels', route: '/', ancre: 'experts', exact: true },
+      { libelle: 'Forum', route: '/app/forum' },
+    ] as LienPublic[]
+  ).map((lien) => ({
+    ...lien,
+    // « Découvrir » et « Professionnels » mènent tous deux à l'accueil :
+    // l'ancre (#experts) les distingue pour n'en marquer qu'un comme actif.
+    options: {
+      paths: lien.exact ? 'exact' : 'subset',
+      fragment: lien.exact ? 'exact' : 'ignored',
+      queryParams: 'ignored',
+      matrixParams: 'ignored',
+    },
+  }));
+
+  // Colonnes du pied de page : ouvertes sur desktop, en accordéon sur mobile
+  protected readonly colonnesOuvertes = this.document.defaultView?.matchMedia('(min-width: 900px)').matches ?? true;
 
   // Menu burger mobile (maquette accueil-mobile)
   protected readonly menuOuvert = signal(false);

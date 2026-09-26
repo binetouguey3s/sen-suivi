@@ -14,7 +14,7 @@
   background: var(--ss-blanc);
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-2) var(--ss-marge-desktop);
+    padding: var(--ss-espace-2) var(--ss-espace-6);
   }
 }
 
@@ -220,123 +220,275 @@
 
 .lp__bouton-texte {
   color: var(--ss-bleu-sen-suivi);
-  font-weight: var(--ss-poids-texte-fort);
+  font-weight: var(--ss-poids-titre);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .lp__bouton-plein {
   background: var(--ss-bleu-sen-suivi);
   color: var(--ss-blanc);
   border-radius: var(--ss-rayon-bouton);
-  padding: var(--ss-espace-1) var(--ss-espace-2);
-  font-weight: var(--ss-poids-texte-fort);
-  font-size: 14px;
+  padding: 12px var(--ss-espace-3);
+  font-weight: var(--ss-poids-titre);
+  font-size: 16px;
   text-decoration: none;
+  box-shadow: var(--ss-ombre-carte);
 }
 
 .lp__pied {
-  margin-top: var(--ss-espace-8);
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
-}
-
-.lp__urgence {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ss-espace-2);
-  padding: var(--ss-espace-3) var(--ss-marge-mobile);
-  background: var(--ss-bleu-sen-suivi);
-  border-left: 4px solid var(--ss-rouge-alerte);
+  margin-top: var(--ss-espace-6);
+  background: var(--ss-blanc);
+  color: var(--ss-bleu-profond);
 
   @media (min-width: 900px) {
-    flex-direction: row;
+    margin-top: var(--ss-espace-8);
+  }
+}
+
+// --- Urgence --------------------------------------------------------------------
+// Rouge alerte : couleur réservée à l'urgence par la charte.
+
+.lp__urgence {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+    gap: var(--ss-espace-3);
+    // À droite : place pour la bulle de chat
+    padding: var(--ss-espace-2) 112px var(--ss-espace-2) var(--ss-espace-6);
+    background: var(--ss-rouge-alerte);
+    color: var(--ss-blanc);
+  }
+}
+
+.lp__urgence-texte {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  font-size: 16px;
+
+  strong {
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+}
+
+.lp__urgence-lien {
+  border: none;
+  background: none;
+  color: var(--ss-blanc);
+  font: inherit;
+  font-weight: var(--ss-poids-titre);
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lp__urgence-carte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 0 var(--ss-marge-mobile);
+  padding: var(--ss-espace-4) var(--ss-espace-3);
+  border-radius: var(--ss-rayon-grande-carte);
+  background: var(--ss-rouge-alerte);
+  color: var(--ss-blanc);
+  text-align: center;
+
+  @media (min-width: 900px) {
+    display: none;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--ss-blanc);
+    font-family: var(--ss-police-titres);
+    font-size: 20px;
   }
 
   p {
     margin: 0;
-    font-size: 15px;
-  }
-
-  button {
-    background: none;
-    border: 1px solid var(--ss-menthe);
-    color: var(--ss-blanc);
-    border-radius: var(--ss-rayon-pilule);
-    padding: var(--ss-espace-1) var(--ss-espace-2);
-    font-size: 13px;
-    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.92;
   }
 }
 
-.lp__urgence-etiquette {
+.lp__urgence-numeros {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--ss-rayon-bouton);
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 24px;
+  letter-spacing: 0.02em;
+}
+
+.lp__urgence-appeler {
+  padding: 12px var(--ss-espace-4);
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-blanc);
   color: var(--ss-rouge-alerte);
-  margin-right: 4px;
+  font-weight: var(--ss-poids-titre);
+  text-decoration: none;
 }
+
+.lp__urgence-tous {
+  border: none;
+  background: none;
+  color: var(--ss-blanc);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+// --- Colonnes ---------------------------------------------------------------------
 
 .lp__colonnes {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--ss-espace-4);
-  padding: var(--ss-espace-6) var(--ss-marge-mobile) var(--ss-espace-3);
+  display: flex;
+  flex-direction: column;
+  padding: var(--ss-espace-5) var(--ss-marge-mobile) var(--ss-espace-3);
 
   @media (min-width: 900px) {
-    grid-template-columns: 2fr 1fr 1fr;
-    padding: var(--ss-espace-6) var(--ss-marge-desktop) var(--ss-espace-3);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ss-espace-4);
+    padding: var(--ss-espace-6) var(--ss-espace-6) var(--ss-espace-6);
   }
 }
 
 .lp__colonne {
   display: flex;
   flex-direction: column;
-  gap: var(--ss-espace-1);
+  gap: 14px;
+}
 
-  h2 {
-    color: var(--ss-blanc);
-    font-size: 16px;
-    margin-bottom: var(--ss-espace-1);
+// Liens d'une colonne (le contenu d'un <details> ne peut pas être une grille flex)
+.lp__liens {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lp__colonne {
+  a,
+  span {
+    color: var(--ss-gris-ardoise);
+    font-size: 15px;
+    text-decoration: none;
   }
 
-  a {
-    color: var(--ss-menthe-pale);
-    text-decoration: none;
-    font-size: 14px;
+  a:hover {
+    color: var(--ss-bleu-sen-suivi);
+  }
 
-    &:hover {
-      text-decoration: underline;
+  // Mobile : accordéons séparés par un filet
+  @media (max-width: 899px) {
+    &:not(.lp__colonne--marque) {
+      padding: var(--ss-espace-2) 0;
+      border-bottom: 1px solid var(--ss-gris-clair);
+
+      &[open] {
+        padding-bottom: var(--ss-espace-3);
+      }
     }
   }
 
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    color: var(--ss-bleu-sen-suivi);
+    font-weight: var(--ss-poids-titre);
+    font-size: 17px;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    // Desktop : simple titre de colonne, toujours ouvert
+    @media (min-width: 900px) {
+      pointer-events: none;
+
+      ss-icon {
+        display: none;
+      }
+    }
+  }
+
+  &[open] summary {
+    margin-bottom: 6px;
+
+    ss-icon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.lp__colonne--marque {
+  gap: var(--ss-espace-2);
+  margin-bottom: var(--ss-espace-3);
+
   p {
     margin: 0;
-    color: var(--ss-menthe-pale);
-    font-size: 14px;
-    max-width: 380px;
+    color: var(--ss-gris-ardoise);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 900px) {
+    margin-bottom: 0;
+    padding-right: var(--ss-espace-3);
   }
 }
 
 .lp__nom {
+  color: var(--ss-bleu-sen-suivi) !important;
   font-family: var(--ss-police-titres);
-  font-weight: var(--ss-poids-titre-fort);
+  font-weight: var(--ss-poids-titre);
   font-size: 20px !important;
-  color: var(--ss-blanc) !important;
 }
 
 .lp__legal {
-  margin: 0;
-  padding: var(--ss-espace-3) var(--ss-marge-mobile);
-  border-top: 1px solid var(--ss-bleu-sen-suivi);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ss-menthe-pale);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  padding: var(--ss-espace-3) var(--ss-marge-mobile) calc(var(--ss-espace-8) + var(--ss-espace-2));
+  border-top: 1px solid var(--ss-gris-clair);
+  color: var(--ss-gris-ardoise);
+  font-size: 13px;
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--ss-espace-3) var(--ss-espace-6);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  ul {
+    display: none;
+    gap: var(--ss-espace-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @media (min-width: 900px) {
+      display: flex;
+    }
   }
 }
 

@@ -1,23 +1,31 @@
 <div class="la">
   <aside class="la__illustration" aria-hidden="true">
-    <div class="la__image">
-      <img class="la__photo" src="/images/inscription.jpg" alt="" />
-    </div>
-    <p class="la__citation">« {{ citation() }} »</p>
+    <img class="la__photo" src="/images/inscription.jpg" alt="" />
   </aside>
 
-  <main class="la__contenu">
-    <div class="la__carte" [class.la__carte--large]="large()">
-      <img class="la__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
-      <ng-content />
-    </div>
-  </main>
+  <div class="la__colonne">
+    <main class="la__contenu">
+      <div class="la__carte" [class.la__carte--large]="large()">
+        @if (logo()) {
+          <img class="la__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
+        }
+        <ng-content />
+      </div>
+    </main>
 
-  <footer class="la__pied">
-    <span>© 2026 Sen Suivi</span>
-    <div class="la__pied-liens">
-      <span>Mentions légales</span>
-      <span>Confidentialité</span>
-    </div>
-  </footer>
+    <!-- Pages à venir : affichées sans lien -->
+    <footer class="la__pied">
+      <span>© {{ annee }} Sen Suivi</span>
+      <div class="la__pied-liens">
+        @if (liensPied() === 'aide') {
+          <span>Aide</span>
+          <span>Confidentialité</span>
+          <span>Conditions</span>
+        } @else {
+          <span>Mentions légales</span>
+          <span>Confidentialité</span>
+        }
+      </div>
+    </footer>
+  </div>
 </div>

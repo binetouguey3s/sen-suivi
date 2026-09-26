@@ -3,6 +3,12 @@
 // l'application passe par <ss-icon>, jamais par un import Lucide direct.
 import {
   LucideActivity,
+  LucideBot,
+  LucideChevronDown,
+  LucideGlobe,
+  LucidePhoneCall,
+  LucideQuote,
+  LucideUserCheck,
   LucideBanknote,
   LucideBuilding2,
   LucideVideo,
@@ -102,6 +108,12 @@ export const ICONES = {
   batiment: LucideBuilding2,
   video: LucideVideo,
   billet: LucideBanknote,
+  robot: LucideBot,
+  appel: LucidePhoneCall,
+  globe: LucideGlobe,
+  'utilisateur-verifie': LucideUserCheck,
+  'chevron-bas': LucideChevronDown,
+  citation: LucideQuote,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

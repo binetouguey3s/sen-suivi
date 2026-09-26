@@ -1,128 +1,225 @@
-<section class="ac__hero">
-  <div class="ac__hero-texte">
-    <h1>Votre bien-être mérite un espace à lui.</h1>
-    <p>Un accompagnement doux, confidentiel et adapté à notre culture, pour prendre soin de votre équilibre mental au quotidien.</p>
-    <div class="ac__actions">
-      <a class="ac__bouton-plein" routerLink="/inscription">Commencer gratuitement</a>
-      <a class="ac__bouton-contour" routerLink="/chatbot">Parler au chatbot</a>
-    </div>
-    <p class="ac__mention">Sen Suivi ne remplace pas un professionnel de santé.</p>
+<!-- Bandeau d'ouverture -->
+<section class="ac__bandeau" [class.ac__bandeau--sans-photo]="!images.bandeau" [style.background-image]="images.bandeau ? 'url(' + images.bandeau + ')' : null">
+  <div class="ac__bandeau-texte">
+    <h1>Votre bien-être,<br />à votre rythme.</h1>
+    <p>Prenez soin de votre bien-être mental avec un accompagnement adapté à la culture sénégalaise.</p>
+    <a class="ac__bouton-menthe" [routerLink]="destinationCompte()">Découvrir mon espace</a>
   </div>
-
-  <div class="ac__apercu" aria-hidden="true">
-    <div class="ac__apercu-humeur">
-      <p>Comment vous sentez-vous ?</p>
-      <span>😫</span><span>🙁</span><span>😐</span><span>🙂</span><span>😊</span>
-    </div>
-    <div class="ac__apercu-courbe">
-      <p>Votre évolution</p>
-      <ss-mood-chart [points]="apercu" />
-    </div>
-  </div>
+  <ul class="ac__confiance ac__desktop">
+    @for (c of confiance; track c.libelle) {
+      <li><ss-icon [nom]="c.icone" taille="sm" /> {{ c.libelle }}</li>
+    }
+  </ul>
 </section>
 
-<section class="ac__piliers">
-  <div><ss-icon nom="cadenas" /><h2>Confidentiel</h2><p>Votre journal et vos résultats ne sont visibles que par vous.</p></div>
-  <div><ss-icon nom="coeur" /><h2>Sans jugement</h2><p>Exprimez-vous librement, nous sommes là pour vous comprendre.</p></div>
-  <div><ss-icon nom="verifie" /><h2>Gratuit</h2><p>Toutes les fonctionnalités de Sen Suivi sont accessibles gratuitement.</p></div>
-</section>
+<!-- Bande de confiance (mobile) -->
+<ul class="ac__confiance-mobile ac__mobile">
+  @for (c of confiance; track c.libelle) {
+    <li><span class="ac__pastille"><ss-icon [nom]="c.icone" taille="sm" /></span>{{ c.libelle }}</li>
+  }
+</ul>
 
-<section class="ac__section">
-  <h2 class="ac__titre">Mieux vous accompagner.</h2>
-  <p class="ac__sous-titre">Une approche pensée pour votre rythme et vos besoins.</p>
-
-  <div class="ac__bento">
-    <article class="ac__carte ac__carte--menthe">
-      <h3>Un journal de bord intuitif</h3>
-      <p>Notez vos pensées et suivez l'évolution de votre météo intérieure au fil des jours.</p>
-      <ss-mood-chart [points]="apercu" aria-hidden="true" />
-      <a class="ac__lien" routerLink="/inscription">Commencer mon journal <ss-icon nom="fleche" taille="sm" /></a>
+<!-- Engagements -->
+<section class="ac__engagements">
+  @for (e of engagements; track e.titre) {
+    <article class="ac__engagement">
+      <span class="ac__engagement-icone"><ss-icon [nom]="e.icone" taille="sm" /></span>
+      <div>
+        <h2>{{ e.titre }}</h2>
+        <p>{{ e.texte }}</p>
+      </div>
     </article>
-    <article class="ac__carte ac__carte--fond-application">
-      <ss-icon nom="exercice" taille="lg" />
-      <h3>Exercices de respiration</h3>
-      <p>Retrouvez le calme avec des techniques simples, à faire en quelques minutes.</p>
-      <a class="ac__lien" routerLink="/ressources" [queryParams]="{ format: 'EXERCICE' }">Voir les exercices <ss-icon nom="fleche" taille="sm" /></a>
-    </article>
-    <article class="ac__carte ac__carte--profond">
-      <ss-icon nom="article" taille="lg" />
-      <h3>Une bibliothèque de ressources</h3>
-      <p>Articles et podcasts pensés pour les étudiants et actifs sénégalais.</p>
-      <a class="ac__lien ac__lien--clair" routerLink="/ressources">Explorer la bibliothèque <ss-icon nom="fleche" taille="sm" /></a>
-    </article>
-  </div>
-</section>
-
-<section class="ac__chatbot">
-  <div class="ac__conversation" aria-hidden="true">
-    <p class="ac__bulle">Bonjour, comment puis-je vous accompagner aujourd'hui ?</p>
-    <p class="ac__bulle ac__bulle--moi">Je me sens un peu stressé par le travail ces derniers temps.</p>
-    <p class="ac__bulle">C'est tout à fait compréhensible. Prenons un instant pour évacuer cette tension ensemble.</p>
-  </div>
-  <div class="ac__chatbot-texte">
-    <h2>Une oreille attentive, quand vous en avez besoin.</h2>
-    <ul>
-      <li><ss-icon nom="cadenas" taille="sm" /> <span><strong>Confidentialité</strong> Vos échanges ne sont jamais partagés.</span></li>
-      <li><ss-icon nom="chat" taille="sm" /> <span><strong>Réponses validées</strong> Le chatbot s'appuie uniquement sur des contenus de la plateforme.</span></li>
-      <li><ss-icon nom="lieux" taille="sm" /> <span><strong>Orientation</strong> Il peut vous recommander des exercices ou des lieux de détente.</span></li>
-    </ul>
-    <a class="ac__bouton-contour" routerLink="/chatbot">Parler au chatbot</a>
-  </div>
-</section>
-
-<section class="ac__section">
-  <h2 class="ac__titre ac__titre--centre">Retrouvez la sérénité.</h2>
-  <p class="ac__sous-titre ac__sous-titre--centre">Notre sélection de lieux apaisants à travers le Sénégal pour vous ressourcer.</p>
-
-  @defer (on viewport) {
-    <div class="ac__lieux">
-      @for (lieu of lieux(); track lieu.id) {
-        <a class="ac__lieu" [routerLink]="['/lieux', lieu.id]">
-          <img [src]="image(lieu)" [alt]="lieu.nom" loading="lazy" />
-          <span>{{ lieu.nom }}, {{ lieu.ville }}</span>
-        </a>
-      }
-    </div>
-  } @placeholder {
-    <div class="ac__attente">Chargement des lieux…</div>
   }
 </section>
 
-<section class="ac__pros">
-  <h2>Des professionnels à votre écoute.</h2>
-  <p>Échangez avec des professionnels validés qui comprennent nos réalités sociales et culturelles.</p>
+<!-- Auto-évaluations -->
+<section class="ac__section">
+  <h2 class="ac__titre">Faites le point sur votre état</h2>
+  <p class="ac__sous-titre">Des tests rapides et confidentiels pour mieux vous comprendre.</p>
+  <ul class="ac__evaluations">
+    @for (e of evaluations; track e.type) {
+      <li>
+        <a
+          class="ac__evaluation"
+          [class.ac__evaluation--sans-photo]="!images[e.cle]"
+          [style.background-image]="images[e.cle] ? 'url(' + images[e.cle] + ')' : null"
+          [routerLink]="'/app/evaluation/' + e.type"
+        >
+          <span class="ac__evaluation-texte">
+            <strong>{{ e.titre }}</strong>
+            <span class="ac__desktop">{{ e.texte }}</span>
+          </span>
+          <span class="ac__rond" aria-hidden="true"><ss-icon nom="fleche" taille="sm" /></span>
+        </a>
+      </li>
+    }
+  </ul>
+</section>
 
-  @defer (on viewport) {
-    <div class="ac__pros-grille">
-      @for (pro of professionnels(); track pro.id) {
-        <a class="ac__pro" [routerLink]="['/professionnels', pro.id]">
-          @if (portrait(pro); as src) {
-            <img [src]="src" [alt]="'Portrait illustratif de ' + pro.nom" />
+<!-- Fonctionnement -->
+<section class="ac__fonctionnement" id="comment-ca-marche">
+  <h2 class="ac__titre ac__titre--centre">Comment fonctionne Sen Suivi ?</h2>
+  <p class="ac__sous-titre ac__sous-titre--centre ac__desktop">Un parcours simple et personnalisé pour votre bien-être.</p>
+
+  <div class="ac__etapes">
+    <div class="ac__arche" aria-hidden="true">
+      @if (images.fonctionnement; as src) {
+        <img [src]="src" alt="" />
+      } @else {
+        <span class="ac__arche-vide"><ss-icon nom="coeur" taille="xl" /></span>
+      }
+    </div>
+    @for (e of etapes; track e.titre; let i = $index) {
+      <article class="ac__etape" [style.grid-area]="'e' + (i + 1)">
+        <span class="ac__numero">{{ i + 1 }}</span>
+        <div>
+          <h3>{{ e.titre }}</h3>
+          <p>{{ e.texte }}</p>
+        </div>
+      </article>
+    }
+  </div>
+</section>
+
+<!-- Titou -->
+<section class="ac__titou">
+  <div class="ac__titou-texte">
+    <h2>Parlez à Titou,<br />votre guide IA bienveillant.</h2>
+    <p>Disponible 24h/24, Titou vous écoute sans jugement et vous propose des exercices de respiration ou des conseils immédiats.</p>
+    <div class="ac__titou-actions ac__desktop">
+      <a class="ac__bouton-menthe ac__bouton-menthe--compact" routerLink="/chatbot">Parler à Titou</a>
+      <a class="ac__bouton-contour-clair" routerLink="/" fragment="comment-ca-marche">En savoir plus</a>
+    </div>
+  </div>
+
+  <!-- Aperçu illustratif de la conversation -->
+  <div class="ac__titou-apercu" aria-hidden="true">
+    <div class="ac__conversation">
+      <div class="ac__conversation-entete">
+        <span class="ac__conversation-avatar"><ss-icon nom="robot" taille="sm" /></span>
+        <span><strong>Titou</strong><small>● En ligne</small></span>
+      </div>
+      <div class="ac__conversation-fil">
+        <p class="ac__bulle">Bonjour ! Je suis là pour vous écouter. Comment s'est passée votre journée ?</p>
+        <p class="ac__bulle ac__bulle--moi">Un peu stressante avec le travail à Dakar.</p>
+        <p class="ac__bulle ac__desktop">Je comprends. Voulez-vous faire une courte séance de respiration ?</p>
+      </div>
+      <div class="ac__conversation-saisie">
+        <span>Écrire un message…</span>
+        <span class="ac__conversation-envoyer"><ss-icon nom="envoyer" taille="sm" /></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ac__titou-actions ac__mobile">
+    <a class="ac__bouton-menthe ac__bouton-menthe--compact" routerLink="/chatbot">Parler à Titou</a>
+    <a class="ac__bouton-contour-clair" routerLink="/" fragment="comment-ca-marche">En savoir plus</a>
+  </div>
+</section>
+
+<!-- Lieux de détente -->
+<section class="ac__section">
+  <div class="ac__entete-section">
+    <div>
+      <h2 class="ac__titre">Lieux de détente<span class="ac__desktop"> au Sénégal</span></h2>
+      <p class="ac__sous-titre ac__desktop">Reconnectez-vous avec la nature et la sérénité locale.</p>
+    </div>
+    <a class="ac__lien-fort" routerLink="/lieux">
+      <span class="ac__desktop">Voir tous les lieux</span><span class="ac__mobile">Voir tout</span>
+      <ss-icon class="ac__desktop" nom="fleche" taille="sm" />
+    </a>
+  </div>
+  <ul class="ac__lieux">
+    @for (l of lieux(); track l.id) {
+      <li>
+        <a class="ac__lieu" [routerLink]="'/lieux/' + l.id">
+          <img [src]="imageLieu(l)" [alt]="l.nom" loading="lazy" />
+          <span class="ac__lieu-texte">
+            <strong>{{ l.nom }}</strong>
+            <span class="ac__lieu-ville ac__desktop"><ss-icon nom="lieux" taille="sm" /> {{ l.ville }}</span>
+            <span class="ac__etiquettes ac__desktop">
+              <span>{{ l.categorie }}</span>
+              @if (l.acces_libre) { <span>Accès libre</span> }
+            </span>
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+</section>
+
+<!-- Experts -->
+<section class="ac__experts" id="experts">
+  <h2 class="ac__titre ac__titre--centre-desktop"><span class="ac__desktop">Experts à votre écoute</span><span class="ac__mobile">Nos Experts</span></h2>
+  <div class="ac__filtres" role="group" aria-label="Filtrer par spécialité">
+    <button type="button" [class.ac__filtre--actif]="specialite() === null" (click)="specialite.set(null)">Tous</button>
+    @for (s of specialites(); track s) {
+      <button type="button" [class.ac__filtre--actif]="specialite() === s" (click)="specialite.set(s)">{{ s }}</button>
+    }
+  </div>
+  <ul class="ac__pros">
+    @for (p of professionnels(); track p.id) {
+      <li class="ac__pro">
+        <div class="ac__pro-entete">
+          @if (portrait(p); as src) {
+            <img class="ac__pro-photo" [src]="src" [alt]="'Portrait illustratif de ' + p.nom" loading="lazy" />
           } @else {
-            <span class="ac__pro-initiales" aria-hidden="true">{{ initiales(pro) }}</span>
+            <span class="ac__pro-photo ac__pro-photo--initiales" aria-hidden="true">{{ initiales(p.nom) }}</span>
           }
-          <h3>{{ pro.nom }}</h3>
-          <p>{{ pro.specialite_affichee }} · {{ pro.ville }}</p>
-          <strong>{{ tarif(pro) }}</strong>
-        </a>
+          <div>
+            <strong>{{ p.nom }}</strong>
+            <span>{{ p.specialite_affichee }}</span>
+          </div>
+        </div>
+        <span class="ac__verifie"><ss-icon nom="verifie" taille="sm" /> Profil vérifié</span>
+        @if (citation(p); as texte) {
+          <p class="ac__pro-citation ac__desktop">« {{ texte }} »</p>
+        }
+        <a class="ac__bouton-plein" [routerLink]="'/professionnels/' + p.id">Voir le profil</a>
+      </li>
+    } @empty {
+      <li class="ac__vide">Aucun professionnel pour cette spécialité pour le moment.</li>
+    }
+  </ul>
+</section>
+
+<!-- Témoignages -->
+<section class="ac__section ac__temoignages">
+  <h2 class="ac__titre ac__titre--centre">Ils ont retrouvé leur équilibre</h2>
+  @if (temoignages().length) {
+    <ul class="ac__cartes-temoignages">
+      @for (t of temoignages(); track t.id) {
+        <li class="ac__temoignage">
+          <ss-icon class="ac__guillemets" nom="citation" taille="md" />
+          <p>« {{ t.contenu }} »</p>
+          <div class="ac__temoin">
+            <span class="ac__temoin-avatar" aria-hidden="true">{{ initiales(t.pseudonyme) }}</span>
+            <span><strong>{{ t.pseudonyme }}</strong><small>{{ t.anciennete }}</small></span>
+          </div>
+        </li>
       }
+    </ul>
+  } @else {
+    <div class="ac__invitation">
+      <ss-icon class="ac__guillemets" nom="citation" taille="lg" />
+      <h3>Vous aussi, partagez votre expérience</h3>
+      <p>Les témoignages sont publiés sous pseudonyme, avec votre accord, après relecture par notre équipe.</p>
+      <a class="ac__lien-fort" [routerLink]="destinationCompte()">Partager mon témoignage <ss-icon nom="fleche" taille="sm" /></a>
     </div>
-  } @placeholder {
-    <div class="ac__attente ac__attente--clair">Chargement des professionnels…</div>
   }
 </section>
 
-<section class="ac__garanties">
-  <div><ss-icon nom="verifie" /><h3>Sans publicité</h3><p>Votre bien-être n'est pas une marchandise : aucune publicité, jamais.</p></div>
-  <div><ss-icon nom="cadenas" /><h3>Données protégées</h3><p>Vos entrées de journal et vos résultats ne sont lisibles que par vous.</p></div>
-  <div><ss-icon nom="journal" /><h3>Prévention</h3><p>Des auto-évaluations pour repérer les signaux avant qu'ils ne s'installent.</p></div>
-</section>
-
-<section class="ac__final">
-  <h2>Le premier pas peut se faire aujourd'hui.</h2>
-  <p>Rejoignez Sen Suivi et commencez à prendre soin de vous, un jour après l'autre.</p>
-  <div class="ac__actions ac__actions--centre">
-    <a class="ac__bouton-plein" routerLink="/inscription">Créer mon espace gratuit</a>
-    <a class="ac__bouton-contour" routerLink="/ressources">En savoir plus</a>
+<!-- Appel à l'inscription -->
+<section class="ac__appel">
+  <div class="ac__appel-texte">
+    <h2>Commencez votre voyage intérieur dès aujourd'hui.</h2>
+    <a class="ac__bouton-plein ac__bouton-plein--grand" [routerLink]="destinationCompte()">
+      {{ auth.estConnecte() ? 'Accéder à mon espace' : 'Créer mon compte gratuit' }}
+    </a>
+  </div>
+  <div class="ac__appel-visuel" [class.ac__appel-visuel--sans-photo]="!images.appel" aria-hidden="true">
+    @if (images.appel; as src) {
+      <img [src]="src" alt="" />
+    }
   </div>
 </section>

@@ -11,7 +11,7 @@ import { LayoutAuthComponent } from '../../../shared/layout-auth/layout-auth.com
   standalone: true,
   imports: [RouterLink, ChampComponent, LayoutAuthComponent],
   template: `
-    <ss-layout-auth citation="Votre espace de sérénité, en toute discrétion.">
+    <ss-layout-auth liensPied="aide">
       <h1 class="nmp__titre">Choisir un nouveau mot de passe</h1>
       @if (termine()) {
         <p class="nmp__ok" role="status">Votre mot de passe a été modifié.</p>
