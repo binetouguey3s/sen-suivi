@@ -71,6 +71,15 @@
         <button type="button" class="layout-app__urgence" (click)="modaleUrgenceOuverte.set(true)">
           <ss-icon nom="telephone" taille="sm" /> Besoin d'aide tout de suite
         </button>
+      } @else {
+        <footer class="layout-app__pied">
+          <p>© {{ annee }} Sen Suivi — Espace professionnel</p>
+          <ul class="layout-app__pied-liens">
+            <li>Aide</li>
+            <li>Confidentialité</li>
+            <li>Conditions</li>
+          </ul>
+        </footer>
       }
     </main>
   </div>

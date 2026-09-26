@@ -42,6 +42,7 @@ export class LayoutAppComponent {
   private readonly document = inject(DOCUMENT);
   protected readonly auth = inject(AuthService);
   protected readonly modaleUrgenceOuverte = signal(false);
+  protected readonly annee = new Date().getFullYear();
 
   // Menu burger mobile : la barre latérale s'ouvre en tiroir
   protected readonly menuOuvert = signal(false);

@@ -47,7 +47,6 @@ export class TableauDeBordProComponent {
   protected readonly onglet = signal<Onglet>('EN_ATTENTE');
   protected readonly erreur = signal<string | null>(null);
   protected readonly enCours = signal<number | null>(null);
-  protected readonly annee = new Date().getFullYear();
 
   protected readonly onglets: { valeur: Onglet; libelle: string }[] = [
     { valeur: 'EN_ATTENTE', libelle: 'En attente' },

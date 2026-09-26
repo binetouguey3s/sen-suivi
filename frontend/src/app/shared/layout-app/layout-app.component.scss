@@ -209,6 +209,9 @@
 
 .layout-app__contenu {
   flex: 1;
+  // Colonne : le pied de page de l'espace pro se cale en bas de l'écran
+  display: flex;
+  flex-direction: column;
   padding: var(--ss-espace-2) var(--ss-marge-mobile) calc(var(--ss-espace-8) + var(--ss-espace-4));
 
   @media (min-width: 900px) {
@@ -228,6 +231,38 @@
   font-size: 13px;
   cursor: pointer;
   padding: var(--ss-espace-1);
+}
+
+// --- Pied de page de l'espace professionnel (desktop) ----------------------
+
+.layout-app__pied {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ss-espace-3);
+    margin-top: auto;
+    padding-top: var(--ss-espace-6);
+    color: var(--ss-gris-ardoise);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.8;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.layout-app__pied-liens {
+  display: flex;
+  gap: var(--ss-espace-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 // --- Bulle de chat ---------------------------------------------------------

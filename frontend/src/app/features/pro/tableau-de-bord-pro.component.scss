@@ -1,13 +1,5 @@
-// Sur desktop, la page occupe au moins toute la hauteur de l'écran (moins
-// les marges du layout) pour que le pied de page reste en bas.
 :host {
   display: block;
-
-  @media (min-width: 900px) {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100dvh - 2 * var(--ss-espace-4));
-  }
 }
 
 // Libellés propres à chaque format, comme sur les deux maquettes
@@ -391,36 +383,4 @@
 
 .tp__etat--erreur {
   color: var(--ss-rouge-alerte);
-}
-
-// --- Pied de page (desktop) -----------------------------------------------------------
-
-.tp__pied {
-  display: none;
-
-  @media (min-width: 900px) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--ss-espace-3);
-    margin-top: auto;
-    padding-top: var(--ss-espace-6);
-    color: var(--ss-gris-ardoise);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    opacity: 0.8;
-
-    p {
-      margin: 0;
-    }
-  }
-}
-
-.tp__pied-liens {
-  display: flex;
-  gap: var(--ss-espace-3);
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
