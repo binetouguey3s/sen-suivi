@@ -1,11 +1,18 @@
 <!doctype html>
-<html lang="fr">
+<!-- data-theme="clair" fixé tant que les composants ne lisent pas encore les
+     tokens de rôle : sans lui, un système en mode sombre activerait déjà les
+     tokens sombres. Il sera remplacé par le script de bascule du thème. -->
+<html lang="fr" data-theme="clair">
   <head>
     <meta charset="utf-8">
     <title>Sen Suivi</title>
     <base href="/">
     <link rel="icon" type="image/png" href="/logo-sen-suivi.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Couleur de la barre d'état mobile : une balise HTML ne peut pas lire
+         var(--ss-*), ces deux valeurs doivent suivre --ss-fond de _themes.scss -->
+    <meta name="theme-color" content="#eef5f2" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0e2739" media="(prefers-color-scheme: dark)">
   </head>
   <body>
     <ss-root></ss-root>

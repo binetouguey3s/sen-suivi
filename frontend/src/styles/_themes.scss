@@ -1,0 +1,150 @@
+// =============================================================
+//  Sen Suivi — Deux thèmes : clair et sombre
+//  Architecture reprise de docs/_themes.scss. Les valeurs du thème
+//  clair sont celles de l'interface actuelle (app/styles/tokens.scss) :
+//  le rendu clair ne doit pas bouger d'un pixel.
+//  Le thème sombre réutilise la même palette, réorganisée.
+//
+//  Bascule : <html data-theme="clair"> ou <html data-theme="sombre">
+// =============================================================
+
+// -------------------------------------------------------------
+//  THÈME CLAIR — celui de l'interface actuelle
+// -------------------------------------------------------------
+@mixin tokens-clair {
+  color-scheme: light;
+
+  // Fonds
+  --ss-fond:            #eef5f2;   // menthe voilée, fond de page
+  --ss-surface:         #ffffff;   // cartes
+  --ss-surface-douce:   #e9f4ef;   // zones de mise en avant
+  --ss-surface-forte:   #1b4b6e;   // blocs bleus
+
+  // Textes
+  --ss-texte:           #12354f;   // titres et texte principal
+  --ss-texte-doux:      #6b7280;   // texte secondaire
+  --ss-texte-inverse:   #ffffff;   // sur fond bleu
+
+  // Marque et actions
+  --ss-primaire:        #1b4b6e;
+  --ss-primaire-texte:  #ffffff;
+  --ss-accent:          #a9d6c4;
+  --ss-accent-texte:    #1b4b6e;
+  --ss-alerte:          #e4572e;
+  --ss-alerte-texte:    #ffffff;
+
+  // Traits et ombres
+  --ss-bordure:         #edeef1;
+  --ss-ombre:           0 8px 24px rgba(18, 53, 79, 0.08);
+
+  // Graphiques : tracé et grille menthe, remplissage menthe pâle
+  --ss-graphe-trace:    #a9d6c4;
+  --ss-graphe-remplis:  #e9f4ef;
+  --ss-graphe-grille:   #a9d6c4;
+
+  // Verre
+  --ss-verre:           rgba(255, 255, 255, 0.72);
+  --ss-verre-plein:     #ffffff;
+  --ss-verre-bordure:   rgba(255, 255, 255, 0.35);
+  --ss-verre-ombre:     0 8px 32px rgba(27, 75, 110, 0.12);
+  --ss-verre-texte:     #12354f;
+}
+
+// -------------------------------------------------------------
+//  THÈME SOMBRE
+//  Le bleu de marque devient le fond, la menthe devient l'action.
+//  Aucun noir pur : un bleu nuit fatigue moins l'œil et reste
+//  fidèle à l'univers de la marque.
+// -------------------------------------------------------------
+@mixin tokens-sombre {
+  color-scheme: dark;
+
+  // Fonds
+  --ss-fond:            #0e2739;   // bleu nuit, fond de page
+  --ss-surface:         #163a55;   // cartes
+  --ss-surface-douce:   #1b4b6e;   // zones de mise en avant
+  --ss-surface-forte:   #0a1e2c;   // blocs très sombres
+
+  // Textes
+  --ss-texte:           #e8f1ee;   // texte principal, menthe très pâle
+  --ss-texte-doux:      #9fb3b0;   // texte secondaire
+  --ss-texte-inverse:   #0e2739;   // sur fond menthe
+
+  // Marque et actions : la menthe prend le rôle du bouton principal,
+  // car le bleu #1b4b6e n'a pas assez de contraste sur fond sombre.
+  --ss-primaire:        #a9d6c4;
+  --ss-primaire-texte:  #0e2739;
+  --ss-accent:          #a9d6c4;
+  --ss-accent-texte:    #0e2739;
+  --ss-alerte:          #ff7a52;   // alerte éclaircie pour rester lisible
+  --ss-alerte-texte:    #0e2739;
+
+  // Traits et ombres
+  --ss-bordure:         rgba(232, 241, 238, 0.14);
+  --ss-ombre:           0 4px 16px rgba(0, 0, 0, 0.35);
+
+  // Graphiques
+  --ss-graphe-trace:    #a9d6c4;
+  --ss-graphe-remplis:  rgba(169, 214, 196, 0.2);
+  --ss-graphe-grille:   rgba(232, 241, 238, 0.12);
+
+  // Verre
+  --ss-verre:           rgba(22, 58, 85, 0.62);
+  --ss-verre-plein:     #163a55;
+  --ss-verre-bordure:   rgba(232, 241, 238, 0.16);
+  --ss-verre-ombre:     0 8px 32px rgba(0, 0, 0, 0.45);
+  --ss-verre-texte:     #e8f1ee;
+}
+
+:root,
+[data-theme='clair'] {
+  @include tokens-clair;
+}
+
+[data-theme='sombre'] {
+  @include tokens-sombre;
+}
+
+// -------------------------------------------------------------
+//  Respect du réglage système, tant qu'aucun thème n'est posé.
+//  Le même mixin que [data-theme='sombre'] : les deux listes ne
+//  peuvent pas diverger.
+// -------------------------------------------------------------
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    @include tokens-sombre;
+  }
+}
+
+// -------------------------------------------------------------
+//  Mixin verre — identique dans les deux thèmes, il lit les tokens.
+//  Réservé aux éléments qui flottent au-dessus du contenu.
+// -------------------------------------------------------------
+@mixin ss-verre($flou: 16px) {
+  background: var(--ss-verre-plein); // repli opaque
+  color: var(--ss-verre-texte);
+  border: 1px solid var(--ss-verre-bordure);
+  border-radius: 16px;
+  box-shadow: var(--ss-verre-ombre);
+
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background: var(--ss-verre);
+    -webkit-backdrop-filter: blur($flou) saturate(140%);
+    backdrop-filter: blur($flou) saturate(140%);
+  }
+
+  // Performance : flou allégé sur petit écran
+  @media (max-width: 640px) {
+    @supports (backdrop-filter: blur(1px)) {
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  // Placé en dernier pour l'emporter sur le flou mobile ci-dessus
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--ss-verre-plein);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
