@@ -36,6 +36,15 @@ button {
   font-family: inherit;
 }
 
+// Bascule de thème : ThemeService pose cette classe 200 ms pour couper toutes
+// les transitions, sinon chaque élément anime sa couleur et l'écran clignote
+.sans-transition,
+.sans-transition *,
+.sans-transition *::before,
+.sans-transition *::after {
+  transition: none !important;
+}
+
 // Logo : suit le thème par un token, aucun composant n'a à s'en occuper
 img[src$='logo-sen-suivi.png'] {
   filter: var(--ss-logo-filtre);

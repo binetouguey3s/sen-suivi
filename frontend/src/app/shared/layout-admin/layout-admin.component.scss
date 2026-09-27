@@ -107,6 +107,12 @@
   color: var(--ss-surface-forte-texte);
 }
 
+// Choix du thème, juste au-dessus du profil
+.la__theme {
+  align-self: flex-start;
+  margin-bottom: var(--ss-espace-2);
+}
+
 .la__profil {
   display: flex;
   align-items: center;

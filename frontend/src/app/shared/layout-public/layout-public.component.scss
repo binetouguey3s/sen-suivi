@@ -147,6 +147,17 @@
   color: var(--ss-texte-marque) !important;
 }
 
+// Choix du thème dans le menu mobile : libellé à gauche, icônes à droite
+.lp__tiroir-theme {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ss-espace-1);
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  color: var(--ss-texte-doux);
+}
+
 .lp__tiroir-compte {
   display: flex;
   flex-direction: column;

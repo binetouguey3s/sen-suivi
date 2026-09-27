@@ -5,6 +5,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { NomIcone } from '../../core/icons/icons';
 import { AuthService } from '../../core/services/auth.service';
 import { IconComponent } from '../icon/icon.component';
+import { SelecteurThemeComponent } from '../selecteur-theme/selecteur-theme.component';
 
 interface LienNavAdmin {
   route: string;
@@ -26,7 +27,7 @@ const LIENS: LienNavAdmin[] = [
 @Component({
   selector: 'ss-layout-admin',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent, SelecteurThemeComponent],
   templateUrl: './layout-admin.component.html',
   styleUrl: './layout-admin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

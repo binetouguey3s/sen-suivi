@@ -8,6 +8,9 @@ import {
   LucideGlobe,
   LucidePhoneCall,
   LucideQuote,
+  LucideSun,
+  LucideMoon,
+  LucideMonitor,
   LucideUserCheck,
   LucideBanknote,
   LucideBuilding2,
@@ -114,6 +117,9 @@ export const ICONES = {
   'utilisateur-verifie': LucideUserCheck,
   'chevron-bas': LucideChevronDown,
   citation: LucideQuote,
+  soleil: LucideSun,
+  lune: LucideMoon,
+  ecran: LucideMonitor,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

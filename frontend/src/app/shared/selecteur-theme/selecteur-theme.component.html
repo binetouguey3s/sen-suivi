@@ -1,0 +1,22 @@
+<div class="st" role="radiogroup" aria-label="Thème d'affichage">
+  @for (option of options; track option.valeur; let i = $index) {
+    <button
+      #bouton
+      type="button"
+      role="radio"
+      class="st__option"
+      [attr.aria-checked]="theme.choix() === option.valeur"
+      [attr.tabindex]="theme.choix() === option.valeur ? 0 : -1"
+      [attr.title]="compact() ? option.description : null"
+      (click)="choisir(option.valeur)"
+      (keydown)="clavier($event, i)"
+    >
+      <ss-icon [nom]="option.icone" taille="sm" />
+      @if (compact()) {
+        <span class="st__masque">{{ option.description }}</span>
+      } @else {
+        <span>{{ option.libelle }}</span>
+      }
+    </button>
+  }
+</div>

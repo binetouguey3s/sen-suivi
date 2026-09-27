@@ -5,6 +5,7 @@ import { IsActiveMatchOptions, Router, RouterLink, RouterLinkActive, RouterOutle
 import { AuthService } from '../../core/services/auth.service';
 import { IconComponent } from '../icon/icon.component';
 import { ModalUrgenceComponent } from '../modal-urgence/modal-urgence.component';
+import { SelecteurThemeComponent } from '../selecteur-theme/selecteur-theme.component';
 
 interface LienPublic {
   libelle: string;
@@ -16,7 +17,7 @@ interface LienPublic {
 @Component({
   selector: 'ss-layout-public',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ModalUrgenceComponent, IconComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ModalUrgenceComponent, IconComponent, SelecteurThemeComponent],
   templateUrl: './layout-public.component.html',
   styleUrl: './layout-public.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

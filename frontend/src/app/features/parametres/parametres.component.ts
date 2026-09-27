@@ -10,6 +10,7 @@ import { ChampComponent } from '../../shared/champ/champ.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { InterrupteurComponent } from '../../shared/interrupteur/interrupteur.component';
 import { ModalComponent } from '../../shared/modal/modal.component';
+import { SelecteurThemeComponent } from '../../shared/selecteur-theme/selecteur-theme.component';
 
 interface TypeNotification {
   cle: string;
@@ -36,7 +37,7 @@ const NOTIFICATIONS_PROFESSIONNEL: TypeNotification[] = [
 @Component({
   selector: 'ss-parametres',
   standalone: true,
-  imports: [ChampComponent, IconComponent, InterrupteurComponent, ModalComponent],
+  imports: [ChampComponent, IconComponent, InterrupteurComponent, ModalComponent, SelecteurThemeComponent],
   templateUrl: './parametres.component.html',
   styleUrl: './parametres.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

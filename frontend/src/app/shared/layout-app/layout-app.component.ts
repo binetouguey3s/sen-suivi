@@ -10,6 +10,7 @@ import { NomIcone } from '../../core/icons/icons';
 import { ClocheNotificationsComponent } from '../panneau-notifications/panneau-notifications.component';
 import { IconComponent } from '../icon/icon.component';
 import { ModalUrgenceComponent } from '../modal-urgence/modal-urgence.component';
+import { SelecteurThemeComponent } from '../selecteur-theme/selecteur-theme.component';
 
 interface LienNav {
   route: string;
@@ -31,7 +32,7 @@ const LIENS_UTILISATEUR: LienNav[] = [
 @Component({
   selector: 'ss-layout-app',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent, ModalUrgenceComponent, ClocheNotificationsComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent, ModalUrgenceComponent, ClocheNotificationsComponent, SelecteurThemeComponent],
   templateUrl: './layout-app.component.html',
   styleUrl: './layout-app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

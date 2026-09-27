@@ -15,6 +15,7 @@
   </nav>
 
   <div class="lp__compte">
+    <ss-selecteur-theme compact />
     @if (auth.estConnecte()) {
       <a class="lp__avatar" [routerLink]="auth.espaceAccueil()" [attr.aria-label]="'Mon espace, ' + nomAffiche()">{{ initiales() }}</a>
     } @else {
@@ -58,6 +59,10 @@
   </nav>
 
   <div class="lp__tiroir-compte">
+    <div class="lp__tiroir-theme">
+      <span aria-hidden="true">Thème</span>
+      <ss-selecteur-theme compact />
+    </div>
     @if (auth.estConnecte()) {
       <div class="lp__tiroir-profil">
         <span class="lp__avatar">{{ initiales() }}</span>

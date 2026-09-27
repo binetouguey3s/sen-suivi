@@ -1,0 +1,59 @@
+:host {
+  display: inline-flex;
+}
+
+.st {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface-neutre);
+}
+
+.st__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  min-height: 36px;
+  padding: 0 var(--ss-espace-2);
+  border: none;
+  border-radius: var(--ss-rayon-pilule);
+  background: transparent;
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  cursor: pointer;
+  transition: background var(--ss-duree) var(--ss-ease), color var(--ss-duree) var(--ss-ease);
+
+  &:hover {
+    color: var(--ss-texte);
+  }
+
+  &[aria-checked='true'] {
+    background: var(--ss-surface);
+    color: var(--ss-texte);
+    box-shadow: var(--ss-ombre);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: 2px;
+  }
+}
+
+// Version compacte des en-têtes : icônes seules, cibles tactiles de 36px
+:host(.st--compact) .st__option {
+  justify-content: center;
+  width: 36px;
+  padding: 0;
+}
+
+// Masqué à l'écran, lu par les lecteurs d'écran
+.st__masque {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
