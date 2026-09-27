@@ -11,6 +11,7 @@ import { ClocheNotificationsComponent } from '../panneau-notifications/panneau-n
 import { IconComponent } from '../icon/icon.component';
 import { ModalUrgenceComponent } from '../modal-urgence/modal-urgence.component';
 import { SelecteurThemeComponent } from '../selecteur-theme/selecteur-theme.component';
+import { ConversationService } from '../../core/services/conversation.service';
 
 interface LienNav {
   route: string;
@@ -39,6 +40,7 @@ const LIENS_UTILISATEUR: LienNav[] = [
   host: { '(document:keydown.escape)': 'menuOuvert.set(false)' },
 })
 export class LayoutAppComponent {
+  protected readonly conversation = inject(ConversationService);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   protected readonly auth = inject(AuthService);

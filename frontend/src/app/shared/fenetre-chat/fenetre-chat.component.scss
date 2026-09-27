@@ -1,0 +1,30 @@
+// Mobile : volet qui monte du bas, légèrement détaché des bords.
+// Ordinateur : fenêtre en bas à droite, juste au-dessus de la bulle de chat.
+.fc {
+  position: fixed;
+  z-index: 40;
+  inset: 12px 12px 12px;
+  overflow: hidden;
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre-forte);
+  animation: fc-apparition 0.2s var(--ss-ease);
+
+  @media (min-width: 900px) {
+    inset: auto var(--ss-espace-3) calc(var(--ss-espace-4) + 56px + var(--ss-espace-2)) auto;
+    width: 420px;
+    height: min(640px, calc(100vh - 140px));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes fc-apparition {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

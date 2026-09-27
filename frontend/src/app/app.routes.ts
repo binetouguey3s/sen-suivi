@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { estConnecteGuard } from './core/guards/est-connecte.guard';
+import { ouvrirConversation } from './core/guards/ouvrir-conversation.guard';
 import { typeCompteGuard } from './core/guards/type-compte.guard';
 
 export const routes: Routes = [
@@ -93,9 +94,11 @@ export const routes: Routes = [
       ),
   },
   {
+    // Ouvre la fenêtre de chat par-dessus la page en cours ; sur un lien direct,
+    // par-dessus l'accueil. Les liens existants vers /chatbot restent valables.
     path: 'chatbot',
-    loadComponent: () =>
-      import('./features/chatbot/chatbot.component').then((m) => m.ChatbotComponent),
+    canActivate: [ouvrirConversation],
+    children: [],
   },
   {
     path: 'bienvenue',

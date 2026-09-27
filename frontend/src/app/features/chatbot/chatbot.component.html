@@ -1,6 +1,5 @@
 <div class="cb">
   <header class="cb__entete">
-    <a class="cb__retour" routerLink="/" aria-label="Retour à l'accueil"><ss-icon nom="fleche-gauche" taille="sm" /></a>
     <p class="cb__confidentiel">
       <ss-icon nom="cadenas" taille="sm" />
       <span class="cb__texte-long">Échange anonyme et confidentiel, disponible 24h/24</span>
@@ -11,14 +10,17 @@
     </button>
     <div class="cb__marque">
       <div class="cb__marque-texte">
-        <strong>Titou</strong>
+        <strong id="titre-chat">Titou</strong>
         <span class="cb__en-ligne">● En ligne</span>
       </div>
     </div>
+    <button type="button" class="cb__fermer" aria-label="Fermer la conversation" (click)="conversation.fermer()">
+      <ss-icon nom="fermer" taille="sm" />
+    </button>
   </header>
 
   <div class="cb__zone" #zoneMessages>
-    @for (m of messages(); track m.id) {
+    @for (m of conversation.messages(); track m.id) {
       @if (m.auteur === 'BOT') {
         <div class="cb__ligne cb__ligne--bot">
           <div class="cb__colonne">
@@ -47,7 +49,7 @@
       }
     }
 
-    @if (enCours()) {
+    @if (conversation.enCours()) {
       <div class="cb__ligne cb__ligne--bot">
         <div class="cb__bulle cb__bulle--bot cb__bulle--typing" aria-label="Sen Suivi écrit…">
           <span></span><span></span><span></span>
@@ -55,10 +57,10 @@
       </div>
     }
 
-    @if (afficherReponsesRapides() && !enCours()) {
+    @if (conversation.debutDeConversation() && !conversation.enCours()) {
       <div class="cb__rapides">
         @for (r of reponsesRapides; track r) {
-          <button type="button" (click)="envoyerRapide(r)">{{ r }}</button>
+          <button type="button" (click)="envoyer(r)">{{ r }}</button>
         }
       </div>
     }
@@ -69,8 +71,8 @@
       <label class="cb__consentement">
         <input
           type="checkbox"
-          [checked]="consentementConservation()"
-          (change)="consentementConservation.set($any($event.target).checked)"
+          [checked]="conversation.consentementConservation()"
+          (change)="conversation.consentementConservation.set($any($event.target).checked)"
         />
         Conserver cet échange dans mon historique
       </label>
@@ -80,14 +82,16 @@
         <ss-icon nom="micro" taille="sm" />
       </button>
       <input
+        #champ
         type="text"
+        aria-label="Votre message à Titou"
         placeholder="Répondez à Titou…"
         [value]="saisie()"
         (input)="saisir($event)"
-        (keydown.enter)="envoyerDepuisChamp()"
+        (keydown.enter)="envoyer(saisie())"
         maxlength="2000"
       />
-      <button type="button" class="cb__envoyer" [disabled]="enCours() || !saisie().trim()" (click)="envoyerDepuisChamp()">
+      <button type="button" class="cb__envoyer" aria-label="Envoyer" [disabled]="conversation.enCours() || !saisie().trim()" (click)="envoyer(saisie())">
         <ss-icon nom="envoyer" taille="sm" />
       </button>
     </div>

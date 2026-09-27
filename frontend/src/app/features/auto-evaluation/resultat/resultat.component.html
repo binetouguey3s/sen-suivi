@@ -76,7 +76,14 @@
       </button>
     </footer>
 
-    <button type="button" class="res__chat" title="Chatbot — bientôt disponible">
+    <button
+      type="button"
+      class="res__chat"
+      aria-controls="fenetre-chat"
+      [attr.aria-expanded]="conversation.ouverte()"
+      [attr.aria-label]="conversation.ouverte() ? 'Fermer la conversation avec Titou' : 'Parler à Titou, le chatbot'"
+      (click)="conversation.basculer()"
+    >
       <ss-icon nom="chat" taille="lg" />
     </button>
 

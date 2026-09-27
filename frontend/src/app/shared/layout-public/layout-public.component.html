@@ -150,7 +150,16 @@
 
 <ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />
 
-<a class="lp__chat" routerLink="/chatbot" aria-label="Parler au chatbot">
-  <ss-icon nom="chat" taille="lg" />
-  <span class="lp__chat-point" aria-hidden="true"></span>
-</a>
+<button
+  type="button"
+  class="lp__chat"
+  aria-controls="fenetre-chat"
+  [attr.aria-expanded]="conversation.ouverte()"
+  [attr.aria-label]="conversation.ouverte() ? 'Fermer la conversation avec Titou' : 'Parler à Titou, le chatbot'"
+  (click)="conversation.basculer()"
+>
+  <ss-icon [nom]="conversation.ouverte() ? 'fermer' : 'chat'" taille="lg" />
+  @if (!conversation.ouverte()) {
+    <span class="lp__chat-point" aria-hidden="true"></span>
+  }
+</button>

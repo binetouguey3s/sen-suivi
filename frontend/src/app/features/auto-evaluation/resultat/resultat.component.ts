@@ -8,6 +8,7 @@ import { CourbeMarqueComponent } from '../../../shared/courbe-marque/courbe-marq
 import { GaugeComponent } from '../../../shared/gauge/gauge.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ModalUrgenceComponent } from '../../../shared/modal-urgence/modal-urgence.component';
+import { ConversationService } from '../../../core/services/conversation.service';
 
 @Component({
   selector: 'ss-evaluation-resultat',
@@ -18,6 +19,7 @@ import { ModalUrgenceComponent } from '../../../shared/modal-urgence/modal-urgen
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultatComponent {
+  protected readonly conversation = inject(ConversationService);
   private readonly router = inject(Router);
   protected readonly resultat = inject(AutoEvaluationService).dernierResultat;
 

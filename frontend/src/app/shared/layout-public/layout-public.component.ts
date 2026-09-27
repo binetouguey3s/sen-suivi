@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { IconComponent } from '../icon/icon.component';
 import { ModalUrgenceComponent } from '../modal-urgence/modal-urgence.component';
 import { SelecteurThemeComponent } from '../selecteur-theme/selecteur-theme.component';
+import { ConversationService } from '../../core/services/conversation.service';
 
 interface LienPublic {
   libelle: string;
@@ -24,6 +25,7 @@ interface LienPublic {
   host: { '(document:keydown.escape)': 'menuOuvert.set(false)' },
 })
 export class LayoutPublicComponent {
+  protected readonly conversation = inject(ConversationService);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   protected readonly auth = inject(AuthService);
