@@ -1,102 +1,169 @@
 <div class="cb">
   <header class="cb__entete">
-    <p class="cb__confidentiel">
-      <ss-icon nom="cadenas" taille="sm" />
-      <span class="cb__texte-long">Échange anonyme et confidentiel, disponible 24h/24</span>
-      <span class="cb__texte-court">Échange confidentiel 24h/24</span>
-    </p>
+    @if (conversation.vue() === 'historique') {
+      <button type="button" class="cb__icone" aria-label="Revenir à la conversation" (click)="conversation.afficherConversation()">
+        <ss-icon nom="fleche-gauche" taille="sm" />
+      </button>
+    }
+    <div class="cb__marque">
+      <div class="cb__marque-texte">
+        <strong id="titre-chat">{{ conversation.vue() === 'historique' ? 'Vos conversations' : 'Titou' }}</strong>
+        @if (conversation.vue() === 'conversation') {
+          <span class="cb__en-ligne">● En ligne</span>
+        }
+      </div>
+    </div>
+    @if (conversation.peutConserver() && conversation.vue() === 'conversation') {
+      <button type="button" class="cb__icone" aria-label="Voir l'historique de vos conversations" title="Historique" (click)="conversation.afficherHistorique()">
+        <ss-icon nom="horloge" taille="sm" />
+      </button>
+    }
     <button type="button" class="cb__urgence" (click)="modaleUrgenceOuverte.set(true)">
       <ss-icon nom="telephone" taille="sm" /> <span class="cb__urgence-texte">Besoin d'aide tout de suite</span>
     </button>
-    <div class="cb__marque">
-      <div class="cb__marque-texte">
-        <strong id="titre-chat">Titou</strong>
-        <span class="cb__en-ligne">● En ligne</span>
-      </div>
-    </div>
-    <button type="button" class="cb__fermer" aria-label="Fermer la conversation" (click)="conversation.fermer()">
+    <button type="button" class="cb__icone cb__fermer" aria-label="Fermer la conversation" (click)="conversation.fermer()">
       <ss-icon nom="fermer" taille="sm" />
     </button>
+    <p class="cb__confidentiel">
+      <ss-icon nom="cadenas" taille="sm" />
+      <span>Échange confidentiel 24h/24</span>
+    </p>
   </header>
 
-  <div class="cb__zone" #zoneMessages>
-    @for (m of conversation.messages(); track m.id) {
-      @if (m.auteur === 'BOT') {
-        <div class="cb__ligne cb__ligne--bot">
-          <div class="cb__colonne">
-            <div class="cb__bulle cb__bulle--bot" [class.cb__bulle--urgence]="m.urgence">
-              <p>{{ m.contenu }}</p>
-              @if (m.ressource) {
-                <a class="cb__ressource" [routerLink]="['/ressources', m.ressource.ressource_id]">
-                  <span class="cb__ressource-icone"><ss-icon nom="marque-page" taille="sm" /></span>
-                  <span class="cb__ressource-texte">
-                    <strong>{{ m.ressource.titre }}</strong>
-                    <span>{{ m.ressource.thematique }}</span>
-                  </span>
-                </a>
+  @if (conversation.vue() === 'historique') {
+    <!-- Historique : conversations conservées, les plus récentes en premier -->
+    <div class="cb__historique">
+      <button type="button" class="cb__nouvelle" (click)="conversation.nouvelleConversation()">
+        <ss-icon nom="ecrire" taille="sm" /> Nouvelle conversation
+      </button>
+
+      @switch (conversation.etatHistorique()) {
+        @case ('chargement') {
+          <p class="cb__etat" role="status">Chargement de vos conversations…</p>
+        }
+        @case ('erreur') {
+          <p class="cb__etat cb__etat--erreur" role="alert">Impossible de charger votre historique pour le moment.</p>
+        }
+        @default {
+          @if (conversation.historique().length === 0) {
+            <p class="cb__etat">
+              Aucune conversation conservée. Cochez « Conserver cet échange dans mon historique » pour retrouver vos échanges ici.
+            </p>
+          } @else {
+            <ul class="cb__liste">
+              @for (c of conversation.historique(); track c.id) {
+                <li class="cb__element" [class.cb__element--actuelle]="c.id === conversation.idConversationAffichee()">
+                  @if (aConfirmer() === c.id) {
+                    <div class="cb__confirmation" role="group" [attr.aria-label]="'Supprimer la conversation du ' + dateLisible(c.derniere_activite)">
+                      <p>Supprimer définitivement cette conversation ?</p>
+                      <div class="cb__confirmation-actions">
+                        <button type="button" class="cb__annuler" (click)="aConfirmer.set(null)">Annuler</button>
+                        <button type="button" class="cb__supprimer" (click)="supprimer(c.id)">Supprimer</button>
+                      </div>
+                      @if (suppressionEchouee()) {
+                        <p class="cb__etat--erreur" role="alert">La suppression a échoué. Réessayez.</p>
+                      }
+                    </div>
+                  } @else {
+                    <button type="button" class="cb__reprendre" (click)="conversation.reprendre(c.id)">
+                      <span class="cb__apercu">{{ c.apercu || 'Conversation' }}</span>
+                      <span class="cb__meta">{{ dateLisible(c.derniere_activite) }} · {{ c.nombre_messages }} messages</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="cb__icone cb__corbeille"
+                      [attr.aria-label]="'Supprimer la conversation « ' + (c.apercu || 'Conversation') + ' »'"
+                      (click)="aConfirmer.set(c.id); suppressionEchouee.set(false)"
+                    >
+                      <ss-icon nom="corbeille" taille="sm" />
+                    </button>
+                  }
+                </li>
               }
+            </ul>
+          }
+        }
+      }
+    </div>
+  } @else {
+    <div class="cb__zone" #zoneMessages>
+      @for (m of conversation.messages(); track m.id) {
+        @if (m.auteur === 'BOT') {
+          <div class="cb__ligne cb__ligne--bot">
+            <div class="cb__colonne">
+              <div class="cb__bulle cb__bulle--bot" [class.cb__bulle--urgence]="m.urgence">
+                <p>{{ m.contenu }}</p>
+                @if (m.ressource) {
+                  <a class="cb__ressource" [routerLink]="['/ressources', m.ressource.ressource_id]">
+                    <span class="cb__ressource-icone"><ss-icon nom="marque-page" taille="sm" /></span>
+                    <span class="cb__ressource-texte">
+                      <strong>{{ m.ressource.titre }}</strong>
+                      <span>{{ m.ressource.thematique }}</span>
+                    </span>
+                  </a>
+                }
+              </div>
+              <span class="cb__heure">{{ m.heure }}</span>
             </div>
-            <span class="cb__heure">{{ m.heure }}</span>
           </div>
-        </div>
-      } @else {
-        <div class="cb__ligne cb__ligne--utilisateur">
-          <div class="cb__colonne cb__colonne--utilisateur">
-            <div class="cb__bulle cb__bulle--utilisateur"><p>{{ m.contenu }}</p></div>
-            <span class="cb__heure">{{ m.heure }}</span>
+        } @else {
+          <div class="cb__ligne cb__ligne--utilisateur">
+            <div class="cb__colonne cb__colonne--utilisateur">
+              <div class="cb__bulle cb__bulle--utilisateur"><p>{{ m.contenu }}</p></div>
+              <span class="cb__heure">{{ m.heure }}</span>
+            </div>
+          </div>
+        }
+      }
+
+      @if (conversation.enCours()) {
+        <div class="cb__ligne cb__ligne--bot">
+          <div class="cb__bulle cb__bulle--bot cb__bulle--typing" aria-label="Sen Suivi écrit…">
+            <span></span><span></span><span></span>
           </div>
         </div>
       }
-    }
 
-    @if (conversation.enCours()) {
-      <div class="cb__ligne cb__ligne--bot">
-        <div class="cb__bulle cb__bulle--bot cb__bulle--typing" aria-label="Sen Suivi écrit…">
-          <span></span><span></span><span></span>
+      @if (conversation.debutDeConversation() && !conversation.enCours()) {
+        <div class="cb__rapides">
+          @for (r of reponsesRapides; track r) {
+            <button type="button" (click)="envoyer(r)">{{ r }}</button>
+          }
         </div>
-      </div>
-    }
-
-    @if (conversation.debutDeConversation() && !conversation.enCours()) {
-      <div class="cb__rapides">
-        @for (r of reponsesRapides; track r) {
-          <button type="button" (click)="envoyer(r)">{{ r }}</button>
-        }
-      </div>
-    }
-  </div>
-
-  <footer class="cb__pied">
-    @if (estUtilisateur()) {
-      <label class="cb__consentement">
-        <input
-          type="checkbox"
-          [checked]="conversation.consentementConservation()"
-          (change)="conversation.consentementConservation.set($any($event.target).checked)"
-        />
-        Conserver cet échange dans mon historique
-      </label>
-    }
-    <div class="cb__champ">
-      <button type="button" class="cb__micro" aria-label="Message vocal (bientôt disponible)" disabled>
-        <ss-icon nom="micro" taille="sm" />
-      </button>
-      <input
-        #champ
-        type="text"
-        aria-label="Votre message à Titou"
-        placeholder="Répondez à Titou…"
-        [value]="saisie()"
-        (input)="saisir($event)"
-        (keydown.enter)="envoyer(saisie())"
-        maxlength="2000"
-      />
-      <button type="button" class="cb__envoyer" aria-label="Envoyer" [disabled]="conversation.enCours() || !saisie().trim()" (click)="envoyer(saisie())">
-        <ss-icon nom="envoyer" taille="sm" />
-      </button>
+      }
     </div>
-    <p class="cb__mention">Titou ne remplace pas un professionnel de santé.</p>
-  </footer>
+
+    <footer class="cb__pied">
+      @if (conversation.peutConserver()) {
+        <label class="cb__consentement">
+          <input type="checkbox" [checked]="conversation.consentementConservation()" (change)="changerConservation($event)" />
+          Conserver cet échange dans mon historique
+        </label>
+        @if (conversation.erreurConservation()) {
+          <p class="cb__etat--erreur cb__consentement-erreur" role="alert">L'échange n'a pas pu être conservé. Réessayez.</p>
+        }
+      }
+      <div class="cb__champ">
+        <button type="button" class="cb__micro" aria-label="Message vocal (bientôt disponible)" disabled>
+          <ss-icon nom="micro" taille="sm" />
+        </button>
+        <input
+          #champ
+          type="text"
+          aria-label="Votre message à Titou"
+          placeholder="Répondez à Titou…"
+          [value]="saisie()"
+          (input)="saisir($event)"
+          (keydown.enter)="envoyer(saisie())"
+          maxlength="2000"
+        />
+        <button type="button" class="cb__envoyer" aria-label="Envoyer" [disabled]="conversation.enCours() || !saisie().trim()" (click)="envoyer(saisie())">
+          <ss-icon nom="envoyer" taille="sm" />
+        </button>
+      </div>
+      <p class="cb__mention">Titou ne remplace pas un professionnel de santé.</p>
+    </footer>
+  }
 </div>
 
 <ss-modal-urgence [(ouverte)]="modaleUrgenceOuverte" />

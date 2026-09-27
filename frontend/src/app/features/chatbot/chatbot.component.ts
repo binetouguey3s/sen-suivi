@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { AuthService } from '../../core/services/auth.service';
 import { ConversationService } from '../../core/services/conversation.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ModalUrgenceComponent } from '../../shared/modal-urgence/modal-urgence.component';
@@ -20,7 +19,6 @@ const REPONSES_RAPIDES = ['Je me sens stressé', 'Je dors mal', 'Je cherche un p
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatbotComponent {
-  private readonly auth = inject(AuthService);
   protected readonly conversation = inject(ConversationService);
 
   private readonly zoneMessages = viewChild<ElementRef<HTMLDivElement>>('zoneMessages');
@@ -29,7 +27,9 @@ export class ChatbotComponent {
   protected readonly reponsesRapides = REPONSES_RAPIDES;
   protected readonly saisie = signal('');
   protected readonly modaleUrgenceOuverte = signal(false);
-  protected readonly estUtilisateur = computed(() => this.auth.typeCompte() === 'utilisateur');
+  // Conversation dont la suppression attend confirmation dans la liste
+  protected readonly aConfirmer = signal<number | null>(null);
+  protected readonly suppressionEchouee = signal(false);
 
   constructor() {
     // Fait défiler vers le bas à chaque nouveau message, et à l'ouverture
@@ -53,5 +53,30 @@ export class ChatbotComponent {
     if (!texte.trim()) return;
     this.saisie.set('');
     void this.conversation.envoyer(texte);
+  }
+
+  protected changerConservation(evenement: Event): void {
+    void this.conversation.definirConservation((evenement.target as HTMLInputElement).checked);
+  }
+
+  protected async supprimer(id: number): Promise<void> {
+    this.suppressionEchouee.set(false);
+    try {
+      await this.conversation.supprimer(id);
+      this.aConfirmer.set(null);
+    } catch {
+      this.suppressionEchouee.set(true);
+    }
+  }
+
+  // « Aujourd'hui à 18:15 », « Hier à 09:02 » ou « 12 sept. à 21:40 »
+  protected dateLisible(iso: string): string {
+    const date = new Date(iso);
+    const heure = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const jour = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const ecart = Math.round((jour(new Date()) - jour(date)) / 86_400_000);
+    if (ecart === 0) return `Aujourd'hui à ${heure}`;
+    if (ecart === 1) return `Hier à ${heure}`;
+    return `${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} à ${heure}`;
   }
 }

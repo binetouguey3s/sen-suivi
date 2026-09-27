@@ -1,9 +1,21 @@
+from django.db.models import Count, Max, OuterRef, Subquery
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.comptes.permissions import EstUtilisateur
+from apps.ressources.models import Ressource
+
 from .models import ConversationChatbot, MessageChatbot, TypeExpediteur
-from .serializers import MessageEntreeSerializer, MessageSortieSerializer
+from .serializers import (
+    ConversationResumeSerializer,
+    MessageEntreeSerializer,
+    MessageHistoriqueSerializer,
+    MessageSortieSerializer,
+    NouvelleConversationSerializer,
+)
 from .services import MicroserviceIAIndisponible, traiter_message
 
 
@@ -63,10 +75,91 @@ class ChatbotMessageView(APIView):
         MessageChatbot.objects.create(
             conversation=conversation, contenu=donnees['message'], type_expediteur=TypeExpediteur.UTILISATEUR
         )
+        suggestion = resultat.get('ressource') or {}
         MessageChatbot.objects.create(
             conversation=conversation,
             contenu=resultat['reponse'],
             type_expediteur=TypeExpediteur.BOT,
             source_reponse=resultat.get('source_reponse'),
+            urgence=bool(resultat.get('urgence')),
+            ressource=Ressource.objects.filter(pk=suggestion.get('ressource_id')).first(),
         )
         return conversation.id
+
+
+def conversations_de(request):
+    """Conversations conservées du compte connecté, et d'aucun autre."""
+    return ConversationChatbot.objects.filter(
+        utilisateur=request.user.utilisateur, consentement_conservation=True
+    )
+
+
+class ConversationsView(APIView):
+    """GET  /api/chatbot/conversations — historique, de la plus récente à la plus ancienne.
+    POST /api/chatbot/conversations — enregistre la conversation en cours au moment où
+    l'utilisateur coche « Conserver cet échange » : les messages déjà échangés ne sont
+    pas perdus. Seul l'auteur peut ensuite la lire.
+    """
+
+    permission_classes = [EstUtilisateur]
+
+    def get(self, request):
+        premier_message = MessageChatbot.objects.filter(
+            conversation=OuterRef('pk'), type_expediteur=TypeExpediteur.UTILISATEUR
+        ).order_by('date_envoi', 'id').values('contenu')[:1]
+        conversations = (
+            conversations_de(request)
+            .annotate(
+                nombre_messages=Count('messages'),
+                derniere_activite=Max('messages__date_envoi'),
+                premier_message=Subquery(premier_message),
+            )
+            .filter(nombre_messages__gt=0)
+            .order_by('-derniere_activite')
+        )
+        return Response(ConversationResumeSerializer(conversations, many=True).data)
+
+    def post(self, request):
+        entree = NouvelleConversationSerializer(data=request.data)
+        entree.is_valid(raise_exception=True)
+        messages = entree.validated_data['messages']
+
+        ids_suggeres = {m['ressource_id'] for m in messages if m.get('ressource_id')}
+        ressources = Ressource.objects.in_bulk(ids_suggeres)
+        conversation = ConversationChatbot.objects.create(
+            utilisateur=request.user.utilisateur, consentement_conservation=True
+        )
+        # Créés un par un pour garder l'ordre de la conversation (date d'envoi croissante)
+        for m in messages:
+            MessageChatbot.objects.create(
+                conversation=conversation,
+                contenu=m['contenu'],
+                type_expediteur=m['auteur'],
+                urgence=m['urgence'] and m['auteur'] == TypeExpediteur.BOT,
+                ressource=ressources.get(m.get('ressource_id')) if m['auteur'] == TypeExpediteur.BOT else None,
+            )
+        return Response({'id': conversation.id}, status=status.HTTP_201_CREATED)
+
+
+class ConversationDetailView(APIView):
+    """GET    /api/chatbot/conversations/<id> — messages d'une conversation conservée.
+    DELETE /api/chatbot/conversations/<id> — efface définitivement la conversation
+    (droit à l'effacement). Une conversation d'un autre compte renvoie 404.
+    """
+
+    permission_classes = [EstUtilisateur]
+
+    def get(self, request, pk):
+        conversation = get_object_or_404(conversations_de(request), pk=pk)
+        messages = conversation.messages.select_related('ressource').order_by('date_envoi', 'id')
+        return Response(
+            {
+                'id': conversation.id,
+                'date': conversation.date,
+                'messages': MessageHistoriqueSerializer(messages, many=True).data,
+            }
+        )
+
+    def delete(self, request, pk):
+        get_object_or_404(conversations_de(request), pk=pk).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

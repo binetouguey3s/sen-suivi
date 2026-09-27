@@ -24,3 +24,35 @@ export interface MessageAffiche {
   ressource?: RessourceSuggereeChatbot | null;
   urgence?: boolean;
 }
+
+// Historique des conversations conservées (GET /api/chatbot/conversations)
+export interface ConversationResume {
+  id: number;
+  date: string;
+  derniere_activite: string;
+  nombre_messages: number;
+  apercu: string;
+}
+
+export interface MessageHistorique {
+  id: number;
+  auteur: 'UTILISATEUR' | 'BOT';
+  contenu: string;
+  date_envoi: string;
+  urgence: boolean;
+  ressource: RessourceSuggereeChatbot | null;
+}
+
+export interface ConversationDetail {
+  id: number;
+  date: string;
+  messages: MessageHistorique[];
+}
+
+// Message déjà échangé, envoyé au moment où l'utilisateur accepte la conservation
+export interface MessageAnterieur {
+  auteur: 'UTILISATEUR' | 'BOT';
+  contenu: string;
+  urgence?: boolean;
+  ressource_id?: number | null;
+}

@@ -62,6 +62,20 @@ class MessageChatbot(models.Model):
         blank=True,
         help_text='Uniquement pour les messages du bot (REGLE pour les niveaux 0 et 1, RAG pour le niveau 2).',
     )
+    # Ce que la réponse affichait dans le chat, pour que l'historique relu
+    # ressemble à la conversation d'origine
+    urgence = models.BooleanField(
+        'alerte de détresse', default=False,
+        help_text='Vrai si la réponse du bot renvoyait vers les numéros d’urgence.',
+    )
+    ressource = models.ForeignKey(
+        'ressources.Ressource',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+        verbose_name='ressource suggérée',
+    )
     date_envoi = models.DateTimeField("date d'envoi", auto_now_add=True)
 
     class Meta:

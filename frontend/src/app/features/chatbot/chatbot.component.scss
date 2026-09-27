@@ -48,7 +48,7 @@
 }
 
 .cb__urgence,
-.cb__fermer {
+.cb__icone {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -65,14 +65,12 @@
 }
 
 .cb__urgence {
-  order: 2;
   border: 1px solid var(--ss-alerte);
   background: var(--ss-surface);
   color: var(--ss-alerte);
 }
 
-.cb__fermer {
-  order: 3;
+.cb__icone {
   border: none;
   background: transparent;
   color: var(--ss-texte);
@@ -97,7 +95,6 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  order: 4;
   flex-basis: 100%;
   margin: 0;
   color: var(--ss-texte);
@@ -105,9 +102,6 @@
   font-weight: var(--ss-poids-texte-fort);
 }
 
-.cb__texte-long {
-  display: none;
-}
 
 // --- Fil de discussion -------------------------------------------------------
 
@@ -373,4 +367,171 @@
   text-align: center;
   font-size: 12px;
   color: var(--ss-texte-doux);
+}
+
+// --- Historique --------------------------------------------------------------
+
+.cb__historique {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-2);
+}
+
+.cb__nouvelle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ss-espace-1);
+  padding: 10px var(--ss-espace-2);
+  border: none;
+  border-radius: var(--ss-rayon-bouton);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: 2px;
+  }
+}
+
+.cb__etat {
+  margin: 0;
+  padding: var(--ss-espace-2);
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+  text-align: center;
+}
+
+.cb__etat--erreur {
+  margin: 0;
+  color: var(--ss-alerte);
+  font-size: 13px;
+}
+
+.cb__consentement-erreur {
+  margin-bottom: var(--ss-espace-1);
+}
+
+.cb__liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cb__element {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-champ);
+  background: var(--ss-surface);
+}
+
+// Conversation actuellement affichée dans la fenêtre
+.cb__element--actuelle {
+  border-color: var(--ss-accent);
+}
+
+.cb__reprendre {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px var(--ss-espace-2);
+  border: none;
+  border-radius: var(--ss-rayon-champ);
+  background: transparent;
+  color: var(--ss-texte);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ss-surface-legere);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: -2px;
+  }
+}
+
+.cb__apercu {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb__meta {
+  color: var(--ss-texte-doux);
+  font-size: 12px;
+}
+
+.cb__corbeille {
+  flex-shrink: 0;
+  margin-right: var(--ss-espace-1);
+  color: var(--ss-texte-doux);
+
+  &:hover {
+    color: var(--ss-alerte);
+  }
+}
+
+.cb__confirmation {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-1);
+  padding: 12px var(--ss-espace-2);
+
+  p {
+    margin: 0;
+    color: var(--ss-texte);
+    font-size: 14px;
+  }
+}
+
+.cb__confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ss-espace-1);
+
+  button {
+    padding: 6px var(--ss-espace-2);
+    border-radius: var(--ss-rayon-pilule);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: var(--ss-poids-texte-fort);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--ss-primaire);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.cb__annuler {
+  border: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
+}
+
+.cb__supprimer {
+  border: none;
+  background: var(--ss-alerte);
+  color: var(--ss-alerte-texte);
 }

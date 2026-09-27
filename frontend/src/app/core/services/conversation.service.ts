@@ -1,6 +1,6 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 
-import { MessageAffiche } from '../models/chatbot';
+import { ConversationResume, MessageAffiche, MessageHistorique } from '../models/chatbot';
 import { AuthService } from './auth.service';
 import { ChatbotService } from './chatbot.service';
 
@@ -10,9 +10,17 @@ const MESSAGE_ACCUEIL =
 const MESSAGE_INDISPONIBLE =
   "Le chatbot n'est pas disponible pour le moment. En cas de détresse immédiate, appelez le 800 805 805 ou le 1515.";
 
+export type VueChat = 'conversation' | 'historique';
+export type EtatHistorique = 'chargement' | 'pret' | 'erreur';
+
+function heureDe(date: Date): string {
+  return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+
 // Conversation avec Titou et état de sa fenêtre. Porté par un service pour
 // survivre à la fermeture de la fenêtre et aux changements de page ; effacé
 // dès que le compte connecté change, pour ne rien laisser sur un appareil partagé.
+// Un compte utilisateur peut conserver ses échanges, les relire et les effacer.
 @Injectable({ providedIn: 'root' })
 export class ConversationService {
   private readonly auth = inject(AuthService);
@@ -23,13 +31,25 @@ export class ConversationService {
   private readonly messagesInternes = signal<MessageAffiche[]>([]);
   private readonly enCoursInterne = signal(false);
   private readonly conversationId = signal<number | null>(null);
+  private readonly consentementInterne = signal(false);
+  private readonly erreurConservationInterne = signal(false);
+  private readonly vueInterne = signal<VueChat>('conversation');
+  private readonly historiqueInterne = signal<ConversationResume[]>([]);
+  private readonly etatHistoriqueInterne = signal<EtatHistorique>('chargement');
 
   readonly ouverte = this.ouverteInterne.asReadonly();
   readonly messages = this.messagesInternes.asReadonly();
   readonly enCours = this.enCoursInterne.asReadonly();
+  readonly consentementConservation = this.consentementInterne.asReadonly();
+  readonly erreurConservation = this.erreurConservationInterne.asReadonly();
+  readonly vue = this.vueInterne.asReadonly();
+  readonly historique = this.historiqueInterne.asReadonly();
+  readonly etatHistorique = this.etatHistoriqueInterne.asReadonly();
   // Les réponses rapides ne sont proposées qu'avant le premier message
   readonly debutDeConversation = computed(() => this.messagesInternes().length === 1);
-  readonly consentementConservation = signal(false);
+  // Conserver et relire son historique : réservé aux comptes utilisateur
+  readonly peutConserver = computed(() => this.auth.typeCompte() === 'utilisateur');
+  readonly idConversationAffichee = this.conversationId.asReadonly();
 
   constructor() {
     this.reinitialiser();
@@ -38,6 +58,8 @@ export class ConversationService {
       this.auth.identifiant();
       untracked(() => {
         this.reinitialiser();
+        this.historiqueInterne.set([]);
+        this.vueInterne.set('conversation');
         this.ouverteInterne.set(false);
       });
     });
@@ -61,7 +83,7 @@ export class ConversationService {
 
     this.ajouter({ auteur: 'UTILISATEUR', contenu });
     this.enCoursInterne.set(true);
-    const conserver = this.auth.typeCompte() === 'utilisateur' && this.consentementConservation();
+    const conserver = this.peutConserver() && this.consentementInterne();
 
     try {
       const reponse = await this.chatbot.envoyer(contenu, this.conversationId(), conserver);
@@ -74,15 +96,97 @@ export class ConversationService {
     }
   }
 
+  // Cocher la case enregistre aussi les messages déjà échangés : l'historique
+  // est complet. En cas d'échec, la case se décoche : on ne laisse jamais
+  // croire qu'un échange est conservé alors qu'il ne l'est pas.
+  async definirConservation(conserver: boolean): Promise<void> {
+    this.erreurConservationInterne.set(false);
+    this.consentementInterne.set(conserver);
+    const dejaEchanges = this.messagesInternes().slice(1);
+    if (!conserver || !this.peutConserver() || this.conversationId() !== null || dejaEchanges.length === 0) return;
+
+    try {
+      const id = await this.chatbot.creer(
+        dejaEchanges.map((m) => ({
+          auteur: m.auteur,
+          contenu: m.contenu,
+          urgence: !!m.urgence,
+          ressource_id: m.ressource?.ressource_id ?? null,
+        })),
+      );
+      this.conversationId.set(id);
+    } catch {
+      this.consentementInterne.set(false);
+      this.erreurConservationInterne.set(true);
+    }
+  }
+
+  // --- Historique -------------------------------------------------------------
+
+  async afficherHistorique(): Promise<void> {
+    this.vueInterne.set('historique');
+    this.etatHistoriqueInterne.set('chargement');
+    try {
+      this.historiqueInterne.set(await this.chatbot.lister());
+      this.etatHistoriqueInterne.set('pret');
+    } catch {
+      this.etatHistoriqueInterne.set('erreur');
+    }
+  }
+
+  afficherConversation(): void {
+    this.vueInterne.set('conversation');
+  }
+
+  // Rouvre une conversation conservée : on peut la relire et la continuer
+  async reprendre(id: number): Promise<void> {
+    try {
+      const detail = await this.chatbot.lire(id);
+      this.messagesInternes.set([this.messageAccueil(), ...detail.messages.map((m) => this.depuisHistorique(m))]);
+      this.conversationId.set(detail.id);
+      this.consentementInterne.set(true);
+      this.erreurConservationInterne.set(false);
+      this.vueInterne.set('conversation');
+    } catch {
+      this.etatHistoriqueInterne.set('erreur');
+    }
+  }
+
+  async supprimer(id: number): Promise<void> {
+    await this.chatbot.supprimer(id);
+    this.historiqueInterne.update((liste) => liste.filter((c) => c.id !== id));
+    // La conversation affichée vient d'être effacée : on repart de zéro
+    if (this.conversationId() === id) this.reinitialiser();
+  }
+
+  nouvelleConversation(): void {
+    this.reinitialiser();
+    this.vueInterne.set('conversation');
+  }
+
   private reinitialiser(): void {
-    this.messagesInternes.set([]);
+    this.messagesInternes.set([this.messageAccueil()]);
     this.conversationId.set(null);
-    this.consentementConservation.set(false);
-    this.ajouter({ auteur: 'BOT', contenu: MESSAGE_ACCUEIL });
+    this.consentementInterne.set(false);
+    this.erreurConservationInterne.set(false);
+  }
+
+  private messageAccueil(): MessageAffiche {
+    return { id: ++this.compteur, auteur: 'BOT', contenu: MESSAGE_ACCUEIL, heure: heureDe(new Date()) };
+  }
+
+  private depuisHistorique(m: MessageHistorique): MessageAffiche {
+    return {
+      id: ++this.compteur,
+      auteur: m.auteur,
+      contenu: m.contenu,
+      heure: heureDe(new Date(m.date_envoi)),
+      ressource: m.ressource,
+      urgence: m.urgence,
+    };
   }
 
   private ajouter(message: Omit<MessageAffiche, 'id' | 'heure'>): void {
-    const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    this.messagesInternes.update((liste) => [...liste, { ...message, id: ++this.compteur, heure }]);
+    this.messagesInternes.update((liste) => [...liste, { ...message, id: ++this.compteur, heure: heureDe(new Date()) }]);
   }
 }
