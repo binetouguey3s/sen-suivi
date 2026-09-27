@@ -1,5 +1,29 @@
 <!-- Bandeau d'ouverture -->
-<section class="ac__bandeau" [class.ac__bandeau--sans-photo]="!images.bandeau" [style.background-image]="images.bandeau ? 'url(' + images.bandeau + ')' : null">
+<section class="ac__bandeau" [class.ac__bandeau--sans-photo]="!diapos.length">
+  <!-- Photos décoratives qui se succèdent en fondu -->
+  <div class="ac__diapos" aria-hidden="true">
+    @for (d of diapos; track d.src; let i = $index) {
+      <div
+        class="ac__diapo"
+        [class.ac__diapo--visible]="i === diapo()"
+        [style.background-image]="'url(' + d.src + ')'"
+        [style.background-position]="d.cadrage"
+      ></div>
+    }
+  </div>
+
+  @if (defilementPossible()) {
+    <button
+      type="button"
+      class="ac__diapos-pause"
+      [attr.aria-label]="enPause() ? 'Reprendre le défilement des photos' : 'Mettre en pause le défilement des photos'"
+      [attr.aria-pressed]="enPause()"
+      (click)="basculerPause()"
+    >
+      <ss-icon [nom]="enPause() ? 'lecture' : 'pause'" taille="sm" />
+    </button>
+  }
+
   <div class="ac__bandeau-texte">
     <h1>Votre bien-être,<br />à votre rythme.</h1>
     <p>Prenez soin de votre bien-être mental avec un accompagnement adapté à la culture sénégalaise.</p>

@@ -36,9 +36,12 @@ Originaux conservés dans images-brutes/accueil/.
 | Fichier | Original | Source | Licence |
 |---|---|---|---|
 | bandeau.webp | accueil.jpg | À compléter | À compléter |
-| stress.webp | belle.jpg | À compléter | À compléter |
-| anxiete.webp | femme joyeuse.jpg | À compléter | À compléter |
-| fatigue.webp | femme belle.jpg | À compléter | À compléter |
+| bandeau-2.webp | belle.jpg | À compléter | À compléter |
+| bandeau-3.webp | femme joyeuse.jpg | À compléter | À compléter |
+| bandeau-4.webp | femme belle.jpg | À compléter | À compléter |
+| stress.webp | stress 2.jpg | À compléter | À compléter |
+| anxiete.webp | anxiete 2.jpg | À compléter | À compléter |
+| fatigue.webp | fatigue 2.jpg | À compléter | À compléter |
 | fonctionnement.webp | sourire.jpg | À compléter | À compléter |
 | appel.webp | joyeux.jpg | À compléter | À compléter |
 

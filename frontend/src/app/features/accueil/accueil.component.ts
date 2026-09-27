@@ -1,9 +1,9 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
-import { IMAGES_ACCUEIL } from '../../core/config/images-accueil';
+import { DIAPOS_BANDEAU, DUREE_DIAPO_MS, IMAGES_ACCUEIL } from '../../core/config/images-accueil';
 import { IMAGE_PAR_LIEU } from '../../core/config/images-lieux';
 import { IMAGE_PAR_PROFESSIONNEL } from '../../core/config/images-professionnels';
 import { NomIcone } from '../../core/icons/icons';
@@ -39,6 +39,18 @@ const LONGUEUR_CITATION = 110;
 export class AccueilComponent {
   protected readonly auth = inject(AuthService);
   protected readonly images = IMAGES_ACCUEIL;
+
+  // Bandeau d'ouverture : les photos se succèdent en fondu. Défilement
+  // suspendu par le bouton pause (WCAG 2.2.2) et jamais lancé quand
+  // l'utilisateur préfère réduire les animations.
+  protected readonly diapos = DIAPOS_BANDEAU;
+  protected readonly diapo = signal(0);
+  protected readonly enPause = signal(false);
+  protected readonly defilementPossible = signal(false);
+
+  constructor() {
+    this.lancerDiaporama();
+  }
 
   protected readonly confiance: { icone: NomIcone; libelle: string }[] = [
     { icone: 'cadenas', libelle: 'Pseudonyme sur le forum' },
@@ -115,5 +127,23 @@ export class AccueilComponent {
     const texte = pro.presentation.trim();
     if (!texte) return null;
     return texte.length > LONGUEUR_CITATION ? `${texte.slice(0, LONGUEUR_CITATION).trimEnd()}…` : texte;
+  }
+
+  protected basculerPause(): void {
+    this.enPause.update((pause) => !pause);
+  }
+
+  private lancerDiaporama(): void {
+    const destruction = inject(DestroyRef);
+    // Navigateur uniquement : afterNextRender ne s'exécute jamais côté serveur
+    afterNextRender(() => {
+      const mouvementReduit = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+      if (this.diapos.length < 2 || mouvementReduit) return;
+      this.defilementPossible.set(true);
+      const minuterie = setInterval(() => {
+        if (!this.enPause()) this.diapo.update((i) => (i + 1) % this.diapos.length);
+      }, DUREE_DIAPO_MS);
+      destruction.onDestroy(() => clearInterval(minuterie));
+    });
   }
 }

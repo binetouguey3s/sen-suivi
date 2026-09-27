@@ -11,6 +11,8 @@ import {
   LucideSun,
   LucideMoon,
   LucideMonitor,
+  LucidePause,
+  LucidePlay,
   LucideUserCheck,
   LucideBanknote,
   LucideBuilding2,
@@ -120,6 +122,8 @@ export const ICONES = {
   soleil: LucideSun,
   lune: LucideMoon,
   ecran: LucideMonitor,
+  pause: LucidePause,
+  lecture: LucidePlay,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

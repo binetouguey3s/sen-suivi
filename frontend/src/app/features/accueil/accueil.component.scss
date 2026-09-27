@@ -171,15 +171,14 @@
   margin-top: var(--ss-espace-2);
   overflow: hidden;
   border-radius: var(--ss-rayon-grande-carte);
-  background-size: cover;
-  background-position: center 30%;
   color: var(--ss-texte-sur-photo);
   box-shadow: var(--ss-ombre-forte);
 
-  // Voile pour la lisibilité du texte blanc sur la photo
+  // Voile pour la lisibilité du texte blanc sur la photo, au-dessus des diapos
   &::before {
     content: '';
     position: absolute;
+    z-index: 1;
     inset: 0;
     background: linear-gradient(to top, var(--ss-photo-voile-fort), var(--ss-photo-voile-leger) 70%);
 
@@ -196,6 +195,52 @@
   }
 }
 
+// Photos du bandeau, superposées : seule la visible est opaque
+.ac__diapos {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.ac__diapo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.ac__diapo--visible {
+  opacity: 1;
+}
+
+// Pause du défilement, en haut à droite du bandeau
+.ac__diapos-pause {
+  position: absolute;
+  z-index: 2;
+  top: var(--ss-espace-2);
+  right: var(--ss-espace-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ss-photo-voile-leger);
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-photo-voile);
+  color: var(--ss-texte-sur-photo);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-texte-sur-photo);
+    outline-offset: 2px;
+  }
+}
+
 // Sans photo : dégradé aux couleurs de la charte
 .ac__bandeau--sans-photo {
   background-image: radial-gradient(circle at 80% 20%, var(--ss-accent) 0, transparent 45%),
@@ -204,6 +249,7 @@
 
 .ac__bandeau-texte {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -246,6 +292,7 @@
 
 .ac__confiance {
   position: absolute;
+  z-index: 2;
   left: 0;
   right: 0;
   bottom: 0;
