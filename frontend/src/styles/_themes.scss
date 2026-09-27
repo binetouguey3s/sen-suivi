@@ -163,8 +163,6 @@
   --ss-photo-voile:           rgba(18, 53, 79, 0.75);
   --ss-photo-voile-leger:     rgba(18, 53, 79, 0.1);
   --ss-photo-voile-nul:       rgba(18, 53, 79, 0);
-  --ss-photo-bande:           rgba(18, 53, 79, 0.35);
-  --ss-photo-trait:           rgba(255, 255, 255, 0.25);
   --ss-survol-sur-fonce:      rgba(255, 255, 255, 0.12);
   --ss-trait-sur-fonce:       rgba(255, 255, 255, 0.15);
   --ss-survol-sur-alerte:     rgba(255, 255, 255, 0.16);
@@ -187,38 +185,5 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     @include tokens-sombre;
-  }
-}
-
-// -------------------------------------------------------------
-//  Mixin verre — identique dans les deux thèmes, il lit les tokens.
-//  Réservé aux éléments qui flottent au-dessus du contenu.
-// -------------------------------------------------------------
-@mixin ss-verre($flou: 16px) {
-  background: var(--ss-verre-plein); // repli opaque
-  color: var(--ss-verre-texte);
-  border: 1px solid var(--ss-verre-bordure);
-  border-radius: 16px;
-  box-shadow: var(--ss-verre-ombre);
-
-  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    background: var(--ss-verre);
-    -webkit-backdrop-filter: blur($flou) saturate(140%);
-    backdrop-filter: blur($flou) saturate(140%);
-  }
-
-  // Performance : flou allégé sur petit écran
-  @media (max-width: 640px) {
-    @supports (backdrop-filter: blur(1px)) {
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-    }
-  }
-
-  // Placé en dernier pour l'emporter sur le flou mobile ci-dessus
-  @media (prefers-reduced-transparency: reduce) {
-    background: var(--ss-verre-plein);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 }

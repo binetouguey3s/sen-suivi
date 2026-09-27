@@ -1,0 +1,40 @@
+// =============================================================
+//  Sen Suivi — Effet verre (glassmorphisme)
+//  Mixin seul, sans aucune sortie CSS : un composant l'importe avec
+//  @use 'verre' as *; sans recopier les tokens des thèmes.
+//
+//  Réservé à ce qui FLOTTE au-dessus du contenu. Jamais sur un
+//  formulaire, une carte de contenu, un graphique, le bandeau
+//  d'urgence ni le pied de page. Jamais deux surfaces en verre
+//  superposées, et jamais plus de 30 % de l'écran.
+// =============================================================
+
+// Identique dans les deux thèmes : il ne lit que des tokens.
+@mixin ss-verre($flou: 16px) {
+  background: var(--ss-verre-plein); // repli opaque
+  color: var(--ss-verre-texte);
+  border: 1px solid var(--ss-verre-bordure);
+  border-radius: 16px;
+  box-shadow: var(--ss-verre-ombre);
+
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background: var(--ss-verre);
+    -webkit-backdrop-filter: blur($flou) saturate(140%);
+    backdrop-filter: blur($flou) saturate(140%);
+  }
+
+  // Performance : flou allégé sur petit écran
+  @media (max-width: 640px) {
+    @supports (backdrop-filter: blur(1px)) {
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  // Placé en dernier pour l'emporter sur le flou mobile ci-dessus
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--ss-verre-plein);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

@@ -1,3 +1,5 @@
+@use 'verre' as *;
+
 :host {
   display: block;
   min-height: 100vh;
@@ -318,9 +320,12 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background: var(--ss-surface);
-  border-top: 1px solid var(--ss-bordure);
   padding: var(--ss-espace-1) 0 max(var(--ss-espace-1), env(safe-area-inset-bottom, 0px));
+  // Verre bord à bord : le contenu défile dessous
+  @include ss-verre;
+  border: none;
+  border-top: 1px solid var(--ss-bordure);
+  border-radius: 0;
 
   @media (min-width: 900px) {
     display: none;

@@ -1,3 +1,5 @@
+@use 'verre' as *;
+
 // Page d'accueil publique. Fond menthe voilée, sections blanches ou bleues
 // pleine largeur ; contenu limité à 1344px et centré sur desktop.
 :host {
@@ -252,10 +254,13 @@
   margin: 0;
   padding: 14px var(--ss-espace-4);
   list-style: none;
-  border-top: 1px solid var(--ss-photo-trait);
-  background: var(--ss-photo-bande);
-  backdrop-filter: blur(6px);
   font-size: 15px;
+  // Verre posé sur la photo : collé au bas du bandeau, qui l'arrondit déjà
+  @include ss-verre;
+  border: none;
+  border-top: 1px solid var(--ss-verre-bordure);
+  border-radius: 0;
+  box-shadow: none;
 
   li {
     display: flex;
