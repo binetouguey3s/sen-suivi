@@ -1166,7 +1166,7 @@
   margin-top: var(--ss-espace-6);
   overflow: hidden;
   border-radius: var(--ss-rayon-grande-carte);
-  background: var(--ss-surface-douce);
+  background: var(--ss-surface-accent);
   box-shadow: var(--ss-ombre);
 
   @media (min-width: 900px) {
@@ -1212,7 +1212,7 @@
 .ac__appel-visuel {
   position: relative;
   min-height: 260px;
-  background: var(--ss-surface);
+  // Photo détourée : elle se pose directement sur le fond menthe du bloc
 
   @media (min-width: 900px) {
     min-height: 400px;
