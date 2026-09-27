@@ -1,24 +1,24 @@
 services:
   db:
-    image: postgres:16-alpine
-    container_name: sensuivi_db
-    restart: unless-stopped
+    image: postgres:16-alpine # Image Docker
+    container_name: sensuivi_db # Nom du conteneur
+    restart: unless-stopped # Ne pas arrêter le conteneur en cas d'erreur
     env_file:
-      - .env
+      - .env # Fichier d'environnement
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB} # Nom de la base de données
+      POSTGRES_USER: ${POSTGRES_USER} # Nom d'utilisateur
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Mot de passe
     ports:
-      - "5433:5432"
+      - "5433:5432" # Ports d'entrée et de sortie
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data # Volume de stockage
     networks:
-      - sensuivi_network
+      - sensuivi_network # Réseau
 
   backend:
-    build: ./backend
-    container_name: sensuivi_backend
+    build: ./backend 
+    container_name: sensuivi_backend 
     restart: unless-stopped
     env_file:
       - .env
@@ -30,15 +30,15 @@ services:
       - sensuivi_network
 
   ai-service:
-    build: ./ai-service
-    container_name: sensuivi_ai_service
-    restart: unless-stopped
+    build: ./ai-service 
+    container_name: sensuivi_ai_service 
+    restart: unless-stopped  
     env_file:
-      - .env
+      - .env 
     ports:
-      - "8001:8001"
+      - "8001:8001" 
     volumes:
-      - chroma_data:${CHROMA_PERSIST_DIR}
+      - chroma_data:${CHROMA_PERSIST_DIR} 
     networks:
       - sensuivi_network
 
@@ -51,9 +51,9 @@ services:
     ports:
       - "4200:4200"
     depends_on:
-      - backend
+      - backend # Dépend du backend
     networks:
-      - sensuivi_network
+      - sensuivi_network 
 
   n8n:
     image: n8nio/n8n
@@ -63,9 +63,9 @@ services:
       - .env
     environment:
       # Permet aux workflows de lire N8N_API_KEY (clé interne partagée avec Django)
-      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false" 
     ports:
-      - "5678:5678"
+      - "5678:5678" 
     volumes:
       - n8n_data:/home/node/.n8n
       # Workflows exportés, importables avec : n8n import:workflow --separate --input=/automations
@@ -77,7 +77,7 @@ networks:
   sensuivi_network:
     driver: bridge
 
-volumes:
-  postgres_data:
-  chroma_data:
-  n8n_data:
+volumes: 
+  postgres_data: 
+  chroma_data: 
+  n8n_data: 
