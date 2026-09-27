@@ -7,10 +7,10 @@
 .lieu__etat {
   padding: var(--ss-espace-8) var(--ss-marge-mobile);
   text-align: center;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   a {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-weight: var(--ss-poids-texte-fort);
   }
 }
@@ -22,7 +22,7 @@
   height: 300px;
   border-radius: 0 0 var(--ss-rayon-grande-carte) var(--ss-rayon-grande-carte);
   overflow: hidden;
-  background: var(--ss-bleu-profond);
+  background: var(--ss-surface-profonde);
 
   @media (min-width: 900px) {
     height: 420px;
@@ -40,12 +40,12 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 35%, var(--ss-bleu-profond) 130%);
+    background: linear-gradient(180deg, transparent 35%, var(--ss-surface-profonde) 130%);
   }
 }
 
 .lieu__hero--vide {
-  background: linear-gradient(135deg, var(--ss-bleu-sen-suivi), var(--ss-bleu-profond));
+  background: linear-gradient(135deg, var(--ss-surface-forte), var(--ss-surface-profonde));
 }
 
 .lieu__retour {
@@ -56,8 +56,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-pilule);
   padding: 6px var(--ss-espace-2);
   font-size: 14px;
@@ -79,7 +79,7 @@
   }
 
   h1 {
-    color: var(--ss-blanc);
+    color: var(--ss-texte-sur-photo);
     font-size: 34px;
     letter-spacing: var(--ss-interlettrage-moyen);
 
@@ -99,8 +99,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: var(--ss-menthe-pale);
-    color: var(--ss-bleu-profond);
+    background: var(--ss-surface-douce);
+    color: var(--ss-texte);
     border-radius: var(--ss-rayon-champ);
     padding: 6px var(--ss-espace-2);
     font-size: 14px;
@@ -122,7 +122,7 @@
 }
 
 .lieu__description {
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 17px;
   margin: 0 0 var(--ss-espace-4);
 }
@@ -143,9 +143,9 @@
     align-items: center;
     gap: var(--ss-espace-2);
     padding: var(--ss-espace-3);
-    background: var(--ss-fond-application);
+    background: var(--ss-fond);
     border-radius: var(--ss-rayon-carte);
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
   }
 
   span {
@@ -153,11 +153,11 @@
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 
   strong {
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     font-weight: var(--ss-poids-texte-fort);
   }
 }
@@ -168,9 +168,9 @@
   gap: var(--ss-espace-2);
   align-self: start;
   padding: var(--ss-espace-2);
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-carte);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
 }
 
 .lieu__mini-carte {
@@ -184,10 +184,10 @@
   align-items: center;
   justify-content: center;
   gap: var(--ss-espace-1);
-  border: 2px solid var(--ss-bleu-sen-suivi);
+  border: 2px solid var(--ss-primaire);
   border-radius: var(--ss-rayon-bouton);
   padding: var(--ss-espace-2);
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   text-decoration: none;
 }
@@ -201,7 +201,7 @@
 
   h2 {
     font-size: 28px;
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     margin-bottom: var(--ss-espace-3);
   }
 }
@@ -236,18 +236,18 @@
   }
 
   .lieu__proche-vide {
-    background: linear-gradient(135deg, var(--ss-menthe-pale), var(--ss-menthe));
-    color: var(--ss-bleu-sen-suivi);
+    background: linear-gradient(135deg, var(--ss-surface-douce), var(--ss-accent));
+    color: var(--ss-accent-texte);
   }
 
   h3 {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-size: 20px;
   }
 
   p {
     margin: 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     font-size: 14px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -260,7 +260,7 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 }
 
 .lieu__pied {
@@ -268,10 +268,10 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--ss-espace-3) var(--ss-marge-mobile);
-  border-top: 1px solid var(--ss-gris-clair);
-  background: var(--ss-fond-application);
+  border-top: 1px solid var(--ss-bordure);
+  background: var(--ss-fond);
   font-size: 14px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   button {
     display: inline-flex;
@@ -279,7 +279,7 @@
     gap: var(--ss-espace-1);
     background: none;
     border: none;
-    color: var(--ss-rouge-alerte);
+    color: var(--ss-alerte);
     font-weight: var(--ss-poids-texte-fort);
     cursor: pointer;
   }

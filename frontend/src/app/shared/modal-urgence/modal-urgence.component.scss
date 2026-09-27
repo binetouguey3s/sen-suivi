@@ -8,7 +8,7 @@
 .modal-urgence {
   position: fixed;
   z-index: 101;
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -30,7 +30,7 @@
 
 .modal-urgence__barre {
   height: 4px;
-  background: var(--ss-rouge-alerte);
+  background: var(--ss-alerte);
   flex-shrink: 0;
 }
 
@@ -39,13 +39,13 @@
   padding: var(--ss-espace-4) var(--ss-espace-3) var(--ss-espace-2);
 
   h2 {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-size: 24px;
     margin-bottom: var(--ss-espace-1);
   }
 
   p {
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     margin: 0;
   }
 }
@@ -62,11 +62,11 @@
   justify-content: space-between;
   gap: var(--ss-espace-2);
   padding: var(--ss-espace-3);
-  border-bottom: 1px solid var(--ss-gris-clair);
+  border-bottom: 1px solid var(--ss-bordure);
 }
 
 .modal-urgence__contact--principal {
-  background: var(--ss-menthe-tres-pale);
+  background: var(--ss-surface-legere);
 }
 
 .modal-urgence__libelle {
@@ -74,22 +74,22 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: var(--ss-interlettrage-moyen);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 }
 
 .modal-urgence__valeur {
   margin: 2px 0 0;
   font-size: 20px;
   font-weight: var(--ss-poids-titre);
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
 }
 
 .modal-urgence__appeler {
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire-fort);
+  color: var(--ss-primaire-texte);
   border: none;
   border-radius: var(--ss-rayon-pilule);
   padding: var(--ss-espace-1) var(--ss-espace-2);
@@ -115,7 +115,7 @@
 .modal-urgence__lien {
   background: none;
   border: none;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   text-decoration: underline;
   cursor: pointer;

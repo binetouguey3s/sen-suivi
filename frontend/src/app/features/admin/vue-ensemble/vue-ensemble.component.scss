@@ -8,21 +8,21 @@
   h1 {
     margin: 0;
     font-size: 28px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   p {
     margin: var(--ss-espace-1) 0 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
 .ve__etat {
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 }
 
 .ve__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .ve__grille {
@@ -39,23 +39,23 @@
   display: flex;
   align-items: center;
   gap: var(--ss-espace-3);
-  background: var(--ss-blanc);
-  border: 1px solid var(--ss-gris-clair);
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-bordure);
   border-radius: var(--ss-rayon-carte);
   padding: var(--ss-espace-3);
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   text-decoration: none;
 
   strong {
     display: block;
     font-size: 28px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     font-variant-numeric: tabular-nums;
   }
 
   span {
     font-size: 14px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
@@ -64,6 +64,6 @@
   align-items: center;
   gap: var(--ss-espace-1);
   margin-top: var(--ss-espace-4);
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
 }

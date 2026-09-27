@@ -27,10 +27,10 @@ import { LayoutAuthComponent } from '../../../shared/layout-auth/layout-auth.com
   `,
   styles: [
     `
-      .nmp__titre { font-size: 26px; color: var(--ss-bleu-sen-suivi); text-align: center; margin-bottom: var(--ss-espace-3); }
+      .nmp__titre { font-size: 26px; color: var(--ss-texte-marque); text-align: center; margin-bottom: var(--ss-espace-3); }
       .nmp__formulaire { display: flex; flex-direction: column; gap: var(--ss-espace-2); }
-      .nmp__ok { text-align: center; color: var(--ss-bleu-sen-suivi); }
-      .nmp__bouton { border: none; border-radius: var(--ss-rayon-bouton); background: var(--ss-bleu-sen-suivi); color: var(--ss-blanc); font-size: 15px; font-weight: var(--ss-poids-texte-fort); padding: var(--ss-espace-2); cursor: pointer; }
+      .nmp__ok { text-align: center; color: var(--ss-texte-marque); }
+      .nmp__bouton { border: none; border-radius: var(--ss-rayon-bouton); background: var(--ss-primaire); color: var(--ss-primaire-texte); font-size: 15px; font-weight: var(--ss-poids-texte-fort); padding: var(--ss-espace-2); cursor: pointer; }
       .nmp__bouton:disabled { opacity: 0.6; }
       .nmp__bouton--lien { display: block; text-align: center; text-decoration: none; }
     `,

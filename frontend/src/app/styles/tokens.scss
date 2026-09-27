@@ -1,25 +1,9 @@
-// Sen Suivi — Design tokens
-// Toute valeur hexadécimale ou de mesure utilisée dans un composant doit
-// passer par une variable définie ici. Aucune valeur en dur ailleurs.
+// Sen Suivi — Design tokens hors couleurs
+// Toute valeur de mesure utilisée dans un composant doit passer par une
+// variable définie ici. Les couleurs, ombres et voiles sont des tokens de
+// rôle définis par thème dans src/styles/_themes.scss.
 
 :root {
-  // Couleurs — aucune autre que celles-ci
-  --ss-bleu-sen-suivi: #1b4b6e;
-  --ss-bleu-profond: #12354f;
-  --ss-menthe: #a9d6c4;
-  --ss-menthe-pale: #e9f4ef;
-  --ss-menthe-tres-pale: #f4faf7;
-  --ss-fond-application: #eef5f2; // Menthe voilée : fond de l'application connectée
-  --ss-blanc: #ffffff;
-  --ss-gris-ardoise: #6b7280;
-  --ss-gris-clair: #edeef1;
-  --ss-rouge-alerte: #e4572e; // urgence et suppression de compte uniquement
-
-  // Fonds par zone
-  --ss-fond-public: var(--ss-blanc);
-  --ss-fond-admin: var(--ss-blanc);
-  --ss-fond-carte: var(--ss-blanc);
-
   // Typographie
   // Polices auto-hébergées prévues ; en
   // attendant les fichiers de police réels, pile de secours système fidèle
@@ -60,11 +44,6 @@
   --ss-gouttiere-desktop: 24px;
   --ss-marge-mobile: 20px;
   --ss-gouttiere-mobile: 16px;
-
-  // Ombres — toujours teintées bleu, jamais grises
-  --ss-ombre-carte: 0 8px 24px rgba(18, 53, 79, 0.08);
-  --ss-voile: rgba(18, 53, 79, 0.55); // fond des modales
-  --ss-ombre-carte-forte: 0 16px 40px rgba(18, 53, 79, 0.14);
 
   // Mouvement — courbe unique : départ vif, arrivée tout en douceur
   --ss-ease: cubic-bezier(0.22, 1, 0.36, 1);

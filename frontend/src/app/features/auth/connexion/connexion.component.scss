@@ -11,7 +11,7 @@
   @media (min-width: 900px) {
     font-size: 30px;
   }
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   margin-bottom: var(--ss-espace-4);
 }
 
@@ -27,19 +27,19 @@
   gap: var(--ss-espace-1);
   font-size: 14px;
   font-weight: var(--ss-poids-texte-fort);
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
 
   input {
     font-family: var(--ss-police-texte);
     font-size: 15px;
     padding: var(--ss-espace-2);
-    border: 1px solid var(--ss-gris-clair);
+    border: 1px solid var(--ss-bordure);
     border-radius: var(--ss-rayon-champ);
-    background: var(--ss-blanc);
-    color: var(--ss-bleu-profond);
+    background: var(--ss-surface);
+    color: var(--ss-texte);
 
     &:focus-visible {
-      outline: 2px solid var(--ss-bleu-sen-suivi);
+      outline: 2px solid var(--ss-primaire);
       outline-offset: 1px;
     }
   }
@@ -52,7 +52,7 @@
 
   a {
     font-weight: var(--ss-poids-texte-fort);
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     text-decoration: none;
 
     &:hover {
@@ -78,7 +78,7 @@
   background: none;
   border: none;
   padding: 0;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   cursor: pointer;
   display: flex;
 }
@@ -87,7 +87,7 @@
   display: flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
   font-size: 14px;
   margin: 0;
 }
@@ -95,8 +95,8 @@
 .connexion__bouton-principal {
   border: none;
   border-radius: var(--ss-rayon-bouton);
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire-fort);
+  color: var(--ss-primaire-texte);
   font-size: 15px;
   font-weight: var(--ss-poids-texte-fort);
   padding: var(--ss-espace-2) var(--ss-espace-3);
@@ -108,7 +108,7 @@
   }
 
   &:hover:not(:disabled) {
-    background: var(--ss-bleu-sen-suivi);
+    background: var(--ss-primaire);
   }
 }
 
@@ -116,10 +116,10 @@
   text-align: center;
   margin-top: var(--ss-espace-3);
   font-size: 14px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   a {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-weight: var(--ss-poids-texte-fort);
     text-decoration: none;
 

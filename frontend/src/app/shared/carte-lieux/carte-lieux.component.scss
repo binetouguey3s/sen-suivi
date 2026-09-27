@@ -10,7 +10,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: var(--ss-menthe-tres-pale);
+  background: var(--ss-surface-legere);
 }
 
 .carte__commandes {
@@ -30,9 +30,9 @@
     height: 48px;
     border: none;
     border-radius: var(--ss-rayon-champ);
-    background: var(--ss-blanc);
-    color: var(--ss-bleu-profond);
-    box-shadow: var(--ss-ombre-carte);
+    background: var(--ss-surface);
+    color: var(--ss-texte);
+    box-shadow: var(--ss-ombre);
     cursor: pointer;
   }
 }
@@ -51,10 +51,10 @@
   gap: 6px;
   padding: var(--ss-espace-2);
   border-radius: var(--ss-rayon-champ);
-  background: var(--ss-blanc);
-  box-shadow: var(--ss-ombre-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
   font-size: 13px;
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
 
   p {
     margin: 0;
@@ -62,7 +62,7 @@
     font-weight: var(--ss-poids-texte-fort);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
   }
 
   span {
@@ -76,9 +76,9 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--ss-bleu-sen-suivi);
+  background: var(--ss-primaire);
 }
 
 .carte__point--selection {
-  background: var(--ss-menthe);
+  background: var(--ss-accent);
 }

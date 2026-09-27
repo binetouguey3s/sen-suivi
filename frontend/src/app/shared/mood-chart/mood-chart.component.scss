@@ -9,26 +9,26 @@
 }
 
 .mood-chart__moyenne {
-  stroke: var(--ss-menthe);
+  stroke: var(--ss-graphe-grille);
   stroke-width: 1;
   stroke-dasharray: 4 4;
 }
 
 .mood-chart__ligne {
-  stroke: var(--ss-menthe);
+  stroke: var(--ss-graphe-trace);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .mood-chart__point {
-  fill: var(--ss-bleu-profond);
+  fill: var(--ss-graphe-point);
 }
 
 .mood-chart__etiquettes {
   display: flex;
   justify-content: space-between;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 13px;
   padding: 0 var(--ss-espace-1);
 }

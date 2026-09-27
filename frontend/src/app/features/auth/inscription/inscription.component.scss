@@ -6,7 +6,7 @@
   display: flex;
   gap: 4px;
   padding: 4px;
-  background: var(--ss-gris-clair);
+  background: var(--ss-surface-neutre);
   border-radius: var(--ss-rayon-champ);
   margin-bottom: var(--ss-espace-3);
 }
@@ -16,7 +16,7 @@
   text-align: center;
   padding: var(--ss-espace-1) 6px;
   border-radius: var(--ss-rayon-champ);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
   text-decoration: none;
 
@@ -27,14 +27,14 @@
 }
 
 .ins__onglet--actif {
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
 }
 
 .ins__titre {
   font-size: 26px;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   margin-bottom: var(--ss-espace-3);
 }
 
@@ -63,11 +63,11 @@
   span {
     height: 4px;
     border-radius: var(--ss-rayon-pilule);
-    background: var(--ss-gris-clair);
+    background: var(--ss-surface-neutre);
   }
 
   .ins__force--actif {
-    background: var(--ss-menthe);
+    background: var(--ss-accent);
   }
 }
 
@@ -76,15 +76,15 @@
   gap: var(--ss-espace-1);
   align-items: flex-start;
   font-size: 13px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   input {
     margin-top: 3px;
-    accent-color: var(--ss-bleu-sen-suivi);
+    accent-color: var(--ss-primaire);
   }
 
   strong {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-weight: var(--ss-poids-texte-fort);
   }
 }
@@ -95,14 +95,14 @@
   gap: var(--ss-espace-1);
   margin: 0;
   font-size: 13px;
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .ins__bouton {
   border: none;
   border-radius: var(--ss-rayon-bouton);
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   font-size: 15px;
   font-weight: var(--ss-poids-texte-fort);
   padding: var(--ss-espace-2);
@@ -121,8 +121,8 @@
   margin: 0;
   padding: var(--ss-espace-2);
   border-radius: var(--ss-rayon-champ);
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   font-size: 13px;
 }
 
@@ -130,10 +130,10 @@
   text-align: center;
   margin: var(--ss-espace-3) 0 0;
   font-size: 14px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   a {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-weight: var(--ss-poids-texte-fort);
     text-decoration: none;
   }

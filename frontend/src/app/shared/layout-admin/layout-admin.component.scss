@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: var(--ss-fond-admin);
+  background: var(--ss-fond-public);
 }
 
 .la {
@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--ss-espace-2) var(--ss-marge-mobile);
-  background: var(--ss-bleu-profond);
+  background: var(--ss-surface-profonde);
 
   @media (min-width: 900px) {
     display: none;
@@ -23,8 +23,8 @@
 
 .la__menu-bouton {
   border: none;
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--ss-blanc);
+  background: var(--ss-survol-sur-fonce);
+  color: var(--ss-surface-forte-texte);
   border-radius: var(--ss-rayon-champ);
   padding: var(--ss-espace-1);
   cursor: pointer;
@@ -46,7 +46,7 @@
   flex-direction: column;
   width: 260px;
   flex-shrink: 0;
-  background: var(--ss-bleu-profond);
+  background: var(--ss-surface-profonde);
   padding: var(--ss-espace-3) var(--ss-espace-2);
 
   @media (max-width: 899px) {
@@ -71,8 +71,8 @@
   width: 32px;
   height: 32px;
   border-radius: var(--ss-rayon-champ);
-  background: var(--ss-menthe);
-  color: var(--ss-bleu-profond);
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte-fort);
   font-family: var(--ss-police-titres);
   font-weight: var(--ss-poids-titre-fort);
 }
@@ -96,22 +96,22 @@
   gap: var(--ss-espace-2);
   padding: var(--ss-espace-2);
   border-radius: var(--ss-rayon-champ);
-  color: var(--ss-menthe-pale);
+  color: var(--ss-surface-forte-texte-doux);
   text-decoration: none;
   font-weight: var(--ss-poids-texte-fort);
   font-size: 15px;
 }
 
 .la__lien--actif {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--ss-blanc);
+  background: var(--ss-survol-sur-fonce);
+  color: var(--ss-surface-forte-texte);
 }
 
 .la__profil {
   display: flex;
   align-items: center;
   gap: var(--ss-espace-2);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid var(--ss-trait-sur-fonce);
   padding-top: var(--ss-espace-3);
 }
 
@@ -122,8 +122,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--ss-menthe);
-  color: var(--ss-bleu-profond);
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte-fort);
   font-weight: var(--ss-poids-titre);
   font-size: 14px;
   flex-shrink: 0;
@@ -137,7 +137,7 @@
 .la__nom {
   margin: 0;
   font-weight: var(--ss-poids-texte-fort);
-  color: var(--ss-blanc);
+  color: var(--ss-surface-forte-texte);
   font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
@@ -146,13 +146,13 @@
 
 .la__role {
   font-size: 12px;
-  color: var(--ss-menthe-pale);
+  color: var(--ss-surface-forte-texte-doux);
 }
 
 .la__deconnexion {
   border: none;
   background: none;
-  color: var(--ss-menthe-pale);
+  color: var(--ss-surface-forte-texte-doux);
   cursor: pointer;
   padding: var(--ss-espace-1);
   flex-shrink: 0;
@@ -161,7 +161,7 @@
 .la__contenu {
   flex: 1;
   min-width: 0;
-  background: var(--ss-fond-admin);
+  background: var(--ss-fond-public);
   padding: var(--ss-espace-4) var(--ss-marge-mobile);
 
   @media (min-width: 900px) {

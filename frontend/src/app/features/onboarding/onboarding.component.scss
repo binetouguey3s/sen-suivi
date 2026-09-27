@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: linear-gradient(160deg, var(--ss-menthe-tres-pale), var(--ss-blanc) 55%, var(--ss-fond-application));
+  background: linear-gradient(160deg, var(--ss-surface-legere), var(--ss-surface) 55%, var(--ss-fond));
 }
 
 .ob {
@@ -29,12 +29,12 @@
 .ob__passer {
   background: none;
   border: none;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
   cursor: pointer;
 
   &:focus-visible {
-    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline: 2px solid var(--ss-primaire);
     outline-offset: 4px;
     border-radius: var(--ss-rayon-champ);
   }
@@ -49,9 +49,9 @@
   width: 100%;
   max-width: 1040px;
   margin: var(--ss-espace-3) 0;
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-grande-carte);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   overflow: hidden;
   // Le navigateur garde le défilement vertical, le TS gère le balayage horizontal
   touch-action: pan-y;
@@ -69,7 +69,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--ss-espace-4);
-  background: var(--ss-menthe-tres-pale);
+  background: var(--ss-surface-legere);
 
   @media (min-width: 900px) {
     flex: 1;
@@ -104,7 +104,7 @@
 
   h1 {
     font-size: 28px;
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     letter-spacing: var(--ss-interlettrage-moyen);
 
     // Focus déplacé par le code à chaque étape : pas d'anneau sur un titre
@@ -119,13 +119,13 @@
 
   p {
     margin: 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
 .ob__badge {
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-pilule);
   padding: 4px var(--ss-espace-2);
   font-size: 12px;
@@ -168,14 +168,14 @@
     // Point gris
     &::before {
       width: 8px;
-      background: var(--ss-gris-ardoise);
+      background: var(--ss-texte-doux);
       opacity: 0.4;
     }
 
     // Pilule menthe, largeur fixe de 24px, ramenée à 8px par scaleX
     &::after {
       width: 24px;
-      background: var(--ss-menthe);
+      background: var(--ss-accent);
       opacity: 0;
       transform: scaleX(0.3333);
       transform-origin: left center;
@@ -203,14 +203,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   border: none;
   border-radius: var(--ss-rayon-bouton);
   padding: var(--ss-espace-2) var(--ss-espace-4);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 15px;
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   cursor: pointer;
 
   // Ombre renforcée préparée à l'avance : au survol, seule son opacité change
@@ -219,13 +219,13 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: var(--ss-ombre-carte-forte);
+    box-shadow: var(--ss-ombre-forte);
     opacity: 0;
     pointer-events: none;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline: 2px solid var(--ss-primaire);
     outline-offset: 3px;
   }
 }

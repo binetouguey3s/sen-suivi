@@ -19,12 +19,12 @@
 
 // Surface pleine et pâle, sans dégradé, comme sur la maquette
 :host ::ng-deep .sparkline__surface .area {
-  fill: var(--ss-menthe-pale);
+  fill: var(--ss-graphe-remplis);
   opacity: 1;
 }
 
 :host ::ng-deep .sparkline__trait .line {
-  stroke: var(--ss-menthe);
+  stroke: var(--ss-graphe-trace);
   stroke-width: 3px;
   stroke-linecap: round;
 }

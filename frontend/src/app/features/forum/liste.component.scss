@@ -17,7 +17,7 @@
   h1 {
     margin: 0;
     font-size: 26px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
 
     @media (min-width: 900px) {
       font-size: 32px;
@@ -29,11 +29,11 @@
   display: flex;
   align-items: center;
   gap: var(--ss-espace-2);
-  background: var(--ss-blanc);
-  border: 1px solid var(--ss-gris-clair);
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-bordure);
   border-radius: var(--ss-rayon-champ);
   padding: var(--ss-espace-2);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   @media (min-width: 900px) {
     width: 320px;
@@ -46,12 +46,12 @@
     outline: none;
     font-size: 15px;
     font-family: inherit;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     background: transparent;
   }
 
   &:focus-within {
-    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline: 2px solid var(--ss-primaire);
   }
 }
 
@@ -90,9 +90,9 @@
 
 .fo__chip {
   flex-shrink: 0;
-  border: 1px solid var(--ss-gris-clair);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
+  border: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
   border-radius: var(--ss-rayon-pilule);
   padding: var(--ss-espace-1) var(--ss-espace-2);
   font-size: 14px;
@@ -100,15 +100,15 @@
 }
 
 .fo__chip--actif {
-  background: var(--ss-bleu-sen-suivi);
-  border-color: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  border-color: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
 }
 
 .fo__carte {
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-carte);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   padding: var(--ss-espace-3);
   cursor: pointer;
 }
@@ -121,7 +121,7 @@
 
   strong {
     display: block;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     font-size: 14px;
   }
 }
@@ -134,26 +134,26 @@
   height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-titre);
   font-size: 13px;
 }
 
 .fo__date {
   font-size: 13px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 }
 
 .fo__carte h2 {
   margin: 0 0 var(--ss-espace-1);
   font-size: 18px;
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
 }
 
 .fo__extrait {
   margin: 0 0 var(--ss-espace-2);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
   line-height: var(--ss-hauteur-ligne-texte);
   display: -webkit-box;
@@ -166,7 +166,7 @@
   display: flex;
   gap: var(--ss-espace-3);
   font-size: 13px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   span {
     display: inline-flex;
@@ -178,7 +178,7 @@
 .fo__squelette {
   height: 140px;
   border-radius: var(--ss-rayon-carte);
-  background: linear-gradient(90deg, var(--ss-gris-clair), var(--ss-menthe-tres-pale), var(--ss-gris-clair));
+  background: linear-gradient(90deg, var(--ss-surface-neutre), var(--ss-surface-legere), var(--ss-surface-neutre));
   background-size: 200% 100%;
   animation: fo-chargement 1.4s ease-in-out infinite;
 }
@@ -197,13 +197,13 @@
   flex-direction: column;
   align-items: center;
   gap: var(--ss-espace-2);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   text-align: center;
   padding: var(--ss-espace-6) 0;
 }
 
 .fo__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .fo__aside {
@@ -213,21 +213,21 @@
 }
 
 .fo__encart {
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-carte);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   padding: var(--ss-espace-3);
 
   h2 {
     margin: 0 0 var(--ss-espace-2);
     font-size: 16px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   p {
     margin: 0;
     font-size: 14px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     line-height: var(--ss-hauteur-ligne-texte);
   }
 
@@ -239,12 +239,12 @@
     flex-direction: column;
     gap: var(--ss-espace-2);
     font-size: 14px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     line-height: var(--ss-hauteur-ligne-texte);
   }
 
   strong {
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 }
 
@@ -256,13 +256,13 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire-fort);
+  color: var(--ss-primaire-texte);
   border: none;
   border-radius: var(--ss-rayon-pilule);
   padding: var(--ss-espace-2) var(--ss-espace-3);
   font-weight: var(--ss-poids-texte-fort);
-  box-shadow: var(--ss-ombre-carte-forte);
+  box-shadow: var(--ss-ombre-forte);
   cursor: pointer;
 
   @media (min-width: 900px) {
@@ -280,7 +280,7 @@
 
   h2 {
     margin: 0;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 }
 
@@ -293,7 +293,7 @@
   margin: 0 0 calc(var(--ss-espace-1) * -1);
   font-size: 14px;
   font-weight: var(--ss-poids-texte-fort);
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
 }
 
 .fo__note {
@@ -302,15 +302,15 @@
   gap: var(--ss-espace-1);
   margin: 0;
   padding: var(--ss-espace-2);
-  background: var(--ss-menthe-tres-pale);
+  background: var(--ss-surface-legere);
   border-radius: var(--ss-rayon-champ);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 13px;
 }
 
 .fo__erreur {
   margin: 0;
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
   font-size: 14px;
 }
 
@@ -327,8 +327,8 @@
   padding: var(--ss-espace-2) var(--ss-espace-3);
   font-weight: var(--ss-poids-texte-fort);
   cursor: pointer;
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire-fort);
+  color: var(--ss-primaire-texte);
 
   &:disabled {
     opacity: 0.6;
@@ -337,9 +337,9 @@
 }
 
 .fo__bouton--contour {
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
-  border: 1px solid var(--ss-gris-clair);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
+  border: 1px solid var(--ss-bordure);
 }
 
 .fo__confirmation {
@@ -351,15 +351,15 @@
 
   h2 {
     margin: 0;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   p {
     margin: 0 0 var(--ss-espace-1);
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
 .fo__confirmation-icone {
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
 }

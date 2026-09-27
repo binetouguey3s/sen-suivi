@@ -1,7 +1,7 @@
 // =============================================================
 //  Sen Suivi — Deux thèmes : clair et sombre
 //  Architecture reprise de docs/_themes.scss. Les valeurs du thème
-//  clair sont celles de l'interface actuelle (app/styles/tokens.scss) :
+//  clair sont celles de l'interface d'avant les thèmes :
 //  le rendu clair ne doit pas bouger d'un pixel.
 //  Le thème sombre réutilise la même palette, réorganisée.
 //
@@ -10,44 +10,73 @@
 
 // -------------------------------------------------------------
 //  THÈME CLAIR — celui de l'interface actuelle
+//  Chaque valeur est celle du token de palette qu'elle remplace.
 // -------------------------------------------------------------
 @mixin tokens-clair {
   color-scheme: light;
 
   // Fonds
-  --ss-fond:            #eef5f2;   // menthe voilée, fond de page
-  --ss-surface:         #ffffff;   // cartes
-  --ss-surface-douce:   #e9f4ef;   // zones de mise en avant
-  --ss-surface-forte:   #1b4b6e;   // blocs bleus
+  --ss-fond:                  #eef5f2;   // menthe voilée, fond de l'espace connecté
+  --ss-fond-public:           #ffffff;   // fond des pages publiques et de l'admin
+  --ss-surface:               #ffffff;   // cartes
+  --ss-surface-douce:         #e9f4ef;   // zones de mise en avant
+  --ss-surface-legere:        #f4faf7;   // fonds très légers dans une carte
+  --ss-surface-neutre:        #edeef1;   // onglets, pastilles, squelettes de chargement
+  --ss-surface-forte:         #1b4b6e;   // blocs bleus (section Titou, panneau photo)
+  --ss-surface-profonde:      #12354f;   // blocs bleu profond (barre latérale admin)
 
   // Textes
-  --ss-texte:           #12354f;   // titres et texte principal
-  --ss-texte-doux:      #6b7280;   // texte secondaire
-  --ss-texte-inverse:   #ffffff;   // sur fond bleu
+  --ss-texte:                 #12354f;   // titres et texte principal
+  --ss-texte-marque:          #1b4b6e;   // liens et titres de carte
+  --ss-texte-doux:            #6b7280;   // texte secondaire
+  --ss-texte-efface:          #edeef1;   // jours hors du mois dans le calendrier
+  --ss-texte-inverse:         #ffffff;   // sur fond bleu
+  --ss-texte-sur-photo:       #ffffff;   // posé sur une photo, identique dans les deux thèmes
+  --ss-surface-forte-texte:   #ffffff;   // sur les blocs bleus
+  --ss-surface-forte-texte-doux: #e9f4ef;
 
   // Marque et actions
-  --ss-primaire:        #1b4b6e;
-  --ss-primaire-texte:  #ffffff;
-  --ss-accent:          #a9d6c4;
-  --ss-accent-texte:    #1b4b6e;
-  --ss-alerte:          #e4572e;
-  --ss-alerte-texte:    #ffffff;
+  --ss-primaire:              #1b4b6e;
+  --ss-primaire-fort:         #12354f;   // boutons principaux des formulaires
+  --ss-primaire-texte:        #ffffff;
+  --ss-accent:                #a9d6c4;
+  --ss-accent-texte:          #1b4b6e;
+  --ss-accent-texte-fort:     #12354f;
+  --ss-alerte:                #e4572e;   // urgence et suppression de compte uniquement
+  --ss-alerte-texte:          #ffffff;
+  --ss-alerte-douce:          rgba(228, 87, 46, 0.12);
 
   // Traits et ombres
-  --ss-bordure:         #edeef1;
-  --ss-ombre:           0 8px 24px rgba(18, 53, 79, 0.08);
+  --ss-bordure:               #edeef1;
+  --ss-ombre:                 0 8px 24px rgba(18, 53, 79, 0.08);
+  --ss-ombre-forte:           0 16px 40px rgba(18, 53, 79, 0.14);
+  --ss-ombre-repere:          rgba(18, 53, 79, 0.35);
+  --ss-voile:                 rgba(18, 53, 79, 0.55);   // fond des modales
 
   // Graphiques : tracé et grille menthe, remplissage menthe pâle
-  --ss-graphe-trace:    #a9d6c4;
-  --ss-graphe-remplis:  #e9f4ef;
-  --ss-graphe-grille:   #a9d6c4;
+  --ss-graphe-trace:          #a9d6c4;
+  --ss-graphe-remplis:        #e9f4ef;
+  --ss-graphe-grille:         #a9d6c4;
+  --ss-graphe-point:          #12354f;
+
+  // Intensité de l'humeur, de 1 (basse) à 5 (haute)
+  --ss-humeur-1:              #12354f;
+  --ss-humeur-1-texte:        #ffffff;
+  --ss-humeur-2:              #1b4b6e;
+  --ss-humeur-2-texte:        #ffffff;
+  --ss-humeur-3:              #edeef1;
+  --ss-humeur-4:              #e9f4ef;
+  --ss-humeur-5:              #a9d6c4;
 
   // Verre
-  --ss-verre:           rgba(255, 255, 255, 0.72);
-  --ss-verre-plein:     #ffffff;
-  --ss-verre-bordure:   rgba(255, 255, 255, 0.35);
-  --ss-verre-ombre:     0 8px 32px rgba(27, 75, 110, 0.12);
-  --ss-verre-texte:     #12354f;
+  --ss-verre:                 rgba(255, 255, 255, 0.72);
+  --ss-verre-plein:           #ffffff;
+  --ss-verre-bordure:         rgba(255, 255, 255, 0.35);
+  --ss-verre-ombre:           0 8px 32px rgba(27, 75, 110, 0.12);
+  --ss-verre-texte:           #12354f;
+
+  // Logo : image bleue d'origine
+  --ss-logo-filtre:           none;
 }
 
 // -------------------------------------------------------------
@@ -60,40 +89,85 @@
   color-scheme: dark;
 
   // Fonds
-  --ss-fond:            #0e2739;   // bleu nuit, fond de page
-  --ss-surface:         #163a55;   // cartes
-  --ss-surface-douce:   #1b4b6e;   // zones de mise en avant
-  --ss-surface-forte:   #0a1e2c;   // blocs très sombres
+  --ss-fond:                  #0e2739;   // bleu nuit, fond de page
+  --ss-fond-public:           #0e2739;
+  --ss-surface:               #163a55;   // cartes
+  --ss-surface-douce:         #1b4b6e;   // zones de mise en avant
+  --ss-surface-legere:        #163a55;
+  --ss-surface-neutre:        rgba(232, 241, 238, 0.08);
+  --ss-surface-forte:         #0a1e2c;   // blocs très sombres
+  --ss-surface-profonde:      #0a1e2c;
 
   // Textes
-  --ss-texte:           #e8f1ee;   // texte principal, menthe très pâle
-  --ss-texte-doux:      #9fb3b0;   // texte secondaire
-  --ss-texte-inverse:   #0e2739;   // sur fond menthe
+  --ss-texte:                 #e8f1ee;   // texte principal, menthe très pâle
+  --ss-texte-marque:          #a9d6c4;
+  --ss-texte-doux:            #9fb3b0;   // texte secondaire
+  --ss-texte-efface:          rgba(232, 241, 238, 0.22);
+  --ss-texte-inverse:         #0e2739;   // sur fond menthe
+  --ss-texte-sur-photo:       #ffffff;
+  --ss-surface-forte-texte:   #e8f1ee;
+  --ss-surface-forte-texte-doux: #9fb3b0;
 
   // Marque et actions : la menthe prend le rôle du bouton principal,
   // car le bleu #1b4b6e n'a pas assez de contraste sur fond sombre.
-  --ss-primaire:        #a9d6c4;
-  --ss-primaire-texte:  #0e2739;
-  --ss-accent:          #a9d6c4;
-  --ss-accent-texte:    #0e2739;
-  --ss-alerte:          #ff7a52;   // alerte éclaircie pour rester lisible
-  --ss-alerte-texte:    #0e2739;
+  --ss-primaire:              #a9d6c4;
+  --ss-primaire-fort:         #a9d6c4;
+  --ss-primaire-texte:        #0e2739;
+  --ss-accent:                #a9d6c4;
+  --ss-accent-texte:          #0e2739;
+  --ss-accent-texte-fort:     #0e2739;
+  --ss-alerte:                #ff7a52;   // alerte éclaircie pour rester lisible
+  --ss-alerte-texte:          #0e2739;
+  --ss-alerte-douce:          rgba(255, 122, 82, 0.16);
 
   // Traits et ombres
-  --ss-bordure:         rgba(232, 241, 238, 0.14);
-  --ss-ombre:           0 4px 16px rgba(0, 0, 0, 0.35);
+  --ss-bordure:               rgba(232, 241, 238, 0.14);
+  --ss-ombre:                 0 4px 16px rgba(0, 0, 0, 0.35);
+  --ss-ombre-forte:           0 16px 40px rgba(0, 0, 0, 0.45);
+  --ss-ombre-repere:          rgba(0, 0, 0, 0.45);
+  --ss-voile:                 rgba(10, 30, 44, 0.7);
 
   // Graphiques
-  --ss-graphe-trace:    #a9d6c4;
-  --ss-graphe-remplis:  rgba(169, 214, 196, 0.2);
-  --ss-graphe-grille:   rgba(232, 241, 238, 0.12);
+  --ss-graphe-trace:          #a9d6c4;
+  --ss-graphe-remplis:        rgba(169, 214, 196, 0.2);
+  --ss-graphe-grille:         rgba(232, 241, 238, 0.12);
+  --ss-graphe-point:          #e8f1ee;
+
+  // Intensité de l'humeur : une seule teinte menthe, de plus en plus soutenue
+  --ss-humeur-1:              rgba(169, 214, 196, 0.12);
+  --ss-humeur-1-texte:        #e8f1ee;
+  --ss-humeur-2:              rgba(169, 214, 196, 0.3);
+  --ss-humeur-2-texte:        #e8f1ee;
+  --ss-humeur-3:              rgba(169, 214, 196, 0.5);
+  --ss-humeur-4:              rgba(169, 214, 196, 0.75);
+  --ss-humeur-5:              #a9d6c4;
 
   // Verre
-  --ss-verre:           rgba(22, 58, 85, 0.62);
-  --ss-verre-plein:     #163a55;
-  --ss-verre-bordure:   rgba(232, 241, 238, 0.16);
-  --ss-verre-ombre:     0 8px 32px rgba(0, 0, 0, 0.45);
-  --ss-verre-texte:     #e8f1ee;
+  --ss-verre:                 rgba(22, 58, 85, 0.62);
+  --ss-verre-plein:           #163a55;
+  --ss-verre-bordure:         rgba(232, 241, 238, 0.16);
+  --ss-verre-ombre:           0 8px 32px rgba(0, 0, 0, 0.45);
+  --ss-verre-texte:           #e8f1ee;
+
+  // Logo : le bleu passe au texte clair (#e8f1ee), la menthe du cerveau ne
+  // bouge pas. Matrice calculée sur les deux couleurs du logo, en sRGB.
+  --ss-logo-filtre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f' color-interpolation-filters='sRGB'%3E%3CfeColorMatrix values='-0.3018 0 0 0 0.924 0 -0.1705 0 0 1.0053 0 0 -0.4638 0 1.1825 0 0 0 1 0'/%3E%3C/filter%3E%3C/svg%3E#f");
+}
+
+// -------------------------------------------------------------
+//  Tokens communs aux deux thèmes : ce qui est posé sur une photo
+//  ou sur un bloc toujours foncé ne dépend pas du thème.
+// -------------------------------------------------------------
+:root {
+  --ss-photo-voile-fort:      rgba(18, 53, 79, 0.85);
+  --ss-photo-voile:           rgba(18, 53, 79, 0.75);
+  --ss-photo-voile-leger:     rgba(18, 53, 79, 0.1);
+  --ss-photo-voile-nul:       rgba(18, 53, 79, 0);
+  --ss-photo-bande:           rgba(18, 53, 79, 0.35);
+  --ss-photo-trait:           rgba(255, 255, 255, 0.25);
+  --ss-survol-sur-fonce:      rgba(255, 255, 255, 0.12);
+  --ss-trait-sur-fonce:       rgba(255, 255, 255, 0.15);
+  --ss-survol-sur-alerte:     rgba(255, 255, 255, 0.16);
 }
 
 :root,

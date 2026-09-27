@@ -46,10 +46,10 @@ const CIRCONFERENCE = 2 * Math.PI * RAYON;
         stroke-width: 12;
       }
       .gauge__piste {
-        stroke: var(--ss-menthe-pale);
+        stroke: var(--ss-graphe-remplis);
       }
       .gauge__valeur {
-        stroke: var(--ss-bleu-sen-suivi);
+        stroke: var(--ss-primaire);
         stroke-linecap: round;
       }
       .gauge__texte {
@@ -65,12 +65,12 @@ const CIRCONFERENCE = 2 * Math.PI * RAYON;
         font-weight: var(--ss-poids-titre-fort);
         font-size: 44px;
         line-height: var(--ss-hauteur-ligne-titre);
-        color: var(--ss-bleu-sen-suivi);
+        color: var(--ss-texte-marque);
         font-variant-numeric: tabular-nums;
       }
       .gauge__legende {
         font-size: 14px;
-        color: var(--ss-gris-ardoise);
+        color: var(--ss-texte-doux);
       }
     `,
   ],

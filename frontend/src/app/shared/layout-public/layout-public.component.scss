@@ -10,8 +10,8 @@
   justify-content: space-between;
   gap: var(--ss-espace-3);
   padding: var(--ss-espace-2) var(--ss-marge-mobile);
-  border-bottom: 1px solid var(--ss-gris-clair);
-  background: var(--ss-blanc);
+  border-bottom: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
 
   @media (min-width: 900px) {
     padding: var(--ss-espace-2) var(--ss-espace-6);
@@ -34,7 +34,7 @@
   }
 
   a {
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     text-decoration: none;
     font-weight: var(--ss-poids-texte-fort);
     font-size: 15px;
@@ -43,14 +43,14 @@
     white-space: nowrap;
 
     &:hover {
-      color: var(--ss-bleu-sen-suivi);
+      color: var(--ss-texte-marque);
     }
   }
 }
 
 .lp__lien--actif {
-  color: var(--ss-bleu-sen-suivi) !important;
-  border-bottom-color: var(--ss-menthe) !important;
+  color: var(--ss-texte-marque) !important;
+  border-bottom-color: var(--ss-accent) !important;
 }
 
 .lp__compte {
@@ -71,9 +71,9 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--ss-gris-clair);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-sen-suivi);
+  border: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-champ);
   cursor: pointer;
 
@@ -103,7 +103,7 @@
   flex-direction: column;
   width: min(300px, 85vw);
   padding: calc(var(--ss-espace-8) + var(--ss-espace-1)) var(--ss-marge-mobile) var(--ss-espace-3);
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   overflow-y: auto;
   visibility: hidden;
   transform: translateX(100%);
@@ -112,7 +112,7 @@
   &.lp__tiroir--ouvert {
     visibility: visible;
     transform: translateX(0);
-    box-shadow: var(--ss-ombre-carte-forte);
+    box-shadow: var(--ss-ombre-forte);
   }
 
   @media (min-width: 900px) {
@@ -135,7 +135,7 @@
   a {
     padding: var(--ss-espace-2);
     border-radius: var(--ss-rayon-champ);
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     text-decoration: none;
     font-weight: var(--ss-poids-texte-fort);
     font-size: 16px;
@@ -143,15 +143,15 @@
 }
 
 .lp__tiroir-lien--actif {
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi) !important;
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque) !important;
 }
 
 .lp__tiroir-compte {
   display: flex;
   flex-direction: column;
   gap: var(--ss-espace-1);
-  border-top: 1px solid var(--ss-gris-clair);
+  border-top: 1px solid var(--ss-bordure);
   padding-top: var(--ss-espace-3);
 
   .lp__bouton-plein,
@@ -162,8 +162,8 @@
 }
 
 .lp__bouton-contour {
-  border: 1px solid var(--ss-bleu-sen-suivi);
-  color: var(--ss-bleu-sen-suivi);
+  border: 1px solid var(--ss-primaire);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-bouton);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 14px;
@@ -179,7 +179,7 @@
 .lp__tiroir-nom {
   flex: 1;
   min-width: 0;
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 14px;
   text-decoration: none;
@@ -192,15 +192,15 @@
   display: flex;
   border: none;
   background: none;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   border-radius: var(--ss-rayon-champ);
   cursor: pointer;
   padding: var(--ss-espace-1);
   flex-shrink: 0;
 
   &:hover {
-    background: var(--ss-menthe-pale);
-    color: var(--ss-bleu-sen-suivi);
+    background: var(--ss-surface-douce);
+    color: var(--ss-texte-marque);
   }
 }
 
@@ -211,35 +211,35 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   font-weight: var(--ss-poids-titre);
   font-size: 14px;
   text-decoration: none;
 }
 
 .lp__bouton-texte {
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-titre);
   text-decoration: none;
   font-size: 16px;
 }
 
 .lp__bouton-plein {
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   border-radius: var(--ss-rayon-bouton);
   padding: 12px var(--ss-espace-3);
   font-weight: var(--ss-poids-titre);
   font-size: 16px;
   text-decoration: none;
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
 }
 
 .lp__pied {
   margin-top: var(--ss-espace-6);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
 
   @media (min-width: 900px) {
     margin-top: var(--ss-espace-8);
@@ -259,8 +259,8 @@
     gap: var(--ss-espace-3);
     // À droite : place pour la bulle de chat
     padding: var(--ss-espace-2) 112px var(--ss-espace-2) var(--ss-espace-6);
-    background: var(--ss-rouge-alerte);
-    color: var(--ss-blanc);
+    background: var(--ss-alerte);
+    color: var(--ss-alerte-texte);
   }
 }
 
@@ -281,7 +281,7 @@
 .lp__urgence-lien {
   border: none;
   background: none;
-  color: var(--ss-blanc);
+  color: var(--ss-alerte-texte);
   font: inherit;
   font-weight: var(--ss-poids-titre);
   text-decoration: underline;
@@ -297,8 +297,8 @@
   margin: 0 var(--ss-marge-mobile);
   padding: var(--ss-espace-4) var(--ss-espace-3);
   border-radius: var(--ss-rayon-grande-carte);
-  background: var(--ss-rouge-alerte);
-  color: var(--ss-blanc);
+  background: var(--ss-alerte);
+  color: var(--ss-alerte-texte);
   text-align: center;
 
   @media (min-width: 900px) {
@@ -307,7 +307,7 @@
 
   h2 {
     margin: 0;
-    color: var(--ss-blanc);
+    color: var(--ss-alerte-texte);
     font-family: var(--ss-police-titres);
     font-size: 20px;
   }
@@ -323,7 +323,7 @@
   width: 100%;
   padding: 12px;
   border-radius: var(--ss-rayon-bouton);
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--ss-survol-sur-alerte);
   font-size: 24px;
   letter-spacing: 0.02em;
 }
@@ -331,8 +331,8 @@
 .lp__urgence-appeler {
   padding: 12px var(--ss-espace-4);
   border-radius: var(--ss-rayon-pilule);
-  background: var(--ss-blanc);
-  color: var(--ss-rouge-alerte);
+  background: var(--ss-surface);
+  color: var(--ss-alerte);
   font-weight: var(--ss-poids-titre);
   text-decoration: none;
 }
@@ -340,7 +340,7 @@
 .lp__urgence-tous {
   border: none;
   background: none;
-  color: var(--ss-blanc);
+  color: var(--ss-alerte-texte);
   font: inherit;
   font-size: 13px;
   text-decoration: underline;
@@ -378,20 +378,20 @@
 .lp__colonne {
   a,
   span {
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     font-size: 15px;
     text-decoration: none;
   }
 
   a:hover {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
   }
 
   // Mobile : accordéons séparés par un filet
   @media (max-width: 899px) {
     &:not(.lp__colonne--marque) {
       padding: var(--ss-espace-2) 0;
-      border-bottom: 1px solid var(--ss-gris-clair);
+      border-bottom: 1px solid var(--ss-bordure);
 
       &[open] {
         padding-bottom: var(--ss-espace-3);
@@ -404,7 +404,7 @@
     align-items: center;
     justify-content: space-between;
     list-style: none;
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-weight: var(--ss-poids-titre);
     font-size: 17px;
     cursor: pointer;
@@ -438,7 +438,7 @@
 
   p {
     margin: 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     font-size: 15px;
     line-height: 1.6;
   }
@@ -450,7 +450,7 @@
 }
 
 .lp__nom {
-  color: var(--ss-bleu-sen-suivi) !important;
+  color: var(--ss-texte-marque) !important;
   font-family: var(--ss-police-titres);
   font-weight: var(--ss-poids-titre);
   font-size: 20px !important;
@@ -462,8 +462,8 @@
   align-items: center;
   gap: var(--ss-espace-1);
   padding: var(--ss-espace-3) var(--ss-marge-mobile) calc(var(--ss-espace-8) + var(--ss-espace-2));
-  border-top: 1px solid var(--ss-gris-clair);
-  color: var(--ss-gris-ardoise);
+  border-top: 1px solid var(--ss-bordure);
+  color: var(--ss-texte-doux);
   font-size: 13px;
 
   @media (min-width: 900px) {
@@ -511,9 +511,9 @@
     bottom: var(--ss-chat-decalage, var(--ss-espace-3));
   }
   border: none;
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
-  box-shadow: var(--ss-ombre-carte-forte);
+  background: var(--ss-primaire-fort);
+  color: var(--ss-primaire-texte);
+  box-shadow: var(--ss-ombre-forte);
   cursor: pointer;
   text-decoration: none;
 
@@ -529,6 +529,6 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--ss-rouge-alerte);
-  border: 2px solid var(--ss-blanc);
+  background: var(--ss-alerte);
+  border: 2px solid var(--ss-alerte-texte);
 }

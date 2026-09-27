@@ -1,6 +1,6 @@
 :host {
   display: block;
-  background: var(--ss-fond-application);
+  background: var(--ss-fond);
 }
 
 .rep {
@@ -54,15 +54,15 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   font-weight: var(--ss-poids-titre);
   font-size: 14px;
   text-decoration: none;
 }
 
 .rep__connexion {
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   text-decoration: none;
   font-size: 14px;
@@ -72,11 +72,11 @@
   display: flex;
   align-items: center;
   gap: var(--ss-espace-2);
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-champ);
   padding: var(--ss-espace-2);
-  color: var(--ss-gris-ardoise);
-  box-shadow: var(--ss-ombre-carte);
+  color: var(--ss-texte-doux);
+  box-shadow: var(--ss-ombre);
 
   input {
     flex: 1;
@@ -85,11 +85,11 @@
     font-size: 15px;
     font-family: inherit;
     background: transparent;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   &:focus-within {
-    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline: 2px solid var(--ss-primaire);
   }
 }
 
@@ -111,25 +111,25 @@
 .rep__chip {
   flex-shrink: 0;
   border: none;
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
   border-radius: var(--ss-rayon-pilule);
   padding: var(--ss-espace-1) var(--ss-espace-2);
   font-size: 14px;
   cursor: pointer;
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
 }
 
 .rep__chip--actif {
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
 }
 
 .rep__categorie {
   flex-shrink: 0;
   border: none;
-  background: var(--ss-blanc);
-  color: var(--ss-gris-ardoise);
+  background: var(--ss-surface);
+  color: var(--ss-texte-doux);
   border-radius: var(--ss-rayon-pilule);
   padding: 6px var(--ss-espace-2);
   font-size: 12px;
@@ -140,14 +140,14 @@
 }
 
 .rep__categorie--actif {
-  background: var(--ss-menthe);
-  color: var(--ss-bleu-profond);
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte-fort);
 }
 
 .rep__titre {
   font-size: 20px;
   margin: var(--ss-espace-3) 0 var(--ss-espace-2);
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
 
   @media (min-width: 900px) {
     position: absolute;
@@ -163,13 +163,13 @@
   flex-direction: column;
   align-items: center;
   gap: var(--ss-espace-2);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   text-align: center;
   padding: var(--ss-espace-4) 0;
 }
 
 .rep__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .rep__liste {
@@ -185,16 +185,16 @@
   display: flex;
   gap: var(--ss-espace-2);
   padding: var(--ss-espace-2);
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
   border: 2px solid transparent;
   border-radius: var(--ss-rayon-carte);
   text-decoration: none;
   color: inherit;
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
 }
 
 .rep__carte--selection {
-  border-color: var(--ss-menthe);
+  border-color: var(--ss-accent);
 }
 
 .rep__photo {
@@ -214,8 +214,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--ss-menthe-pale), var(--ss-menthe));
-  color: var(--ss-bleu-sen-suivi);
+  background: linear-gradient(135deg, var(--ss-surface-douce), var(--ss-accent));
+  color: var(--ss-accent-texte);
 }
 
 .rep__infos {
@@ -228,14 +228,14 @@
 
   h2 {
     font-size: 19px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     padding-right: 90px;
   }
 
   p {
     margin: 0;
     font-size: 14px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
@@ -243,8 +243,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-champ);
   padding: 2px var(--ss-espace-1);
   font-size: 11px;
@@ -288,15 +288,15 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   border: none;
   border-radius: var(--ss-rayon-pilule);
   padding: var(--ss-espace-2) var(--ss-espace-4);
   white-space: nowrap;
   font-weight: var(--ss-poids-texte-fort);
   font-size: 15px;
-  box-shadow: var(--ss-ombre-carte-forte);
+  box-shadow: var(--ss-ombre-forte);
   cursor: pointer;
 
   @media (min-width: 900px) {

@@ -23,7 +23,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       }
       path {
         fill: none;
-        stroke: var(--ss-menthe);
+        stroke: var(--ss-accent);
         stroke-width: 3;
         stroke-linecap: round;
         opacity: 0.6;

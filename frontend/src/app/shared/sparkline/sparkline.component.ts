@@ -22,12 +22,13 @@ export class SparklineComponent {
   protected readonly courbe = curveBasis;
 
   // ngx-charts attend une couleur réelle : on la lit dans les tokens plutôt
-  // que de l'écrire en dur.
+  // que de l'écrire en dur. Lue une seule fois, mais sans effet sur la bascule
+  // de thème : le SCSS du composant impose fill et stroke via les tokens.
   protected readonly palette: Color = {
     name: 'sen-suivi',
     selectable: false,
     group: ScaleType.Ordinal,
-    domain: [getComputedStyle(this.document.documentElement).getPropertyValue('--ss-menthe').trim()],
+    domain: [getComputedStyle(this.document.documentElement).getPropertyValue('--ss-graphe-trace').trim()],
   };
 
   protected readonly series = computed(() => [

@@ -25,7 +25,7 @@
     font-size: 28px;
     line-height: var(--ss-hauteur-ligne-titre);
     letter-spacing: var(--ss-interlettrage-moyen);
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
 
     @media (min-width: 900px) {
       font-size: 42px;
@@ -35,7 +35,7 @@
 
   p {
     margin: var(--ss-espace-1) 0 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     font-size: 14px;
 
     @media (min-width: 900px) {
@@ -60,9 +60,9 @@
 }
 
 .tp__stat {
-  background: var(--ss-fond-carte);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-grande-carte);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   padding: var(--ss-espace-3) var(--ss-espace-3) var(--ss-espace-3);
 }
 
@@ -74,7 +74,7 @@
 
 .tp__stat-libelle {
   margin: 0;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -93,8 +93,8 @@
   width: 32px;
   height: 32px;
   border-radius: var(--ss-rayon-champ);
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
 }
 
 .tp__stat-valeur {
@@ -104,7 +104,7 @@
   font-weight: var(--ss-poids-texte);
   font-size: 36px;
   line-height: 1;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-variant-numeric: tabular-nums;
 }
 
@@ -133,10 +133,10 @@
   gap: 6px;
   margin-top: var(--ss-espace-1);
   padding: 2px var(--ss-espace-1);
-  border: 1px solid var(--ss-menthe);
+  border: 1px solid var(--ss-accent);
   border-radius: var(--ss-rayon-pilule);
-  background: var(--ss-menthe-tres-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-legere);
+  color: var(--ss-texte-marque);
   font-size: 11px;
   font-weight: var(--ss-poids-texte-fort);
   text-transform: uppercase;
@@ -154,7 +154,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ss-bleu-sen-suivi);
+  background: var(--ss-primaire);
 }
 
 // --- Onglets -------------------------------------------------------------------
@@ -164,7 +164,7 @@
   gap: var(--ss-espace-3);
   margin: var(--ss-espace-4) calc(-1 * var(--ss-marge-mobile)) 0;
   padding: 0 var(--ss-marge-mobile);
-  border-bottom: 1px solid var(--ss-gris-clair);
+  border-bottom: 1px solid var(--ss-bordure);
 
   @media (min-width: 900px) {
     gap: var(--ss-espace-4);
@@ -179,7 +179,7 @@
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   background: none;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-family: inherit;
   font-size: 15px;
   opacity: 0.75;
@@ -192,8 +192,8 @@
 }
 
 .tp__onglet--actif {
-  color: var(--ss-bleu-sen-suivi);
-  border-bottom-color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
+  border-bottom-color: var(--ss-primaire);
   font-weight: var(--ss-poids-titre);
   opacity: 1;
 
@@ -218,9 +218,9 @@
 }
 
 .tp__demande {
-  background: var(--ss-fond-carte);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-carte);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   padding: var(--ss-espace-3) 20px;
 
   @media (min-width: 900px) {
@@ -257,14 +257,14 @@
   font-family: var(--ss-police-titres);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 20px;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
 }
 
 .tp__meta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
 
   @media (min-width: 900px) {
@@ -274,7 +274,7 @@
       height: 4px;
       margin-right: 6px;
       border-radius: 50%;
-      background: var(--ss-gris-clair);
+      background: var(--ss-surface-neutre);
     }
   }
 }
@@ -300,7 +300,7 @@
 
 .tp__message {
   margin: 12px 0 0;
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
   font-style: italic;
   font-size: 14px;
   display: -webkit-box;
@@ -320,7 +320,7 @@
   align-items: center;
   gap: 6px;
   margin: var(--ss-espace-1) 0 0;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-size: 14px;
 }
 
@@ -341,13 +341,13 @@
 .tp__bouton {
   height: 48px;
   padding: 0 var(--ss-espace-3);
-  border: 1px solid var(--ss-bleu-sen-suivi);
+  border: 1px solid var(--ss-primaire);
   border-radius: var(--ss-rayon-bouton);
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   font-family: inherit;
   font-size: 16px;
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   cursor: pointer;
 
   &:disabled {
@@ -357,9 +357,9 @@
 }
 
 .tp__bouton--contour {
-  border-color: var(--ss-gris-clair);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
+  border-color: var(--ss-bordure);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
   box-shadow: none;
 }
 
@@ -367,14 +367,14 @@
 
 .tp__erreur {
   margin: var(--ss-espace-2) 0 0;
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
   font-size: 14px;
 }
 
 .tp__etat {
   margin: var(--ss-espace-4) 0 0;
   text-align: center;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   p {
     margin: var(--ss-espace-2) 0 0;
@@ -382,5 +382,5 @@
 }
 
 .tp__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }

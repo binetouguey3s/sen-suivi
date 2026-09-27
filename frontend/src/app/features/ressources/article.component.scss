@@ -13,11 +13,11 @@
 .art__etat {
   padding: var(--ss-espace-8) var(--ss-marge-mobile);
   text-align: center;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 }
 
 .art__etat--erreur a {
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
 }
 
@@ -26,7 +26,7 @@
   align-items: center;
   gap: 4px;
   font-size: 13px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   margin-bottom: var(--ss-espace-2);
 
   a {
@@ -39,7 +39,7 @@
   }
 
   span {
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     font-weight: var(--ss-poids-texte-fort);
   }
 }
@@ -50,19 +50,19 @@
   justify-content: center;
   height: 200px;
   border-radius: var(--ss-rayon-grande-carte);
-  background: linear-gradient(135deg, var(--ss-menthe-pale), var(--ss-menthe));
-  color: var(--ss-bleu-sen-suivi);
+  background: linear-gradient(135deg, var(--ss-surface-douce), var(--ss-accent));
+  color: var(--ss-accent-texte);
 
   @media (min-width: 900px) {
     height: 300px;
   }
 
   &[data-type='EXERCICE'] {
-    background: linear-gradient(135deg, var(--ss-menthe-tres-pale), var(--ss-menthe-pale));
+    background: linear-gradient(135deg, var(--ss-surface-legere), var(--ss-surface-douce));
   }
 
   &[data-type='PODCAST'] {
-    background: linear-gradient(135deg, var(--ss-fond-application), var(--ss-menthe-pale));
+    background: linear-gradient(135deg, var(--ss-fond), var(--ss-surface-douce));
   }
 }
 
@@ -80,8 +80,8 @@
 
 .art__thematique {
   display: inline-block;
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-pilule);
   padding: 2px var(--ss-espace-2);
   font-size: 13px;
@@ -92,7 +92,7 @@
 .art__texte {
   h1 {
     font-size: 30px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     letter-spacing: var(--ss-interlettrage-moyen);
     margin-bottom: var(--ss-espace-3);
 
@@ -103,13 +103,13 @@
 
   h2 {
     font-size: 24px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     margin: var(--ss-espace-5) 0 var(--ss-espace-2);
     scroll-margin-top: var(--ss-espace-6);
   }
 
   p {
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     font-size: 16px;
     margin: 0 0 var(--ss-espace-2);
   }
@@ -121,8 +121,8 @@
   align-items: center;
   gap: var(--ss-espace-3);
   padding-bottom: var(--ss-espace-3);
-  border-bottom: 1px solid var(--ss-gris-clair);
-  color: var(--ss-gris-ardoise);
+  border-bottom: 1px solid var(--ss-bordure);
+  color: var(--ss-texte-doux);
   font-size: 14px;
 
   span {
@@ -143,20 +143,20 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border: 1px solid var(--ss-gris-clair);
-    background: var(--ss-blanc);
-    color: var(--ss-bleu-sen-suivi);
+    border: 1px solid var(--ss-bordure);
+    background: var(--ss-surface);
+    color: var(--ss-texte-marque);
     cursor: pointer;
   }
 }
 
 .art__actif {
-  background: var(--ss-bleu-sen-suivi) !important;
-  color: var(--ss-blanc) !important;
+  background: var(--ss-primaire) !important;
+  color: var(--ss-primaire-texte) !important;
 }
 
 .art__confirmation {
-  color: var(--ss-bleu-sen-suivi) !important;
+  color: var(--ss-texte-marque) !important;
   font-size: 14px !important;
   margin-top: var(--ss-espace-1) !important;
 }
@@ -170,10 +170,10 @@
 blockquote {
   margin: var(--ss-espace-3) 0;
   padding: var(--ss-espace-3);
-  background: var(--ss-menthe-pale);
-  border-left: 4px solid var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  border-left: 4px solid var(--ss-primaire);
   border-radius: var(--ss-rayon-champ);
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
   font-size: 18px;
 }
 
@@ -190,7 +190,7 @@ blockquote {
 }
 
 .art__carte {
-  background: var(--ss-fond-application);
+  background: var(--ss-fond);
   border-radius: var(--ss-rayon-carte);
   padding: var(--ss-espace-3);
 
@@ -212,25 +212,25 @@ blockquote {
     background: none;
     border: none;
     padding: 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     font-size: 14px;
     text-align: left;
     cursor: pointer;
 
     &:hover {
-      color: var(--ss-bleu-sen-suivi);
+      color: var(--ss-texte-marque);
     }
   }
 
   p {
     margin: 0;
     font-size: 14px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
 .art__carte--aide {
-  background: var(--ss-menthe-pale);
+  background: var(--ss-surface-douce);
 }
 
 .art__bouton-plein,
@@ -248,16 +248,16 @@ blockquote {
 }
 
 .art__bouton-plein {
-  background: var(--ss-bleu-sen-suivi);
+  background: var(--ss-primaire);
   border: none;
-  color: var(--ss-blanc);
+  color: var(--ss-primaire-texte);
   margin-bottom: var(--ss-espace-1);
 }
 
 .art__bouton-contour {
-  background: var(--ss-blanc);
-  border: 1px solid var(--ss-gris-clair);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-bordure);
+  color: var(--ss-texte-marque);
 }
 
 .art__suite {
@@ -275,7 +275,7 @@ blockquote {
   }
 
   a {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-weight: var(--ss-poids-texte-fort);
     font-size: 14px;
     text-decoration: none;

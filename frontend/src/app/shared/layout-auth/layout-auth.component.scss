@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: var(--ss-gris-clair);
+  background: var(--ss-surface-neutre);
 }
 
 .la {
@@ -23,7 +23,7 @@
     top: 0;
     height: 100vh;
     overflow: hidden;
-    background: var(--ss-bleu-sen-suivi);
+    background: var(--ss-surface-forte);
   }
 }
 
@@ -59,8 +59,8 @@
   max-width: 440px;
   padding: var(--ss-espace-4) var(--ss-espace-3);
   border-radius: var(--ss-rayon-carte);
-  background: var(--ss-fond-carte);
-  box-shadow: var(--ss-ombre-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
 
   @media (min-width: 900px) {
     padding: var(--ss-espace-4) var(--ss-espace-5) var(--ss-espace-5);
@@ -84,9 +84,9 @@
   align-items: center;
   gap: var(--ss-espace-1);
   padding: var(--ss-espace-3) var(--ss-marge-mobile);
-  border-top: 1px solid var(--ss-blanc);
+  border-top: 1px solid var(--ss-surface);
   font-size: 13px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   @media (min-width: 900px) {
     flex-direction: row;

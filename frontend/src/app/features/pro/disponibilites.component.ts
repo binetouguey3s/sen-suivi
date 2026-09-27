@@ -29,7 +29,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
         font-weight: var(--ss-poids-texte-fort);
         font-size: 28px;
         letter-spacing: var(--ss-interlettrage-moyen);
-        color: var(--ss-bleu-sen-suivi);
+        color: var(--ss-texte-marque);
 
         @media (min-width: 900px) {
           font-size: 42px;
@@ -40,9 +40,9 @@ import { IconComponent } from '../../shared/icon/icon.component';
       .dispo__carte {
         margin-top: var(--ss-espace-4);
         padding: var(--ss-espace-5) var(--ss-espace-3);
-        background: var(--ss-fond-carte);
+        background: var(--ss-surface);
         border-radius: var(--ss-rayon-grande-carte);
-        box-shadow: var(--ss-ombre-carte);
+        box-shadow: var(--ss-ombre);
         text-align: center;
       }
 
@@ -50,8 +50,8 @@ import { IconComponent } from '../../shared/icon/icon.component';
         display: inline-flex;
         padding: var(--ss-espace-2);
         border-radius: 50%;
-        background: var(--ss-menthe-pale);
-        color: var(--ss-bleu-sen-suivi);
+        background: var(--ss-surface-douce);
+        color: var(--ss-texte-marque);
       }
 
       h2 {
@@ -59,12 +59,12 @@ import { IconComponent } from '../../shared/icon/icon.component';
         font-family: var(--ss-police-titres);
         font-weight: var(--ss-poids-titre);
         font-size: 20px;
-        color: var(--ss-bleu-profond);
+        color: var(--ss-texte);
       }
 
       p {
         margin: var(--ss-espace-1) 0 0;
-        color: var(--ss-gris-ardoise);
+        color: var(--ss-texte-doux);
       }
     `,
   ],

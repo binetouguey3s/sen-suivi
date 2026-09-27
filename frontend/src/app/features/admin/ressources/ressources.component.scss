@@ -17,49 +17,49 @@
   h1 {
     margin: 0;
     font-size: 28px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   p {
     margin: var(--ss-espace-1) 0 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
 .ar__erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
   margin-bottom: var(--ss-espace-2);
 }
 
 .ar__etat {
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   padding: var(--ss-espace-4) 0;
 }
 
 .ar__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .ar__tableau {
   width: 100%;
   border-collapse: collapse;
-  background: var(--ss-blanc);
+  background: var(--ss-surface);
 
   th {
     text-align: left;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     padding: var(--ss-espace-2);
-    border-bottom: 1px solid var(--ss-gris-clair);
+    border-bottom: 1px solid var(--ss-bordure);
   }
 
   td {
     padding: var(--ss-espace-2);
-    border-bottom: 1px solid var(--ss-gris-clair);
+    border-bottom: 1px solid var(--ss-bordure);
     font-size: 14px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     vertical-align: middle;
   }
 }
@@ -75,8 +75,8 @@
   gap: 6px;
   padding: 4px var(--ss-espace-2);
   border-radius: var(--ss-rayon-pilule);
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -92,7 +92,7 @@
   gap: 4px;
   border: none;
   background: none;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 14px;
   cursor: pointer;
@@ -100,7 +100,7 @@
 }
 
 .ar__lien--danger {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .ar__bouton {
@@ -111,8 +111,8 @@
   border-radius: var(--ss-rayon-bouton);
   padding: var(--ss-espace-2) var(--ss-espace-3);
   font-weight: var(--ss-poids-texte-fort);
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire-fort);
+  color: var(--ss-primaire-texte);
   cursor: pointer;
   white-space: nowrap;
 
@@ -123,16 +123,16 @@
 }
 
 .ar__bouton--danger {
-  background: var(--ss-rouge-alerte);
+  background: var(--ss-alerte);
 }
 
 .ar__bouton-secondaire {
-  border: 1px solid var(--ss-gris-clair);
+  border: 1px solid var(--ss-bordure);
   border-radius: var(--ss-rayon-bouton);
   padding: var(--ss-espace-2) var(--ss-espace-3);
   font-weight: var(--ss-poids-texte-fort);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
   cursor: pointer;
 }
 
@@ -146,7 +146,7 @@
 
   h2 {
     margin: 0;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 }
 
@@ -154,7 +154,7 @@
   margin: 0 0 calc(var(--ss-espace-1) * -1);
   font-size: 14px;
   font-weight: var(--ss-poids-texte-fort);
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
 }
 
 .ar__formats {
@@ -167,9 +167,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid var(--ss-gris-clair);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
+  border: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
   border-radius: var(--ss-rayon-pilule);
   padding: var(--ss-espace-1) var(--ss-espace-2);
   font-size: 14px;
@@ -177,9 +177,9 @@
 }
 
 .ar__format--actif {
-  background: var(--ss-bleu-sen-suivi);
-  border-color: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  border-color: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
 }
 
 .ar__duree {
@@ -188,22 +188,22 @@
   gap: 6px;
   font-size: 14px;
   font-weight: var(--ss-poids-texte-fort);
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
 
   input {
-    border: 1px solid var(--ss-gris-clair);
+    border: 1px solid var(--ss-bordure);
     border-radius: var(--ss-rayon-champ);
     padding: var(--ss-espace-2);
     font-size: 15px;
     font-family: inherit;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     width: 120px;
   }
 }
 
 .ar__erreur-modale {
   margin: 0;
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
   font-size: 14px;
 }
 

@@ -5,13 +5,13 @@
 .mdp__titre,
 .mdp__envoye h1 {
   font-size: 26px;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   text-align: center;
 }
 
 .mdp__intro {
   text-align: center;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
   margin: var(--ss-espace-2) 0 var(--ss-espace-3);
 }
@@ -25,8 +25,8 @@
 .mdp__bouton {
   border: none;
   border-radius: var(--ss-rayon-bouton);
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   font-size: 15px;
   font-weight: var(--ss-poids-texte-fort);
   padding: var(--ss-espace-2);
@@ -44,7 +44,7 @@
   justify-content: center;
   gap: var(--ss-espace-1);
   margin-top: var(--ss-espace-3);
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 14px;
   text-decoration: none;
@@ -59,7 +59,7 @@
 
   p {
     margin: 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     font-size: 14px;
   }
 }
@@ -71,8 +71,8 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
 }
 
 .mdp__relance button {
@@ -80,7 +80,7 @@
   margin: 4px auto 0;
   background: none;
   border: none;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   cursor: pointer;
 }

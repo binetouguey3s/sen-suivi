@@ -6,7 +6,7 @@
   display: flex;
   gap: 4px;
   padding: 4px;
-  background: var(--ss-gris-clair);
+  background: var(--ss-surface-neutre);
   border-radius: var(--ss-rayon-champ);
   margin-bottom: var(--ss-espace-3);
 }
@@ -16,20 +16,20 @@
   text-align: center;
   padding: var(--ss-espace-1) var(--ss-espace-2);
   border-radius: var(--ss-rayon-champ);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
   text-decoration: none;
 }
 
 .ip__onglet--actif {
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
 }
 
 .ip__titre {
   font-size: 26px;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   margin-bottom: var(--ss-espace-3);
 }
 
@@ -59,7 +59,7 @@
   label {
     font-size: 14px;
     font-weight: var(--ss-poids-texte-fort);
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   select {
@@ -67,25 +67,25 @@
     font-family: var(--ss-police-texte);
     font-size: 15px;
     padding: var(--ss-espace-2);
-    border: 1px solid var(--ss-gris-clair);
+    border: 1px solid var(--ss-bordure);
     border-radius: var(--ss-rayon-champ);
-    background: var(--ss-blanc);
-    color: var(--ss-bleu-profond);
+    background: var(--ss-surface);
+    color: var(--ss-texte);
 
     &:focus-visible {
-      outline: 2px solid var(--ss-bleu-sen-suivi);
+      outline: 2px solid var(--ss-primaire);
     }
   }
 
   p {
     margin: 0;
     font-size: 13px;
-    color: var(--ss-rouge-alerte);
+    color: var(--ss-alerte);
   }
 }
 
 .ip__select--erreur select {
-  border-color: var(--ss-rouge-alerte);
+  border-color: var(--ss-alerte);
 }
 
 .ip__langues {
@@ -96,7 +96,7 @@
   legend {
     font-size: 14px;
     font-weight: var(--ss-poids-texte-fort);
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     margin-bottom: var(--ss-espace-1);
     padding: 0;
   }
@@ -104,7 +104,7 @@
   p {
     margin: var(--ss-espace-1) 0 0;
     font-size: 13px;
-    color: var(--ss-rouge-alerte);
+    color: var(--ss-alerte);
   }
 }
 
@@ -115,9 +115,9 @@
 }
 
 .ip__chip {
-  border: 1px solid var(--ss-gris-clair);
-  background: var(--ss-blanc);
-  color: var(--ss-gris-ardoise);
+  border: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
+  color: var(--ss-texte-doux);
   border-radius: var(--ss-rayon-pilule);
   padding: 4px var(--ss-espace-2);
   font-size: 13px;
@@ -125,9 +125,9 @@
 }
 
 .ip__chip--actif {
-  background: var(--ss-bleu-sen-suivi);
-  border-color: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  border-color: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
 }
 
 .ip__erreur {
@@ -136,14 +136,14 @@
   gap: var(--ss-espace-1);
   margin: 0;
   font-size: 13px;
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .ip__bouton {
   border: none;
   border-radius: var(--ss-rayon-bouton);
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   font-size: 15px;
   font-weight: var(--ss-poids-texte-fort);
   padding: var(--ss-espace-2);
@@ -163,8 +163,8 @@
   margin: 0;
   padding: var(--ss-espace-2);
   border-radius: var(--ss-rayon-champ);
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   font-size: 13px;
 }
 
@@ -176,13 +176,13 @@
   text-align: center;
 
   h2 {
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
     font-size: 24px;
   }
 
   p {
     margin: 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
@@ -193,6 +193,6 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
 }

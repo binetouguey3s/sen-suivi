@@ -8,7 +8,7 @@
 
 .tdb__entete h1 {
   font-size: 28px;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
 
   @media (min-width: 900px) {
     font-size: 34px;
@@ -16,7 +16,7 @@
 }
 
 .tdb__date {
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   margin: var(--ss-espace-1) 0 0;
 }
 
@@ -39,10 +39,10 @@
 }
 
 .tdb__carte {
-  background: var(--ss-fond-carte);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-carte);
   padding: var(--ss-espace-3);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
 }
 
 .tdb__carte--lieu {
@@ -82,22 +82,22 @@
 }
 
 .tdb__etat {
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
 }
 
 .tdb__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .tdb__erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
   font-size: 14px;
   margin: var(--ss-espace-2) 0 0;
 }
 
 .tdb__carte--serie {
-  background: var(--ss-menthe-tres-pale);
+  background: var(--ss-surface-legere);
 }
 
 .tdb__eyebrow {
@@ -108,7 +108,7 @@
   font-size: 12px;
   font-weight: var(--ss-poids-texte-fort);
   letter-spacing: var(--ss-interlettrage-moyen);
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   margin: 0 0 var(--ss-espace-2);
 }
 
@@ -116,7 +116,7 @@
   font-family: var(--ss-police-titres);
   font-size: 40px;
   font-weight: var(--ss-poids-titre-fort);
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
   margin: 0;
 
   span {
@@ -126,7 +126,7 @@
 }
 
 .tdb__serie-texte {
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
   font-size: 14px;
   margin: var(--ss-espace-2) 0 0;
 }
@@ -138,7 +138,7 @@
 }
 
 .tdb__texte-secondaire {
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
   margin: 0 0 var(--ss-espace-2);
 }
@@ -147,7 +147,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   text-decoration: none;
   cursor: default;
@@ -164,9 +164,9 @@
 }
 
 .tdb__bouton-contour {
-  background: var(--ss-blanc);
-  border: 1px solid var(--ss-bleu-sen-suivi);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-primaire);
+  color: var(--ss-texte-marque);
   width: 100%;
   display: block;
   text-align: center;
@@ -183,15 +183,15 @@
 .tdb__bouton-principal {
   text-decoration: none;
   cursor: pointer;
-  background: var(--ss-bleu-profond);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire-fort);
+  color: var(--ss-primaire-texte);
   border: none;
 }
 
 .tdb__bouton-texte {
   text-decoration: none;
   cursor: pointer;
-  background: var(--ss-gris-clair);
-  color: var(--ss-bleu-profond);
+  background: var(--ss-surface-neutre);
+  color: var(--ss-texte);
   border: none;
 }

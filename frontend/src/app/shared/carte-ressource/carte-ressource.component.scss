@@ -6,14 +6,14 @@
 .cr {
   position: relative;
   height: 100%;
-  background: var(--ss-fond-carte);
-  border: 1px solid var(--ss-gris-clair);
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-bordure);
   border-radius: var(--ss-rayon-carte);
   overflow: hidden;
   transition: box-shadow 0.15s ease;
 
   &:hover {
-    box-shadow: var(--ss-ombre-carte);
+    box-shadow: var(--ss-ombre);
   }
 }
 
@@ -31,15 +31,15 @@
   align-items: center;
   justify-content: center;
   height: 150px;
-  background: linear-gradient(135deg, var(--ss-menthe-pale), var(--ss-menthe));
-  color: var(--ss-bleu-sen-suivi);
+  background: linear-gradient(135deg, var(--ss-surface-douce), var(--ss-accent));
+  color: var(--ss-accent-texte);
 
   &[data-type='EXERCICE'] {
-    background: linear-gradient(135deg, var(--ss-menthe-tres-pale), var(--ss-menthe-pale));
+    background: linear-gradient(135deg, var(--ss-surface-legere), var(--ss-surface-douce));
   }
 
   &[data-type='PODCAST'] {
-    background: linear-gradient(135deg, var(--ss-fond-application), var(--ss-menthe-pale));
+    background: linear-gradient(135deg, var(--ss-fond), var(--ss-surface-douce));
   }
 }
 
@@ -51,8 +51,8 @@
   position: absolute;
   top: var(--ss-espace-2);
   left: var(--ss-espace-2);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-pilule);
   padding: 4px var(--ss-espace-2);
   font-size: 12px;
@@ -70,13 +70,13 @@
 }
 
 .cr--vedette .cr__corps {
-  background: var(--ss-fond-application);
+  background: var(--ss-fond);
   flex: 1;
 }
 
 .cr__thematique {
-  background: var(--ss-menthe-pale);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
   border-radius: var(--ss-rayon-pilule);
   padding: 2px var(--ss-espace-1);
   font-size: 13px;
@@ -85,7 +85,7 @@
 
 .cr__titre {
   font-size: 18px;
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
   line-height: 1.25;
 }
 
@@ -97,7 +97,7 @@
   display: flex;
   gap: var(--ss-espace-3);
   margin: 0;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 13px;
 
   span {
@@ -118,13 +118,13 @@
   height: 36px;
   border: none;
   border-radius: 50%;
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
   cursor: pointer;
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
 }
 
 .cr__coeur--actif {
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
 }

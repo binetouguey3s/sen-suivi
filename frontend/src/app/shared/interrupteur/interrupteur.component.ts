@@ -24,7 +24,7 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
         height: 24px;
         border: none;
         border-radius: var(--ss-rayon-pilule);
-        background: var(--ss-gris-clair);
+        background: var(--ss-surface-neutre);
         padding: 2px;
         cursor: pointer;
         transition: background 0.15s ease;
@@ -35,18 +35,18 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        background: var(--ss-blanc);
-        box-shadow: var(--ss-ombre-carte);
+        background: var(--ss-surface);
+        box-shadow: var(--ss-ombre);
         transition: transform 0.15s ease;
       }
       .interrupteur--actif {
-        background: var(--ss-bleu-sen-suivi);
+        background: var(--ss-primaire);
       }
       .interrupteur--actif span {
         transform: translateX(20px);
       }
       .interrupteur:focus-visible {
-        outline: 2px solid var(--ss-bleu-sen-suivi);
+        outline: 2px solid var(--ss-primaire);
         outline-offset: 2px;
       }
     `,

@@ -4,7 +4,7 @@
 
 .bib__hero {
   padding: var(--ss-espace-6) var(--ss-marge-mobile) var(--ss-espace-4);
-  background: linear-gradient(180deg, var(--ss-menthe-pale), var(--ss-fond-public));
+  background: linear-gradient(180deg, var(--ss-surface-douce), var(--ss-fond-public));
 
   @media (min-width: 900px) {
     padding: var(--ss-espace-8) var(--ss-marge-desktop) var(--ss-espace-5);
@@ -13,7 +13,7 @@
   h1 {
     max-width: 640px;
     font-size: 34px;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     letter-spacing: var(--ss-interlettrage-moyen);
 
     @media (min-width: 900px) {
@@ -24,7 +24,7 @@
 
   p {
     max-width: 520px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
     margin: var(--ss-espace-2) 0 var(--ss-espace-4);
   }
 }
@@ -34,11 +34,11 @@
   align-items: center;
   gap: var(--ss-espace-2);
   max-width: 460px;
-  background: var(--ss-blanc);
-  border: 1px solid var(--ss-gris-clair);
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-bordure);
   border-radius: var(--ss-rayon-champ);
   padding: var(--ss-espace-2);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   input {
     flex: 1;
@@ -46,12 +46,12 @@
     outline: none;
     font-size: 15px;
     font-family: inherit;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
     background: transparent;
   }
 
   &:focus-within {
-    outline: 2px solid var(--ss-bleu-sen-suivi);
+    outline: 2px solid var(--ss-primaire);
   }
 }
 
@@ -65,7 +65,7 @@
 
 .bib__filtres {
   padding: 0 var(--ss-marge-mobile) var(--ss-espace-3);
-  border-bottom: 1px solid var(--ss-gris-clair);
+  border-bottom: 1px solid var(--ss-bordure);
   margin: 0 var(--ss-marge-mobile);
   padding-left: 0;
   padding-right: 0;
@@ -89,9 +89,9 @@
 
 .bib__chip {
   flex-shrink: 0;
-  border: 1px solid var(--ss-gris-clair);
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-profond);
+  border: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
   border-radius: var(--ss-rayon-pilule);
   padding: var(--ss-espace-1) var(--ss-espace-2);
   font-size: 14px;
@@ -99,9 +99,9 @@
 }
 
 .bib__chip--actif {
-  background: var(--ss-bleu-sen-suivi);
-  border-color: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  border-color: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
 }
 
 .bib__formats {
@@ -117,16 +117,16 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   font-size: 14px;
   padding: var(--ss-espace-1) 0;
   cursor: pointer;
 }
 
 .bib__format--actif {
-  color: var(--ss-bleu-profond);
+  color: var(--ss-texte);
   font-weight: var(--ss-poids-texte-fort);
-  border-bottom-color: var(--ss-menthe);
+  border-bottom-color: var(--ss-accent);
 }
 
 .bib__resultats {
@@ -156,7 +156,7 @@
 .bib__squelette {
   height: 280px;
   border-radius: var(--ss-rayon-carte);
-  background: linear-gradient(90deg, var(--ss-gris-clair), var(--ss-menthe-tres-pale), var(--ss-gris-clair));
+  background: linear-gradient(90deg, var(--ss-surface-neutre), var(--ss-surface-legere), var(--ss-surface-neutre));
   background-size: 200% 100%;
   animation: bib-chargement 1.4s ease-in-out infinite;
 }
@@ -175,13 +175,13 @@
   flex-direction: column;
   align-items: center;
   gap: var(--ss-espace-2);
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
   text-align: center;
   padding: var(--ss-espace-6) 0;
 }
 
 .bib__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .bib__plus {
@@ -190,8 +190,8 @@
   margin-top: var(--ss-espace-5);
 
   button {
-    background: var(--ss-menthe-pale);
-    color: var(--ss-bleu-sen-suivi);
+    background: var(--ss-surface-douce);
+    color: var(--ss-texte-marque);
     border: none;
     border-radius: var(--ss-rayon-pilule);
     padding: var(--ss-espace-2) var(--ss-espace-4);

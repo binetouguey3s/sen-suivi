@@ -4,16 +4,16 @@
 
 .pa__titre {
   font-size: 30px;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   margin-bottom: var(--ss-espace-3);
 }
 
 .pa__etat {
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 }
 
 .pa__etat--erreur {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .pa__pages {
@@ -24,15 +24,15 @@
 }
 
 .pa__carte {
-  background: var(--ss-fond-carte);
+  background: var(--ss-surface);
   border-radius: var(--ss-rayon-carte);
-  box-shadow: var(--ss-ombre-carte);
+  box-shadow: var(--ss-ombre);
   padding: var(--ss-espace-3);
 
   h2 {
     font-size: 20px;
     margin-bottom: var(--ss-espace-2);
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
   }
 }
 
@@ -50,17 +50,17 @@
   label {
     font-size: 14px;
     font-weight: var(--ss-poids-texte-fort);
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   select {
     font-family: var(--ss-police-texte);
     font-size: 15px;
     padding: var(--ss-espace-2);
-    border: 1px solid var(--ss-gris-clair);
+    border: 1px solid var(--ss-bordure);
     border-radius: var(--ss-rayon-champ);
-    background: var(--ss-blanc);
-    color: var(--ss-bleu-profond);
+    background: var(--ss-surface);
+    color: var(--ss-texte);
   }
 }
 
@@ -68,13 +68,13 @@
 .pa__texte {
   margin: 0;
   font-size: 14px;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 }
 
 .pa__ok {
   margin: 0;
   font-size: 14px;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
 }
 
 .pa__bouton {
@@ -82,10 +82,10 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ss-espace-1);
-  border: 2px solid var(--ss-bleu-sen-suivi);
+  border: 2px solid var(--ss-primaire);
   border-radius: var(--ss-rayon-bouton);
-  background: var(--ss-bleu-sen-suivi);
-  color: var(--ss-blanc);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
   padding: var(--ss-espace-1) var(--ss-espace-3);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 15px;
@@ -98,14 +98,14 @@
 }
 
 .pa__bouton--contour {
-  background: var(--ss-blanc);
-  color: var(--ss-bleu-sen-suivi);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
 }
 
 .pa__bouton--danger {
-  background: var(--ss-rouge-alerte);
-  border-color: var(--ss-rouge-alerte);
-  color: var(--ss-blanc);
+  background: var(--ss-alerte);
+  border-color: var(--ss-alerte);
+  color: var(--ss-alerte-texte);
 }
 
 .pa__notif-entete {
@@ -115,7 +115,7 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ss-gris-ardoise);
+  color: var(--ss-texte-doux);
 
   span {
     text-align: center;
@@ -133,16 +133,16 @@
   justify-content: space-between;
   gap: var(--ss-espace-2);
   padding: 12px 0;
-  border-top: 1px solid var(--ss-gris-clair);
+  border-top: 1px solid var(--ss-bordure);
 
   strong {
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   p {
     margin: 0;
     font-size: 13px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 
@@ -152,20 +152,20 @@
   align-items: center;
   gap: var(--ss-espace-1);
   padding: var(--ss-espace-2) 0;
-  border-bottom: 1px solid var(--ss-gris-clair);
+  border-bottom: 1px solid var(--ss-bordure);
 
   &:last-child {
     border-bottom: none;
   }
 
   strong {
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 
   p {
     margin: 0;
     font-size: 13px;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 
   ss-interrupteur {
@@ -179,14 +179,14 @@
   gap: var(--ss-espace-1);
   background: none;
   border: none;
-  color: var(--ss-bleu-sen-suivi);
+  color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
   font-size: 15px;
   cursor: pointer;
 }
 
 .pa__carte--danger h2 {
-  color: var(--ss-rouge-alerte);
+  color: var(--ss-alerte);
 }
 
 .pa__danger {
@@ -194,12 +194,12 @@
   flex-direction: column;
   gap: var(--ss-espace-2);
   padding: var(--ss-espace-3);
-  border: 1px solid var(--ss-rouge-alerte);
+  border: 1px solid var(--ss-alerte);
   border-radius: var(--ss-rayon-champ);
 
   p {
     margin: 0;
-    color: var(--ss-bleu-profond);
+    color: var(--ss-texte);
   }
 }
 
@@ -210,12 +210,12 @@
 
   h2 {
     font-size: 22px;
-    color: var(--ss-bleu-sen-suivi);
+    color: var(--ss-texte-marque);
   }
 
   p {
     margin: 0;
-    color: var(--ss-gris-ardoise);
+    color: var(--ss-texte-doux);
   }
 }
 

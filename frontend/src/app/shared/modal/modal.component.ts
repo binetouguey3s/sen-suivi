@@ -21,7 +21,7 @@ import { ChangeDetectionStrategy, Component, model } from '@angular/core';
       .modale {
         position: fixed;
         z-index: 101;
-        background: var(--ss-blanc);
+        background: var(--ss-surface);
         padding: var(--ss-espace-4) var(--ss-espace-3) var(--ss-espace-5);
         inset: auto 0 0 0;
         border-radius: var(--ss-rayon-grande-carte) var(--ss-rayon-grande-carte) 0 0;
