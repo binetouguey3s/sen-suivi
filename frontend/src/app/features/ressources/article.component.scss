@@ -50,8 +50,8 @@
   justify-content: center;
   height: 200px;
   border-radius: var(--ss-rayon-grande-carte);
-  background: linear-gradient(135deg, var(--ss-surface-douce), var(--ss-accent));
-  color: var(--ss-accent-texte);
+  background: linear-gradient(135deg, var(--ss-vide-debut), var(--ss-vide-fin));
+  color: var(--ss-vide-texte);
 
   @media (min-width: 900px) {
     height: 300px;

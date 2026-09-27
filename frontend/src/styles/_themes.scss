@@ -28,7 +28,7 @@
   // Textes
   --ss-texte:                 #12354f;   // titres et texte principal
   --ss-texte-marque:          #1b4b6e;   // liens et titres de carte
-  --ss-texte-doux:            #6b7280;   // texte secondaire
+  --ss-texte-doux:            #666c7a;   // texte secondaire (4,5:1 sur les fonds menthe et gris)
   --ss-texte-efface:          #edeef1;   // jours hors du mois dans le calendrier
   --ss-texte-inverse:         #ffffff;   // sur fond bleu
   --ss-texte-sur-photo:       #ffffff;   // posé sur une photo, identique dans les deux thèmes
@@ -42,9 +42,10 @@
   --ss-accent:                #a9d6c4;
   --ss-accent-texte:          #1b4b6e;
   --ss-accent-texte-fort:     #12354f;
-  --ss-alerte:                #e4572e;   // urgence et suppression de compte uniquement
+  --ss-alerte:                #d4451b;   // urgence et suppression de compte uniquement (4,5:1 sur blanc)
   --ss-alerte-texte:          #ffffff;
-  --ss-alerte-douce:          rgba(228, 87, 46, 0.12);
+  --ss-alerte-douce:          rgba(212, 69, 27, 0.12);
+  --ss-alerte-sur-douce:      #d4451b;   // texte des badges posés sur --ss-alerte-douce
 
   // Traits et ombres
   --ss-bordure:               #edeef1;
@@ -52,6 +53,11 @@
   --ss-ombre-forte:           0 16px 40px rgba(18, 53, 79, 0.14);
   --ss-ombre-repere:          rgba(18, 53, 79, 0.35);
   --ss-voile:                 rgba(18, 53, 79, 0.55);   // fond des modales
+
+  // Image absente : dégradé menthe et icône bleue
+  --ss-vide-debut:            #e9f4ef;
+  --ss-vide-fin:              #a9d6c4;
+  --ss-vide-texte:            #1b4b6e;
 
   // Graphiques : tracé et grille menthe, remplissage menthe pâle
   --ss-graphe-trace:          #a9d6c4;
@@ -101,7 +107,7 @@
   // Textes
   --ss-texte:                 #e8f1ee;   // texte principal, menthe très pâle
   --ss-texte-marque:          #a9d6c4;
-  --ss-texte-doux:            #9fb3b0;   // texte secondaire
+  --ss-texte-doux:            #a7b9b6;   // texte secondaire (4,5:1 sur les zones bleues)
   --ss-texte-efface:          rgba(232, 241, 238, 0.22);
   --ss-texte-inverse:         #0e2739;   // sur fond menthe
   --ss-texte-sur-photo:       #ffffff;
@@ -118,7 +124,8 @@
   --ss-accent-texte-fort:     #0e2739;
   --ss-alerte:                #ff7a52;   // alerte éclaircie pour rester lisible
   --ss-alerte-texte:          #0e2739;
-  --ss-alerte-douce:          rgba(255, 122, 82, 0.16);
+  --ss-alerte-douce:          rgba(255, 154, 122, 0.12);
+  --ss-alerte-sur-douce:      #ff9a7a;   // 4,7:1 sur le fond du badge
 
   // Traits et ombres
   --ss-bordure:               rgba(232, 241, 238, 0.14);
@@ -126,6 +133,11 @@
   --ss-ombre-forte:           0 16px 40px rgba(0, 0, 0, 0.45);
   --ss-ombre-repere:          rgba(0, 0, 0, 0.45);
   --ss-voile:                 rgba(10, 30, 44, 0.7);
+
+  // Image absente : dégradé bleu discret et icône menthe
+  --ss-vide-debut:            #1b4b6e;
+  --ss-vide-fin:              #163a55;
+  --ss-vide-texte:            #a9d6c4;
 
   // Graphiques
   --ss-graphe-trace:          #a9d6c4;
@@ -143,7 +155,7 @@
   --ss-humeur-5:              #a9d6c4;
 
   // Verre
-  --ss-verre:                 rgba(22, 58, 85, 0.62);
+  --ss-verre:                 rgba(22, 58, 85, 0.73);   // 4,5:1 même sur une photo très claire
   --ss-verre-plein:           #163a55;
   --ss-verre-bordure:         rgba(232, 241, 238, 0.16);
   --ss-verre-ombre:           0 8px 32px rgba(0, 0, 0, 0.45);

@@ -214,8 +214,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--ss-surface-douce), var(--ss-accent));
-  color: var(--ss-accent-texte);
+  background: linear-gradient(135deg, var(--ss-vide-debut), var(--ss-vide-fin));
+  color: var(--ss-vide-texte);
 }
 
 .rep__infos {
