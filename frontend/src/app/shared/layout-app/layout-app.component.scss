@@ -298,6 +298,17 @@
   }
 }
 
+// Mobile, compte utilisateur : la bulle occupe l'emplacement laissé libre au
+// centre de la barre de navigation, et dépasse légèrement vers le haut
+.layout-app__chat--centre {
+  @media (max-width: 899px) {
+    right: auto;
+    left: 50%;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+  }
+}
+
 .layout-app__chat-point {
   position: absolute;
   top: 6px;

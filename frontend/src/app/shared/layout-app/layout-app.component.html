@@ -89,6 +89,7 @@
   <button
     type="button"
     class="layout-app__chat"
+    [class.layout-app__chat--centre]="!estProfessionnel()"
     aria-controls="fenetre-chat"
     [attr.aria-expanded]="conversation.ouverte()"
     [attr.aria-label]="conversation.ouverte() ? 'Fermer la conversation avec Titou' : 'Parler à Titou, le chatbot'"
