@@ -1,13 +1,31 @@
+// La conversation est une fenêtre posée sur le fond de la page, comme sur
+// la maquette : légèrement détachée des bords sur mobile, centrée sur ordinateur.
 :host {
   display: block;
   height: 100vh;
+  height: 100dvh;
+  padding: 12px;
+  background: var(--ss-fond);
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-5) var(--ss-espace-3);
+  }
 }
 
 .cb {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background: linear-gradient(180deg, var(--ss-surface-legere), var(--ss-fond-public) 40%);
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-carte);
+  background: linear-gradient(180deg, var(--ss-surface-legere), var(--ss-surface) 40%);
+  box-shadow: var(--ss-ombre-forte);
+
+  @media (min-width: 900px) {
+    max-width: 880px;
+    margin: 0 auto;
+  }
 }
 
 // --- En-tête ---------------------------------------------------------------
@@ -17,11 +35,11 @@
   align-items: center;
   gap: var(--ss-espace-2);
   flex-wrap: wrap;
-  padding: var(--ss-espace-2) var(--ss-marge-mobile);
+  padding: var(--ss-espace-2);
   background: var(--ss-surface-douce);
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-2) var(--ss-marge-desktop);
+    padding: var(--ss-espace-2) var(--ss-espace-3);
   }
 }
 
@@ -135,16 +153,13 @@
 .cb__zone {
   flex: 1;
   overflow-y: auto;
-  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  padding: var(--ss-espace-3) var(--ss-espace-2);
   display: flex;
   flex-direction: column;
   gap: var(--ss-espace-3);
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-4) var(--ss-marge-desktop);
-    max-width: 900px;
-    margin: 0 auto;
-    width: 100%;
+    padding: var(--ss-espace-4);
   }
 }
 
@@ -324,10 +339,10 @@
 .cb__pied {
   background: var(--ss-surface);
   border-top: 1px solid var(--ss-bordure);
-  padding: var(--ss-espace-2) var(--ss-marge-mobile);
+  padding: var(--ss-espace-2);
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+    padding: var(--ss-espace-3) var(--ss-espace-4);
   }
 }
 
