@@ -4,7 +4,11 @@
   background: var(--ss-fond-public);
 }
 
+// Reste en haut de l'écran pendant le défilement, sous le menu burger et son voile
 .lp__entete {
+  position: sticky;
+  top: 0;
+  z-index: 25;
   display: flex;
   align-items: center;
   justify-content: space-between;

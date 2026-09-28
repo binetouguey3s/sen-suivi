@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, ViewportScroller } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { IsActiveMatchOptions, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -22,7 +22,7 @@ interface LienPublic {
   templateUrl: './layout-public.component.html',
   styleUrl: './layout-public.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown.escape)': 'menuOuvert.set(false)' },
+  host: { '(document:keydown.escape)': 'menuOuvert.set(false)' }, 
 })
 export class LayoutPublicComponent {
   protected readonly conversation = inject(ConversationService);
@@ -58,11 +58,19 @@ export class LayoutPublicComponent {
   // Menu burger mobile (maquette accueil-mobile)
   protected readonly menuOuvert = signal(false);
 
+  private readonly entete = viewChild<ElementRef<HTMLElement>>('entete'); // Sert à défiler le contenu de la page
+
   constructor() {
     // La page derrière le tiroir ne défile pas tant qu'il est ouvert
     effect(() => {
-      this.document.body.style.overflow = this.menuOuvert() ? 'hidden' : '';
+      this.document.body.style.overflow = this.menuOuvert() ? 'hidden' : ''; 
     });
+
+    // L'en-tête collant masquerait le haut d'une section atteinte par un lien
+    // (/#experts) : le défilement s'arrête juste sous l'en-tête
+    const defilement = inject(ViewportScroller);
+    defilement.setOffset(() => [0, (this.entete()?.nativeElement.offsetHeight ?? 0) + 16]);
+    inject(DestroyRef).onDestroy(() => defilement.setOffset([0, 0]));
   }
 
   protected readonly initiales = computed(() => {

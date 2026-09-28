@@ -192,7 +192,11 @@
   flex-direction: column;
 }
 
+// Mobile : reste en haut de l'écran pendant le défilement, sous le tiroir du menu
 .layout-app__topbar-mobile {
+  position: sticky;
+  top: 0;
+  z-index: 25;
   display: flex;
   align-items: center;
   justify-content: space-between;
