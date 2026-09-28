@@ -39,6 +39,20 @@
   --ss-espace-6: 48px;
   --ss-espace-8: 64px;
 
+  // Colonne commune des pages publiques : en-tête, contenu et pied de page
+  // partagent les mêmes bords gauche et droit. Les blocs pleine largeur
+  // (en-tête, bandeau d'urgence…) gardent leur fond sur tout l'écran et
+  // décalent leur contenu de --ss-gouttiere-page.
+  // Pas de largeur maximale : quelle que soit la taille de l'écran, la page
+  // occupe toute la largeur avec la même marge de chaque côté.
+  --ss-largeur-page: 100%;
+  --ss-marge-page: var(--ss-marge-mobile);
+  --ss-gouttiere-page: max(var(--ss-marge-page), calc((100% - var(--ss-largeur-page)) / 2));
+
+  @media (min-width: 900px) {
+    --ss-marge-page: var(--ss-espace-6);
+  }
+
   // Grille
   --ss-marge-desktop: 80px;
   --ss-gouttiere-desktop: 24px;

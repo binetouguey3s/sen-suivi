@@ -1,19 +1,15 @@
 @use 'verre' as *;
 
 // Page d'accueil publique. Fond menthe voilée, sections blanches ou bleues
-// pleine largeur ; contenu limité à 1344px et centré sur desktop.
+// pleine largeur ; contenu sur toute la largeur, avec la marge commune.
 :host {
-  --ac-marge: var(--ss-marge-mobile);
-  --ac-largeur: 1344px;
+  --ac-marge: var(--ss-marge-page);
+  --ac-largeur: var(--ss-largeur-page);
 
   display: block;
   background: var(--ss-fond);
   color: var(--ss-texte);
   overflow-x: hidden;
-
-  @media (min-width: 900px) {
-    --ac-marge: var(--ss-espace-6);
-  }
 }
 
 .ac__desktop {

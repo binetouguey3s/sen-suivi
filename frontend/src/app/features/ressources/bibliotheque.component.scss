@@ -7,7 +7,7 @@
   background: linear-gradient(180deg, var(--ss-surface-douce), var(--ss-fond-public));
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-8) var(--ss-marge-desktop) var(--ss-espace-5);
+    padding: var(--ss-espace-8) var(--ss-gouttiere-page) var(--ss-espace-5);
   }
 
   h1 {
@@ -71,7 +71,7 @@
   padding-right: 0;
 
   @media (min-width: 900px) {
-    margin: 0 var(--ss-marge-desktop);
+    margin: 0 var(--ss-gouttiere-page);
   }
 }
 
@@ -133,7 +133,7 @@
   padding: var(--ss-espace-4) var(--ss-marge-mobile);
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-5) var(--ss-marge-desktop);
+    padding: var(--ss-espace-5) var(--ss-gouttiere-page);
   }
 }
 

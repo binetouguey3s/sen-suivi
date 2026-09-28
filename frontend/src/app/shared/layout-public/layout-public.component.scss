@@ -13,13 +13,9 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--ss-espace-3);
-  padding: var(--ss-espace-2) var(--ss-marge-mobile);
+  padding: var(--ss-espace-2) var(--ss-gouttiere-page);
   border-bottom: 1px solid var(--ss-bordure);
   background: var(--ss-surface);
-
-  @media (min-width: 900px) {
-    padding: var(--ss-espace-2) var(--ss-espace-6);
-  }
 }
 
 .lp__marque img {
@@ -272,8 +268,8 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--ss-espace-3);
-    // À droite : place pour la bulle de chat
-    padding: var(--ss-espace-2) 112px var(--ss-espace-2) var(--ss-espace-6);
+    // À droite : au moins la place de la bulle de chat
+    padding: var(--ss-espace-2) max(112px, var(--ss-gouttiere-page)) var(--ss-espace-2) var(--ss-gouttiere-page);
     background: var(--ss-alerte);
     color: var(--ss-alerte-texte);
   }
@@ -373,7 +369,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--ss-espace-4);
-    padding: var(--ss-espace-6) var(--ss-espace-6) var(--ss-espace-6);
+    padding: var(--ss-espace-6) var(--ss-gouttiere-page);
   }
 }
 
@@ -484,7 +480,7 @@
   @media (min-width: 900px) {
     flex-direction: row;
     justify-content: space-between;
-    padding: var(--ss-espace-3) var(--ss-espace-6);
+    padding: var(--ss-espace-3) var(--ss-gouttiere-page);
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.06em;

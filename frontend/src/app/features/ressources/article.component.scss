@@ -2,12 +2,9 @@
   display: block;
 }
 
+// Alignée sur la colonne commune des pages publiques (en-tête, pied de page)
 .art {
-  padding: var(--ss-espace-3) var(--ss-marge-mobile) 0;
-
-  @media (min-width: 900px) {
-    padding: var(--ss-espace-3) 160px 0;
-  }
+  padding: var(--ss-espace-3) var(--ss-gouttiere-page) 0;
 }
 
 .art__etat {
