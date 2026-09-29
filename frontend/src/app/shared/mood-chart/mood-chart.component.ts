@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
+import { NIVEAUX_HUMEUR } from '../../core/models/suivi';
+
 export interface PointHumeur {
   libelle: string;
   score: number | null; // 1 à 5, null = jour sans saisie (un trou, jamais un zéro)
@@ -23,6 +25,15 @@ export class MoodChartComponent {
   readonly pas = input(1);
 
   protected readonly viewBox = `0 0 ${LARGEUR} ${HAUTEUR}`;
+
+  // Échelle verticale, de « Très bien » (en haut) à « Très mal » (en bas) :
+  // chaque libellé est placé à la même hauteur relative que le score sur la courbe
+  protected readonly niveaux = [...NIVEAUX_HUMEUR]
+    .sort((a, b) => b.score - a.score)
+    .map((n) => ({
+      libelle: n.libelle,
+      haut: ((MARGE + (1 - (n.score - 1) / 4) * (HAUTEUR - 2 * MARGE)) / HAUTEUR) * 100,
+    }));
 
   private readonly coordonnees = computed(() => {
     const pts = this.points();

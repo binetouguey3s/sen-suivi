@@ -9,7 +9,10 @@
 
 <div class="st__grille">
   <section class="st__carte st__carte--graphique">
-    <h2>Évolution de l'humeur</h2>
+    <div class="st__entete-carte">
+      <h2>Évolution de l'humeur</h2>
+      <span class="st__legende"><span class="st__puce" aria-hidden="true"></span> Votre score</span>
+    </div>
     @if (suivi.isLoading()) {
       <p class="st__etat">Chargement de votre historique…</p>
     } @else if (suivi.error()) {

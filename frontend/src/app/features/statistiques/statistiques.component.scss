@@ -280,3 +280,32 @@
     border-radius: 50%;
   }
 }
+
+// Titre du graphique et légende « ● Votre score » sur la même ligne
+.st__entete-carte {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--ss-espace-1) var(--ss-espace-2);
+  margin-bottom: var(--ss-espace-3);
+
+  h2 {
+    margin-bottom: 0;
+  }
+}
+
+.st__legende {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}
+
+.st__puce {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ss-graphe-point);
+}

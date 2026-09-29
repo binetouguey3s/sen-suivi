@@ -18,7 +18,10 @@
     </section>
 
     <section class="tdb__carte">
-      <h2 class="tdb__titre-carte">Évolution de votre humeur</h2>
+      <div class="tdb__entete-carte">
+        <h2 class="tdb__titre-carte">Évolution de votre humeur</h2>
+        <span class="tdb__legende"><span class="tdb__puce" aria-hidden="true"></span> Votre score</span>
+      </div>
       @if (suivi.isLoading()) {
         <p class="tdb__etat">Chargement de votre historique…</p>
       } @else if (suivi.error()) {
