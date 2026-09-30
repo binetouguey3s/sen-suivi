@@ -7,10 +7,23 @@ Isolée des vues et des sérialiseurs : une vue orchestre, elle ne calcule pas
 from apps.comptes.models import Professionnel, StatutValidationPro
 
 
-def calculer_score_de_tendance(valeurs):
-    """Score brut (0-32) ramené sur 100, arrondi à l'entier."""
-    score_brut = sum(valeurs)
-    return round((score_brut / 32) * 100)
+VALEUR_MAX_PAR_DEFAUT = 4
+
+
+def calculer_score_de_tendance(valeurs, valeurs_max=None):
+    """Score brut ramené sur 100, arrondi à l'entier.
+
+    `valeurs_max` : valeur la plus haute possible pour chaque question répondue.
+    Le maximum suit ainsi les questions réellement posées (modifiables depuis
+    l'admin) au lieu d'un 32 figé : 8 questions notées de 0 à 4 donnent bien
+    0-32, et une question ajoutée ne fausse jamais le pourcentage.
+    """
+    if valeurs_max is None:
+        valeurs_max = [VALEUR_MAX_PAR_DEFAUT] * len(valeurs)
+    maximum = sum(valeurs_max)
+    if maximum <= 0:
+        return 0
+    return round((sum(valeurs) / maximum) * 100)
 
 
 def interpreter_score(score):

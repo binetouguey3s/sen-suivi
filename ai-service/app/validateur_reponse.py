@@ -11,6 +11,7 @@ import unicodedata
 from dataclasses import dataclass
 
 from app.config.regles_reponse import (
+    CONSEILS_INTERDITS,
     EXHORTATIONS,
     FORMULES_CREUSES,
     MOTS_VIDES,
@@ -52,6 +53,7 @@ _MOTIFS = {
         'terme clinique': TERMES_CLINIQUES,
         'promesse interdite': PROMESSES_INTERDITES,
         'sujet payant': TERMES_PAYANTS,
+        'conseil interdit': CONSEILS_INTERDITS,
     }.items()
 }
 

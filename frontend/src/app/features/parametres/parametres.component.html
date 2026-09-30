@@ -94,6 +94,13 @@
       <section class="pa__carte" id="confidentialite">
         <h2>Confidentialité</h2>
         <p class="pa__texte">Sur le forum, vous apparaissez uniquement sous votre pseudonyme <strong>{{ compte()?.pseudonyme }}</strong>. Votre nom, votre prénom et votre e-mail ne sont jamais affichés. Votre journal et vos résultats ne sont visibles que par vous.</p>
+        <div class="pa__option">
+          <div>
+            <strong>Personnaliser les réponses de Titou</strong>
+            <p>Titou reçoit seulement un résumé de votre tendance, par exemple « humeur en baisse sur 7 jours, journal irrégulier », pour adapter son ton. Jamais le texte de votre journal, vos réponses aux tests, vos conversations, votre nom ni votre e-mail. Vous pouvez le désactiver à tout moment.</p>
+          </div>
+          <ss-interrupteur libelle="Personnaliser les réponses de Titou" [actif]="personnalisation()" (actifChange)="basculerPersonnalisation($event)" />
+        </div>
       </section>
     }
 

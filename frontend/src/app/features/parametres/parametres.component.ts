@@ -20,6 +20,11 @@ interface TypeNotification {
 
 const NOTIFICATIONS_UTILISATEUR: TypeNotification[] = [
   { cle: 'rappel_journal', titre: 'Rappel du journal', texte: 'Un rappel doux pour compléter votre suivi quotidien.' },
+  {
+    cle: 'rappel_auto_evaluation',
+    titre: 'Rappel d’auto-évaluation',
+    texte: 'Une proposition de refaire le test quand le dernier date de plus d’un mois.',
+  },
   { cle: 'reponse_professionnel', titre: 'Réponse d’un professionnel', texte: 'Dès qu’un professionnel répond à votre demande.' },
   { cle: 'reponse_forum', titre: 'Réponse sur le forum', texte: 'Quand quelqu’un répond à votre publication.' },
   { cle: 'nouvelles_ressources', titre: 'Nouvelles ressources', texte: 'Articles et conseils adaptés à votre profil.' },
@@ -162,7 +167,23 @@ export class ParametresComponent {
   }
 
   protected actif(cle: string, canal: 'email' | 'push'): boolean {
-    return this.compte()?.preferences?.[cle]?.[canal] ?? true;
+    const preference = this.compte()?.preferences?.[cle];
+    return typeof preference === 'object' ? (preference[canal] ?? true) : true;
+  }
+
+  // Consentement explicite : désactivé tant que l'utilisateur ne l'a pas activé
+  protected readonly personnalisation = computed(() => this.compte()?.preferences?.personnalisation_chatbot === true);
+
+  protected async basculerPersonnalisation(valeur: boolean): Promise<void> {
+    const c = this.compte();
+    if (!c) return;
+    const preferences = { ...c.preferences, personnalisation_chatbot: valeur };
+    this.service.compte.set({ ...c, preferences });
+    try {
+      await this.service.modifier({ preferences });
+    } catch {
+      this.service.compte.set(c);
+    }
   }
 
   protected async basculer(cle: string, canal: 'email' | 'push', valeur: boolean): Promise<void> {

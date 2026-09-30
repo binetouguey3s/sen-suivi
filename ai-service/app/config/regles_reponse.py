@@ -77,6 +77,26 @@ TERMES_PAYANTS = [
     'paiement',
 ]
 
+# Conseils qu'une piste générale ne donne jamais : substances, alimentation,
+# décisions de vie lourdes. « * » final = racine (démissionner, démissionnez…)
+CONSEILS_INTERDITS = [
+    'alcool',
+    'cigarette',
+    'tabac',
+    'drogue',
+    'cannabis',
+    'complement alimentaire',
+    'vitamine',
+    'plantes medicinales',
+    'jeuner',
+    'regime alimentaire',
+    'demissionn*',
+    'divorc*',
+    'arretez vos etudes',
+    'quittez votre',
+    'automedication',
+]
+
 # Seuls numéros autorisés dans une réponse (chiffres sans espaces)
 NUMEROS_AUTORISES = {'800805805', '1515', '18'}
 

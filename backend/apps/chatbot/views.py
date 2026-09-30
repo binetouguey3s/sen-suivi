@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models import Count, Max, OuterRef, Subquery
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -7,6 +9,7 @@ from rest_framework.views import APIView
 
 from apps.comptes.permissions import EstUtilisateur
 from apps.ressources.models import Ressource
+from apps.suivi.profil_tendance import a_consenti, profil_tendance
 
 from .models import ConversationChatbot, MessageChatbot, TypeExpediteur
 from .serializers import (
@@ -17,6 +20,8 @@ from .serializers import (
     NouvelleConversationSerializer,
 )
 from .services import MicroserviceIAIndisponible, traiter_message
+
+journal = logging.getLogger(__name__)
 
 
 class ChatbotMessageView(APIView):
@@ -35,7 +40,7 @@ class ChatbotMessageView(APIView):
         donnees = entree.validated_data
 
         try:
-            resultat = traiter_message(donnees['message'], donnees['historique'])
+            resultat = traiter_message(donnees['message'], donnees['historique'], self._profil(request))
         except MicroserviceIAIndisponible:
             return Response(
                 {
@@ -56,6 +61,18 @@ class ChatbotMessageView(APIView):
         sortie = MessageSortieSerializer(data={**resultat, 'conversation_id': conversation_id})
         sortie.is_valid(raise_exception=True)
         return Response(sortie.validated_data)
+
+    def _profil(self, request):
+        """Profil de tendance d'un utilisateur connecté et consentant ; sinon aucun,
+        et le chatbot répond exactement comme sans personnalisation."""
+        utilisateur = getattr(request.user, 'utilisateur', None) if request.user.is_authenticated else None
+        if not utilisateur or not a_consenti(utilisateur):
+            return None
+        try:
+            return profil_tendance(utilisateur)
+        except Exception:  # la personnalisation est un confort : son échec ne bloque jamais la réponse
+            journal.exception('Profil de tendance indisponible')
+            return None
 
     def _conserver_si_necessaire(self, request, donnees, resultat):
         utilisateur = getattr(request.user, 'utilisateur', None) if request.user.is_authenticated else None

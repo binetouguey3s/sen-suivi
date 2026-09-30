@@ -1,6 +1,6 @@
 {
-  "id": "0lwV3P9sjb8iEq8z",
-  "name": "Rappel d'inactivité",
+  "id": "rAppelAutoEval01",
+  "name": "Rappel d'auto-évaluation",
   "nodes": [
     {
       "parameters": {
@@ -8,13 +8,13 @@
           "interval": [
             {
               "field": "days",
-              "triggerAtHour": 9
+              "triggerAtHour": 10
             }
           ]
         }
       },
-      "id": "declencheur",
-      "name": "Chaque jour à 9 h",
+      "id": "declencheur-test",
+      "name": "Chaque jour à 10 h",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -25,7 +25,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "http://backend:8000/api/interne/utilisateurs-inactifs",
+        "url": "http://backend:8000/api/interne/utilisateurs-a-retester",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -36,8 +36,8 @@
           ]
         }
       },
-      "id": "utilisateurs-inactifs",
-      "name": "Utilisateurs inactifs",
+      "id": "utilisateurs-a-retester",
+      "name": "Utilisateurs à retester",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -62,7 +62,7 @@
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ destinataire_id: $json.id, objet: $json.objet, contenu: $json.contenu, preference: $json.preference }) }}"
       },
-      "id": "créer-la-notification",
+      "id": "creer-la-notification-test",
       "name": "Créer la notification",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -73,18 +73,18 @@
     }
   ],
   "connections": {
-    "Chaque jour à 9 h": {
+    "Chaque jour à 10 h": {
       "main": [
         [
           {
-            "node": "Utilisateurs inactifs",
+            "node": "Utilisateurs à retester",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Utilisateurs inactifs": {
+    "Utilisateurs à retester": {
       "main": [
         [
           {

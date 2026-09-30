@@ -97,11 +97,12 @@ Le front-end Angular se lance en développement avec `cd frontend && npm install
 
 ### Automatisations n8n
 
-Les quatre workflows sont exportés dans [`automations/`](./automations) :
+Les cinq workflows sont exportés dans [`automations/`](./automations) :
 
 | Workflow | Déclencheur | Effet |
 |---|---|---|
-| Rappel d'inactivité | Chaque jour | Rappelle le journal aux utilisateurs inactifs depuis 3 jours |
+| Rappel d'inactivité | Chaque jour | Rappelle doucement le journal aux utilisateurs inactifs depuis `RAPPEL_JOURNAL_JOURS` jours, sauf s'ils l'ont désactivé |
+| Rappel d'auto-évaluation | Chaque jour | Propose de refaire le test quand le dernier date de plus de `RAPPEL_TEST_JOURS` jours, sauf s'ils l'ont désactivé |
 | Nouvelle inscription professionnelle | Inscription d'un professionnel | Prévient les administrateurs qu'un profil attend validation |
 | Nouvelle demande de mise en relation | Demande envoyée par un utilisateur | Prévient le professionnel (pseudonyme uniquement), sauf s'il a désactivé cette notification |
 | Indexation RAG | Création ou modification d'une ressource | Réindexe les ressources du chatbot |

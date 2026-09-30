@@ -23,7 +23,7 @@ historique ne peut jamais retarder une réponse d'urgence.
 
 import logging
 import re
-from typing import Literal
+from typing import Annotated, Literal
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,7 +32,7 @@ from pydantic import BaseModel, Field
 from app.classificateur_intention import REPONSE_PAR_INTENTION, classifier
 from app.detecteur_detresse import REPONSE_URGENCE, detecter_detresse
 from app.generateur_reponse import echeance_totale, ecouter, generation_disponible, generer
-from app.moteur_rag import catalogue, indexer_ressources, rechercher, rechercher_plusieurs
+from app.moteur_rag import NOMBRE_MAX_RESULTATS, catalogue, indexer_ressources, rechercher, rechercher_plusieurs
 from app.validateur_reponse import mots_significatifs, valider
 
 journal = logging.getLogger(__name__)
@@ -72,6 +72,8 @@ class MessageEntree(BaseModel):
     message: str
     # Derniers échanges de la conversation, du plus ancien au plus récent
     historique: list[EchangePrecedent] = Field(default_factory=list, max_length=20)
+    # Profil de tendance (mots-clés anonymes), seulement si l'utilisateur y a consenti
+    profil_tendance: list[Annotated[str, Field(max_length=80)]] = Field(default_factory=list, max_length=10)
 
 
 class RessourceSuggeree(BaseModel):
@@ -137,19 +139,21 @@ def traiter_message(entree: MessageEntree):
         )
 
     # Niveau 2a — ressources validées les plus proches
-    ressources = rechercher_plusieurs(message)
+    ressources = _rechercher_avec_contexte(message, entree.historique)
     meilleure = ressources[0] if ressources else None
 
     # Niveau 2b — génération encadrée, puis validation
     if generation_disponible():
-        texte = _generer_valide(message, ressources, [e.model_dump() for e in entree.historique])
+        texte = _generer_valide(
+            message, ressources, [e.model_dump() for e in entree.historique], entree.profil_tendance
+        )
         if texte:
             return MessageSortie(
                 reponse=texte,
                 source_reponse='GENERATION',
                 urgence=False,
                 intention=intention,
-                ressource=_suggestion(ressource_evoquee(texte, ressources)),
+                ressource=_suggestion(ressource_evoquee(texte, ressources, _catalogue_ou_rien())),
             )
 
     # Repli en cascade : réponse prédéfinie, sinon ressource la plus proche, sinon repli
@@ -174,27 +178,45 @@ def traiter_message(entree: MessageEntree):
     )
 
 
-# Nombre minimal de mots communs pour qu'une réponse « parle » d'une ressource
-MOTS_COMMUNS_MIN = 3
+# Un titre d'un seul mot porteur de sens (« Respirer ») se retrouve partout
+MOTS_TITRE_MIN = 2
 
 
-def ressource_evoquee(texte: str, ressources: list[dict]) -> dict | None:
-    """La ressource dont la réponse parle vraiment, pour l'encart sous le message.
+def ressource_evoquee(texte: str, ressources: list[dict], catalogue: list[dict] | None = None) -> dict | None:
+    """La ressource que la réponse cite, pour l'encart sous le message.
 
-    Titre cité dans la réponse : c'est celle-là. Sinon, celle qui partage le plus
-    de mots avec la réponse, s'il y en a assez. Sinon aucune : mieux vaut aucun
-    encart qu'un encart hors sujet.
+    Titre cité (tous ses mots porteurs de sens présents), parmi les ressources
+    trouvées puis dans tout le catalogue : Titou peut en citer une autre.
+    Aucun titre cité : aucun encart. Mieux vaut aucun encart qu'un encart
+    hors sujet sous une réponse qui n'en parle pas.
     """
     mots_reponse = mots_significatifs(texte)
-    meilleure, meilleur_score = None, 0
-    for ressource in ressources:
+    for ressource in [*ressources, *(catalogue or [])]:
         mots_titre = mots_significatifs(ressource['titre'])
-        if mots_titre and mots_titre <= mots_reponse:
+        if len(mots_titre) >= MOTS_TITRE_MIN and mots_titre <= mots_reponse:
             return ressource
-        score = len(mots_reponse & (mots_titre | mots_significatifs(ressource.get('contenu', ''))))
-        if score > meilleur_score:
-            meilleure, meilleur_score = ressource, score
-    return meilleure if meilleur_score >= MOTS_COMMUNS_MIN else None
+    return None
+
+
+# Messages précédents de la personne ajoutés à la recherche : « et je fais
+# comment ? » ou « donnez-moi des conseils » ne contiennent aucun sujet
+MESSAGES_CONTEXTE_RAG = 2
+
+
+def _rechercher_avec_contexte(message: str, historique: list[EchangePrecedent]) -> list[dict]:
+    """Ressources proches du message seul ET du message replacé dans la conversation.
+
+    Le message seul garde la priorité quand la personne change de sujet ; le
+    contexte retrouve le sujet quand le message n'en porte pas.
+    """
+    trouvees = rechercher_plusieurs(message)
+    precedents = [e.contenu for e in historique if e.auteur == 'UTILISATEUR'][-MESSAGES_CONTEXTE_RAG:]
+    if precedents:
+        deja = {r['ressource_id'] for r in trouvees}
+        trouvees += [
+            r for r in rechercher_plusieurs(' '.join(precedents + [message])) if r['ressource_id'] not in deja
+        ]
+    return sorted(trouvees, key=lambda r: -r.get('similarite', 0))[:NOMBRE_MAX_RESULTATS]
 
 
 def _repli(historique: list[EchangePrecedent]) -> str:
@@ -211,7 +233,9 @@ def _catalogue_ou_rien() -> list[dict]:
         return []
 
 
-def _generer_valide(message: str, ressources: list[dict], historique: list[dict]) -> str | None:
+def _generer_valide(
+    message: str, ressources: list[dict], historique: list[dict], profil: list[str] | None = None
+) -> str | None:
     """Réponse générée qui a passé le validateur, ou None.
 
     Mode ressources d'abord s'il y en a ; si sa réponse est rejetée ou vide,
@@ -234,10 +258,12 @@ def _generer_valide(message: str, ressources: list[dict], historique: list[dict]
         return accepter
 
     if ressources:
-        texte = generer(message, ressources, historique, liste, echeance, accepter_en('ressources'))
+        texte = generer(
+            message, ressources, historique, liste, echeance, accepter=accepter_en('ressources'), profil=profil
+        )
         if texte:
             return texte
-    return ecouter(message, historique, liste, echeance, accepter_en('ecoute'))
+    return ecouter(message, historique, liste, echeance, accepter=accepter_en('ecoute'), profil=profil)
 
 
 @app.post('/reindexer')

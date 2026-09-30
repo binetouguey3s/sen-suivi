@@ -6,6 +6,12 @@ import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '../config/api.config';
 import { AuthService, ErreurFormulaire } from './auth.service';
 
+// Canaux par type de notification, et consentement à la personnalisation de Titou
+export interface Preferences {
+  personnalisation_chatbot?: boolean;
+  [cle: string]: { email?: boolean; push?: boolean } | boolean | undefined;
+}
+
 export interface Compte {
   id: number;
   type_compte: 'utilisateur' | 'professionnel' | 'administrateur';
@@ -14,7 +20,7 @@ export interface Compte {
   email: string;
   ville: string | null;
   pseudonyme: string | null;
-  preferences: Record<string, { email?: boolean; push?: boolean }>;
+  preferences: Preferences;
 }
 
 @Injectable({ providedIn: 'root' })

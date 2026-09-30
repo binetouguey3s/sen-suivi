@@ -173,6 +173,25 @@
   }
 }
 
+.pa__option {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  padding-top: var(--ss-espace-2);
+  border-top: 1px solid var(--ss-bordure);
+
+  strong {
+    color: var(--ss-texte);
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ss-texte-doux);
+  }
+}
+
 .pa__deconnexion {
   display: inline-flex;
   align-items: center;

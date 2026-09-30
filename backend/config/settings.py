@@ -152,3 +152,9 @@ AI_SERVICE_DELAI_SECONDES = env.float('AI_SERVICE_DELAI_SECONDES', default=25)
 # (jamais une clé d'un service externe) : voir .env.example.
 N8N_WEBHOOK_URL = env('N8N_WEBHOOK_URL', default='http://n8n:5678')
 N8N_API_KEY = env('N8N_API_KEY', default='')
+
+# Rappels automatiques (workflows n8n) : jamais plus d'un rappel par
+# utilisateur pendant RAPPEL_FREQUENCE_MAX_JOURS, tous types confondus
+RAPPEL_JOURNAL_JOURS = env.int('RAPPEL_JOURNAL_JOURS', default=3)
+RAPPEL_TEST_JOURS = env.int('RAPPEL_TEST_JOURS', default=30)
+RAPPEL_FREQUENCE_MAX_JOURS = env.int('RAPPEL_FREQUENCE_MAX_JOURS', default=7)

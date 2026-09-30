@@ -74,7 +74,11 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
         questions_attendues = QuestionEvaluation.objects.filter(
             type_evaluation=attrs['type_evaluation']
         )
-        questions_repondues = {reponse['question'].id for reponse in attrs['reponses']}
+        ids_repondus = [reponse['question'].id for reponse in attrs['reponses']]
+        # Une question répondue deux fois compterait double et ferait dépasser 100 %
+        if len(ids_repondus) != len(set(ids_repondus)):
+            raise serializers.ValidationError('Chaque question ne doit recevoir qu\'une seule réponse.')
+        questions_repondues = set(ids_repondus)
 
         if questions_repondues != set(questions_attendues.values_list('id', flat=True)):
             raise serializers.ValidationError(
@@ -89,8 +93,12 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         utilisateur = self.context['request'].user.utilisateur
-        valeurs = [reponse['option'].valeur for reponse in validated_data['reponses']]
-        score = calculer_score_de_tendance(valeurs)
+        reponses = validated_data['reponses']
+        valeurs = [reponse['option'].valeur for reponse in reponses]
+        valeurs_max = [
+            max(reponse['question'].options.values_list('valeur', flat=True), default=0) for reponse in reponses
+        ]
+        score = calculer_score_de_tendance(valeurs, valeurs_max)
 
         auto_evaluation = AutoEvaluation.objects.create(
             utilisateur=utilisateur,

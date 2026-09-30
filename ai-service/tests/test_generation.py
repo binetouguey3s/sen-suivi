@@ -20,8 +20,8 @@ RESSOURCE = {
 
 REPONSE_EMPATHIQUE = (
     "Vous avez l'impression que tout s'accélère à l'approche de l'épreuve. Beaucoup de "
-    "personnes traversent cela. Inspirer sur quatre temps puis expirer sur six aide à "
-    "ralentir. Voulez-vous essayer maintenant ?"
+    "personnes traversent cela. « Respirer avant un examen » propose d'inspirer sur quatre "
+    "temps puis d'expirer sur six pour ralentir. Voulez-vous essayer maintenant ?"
 )
 
 
@@ -30,7 +30,7 @@ def modele(texte):
     `accepter` (le validateur) avant d'être retenue."""
 
     def repondre(*args, **kwargs):
-        accepter = kwargs.get('accepter', args[-1])
+        accepter = kwargs.get('accepter')
         return texte if accepter is None or accepter(texte) else None
 
     return repondre
@@ -138,7 +138,7 @@ def test_sans_modele_ni_ressource_le_repli_relance_la_conversation(monkeypatch):
 def test_l_historique_de_la_conversation_est_transmis(pipeline, monkeypatch):
     recu = {}
 
-    def generer_espion(message, ressources, historique, *reste):
+    def generer_espion(message, ressources, historique, *reste, **options):
         recu['historique'] = historique
         return REPONSE_EMPATHIQUE
 
@@ -347,11 +347,11 @@ def test_sans_modele_l_intention_donne_sa_reponse_predefinie(monkeypatch):
 def test_le_catalogue_des_ressources_est_transmis_au_modele(monkeypatch):
     monkeypatch.setattr(main, 'rechercher_plusieurs', lambda message: [])
     monkeypatch.setattr(main, 'generation_disponible', lambda: True)
-    catalogue = [{'titre': 'Dormir mieux', 'thematique': 'Sommeil'}]
+    catalogue = [{'ressource_id': 3, 'titre': 'Dormir mieux', 'thematique': 'Sommeil'}]
     monkeypatch.setattr(main, 'catalogue', lambda: catalogue)
     recu = {}
 
-    def ecouter_espion(message, historique, liste, echeance, accepter):
+    def ecouter_espion(message, historique, liste, echeance, **options):
         recu['catalogue'] = liste
         return "Voici d'autres ressources : « Dormir mieux »."
 
@@ -386,9 +386,9 @@ def test_l_encart_montre_la_ressource_dont_le_titre_est_cite():
     assert main.ressource_evoquee(texte, [RESSOURCE, AUTRE])['ressource_id'] == 9
 
 
-def test_l_encart_montre_la_ressource_dont_la_reponse_reprend_le_contenu():
+def test_aucun_encart_sans_titre_cite_meme_si_le_contenu_est_repris():
     texte = "Vous pourriez inspirer sur quatre temps puis expirer sur six pour ralentir."
-    assert main.ressource_evoquee(texte, [AUTRE, RESSOURCE])['ressource_id'] == 7
+    assert main.ressource_evoquee(texte, [AUTRE, RESSOURCE]) is None
 
 
 def test_aucun_encart_si_la_reponse_ne_parle_d_aucune_ressource():
@@ -485,3 +485,94 @@ def test_le_repli_n_est_jamais_envoye_deux_fois_de_suite(monkeypatch):
     corps = client.post('/message', json={'message': 'je ne sais pas', 'historique': historique}).json()
 
     assert corps['reponse'] == main.REPONSE_REPLI_BIS
+
+
+# --- Profil de tendance (volet D) ----------------------------------------------
+
+def test_le_profil_de_tendance_est_transmis_au_modele(monkeypatch):
+    monkeypatch.setattr(main, 'rechercher_plusieurs', lambda message: [])
+    monkeypatch.setattr(main, 'generation_disponible', lambda: True)
+    recu = {}
+
+    def ecouter_espion(*args, **options):
+        recu['profil'] = options['profil']
+        return 'Comment se passent vos journées en ce moment ?'
+
+    monkeypatch.setattr(main, 'ecouter', ecouter_espion)
+    profil = ['humeur en baisse sur 7 jours', 'journal irrégulier']
+
+    client.post('/message', json={'message': 'bof', 'profil_tendance': profil})
+
+    assert recu['profil'] == profil
+
+
+def test_le_profil_arrive_au_modele_comme_consigne_de_ton():
+    messages = generateur._contexte_profil(['humeur en baisse sur 7 jours'])
+
+    assert messages[0]['role'] == 'system'
+    assert 'humeur en baisse sur 7 jours' in messages[0]['content']
+    assert 'TON seulement' in messages[0]['content']
+
+
+def test_sans_profil_aucune_consigne_n_est_ajoutee():
+    assert generateur._contexte_profil([]) == []
+
+
+def test_un_profil_de_tendance_ne_retarde_jamais_une_reponse_d_urgence(monkeypatch):
+    monkeypatch.setattr(main, 'ecouter', lambda *a, **k: pytest.fail('modèle appelé sur une détresse'))
+    monkeypatch.setattr(main, 'generer', lambda *a, **k: pytest.fail('modèle appelé sur une détresse'))
+
+    corps = client.post(
+        '/message', json={'message': 'je veux mourir', 'profil_tendance': ['humeur stable sur 7 jours']}
+    ).json()
+
+    assert corps['urgence'] is True
+
+
+def test_un_profil_trop_long_est_refuse():
+    reponse = client.post('/message', json={'message': 'bonjour', 'profil_tendance': ['x' * 81]})
+    assert reponse.status_code == 422
+
+
+# --- Recherche replacée dans la conversation -------------------------------------
+
+def test_un_message_sans_sujet_retrouve_la_ressource_grace_a_la_conversation(monkeypatch):
+    def rechercher_espion(requete):
+        return [RESSOURCE] if 'examen' in requete else []
+
+    monkeypatch.setattr(main, 'rechercher_plusieurs', rechercher_espion)
+    historique = [main.EchangePrecedent(auteur='UTILISATEUR', contenu="J'ai un examen dans deux jours")]
+
+    assert main._rechercher_avec_contexte('et je fais comment ?', historique) == [RESSOURCE]
+
+
+def test_le_message_seul_garde_la_priorite_quand_le_sujet_change(monkeypatch):
+    proche = {**RESSOURCE, 'ressource_id': 8, 'titre': 'Dormir mieux', 'similarite': 0.9}
+    ancienne = {**RESSOURCE, 'similarite': 0.5}
+    monkeypatch.setattr(main, 'rechercher_plusieurs', lambda requete: [ancienne, proche] if 'examen' in requete else [proche])
+    historique = [main.EchangePrecedent(auteur='UTILISATEUR', contenu="J'ai un examen")]
+
+    trouvees = main._rechercher_avec_contexte('je dors mal', historique)
+
+    assert [r['ressource_id'] for r in trouvees] == [8, 7]
+
+
+def test_sans_historique_la_recherche_porte_sur_le_message_seul(monkeypatch):
+    requetes = []
+    monkeypatch.setattr(main, 'rechercher_plusieurs', lambda requete: requetes.append(requete) or [])
+
+    main._rechercher_avec_contexte('bonjour', [])
+
+    assert requetes == ['bonjour']
+
+
+def test_l_encart_montre_une_ressource_du_catalogue_citee_par_titou():
+    catalogue = [{'ressource_id': 12, 'titre': 'Exercice de respiration guidée, 4 minutes', 'thematique': 'Respiration'}]
+    texte = "L'exercice de respiration guidée de 4 minutes de la bibliothèque peut vous apaiser."
+
+    assert main.ressource_evoquee(texte, [AUTRE], catalogue)['ressource_id'] == 12
+
+
+def test_un_titre_d_un_seul_mot_ne_suffit_pas_a_choisir_l_encart():
+    catalogue = [{'ressource_id': 13, 'titre': 'Respirer', 'thematique': 'Respiration'}]
+    assert main.ressource_evoquee('Prenez le temps de respirer un peu.', [], catalogue) is None

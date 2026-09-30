@@ -7,10 +7,12 @@ que par lui, et il peut les effacer à tout moment.
 
 from unittest.mock import patch
 
+from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from apps.comptes.models import Professionnel, StatutValidationPro, Utilisateur
 from apps.ressources.models import Ressource
+from apps.suivi.models import SuiviHumeur
 
 from .models import ConversationChatbot, MessageChatbot
 
@@ -75,7 +77,7 @@ class ConservationTests(APITestCase):
 
         self.client.post(URL_MESSAGE, {'message': 'Ça va', 'historique': historique}, format='json')
 
-        traiter.assert_called_once_with('Ça va', historique)
+        traiter.assert_called_once_with('Ça va', historique, None)
         self.assertFalse(MessageChatbot.objects.exists())
 
     def test_une_reponse_generee_par_le_modele_est_conservee(self, traiter):
@@ -94,6 +96,53 @@ class ConservationTests(APITestCase):
         self.client.post(URL_MESSAGE, {'message': 'Bonjour', 'consentement_conservation': True})
 
         self.assertIsNone(MessageChatbot.objects.get(type_expediteur='BOT').ressource)
+
+
+@patch('apps.chatbot.views.traiter_message')
+class PersonnalisationTests(APITestCase):
+    """Le profil de tendance n'est transmis qu'avec un consentement explicite."""
+
+    def setUp(self):
+        self.utilisateur = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+        SuiviHumeur.objects.create(utilisateur=self.utilisateur, date=timezone.localdate(), score_humeur='MAL', note='Mon secret')
+        self.client.force_authenticate(self.utilisateur)
+
+    def _profil_transmis(self, traiter):
+        traiter.return_value = reponse_ia()
+        self.client.post(URL_MESSAGE, {'message': 'Bonjour'})
+        return traiter.call_args.args[2]
+
+    def test_sans_consentement_aucun_profil_n_est_transmis(self, traiter):
+        self.assertIsNone(self._profil_transmis(traiter))
+
+    def test_avec_consentement_seuls_des_mots_cles_sont_transmis(self, traiter):
+        self.utilisateur.preferences = {'personnalisation_chatbot': True}
+        self.utilisateur.save()
+
+        profil = self._profil_transmis(traiter)
+
+        self.assertEqual(profil, ['journal irrégulier'])
+        texte = ' '.join(profil)
+        for donnee_brute in ('Mon secret', 'Awa', 'Diop', 'awa@test.sn'):
+            self.assertNotIn(donnee_brute, texte)
+
+    def test_un_consentement_retire_coupe_la_personnalisation(self, traiter):
+        self.utilisateur.preferences = {'personnalisation_chatbot': False}
+        self.utilisateur.save()
+
+        self.assertIsNone(self._profil_transmis(traiter))
+
+    def test_un_profil_indisponible_ne_bloque_jamais_la_reponse(self, traiter):
+        self.utilisateur.preferences = {'personnalisation_chatbot': True}
+        self.utilisateur.save()
+
+        with patch('apps.chatbot.views.profil_tendance', side_effect=RuntimeError('panne')):
+            self.assertIsNone(self._profil_transmis(traiter))
+
+    def test_un_visiteur_n_a_jamais_de_profil(self, traiter):
+        self.client.force_authenticate(None)
+
+        self.assertIsNone(self._profil_transmis(traiter))
 
 
 @patch('apps.chatbot.views.traiter_message')

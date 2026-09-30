@@ -137,3 +137,26 @@ def test_une_reponse_inachevee_est_rejetee(coupee):
 @pytest.mark.parametrize('fin', ['Voulez-vous essayer ?', 'Je reste là.', 'Lisez « Respirer avant un examen ».', 'Vous y êtes presque !'])
 def test_une_reponse_qui_finit_sa_phrase_est_acceptee(fin):
     assert valider(fin, RESSOURCES, 'ecoute').valide
+
+
+# --- Pistes générales : jamais de substance ni de décision lourde -------------
+
+@pytest.mark.parametrize(
+    'conseil',
+    [
+        'Un verre d’alcool peut aider à décompresser.',
+        'Une vitamine le matin peut redonner de l’énergie.',
+        'Vous pourriez démissionner pour souffler.',
+        'Essayez les plantes médicinales pour dormir.',
+    ],
+)
+def test_une_piste_generale_dangereuse_est_rejetee(conseil):
+    assert valider(conseil, [], 'ecoute').raison.startswith('conseil interdit')
+
+
+def test_une_piste_generale_sure_est_acceptee():
+    reponse = (
+        "Cette échéance semble peser lourd. Découper le travail en blocs de 45 minutes avec une "
+        "courte pause entre chaque peut alléger la pression. Voulez-vous essayer ?"
+    )
+    assert valider(reponse, [], 'ecoute').valide

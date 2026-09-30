@@ -101,10 +101,14 @@ def rechercher_plusieurs(message: str) -> list[dict]:
 
 def catalogue() -> list[dict]:
     """Titre et thématique de toutes les ressources indexées : Titou peut ainsi
-    citer d'autres ressources de la bibliothèque quand on les lui demande."""
+    citer d'autres ressources de la bibliothèque quand on les lui demande
+    (l'identifiant sert seulement à l'encart sous le message)."""
     collection = _obtenir_collection()
     return sorted(
-        ({'titre': m['titre'], 'thematique': m['thematique']} for m in collection.get(include=['metadatas'])['metadatas']),
+        (
+            {'ressource_id': m['ressource_id'], 'titre': m['titre'], 'thematique': m['thematique']}
+            for m in collection.get(include=['metadatas'])['metadatas']
+        ),
         key=lambda r: (r['thematique'], r['titre']),
     )
 
