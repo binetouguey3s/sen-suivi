@@ -177,6 +177,303 @@ Pourquoi prendre soin de soi n'est pas égoïste. Des gestes simples pour s'accu
 
 Accordez-vous chaque jour un petit moment de teranga : un repas tranquille, une marche, un mot gentil à vous-même.""",
     },
+    # --- Ressources complémentaires : sujets que le chatbot ne couvrait pas ---
+    {
+        'titre': 'Tenir une échéance au travail sans s’épuiser',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Travail',
+        'duree_lecture': 6,
+        'contenu': """Un rendu dans deux jours, des messages qui s'accumulent, la fatigue qui s'installe : la pression d'une échéance professionnelle pèse sur le corps autant que sur l'esprit. Quelques repères aident à avancer sans s'user.
+
+## 1. Vider sa tête sur papier
+
+Notez tout ce qui reste à faire, même les petites choses. Ce qui est écrit n'a plus besoin d'être retenu : l'esprit se libère pour le travail lui-même.
+
+## 2. Découper en blocs courts
+
+Choisissez la tâche la plus importante et découpez-la en blocs de 45 minutes. Après chaque bloc, faites une vraie pause de cinq minutes : levez-vous, buvez de l'eau, regardez au loin.
+
+## 3. Dire ce qui n'est pas possible
+
+Si l'échéance est irréaliste, parlez-en tôt à votre responsable ou à vos collègues, avec une proposition : « Je peux livrer cette partie jeudi, et le reste lundi. » Prévenir tôt protège votre travail et votre santé.
+
+> Une échéance se tient mieux avec un corps reposé qu'avec une nuit blanche.
+
+## 4. Protéger la soirée
+
+Fixez une heure d'arrêt, même tardive. Le sommeil de la veille fait partie du travail du lendemain.""",
+    },
+    {
+        'titre': 'Reprendre confiance en soi, pas à pas',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Confiance en soi',
+        'duree_lecture': 6,
+        'contenu': """La confiance en soi ne tombe pas du ciel : elle se construit par petites preuves, jour après jour. Voici une méthode simple pour la nourrir.
+
+## 1. Noter trois réussites par jour
+
+Chaque soir, écrivez trois choses que vous avez réussies, même minuscules : être arrivé à l'heure, avoir aidé quelqu'un, avoir osé poser une question. Au bout d'une semaine, relisez la liste.
+
+## 2. Parler de vous comme d'un ami
+
+Quand une petite voix vous dit « je suis nul », demandez-vous : « Est-ce que je parlerais ainsi à mon meilleur ami ? » Reformulez avec la même bienveillance que vous auriez pour lui.
+
+## 3. Oser un petit défi par semaine
+
+Choisissez un défi à votre portée : prendre la parole une fois en réunion, appeler un ancien camarade, proposer une idée. Chaque défi relevé devient une preuve.
+
+> La confiance vient après l'action, rarement avant.
+
+## 4. S'entourer de personnes qui élèvent
+
+Passez plus de temps avec les personnes qui vous encouragent, et un peu moins avec celles qui rabaissent.""",
+    },
+    {
+        'titre': 'Se sentir seul, même entouré',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Lien social',
+        'duree_lecture': 5,
+        'contenu': """On peut vivre dans une maison pleine, avoir des collègues et des camarades, et pourtant se sentir seul. Ce sentiment est plus fréquent qu'on ne le croit, surtout après un déménagement, un changement de travail ou d'études.
+
+## 1. Commencer petit
+
+Envoyez un message à une personne avec qui vous vous entendiez bien : « J'ai repensé à nos discussions, comment ça va ? » Un simple échange peut rouvrir une porte.
+
+## 2. Rejoindre un lieu régulier
+
+Une association de quartier, un dahira, un club de sport, une chorale ou un groupe de lecture : revoir les mêmes visages chaque semaine crée des liens sans effort particulier.
+
+## 3. Partager une activité plutôt que parler
+
+Il est souvent plus facile de créer du lien en faisant quelque chose ensemble : cuisiner, marcher, jouer, bricoler.
+
+> Un lien se tisse dans la répétition, pas dans une seule grande conversation.
+
+## 4. Le forum de Sen Suivi
+
+Sur le forum, vous pouvez échanger de façon anonyme avec d'autres personnes qui vivent la même chose.""",
+    },
+    {
+        'titre': 'Quand tout s’accumule : organiser sa semaine',
+        'type_ressource': 'EXERCICE',
+        'thematique': 'Organisation',
+        'duree_lecture': 10,
+        'contenu': """Travail, famille, démarches, études : quand tout arrive en même temps, on ne sait plus par où commencer. Cet exercice de dix minutes, à faire le dimanche soir ou le lundi matin, remet de l'ordre.
+
+## 1. La liste complète
+
+Écrivez tout ce qui vous occupe l'esprit cette semaine, sans trier.
+
+## 2. Les trois colonnes
+
+Répartissez chaque élément en trois colonnes : « urgent et important », « important mais pas urgent », « peut attendre ou être confié ». Soyez honnête : tout n'est pas urgent.
+
+## 3. Trois priorités seulement
+
+Choisissez au maximum trois priorités pour la semaine. Placez-les dans votre agenda à des moments où vous avez de l'énergie.
+
+## 4. Confier et renoncer
+
+Pour la dernière colonne, demandez-vous ce qu'un proche pourrait faire à votre place, et ce qui peut simplement être abandonné.
+
+> Faire moins, mais le faire vraiment, soulage davantage que tout commencer.""",
+    },
+    {
+        'titre': 'Prendre la parole sans paniquer',
+        'type_ressource': 'EXERCICE',
+        'thematique': 'Confiance en soi',
+        'duree_lecture': 5,
+        'contenu': """Exposé, réunion, entretien d'embauche : prendre la parole devant les autres fait monter le cœur et trembler la voix. C'est une réaction du corps, et elle s'apprivoise.
+
+## Avant
+
+Préparez trois idées principales, pas un texte entier. Répétez-les à voix haute deux fois, devant un miroir ou un proche.
+
+## Juste avant de parler
+
+Inspirez quatre secondes, expirez six secondes, trois fois. Posez les pieds bien à plat et relâchez les épaules.
+
+## Pendant
+
+Regardez une personne bienveillante dans l'assistance. Parlez un peu plus lentement que d'habitude : ce qui vous semble lent paraît naturel aux autres. Si vous perdez le fil, marquez une pause et regardez vos trois idées.
+
+> Personne n'attend de vous une perfection : on attend votre message.
+
+## Après
+
+Notez une chose qui s'est bien passée. C'est elle que vous retiendrez pour la prochaine fois.""",
+    },
+    {
+        'titre': 'Quand la colère monte',
+        'type_ressource': 'EXERCICE',
+        'thematique': 'Émotions',
+        'duree_lecture': 4,
+        'contenu': """La colère est une émotion utile : elle signale qu'une limite a été dépassée. Mais quand elle déborde, elle peut abîmer nos relations. Voici comment la traverser.
+
+## 1. S'éloigner quelques minutes
+
+Dites simplement : « J'ai besoin de quelques minutes, je reviens. » Sortir de la pièce n'est pas fuir, c'est se donner le temps de répondre plutôt que de réagir.
+
+## 2. Faire redescendre le corps
+
+Marchez, buvez un verre d'eau fraîche, passez de l'eau sur votre visage. Respirez en allongeant l'expiration.
+
+## 3. Mettre des mots
+
+Une fois calmé, écrivez ce qui vous a mis en colère et ce dont vous aviez besoin : être écouté, être respecté, être aidé.
+
+> Derrière la colère, il y a presque toujours un besoin qui n'a pas été entendu.
+
+## 4. Revenir à l'échange
+
+Parlez en « je » : « Je me suis senti mis de côté quand… » plutôt qu'un reproche général comme « C'est toujours pareil ».""",
+    },
+    {
+        'titre': 'Traverser une rupture amoureuse',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Relations',
+        'duree_lecture': 6,
+        'contenu': """Une séparation bouleverse les habitudes, l'estime de soi et parfois l'entourage. La tristesse, la colère ou le soulagement peuvent se succéder dans la même journée : tout cela fait partie du chemin.
+
+## 1. Se donner le droit d'être triste
+
+Vous n'avez pas à aller bien tout de suite. Pleurer, écrire, en parler à une personne de confiance aide à laisser passer la vague.
+
+## 2. Prendre de la distance
+
+Pendant quelque temps, évitez de consulter les réseaux sociaux de l'autre personne. Chaque visite rouvre la blessure.
+
+## 3. Reprendre soin de son quotidien
+
+Des repas réguliers, un peu de marche, des heures de coucher fixes : le corps a besoin de repères quand le cœur est bousculé.
+
+> Une histoire qui se termine ne dit rien de votre valeur.
+
+## 4. Se reconnecter à soi
+
+Reprenez une activité que vous aviez laissée de côté, revoyez des amis, notez ce que cette relation vous a appris.""",
+    },
+    {
+        'titre': 'Traverser la perte d’un proche',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Deuil',
+        'duree_lecture': 7,
+        'contenu': """Perdre un proche est l'une des épreuves les plus dures de la vie. Au Sénégal, la présence de la famille et du voisinage pendant les premiers jours soutient beaucoup ; c'est souvent après, quand chacun reprend sa vie, que le manque se fait le plus sentir.
+
+## 1. Il n'y a pas de bonne façon de vivre la perte
+
+Certains pleurent beaucoup, d'autres pas du tout. Certains ont besoin de parler, d'autres de silence. Toutes ces réactions sont légitimes.
+
+## 2. Garder un lien avec la personne
+
+Évoquer ses souvenirs, prier pour elle, garder un objet qui lui appartenait, cuisiner son plat préféré : ces gestes permettent de continuer à l'honorer.
+
+## 3. Accepter l'aide
+
+Laissez vos proches vous apporter un repas, vous accompagner dans les démarches, simplement être là.
+
+> Le chagrin est la trace de l'amour que l'on a donné.
+
+## 4. Quand la peine reste trop lourde
+
+Si, avec le temps, la douleur vous empêche de dormir, de manger ou d'avancer, un professionnel de l'annuaire peut vous accompagner. Pour parler à quelqu'un tout de suite, le numéro vert 800 805 805 est disponible.""",
+    },
+    {
+        'titre': 'Réseaux sociaux : arrêter de se comparer',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Numérique',
+        'duree_lecture': 5,
+        'contenu': """Mariages, voyages, réussites : sur les réseaux sociaux, chacun montre le meilleur de sa vie. À force de comparer notre quotidien à ces vitrines, on peut finir par se sentir en retard ou insuffisant.
+
+## 1. Se rappeler que c'est une vitrine
+
+Ce que l'on voit est choisi, retouché, mis en scène. Les difficultés, elles, sont rarement publiées.
+
+## 2. Observer son ressenti
+
+Après dix minutes de défilement, demandez-vous : « Comment je me sens maintenant ? » Si la réponse est « moins bien », c'est un signal.
+
+## 3. Faire le tri
+
+Masquez les comptes qui vous font vous sentir mal et suivez-en qui vous inspirent ou vous font sourire.
+
+> Comparer son chapitre 3 au chapitre 20 d'un autre n'a pas de sens.
+
+## 4. Des moments sans écran
+
+Laissez le téléphone hors de la chambre la nuit, et offrez-vous une heure sans écran chaque jour.""",
+    },
+    {
+        'titre': 'Garder le moral pendant la recherche d’emploi',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Travail',
+        'duree_lecture': 6,
+        'contenu': """Envoyer des candidatures sans réponse, entendre « alors, toujours rien ? » en famille : la recherche d'emploi met la patience et l'estime de soi à rude épreuve. Voici des repères pour tenir sur la durée.
+
+## 1. Garder un rythme
+
+Levez-vous à heure fixe et consacrez des plages précises à la recherche, comme un travail. Le reste du temps vous appartient.
+
+## 2. Mesurer ses efforts, pas seulement les résultats
+
+Notez chaque semaine le nombre de candidatures envoyées, de personnes contactées, de compétences travaillées. Vous verrez que vous avancez, même sans réponse.
+
+## 3. Activer son réseau
+
+Au Sénégal, beaucoup d'opportunités passent par le bouche-à-oreille. Parlez de votre recherche à vos anciens enseignants, camarades, voisins.
+
+> Un « non » concerne une candidature, jamais votre valeur.
+
+## 4. Continuer à nourrir sa vie
+
+Sport, bénévolat, formation en ligne, moments avec des amis : ces activités gardent l'énergie et ouvrent souvent des portes inattendues.""",
+    },
+    {
+        'titre': 'Quand l’envie n’est plus là',
+        'type_ressource': 'ARTICLE',
+        'thematique': 'Motivation',
+        'duree_lecture': 5,
+        'contenu': """Il y a des périodes où plus rien ne donne envie : les journées se ressemblent, les projets semblent lointains. Plutôt que d'attendre que la motivation revienne, on peut l'aider à revenir.
+
+## 1. La règle des deux minutes
+
+Commencez par une action qui prend moins de deux minutes : ouvrir le cahier, enfiler ses chaussures, écrire la première phrase. Souvent, l'élan suit l'action.
+
+## 2. Des objectifs minuscules
+
+Remplacez « réviser tout le chapitre » par « relire une page ». Un objectif atteint redonne plus d'énergie qu'un grand objectif abandonné.
+
+## 3. Se relier à son pourquoi
+
+Écrivez en une phrase pourquoi ce projet compte pour vous, et gardez-la sous les yeux.
+
+> La motivation est un résultat de l'action, pas une condition.
+
+## 4. Si le manque d'envie dure
+
+Si depuis plusieurs semaines plus rien ne vous fait plaisir, parlez-en à un proche ou à un professionnel de l'annuaire : vous n'avez pas à attendre que ça passe seul.""",
+    },
+    {
+        'titre': 'Trois minutes pour décompresser au travail',
+        'type_ressource': 'EXERCICE',
+        'thematique': 'Travail',
+        'duree_lecture': 3,
+        'contenu': """Un exercice discret à faire à votre poste, entre deux réunions ou après un échange tendu. Personne n'a besoin de le remarquer.
+
+## Minute 1 : relâcher le corps
+
+Posez les pieds à plat. Montez les épaules vers les oreilles en inspirant, puis laissez-les retomber d'un coup en expirant. Répétez trois fois. Desserrez la mâchoire.
+
+## Minute 2 : respirer
+
+Inspirez par le nez en comptant jusqu'à quatre, expirez par la bouche en comptant jusqu'à six. Gardez les yeux posés sur un point fixe.
+
+## Minute 3 : revenir
+
+Nommez intérieurement la prochaine petite chose à faire, une seule. Buvez un verre d'eau avant de reprendre.
+
+> Trois minutes de pause valent mieux qu'une heure de travail sous tension.""",
+    },
 ]
 
 LIEUX = {
