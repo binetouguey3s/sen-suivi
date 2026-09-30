@@ -69,6 +69,24 @@ class ConservationTests(APITestCase):
         self.assertTrue(bot.urgence)
         self.assertEqual(bot.ressource, self.ressource)
 
+    def test_l_historique_est_transmis_au_microservice_sans_etre_enregistre(self, traiter):
+        traiter.return_value = reponse_ia()
+        historique = [{'auteur': 'UTILISATEUR', 'contenu': 'Bonjour'}, {'auteur': 'BOT', 'contenu': 'Bonjour !'}]
+
+        self.client.post(URL_MESSAGE, {'message': 'Ça va', 'historique': historique}, format='json')
+
+        traiter.assert_called_once_with('Ça va', historique)
+        self.assertFalse(MessageChatbot.objects.exists())
+
+    def test_une_reponse_generee_par_le_modele_est_conservee(self, traiter):
+        traiter.return_value = reponse_ia(source_reponse='GENERATION', reponse='Réponse encadrée.')
+        self.client.force_authenticate(self.utilisateur)
+
+        self.client.post(URL_MESSAGE, {'message': 'Bonjour', 'consentement_conservation': True})
+
+        bot = MessageChatbot.objects.get(type_expediteur='BOT')
+        self.assertEqual((bot.source_reponse, bot.contenu), ('GENERATION', 'Réponse encadrée.'))
+
     def test_une_ressource_inconnue_n_empeche_pas_l_enregistrement(self, traiter):
         traiter.return_value = reponse_ia(ressource={'ressource_id': 9999, 'titre': 'Supprimée', 'thematique': 'X'})
         self.client.force_authenticate(self.utilisateur)

@@ -10,10 +10,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Télécharge dès la construction le modèle d'embeddings par défaut de ChromaDB
-# (all-MiniLM-L6-v2, licence Apache 2.0, aucune clé requise) : le service
-# n'a ainsi plus besoin d'Internet au démarrage ni après un redémarrage.
-RUN python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction; DefaultEmbeddingFunction()(['amorce'])"
+# Télécharge dès la construction le modèle d'embeddings multilingue
+# (EMBEDDING_MODELE du .env, transmis par docker-compose) : le service n'a
+# ainsi plus besoin d'Internet au démarrage ni après un redémarrage.
+ARG EMBEDDING_MODELE=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('${EMBEDDING_MODELE}')"
 
 COPY . .
 

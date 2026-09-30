@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../config/api.config';
-import { ConversationDetail, ConversationResume, MessageAnterieur, ReponseChatbot } from '../models/chatbot';
+import { ConversationDetail, ConversationResume, EchangePrecedent, MessageAnterieur, ReponseChatbot } from '../models/chatbot';
 
 @Injectable({ providedIn: 'root' })
 export class ChatbotService {
@@ -13,12 +13,14 @@ export class ChatbotService {
     message: string,
     conversationId: number | null,
     consentementConservation: boolean,
+    historique: EchangePrecedent[] = [],
   ): Promise<ReponseChatbot> {
     return firstValueFrom(
       this.http.post<ReponseChatbot>(`${API_BASE_URL}/chatbot/message`, {
         message,
         conversation_id: conversationId ?? undefined,
         consentement_conservation: consentementConservation,
+        historique,
       }),
     );
   }

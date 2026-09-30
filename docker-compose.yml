@@ -30,7 +30,11 @@ services:
       - sensuivi_network
 
   ai-service:
-    build: ./ai-service 
+    build:
+      context: ./ai-service
+      # Modèle d'embeddings téléchargé dans l'image à la construction
+      args:
+        EMBEDDING_MODELE: ${EMBEDDING_MODELE}
     container_name: sensuivi_ai_service 
     restart: unless-stopped  
     env_file:

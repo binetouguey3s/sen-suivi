@@ -10,7 +10,7 @@ export interface RessourceSuggereeChatbot {
 export interface ReponseChatbot {
   conversation_id: number | null;
   reponse: string;
-  source_reponse: 'REGLE' | 'RAG' | null;
+  source_reponse: 'REGLE' | 'RAG' | 'GENERATION' | null;
   urgence: boolean;
   intention: string | null;
   ressource: RessourceSuggereeChatbot | null;
@@ -55,4 +55,10 @@ export interface MessageAnterieur {
   contenu: string;
   urgence?: boolean;
   ressource_id?: number | null;
+}
+
+// Échange déjà affiché, transmis pour que Titou suive la conversation
+export interface EchangePrecedent {
+  auteur: 'UTILISATEUR' | 'BOT';
+  contenu: string;
 }

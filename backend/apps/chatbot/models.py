@@ -16,6 +16,7 @@ class TypeExpediteur(models.TextChoices):
 class SourceReponse(models.TextChoices):
     REGLE = 'REGLE', 'Règle'
     RAG = 'RAG', 'RAG'
+    GENERATION = 'GENERATION', 'Génération encadrée'
 
 
 class ConversationChatbot(models.Model):
@@ -56,11 +57,14 @@ class MessageChatbot(models.Model):
     )
     source_reponse = models.CharField(
         'source de la réponse',
-        max_length=6,
+        max_length=10,
         choices=SourceReponse.choices,
         null=True,
         blank=True,
-        help_text='Uniquement pour les messages du bot (REGLE pour les niveaux 0 et 1, RAG pour le niveau 2).',
+        help_text=(
+            'Uniquement pour les messages du bot : REGLE pour les niveaux 0 et 1, RAG pour '
+            'le niveau 2a, GENERATION pour une réponse du modèle de langage validée (niveau 2b).'
+        ),
     )
     # Ce que la réponse affichait dans le chat, pour que l'historique relu
     # ressemble à la conversation d'origine

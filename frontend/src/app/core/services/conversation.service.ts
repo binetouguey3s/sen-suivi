@@ -7,6 +7,9 @@ import { ChatbotService } from './chatbot.service';
 const MESSAGE_ACCUEIL =
   "Naka nga def ? Je suis là pour vous écouter. De quoi avez-vous envie de parler aujourd'hui ?";
 
+// Derniers échanges transmis à Titou pour qu'il suive la conversation
+const HISTORIQUE_TRANSMIS = 6;
+
 const MESSAGE_INDISPONIBLE =
   "Le chatbot n'est pas disponible pour le moment. En cas de détresse immédiate, appelez le 800 805 805 ou le 1515.";
 
@@ -81,12 +84,17 @@ export class ConversationService {
     const contenu = texte.trim();
     if (!contenu || this.enCoursInterne()) return;
 
+    // Échanges déjà affichés, sans le message d'accueil (toujours le même)
+    const historique = this.messagesInternes()
+      .slice(1)
+      .slice(-HISTORIQUE_TRANSMIS)
+      .map((m) => ({ auteur: m.auteur, contenu: m.contenu }));
     this.ajouter({ auteur: 'UTILISATEUR', contenu });
     this.enCoursInterne.set(true);
     const conserver = this.peutConserver() && this.consentementInterne();
 
     try {
-      const reponse = await this.chatbot.envoyer(contenu, this.conversationId(), conserver);
+      const reponse = await this.chatbot.envoyer(contenu, this.conversationId(), conserver, historique);
       if (reponse.conversation_id) this.conversationId.set(reponse.conversation_id);
       this.ajouter({ auteur: 'BOT', contenu: reponse.reponse, ressource: reponse.ressource, urgence: reponse.urgence });
     } catch {

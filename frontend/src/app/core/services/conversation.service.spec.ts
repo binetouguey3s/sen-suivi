@@ -66,8 +66,12 @@ describe('ConversationService', () => {
     envoyer.mockResolvedValue({ ...REPONSE, reponse: 'Parlons-en.' });
     await service.envoyer('Au travail');
 
-    expect(envoyer).toHaveBeenNthCalledWith(1, 'Je suis stressé', null, false);
-    expect(envoyer).toHaveBeenNthCalledWith(2, 'Au travail', 42, false);
+    expect(envoyer).toHaveBeenNthCalledWith(1, 'Je suis stressé', null, false, []);
+    // Le deuxième envoi transmet l'échange précédent, sans le message d'accueil
+    expect(envoyer).toHaveBeenNthCalledWith(2, 'Au travail', 42, false, [
+      { auteur: 'UTILISATEUR', contenu: 'Je suis stressé' },
+      { auteur: 'BOT', contenu: 'Je vous écoute.' },
+    ]);
     expect(service.messages().map((m) => m.contenu).slice(1)).toEqual([
       'Je suis stressé',
       'Je vous écoute.',
@@ -82,6 +86,18 @@ describe('ConversationService', () => {
     await service.envoyer('   ');
     expect(envoyer).not.toHaveBeenCalled();
     expect(service.messages()).toHaveLength(1);
+  });
+
+  it('ne transmet que les 6 derniers échanges', async () => {
+    envoyer.mockResolvedValue(REPONSE);
+    for (let i = 1; i <= 5; i++) await service.envoyer(`Message ${i}`);
+
+    await service.envoyer('Dernier');
+
+    const historique = envoyer.mock.lastCall![3]!;
+    expect(historique).toHaveLength(6);
+    expect(historique.at(-1)).toEqual({ auteur: 'BOT', contenu: 'Je vous écoute.' });
+    expect(historique.some((e) => e.contenu === 'Message 1')).toBe(false);
   });
 
   it('affiche les numéros d’urgence si le chatbot est indisponible', async () => {
@@ -103,8 +119,8 @@ describe('ConversationService', () => {
     typeCompte.set('utilisateur');
     await service.envoyer('Utilisateur');
 
-    expect(envoyer).toHaveBeenNthCalledWith(1, 'Visiteur', null, false);
-    expect(envoyer).toHaveBeenNthCalledWith(2, 'Utilisateur', 42, true);
+    expect(envoyer).toHaveBeenNthCalledWith(1, 'Visiteur', null, false, expect.any(Array));
+    expect(envoyer).toHaveBeenNthCalledWith(2, 'Utilisateur', 42, true, expect.any(Array));
   });
 
   it('efface la conversation et ferme la fenêtre quand le compte change (déconnexion)', async () => {
@@ -125,7 +141,8 @@ describe('ConversationService', () => {
     expect(service.consentementConservation()).toBe(false);
 
     await service.envoyer('Nouvelle conversation');
-    expect(envoyer).toHaveBeenLastCalledWith('Nouvelle conversation', null, false);
+    // Nouvelle conversation : rien de l'ancienne n'est transmis
+    expect(envoyer).toHaveBeenLastCalledWith('Nouvelle conversation', null, false, []);
   });
 
   describe('historique (compte utilisateur)', () => {
@@ -151,7 +168,7 @@ describe('ConversationService', () => {
 
       envoyer.mockResolvedValue(REPONSE);
       await service.envoyer('Merci');
-      expect(envoyer).toHaveBeenLastCalledWith('Merci', 99, true);
+      expect(envoyer).toHaveBeenLastCalledWith('Merci', 99, true, expect.any(Array));
     });
 
     it('cocher la case avant tout message ne crée rien d’avance', async () => {
@@ -208,7 +225,11 @@ describe('ConversationService', () => {
       expect(service.messages().map((m) => m.contenu).slice(1)).toEqual(['Je dors mal', 'Depuis quand ?']);
       expect(service.consentementConservation()).toBe(true);
       await service.envoyer('Depuis une semaine');
-      expect(envoyer).toHaveBeenLastCalledWith('Depuis une semaine', 5, true);
+      // La conversation reprise sert de contexte à Titou
+      expect(envoyer).toHaveBeenLastCalledWith('Depuis une semaine', 5, true, [
+        { auteur: 'UTILISATEUR', contenu: 'Je dors mal' },
+        { auteur: 'BOT', contenu: 'Depuis quand ?' },
+      ]);
     });
 
     it('supprimer la conversation affichée repart d’une conversation vierge', async () => {

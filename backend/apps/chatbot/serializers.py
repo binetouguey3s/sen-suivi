@@ -3,8 +3,16 @@ from rest_framework import serializers
 from .models import MessageChatbot
 
 
+class EchangePrecedentSerializer(serializers.Serializer):
+    auteur = serializers.ChoiceField(choices=['UTILISATEUR', 'BOT'])
+    contenu = serializers.CharField(max_length=2000)
+
+
 class MessageEntreeSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=2000, trim_whitespace=True)
+    # Derniers échanges affichés dans la fenêtre : transmis au microservice IA
+    # pour qu'il suive la conversation, jamais enregistrés à ce titre
+    historique = EchangePrecedentSerializer(many=True, required=False, default=list, max_length=20)
     conversation_id = serializers.IntegerField(required=False, allow_null=True)
     # Vrai uniquement si l'utilisateur connecté a explicitement accepté de
     # conserver cet échange dans son historique

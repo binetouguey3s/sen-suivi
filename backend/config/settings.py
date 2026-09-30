@@ -144,6 +144,8 @@ FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 
 # Microservice IA (FastAPI), séparé du back-end.
 AI_SERVICE_URL = env('AI_SERVICE_URL', default='http://localhost:8001')
+# Attente maximale d'une réponse du chatbot : plus long que la cascade de modèles côté IA
+AI_SERVICE_DELAI_SECONDES = env.float('AI_SERVICE_DELAI_SECONDES', default=25)
 
 # Automatisation n8n : adresse des webhooks et clé partagée pour les
 # endpoints internes (/api/interne/...). La clé est générée par l'équipe

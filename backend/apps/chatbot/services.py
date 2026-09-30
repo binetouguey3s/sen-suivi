@@ -10,10 +10,13 @@ class MicroserviceIAIndisponible(Exception):
     pass
 
 
-def traiter_message(message: str) -> dict:
+def traiter_message(message: str, historique: list[dict] | None = None) -> dict:
     try:
         reponse = httpx.post(
-            f'{settings.AI_SERVICE_URL}/message', json={'message': message}, timeout=10
+            f'{settings.AI_SERVICE_URL}/message',
+            json={'message': message, 'historique': historique or []},
+            # Plus long que le budget de la cascade de modèles côté IA (LLM_DELAI_TOTAL_SECONDES)
+            timeout=settings.AI_SERVICE_DELAI_SECONDES,
         )
         reponse.raise_for_status()
         return reponse.json()

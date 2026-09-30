@@ -35,7 +35,7 @@ class ChatbotMessageView(APIView):
         donnees = entree.validated_data
 
         try:
-            resultat = traiter_message(donnees['message'])
+            resultat = traiter_message(donnees['message'], donnees['historique'])
         except MicroserviceIAIndisponible:
             return Response(
                 {
