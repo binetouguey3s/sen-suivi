@@ -274,14 +274,9 @@
 
 .mf__element {
   padding: var(--ss-espace-3);
-  border-left: 4px solid var(--ss-bordure);
   border-radius: var(--ss-rayon-carte);
   background: var(--ss-surface);
   box-shadow: var(--ss-ombre);
-}
-
-.mf__element--haute {
-  border-left-color: var(--ss-primaire);
 }
 
 .mf__element-entete {
@@ -334,5 +329,7 @@
 }
 
 .mf__element .mf__actions {
+  flex-direction: row;
+  flex-wrap: wrap;
   margin-top: var(--ss-espace-2);
 }

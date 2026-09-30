@@ -47,7 +47,7 @@
   } @else {
     <ul class="mf__file">
       @for (e of listeFilePage(); track e.id) {
-        <li class="mf__element" [class.mf__element--haute]="e.priorite >= 2">
+        <li class="mf__element">
           <div class="mf__element-entete">
             <span class="mf__pseudo">{{ e.pseudonyme }}</span>
             <span class="mf__date">{{ e.type === 'PUBLICATION' ? 'Publication' : 'Réponse' }} · {{ depuis(e.date) }}</span>
