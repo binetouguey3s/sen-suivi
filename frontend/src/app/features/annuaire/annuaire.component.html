@@ -1,0 +1,104 @@
+<div class="an">
+  <header class="an__entete">
+    <h1>Annuaire des professionnels</h1>
+    <p>Psychologues, sophrologues, coachs, médiateurs et assistants sociaux, tous vérifiés par Sen Suivi.</p>
+    <ss-badge-offre />
+  </header>
+
+  @if (suggestion(); as s) {
+    <section class="an__suggestion" aria-labelledby="titre-suggestion">
+      <p class="an__suggestion-etiquette" id="titre-suggestion"><ss-icon nom="suggestion" taille="sm" /> Suggéré pour vous</p>
+      <div class="an__suggestion-corps">
+        @if (portrait(s.professionnel); as src) {
+          <img class="an__photo an__photo--grande" [src]="src" [alt]="'Portrait illustratif de ' + s.professionnel.nom" />
+        } @else {
+          <span class="an__photo an__photo--grande an__photo--initiales" aria-hidden="true">{{ initiales(s.professionnel.nom) }}</span>
+        }
+        <div class="an__suggestion-texte">
+          <strong>{{ s.professionnel.nom }}</strong>
+          <span class="an__specialite">{{ s.professionnel.specialite_affichee }} · {{ s.professionnel.ville }}</span>
+          <p class="an__raison">{{ s.raison }}</p>
+        </div>
+      </div>
+      <div class="an__suggestion-actions">
+        <a class="an__bouton" [routerLink]="['/professionnels', s.professionnel.id]">Voir le profil</a>
+        <button type="button" class="an__lien" (click)="ignorer(s.professionnel.id)">Ignorer cette suggestion</button>
+      </div>
+      <p class="an__note">Une simple piste, calculée à partir de ce que vous avez partagé sur Sen Suivi. Tous les professionnels restent disponibles ci-dessous.</p>
+    </section>
+  }
+
+  <section class="an__filtres" aria-label="Filtrer les professionnels">
+    <label class="an__recherche">
+      <ss-icon nom="recherche" taille="sm" />
+      <input type="search" placeholder="Nom, spécialité, domaine…" [value]="recherche()" (input)="recherche.set($any($event.target).value)" />
+    </label>
+    <div class="an__puces" role="group" aria-label="Spécialité">
+      <button type="button" [class.an__puce--active]="specialite() === null" (click)="specialite.set(null)">Toutes</button>
+      @for (sp of specialites(); track sp) {
+        <button type="button" [class.an__puce--active]="specialite() === sp" (click)="specialite.set(sp)">{{ sp }}</button>
+      }
+    </div>
+    <div class="an__selects">
+      <select aria-label="Ville" [value]="ville()" (change)="ville.set($any($event.target).value)">
+        <option value="">Toutes les villes</option>
+        @for (v of villes(); track v) { <option [value]="v">{{ v }}</option> }
+      </select>
+      <select aria-label="Langue" [value]="langue()" (change)="langue.set($any($event.target).value)">
+        <option value="">Toutes les langues</option>
+        @for (l of langues(); track l) { <option [value]="l">{{ l }}</option> }
+      </select>
+      <button type="button" class="an__bascule" [class.an__bascule--active]="aDistance()" [attr.aria-pressed]="aDistance()" (click)="aDistance.set(!aDistance())">
+        <ss-icon nom="video" taille="sm" /> À distance
+      </button>
+      <button type="button" class="an__bascule" [class.an__bascule--active]="enCabinet()" [attr.aria-pressed]="enCabinet()" (click)="enCabinet.set(!enCabinet())">
+        <ss-icon nom="batiment" taille="sm" /> En cabinet
+      </button>
+    </div>
+  </section>
+
+  @if (chargement()) {
+    <p class="an__etat">Chargement des professionnels…</p>
+  } @else if (erreur()) {
+    <p class="an__etat">L'annuaire est momentanément indisponible. Réessayez dans un instant.</p>
+  } @else {
+    <p class="an__compte" aria-live="polite">
+      {{ professionnels().length }} professionnel{{ professionnels().length > 1 ? 's' : '' }}
+      @if (filtresActifs()) { <button type="button" class="an__lien" (click)="effacerFiltres()">Effacer les filtres</button> }
+    </p>
+    <ul class="an__liste">
+      @for (p of professionnels(); track p.id) {
+        <li class="an__carte">
+          <div class="an__carte-entete">
+            @if (portrait(p); as src) {
+              <img class="an__photo" [src]="src" [alt]="'Portrait illustratif de ' + p.nom" loading="lazy" />
+            } @else {
+              <span class="an__photo an__photo--initiales" aria-hidden="true">{{ initiales(p.nom) }}</span>
+            }
+            <div>
+              <strong>{{ p.nom }}</strong>
+              <span class="an__specialite">{{ p.specialite_affichee }}</span>
+            </div>
+          </div>
+          <p class="an__ligne"><ss-icon nom="lieux" taille="sm" /> {{ p.ville }}</p>
+          <ul class="an__etiquettes">
+            @for (l of languesDe(p); track l) { <li>{{ l }}</li> }
+            @if (p.consultation_distance) { <li>À distance</li> }
+            @if (p.consultation_cabinet) { <li>En cabinet</li> }
+          </ul>
+          @if (p.domaines.length) {
+            <p class="an__domaines">{{ p.domaines.slice(0, 3).join(' · ') }}</p>
+          }
+          @if (!p.accepte_demandes) {
+            <p class="an__indisponible">Ne prend pas de nouvelles demandes pour le moment</p>
+          }
+          <a class="an__bouton an__bouton--contour" [routerLink]="['/professionnels', p.id]">Voir le profil</a>
+        </li>
+      } @empty {
+        <li class="an__etat">Aucun professionnel ne correspond à ces filtres.</li>
+      }
+    </ul>
+  }
+
+  <p class="an__mention">Sen Suivi ne remplace pas un professionnel de santé. En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>.</p>
+</div>

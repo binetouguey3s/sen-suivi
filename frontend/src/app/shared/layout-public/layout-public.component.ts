@@ -37,13 +37,13 @@ export class LayoutPublicComponent {
       { libelle: 'Découvrir', route: '/', exact: true },
       { libelle: 'Ressources', route: '/ressources' },
       { libelle: 'Lieux de détente', route: '/lieux' },
-      { libelle: 'Professionnels', route: '/', ancre: 'experts', exact: true },
+      { libelle: 'Professionnels', route: '/professionnels' },
       { libelle: 'Forum', route: '/app/forum' },
     ] as LienPublic[]
   ).map((lien) => ({
     ...lien,
-    // « Découvrir » et « Professionnels » mènent tous deux à l'accueil :
-    // l'ancre (#experts) les distingue pour n'en marquer qu'un comme actif.
+    // « Découvrir » n'est actif que sur l'accueil lui-même, sans ancre ;
+    // les autres le restent sur leurs sous-pages (une fiche, un lieu…).
     options: {
       paths: lien.exact ? 'exact' : 'subset',
       fragment: lien.exact ? 'exact' : 'ignored',

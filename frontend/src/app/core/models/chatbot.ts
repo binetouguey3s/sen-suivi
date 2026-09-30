@@ -1,6 +1,8 @@
 // Types correspondant au sérialiseur Django (apps/chatbot), lui-même
 // construit à partir de la réponse du microservice IA.
 
+import { ProfessionnelSuggereChatbot } from './orientation';
+
 export interface RessourceSuggereeChatbot {
   ressource_id: number;
   titre: string;
@@ -14,6 +16,11 @@ export interface ReponseChatbot {
   urgence: boolean;
   intention: string | null;
   ressource: RessourceSuggereeChatbot | null;
+  orientation_professionnel?: boolean;
+  // Professionnel mis en avant par l'algorithme d'orientation (compte connecté)
+  professionnel_suggere?: ProfessionnelSuggereChatbot | null;
+  // Remis seulement quand une détresse est détectée
+  jeton_urgence?: string | null;
 }
 
 export interface MessageAffiche {
@@ -23,6 +30,9 @@ export interface MessageAffiche {
   heure: string;
   ressource?: RessourceSuggereeChatbot | null;
   urgence?: boolean;
+  professionnel?: ProfessionnelSuggereChatbot | null;
+  // Titou oriente vers un professionnel sans suggestion personnalisée (visiteur)
+  orientationAnnuaire?: boolean;
 }
 
 // Historique des conversations conservées (GET /api/chatbot/conversations)

@@ -102,6 +102,25 @@
                     </span>
                   </a>
                 }
+                @if (m.professionnel; as pro) {
+                  <a class="cb__ressource cb__pro" [routerLink]="['/professionnels', pro.id]">
+                    <span class="cb__ressource-icone"><ss-icon nom="suggestion" taille="sm" /></span>
+                    <span class="cb__ressource-texte">
+                      <span class="cb__pro-etiquette">Suggéré pour vous</span>
+                      <strong>{{ pro.nom }}</strong>
+                      <span class="cb__pro-raison">{{ pro.raison }}</span>
+                    </span>
+                  </a>
+                  <a class="cb__pro-annuaire" routerLink="/professionnels">Voir tous les professionnels</a>
+                } @else if (m.orientationAnnuaire) {
+                  <a class="cb__ressource" routerLink="/professionnels">
+                    <span class="cb__ressource-icone"><ss-icon nom="utilisateur-verifie" taille="sm" /></span>
+                    <span class="cb__ressource-texte">
+                      <strong>Annuaire des professionnels</strong>
+                      <span>Tous vérifiés par Sen Suivi</span>
+                    </span>
+                  </a>
+                }
               </div>
               <span class="cb__heure">{{ m.heure }}</span>
             </div>

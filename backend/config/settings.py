@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
+from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
     'apps.forum',
     'apps.chatbot',
     'apps.notifications',
+    'apps.orientation',
 ]
 
 MIDDLEWARE = [
@@ -139,6 +141,9 @@ CORS_ALLOWED_ORIGINS = env.list(
     default=['http://localhost:4200'],
 )
 
+# Jeton d'urgence (apps.orientation.urgence) envoyé par le front en plus des en-têtes standard
+CORS_ALLOW_HEADERS = (*default_headers, 'x-jeton-urgence')
+
 # Adresse du front-end, utilisée dans les liens envoyés par e-mail.
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 
@@ -158,3 +163,16 @@ N8N_API_KEY = env('N8N_API_KEY', default='')
 RAPPEL_JOURNAL_JOURS = env.int('RAPPEL_JOURNAL_JOURS', default=3)
 RAPPEL_TEST_JOURS = env.int('RAPPEL_TEST_JOURS', default=30)
 RAPPEL_FREQUENCE_MAX_JOURS = env.int('RAPPEL_FREQUENCE_MAX_JOURS', default=7)
+
+# Offre de lancement : mise en relation gratuite pendant 2 mois.
+# OFFRE_MODE=globale : même date de fin pour tous (OFFRE_DATE_FIN, AAAA-MM-JJ ;
+# vide = offre sans fin). OFFRE_MODE=individuelle : OFFRE_DUREE_JOURS à partir
+# de l'inscription de chaque utilisateur.
+OFFRE_MODE = env('OFFRE_MODE', default='globale')
+OFFRE_DATE_FIN = env('OFFRE_DATE_FIN', default='')
+OFFRE_DUREE_JOURS = env.int('OFFRE_DUREE_JOURS', default=60)
+# Accès à la mise en relation après l'offre (paiement mobile money, à brancher)
+ACCES_TARIF_FCFA = env.int('ACCES_TARIF_FCFA', default=2000)
+ACCES_DUREE_JOURS = env.int('ACCES_DUREE_JOURS', default=30)
+# Durée de validité du jeton remis par le chatbot quand il détecte une détresse
+URGENCE_JETON_HEURES = env.int('URGENCE_JETON_HEURES', default=24)

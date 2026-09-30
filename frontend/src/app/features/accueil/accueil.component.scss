@@ -1048,6 +1048,19 @@
   line-height: 1.5;
 }
 
+.ac__annuaire {
+  margin: var(--ss-espace-3) 0 0;
+  text-align: center;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--ss-texte-marque);
+    font-weight: var(--ss-poids-texte-fort);
+  }
+}
+
 .ac__vide {
   grid-column: 1 / -1;
   color: var(--ss-texte-doux);

@@ -74,6 +74,9 @@ class MessageEntree(BaseModel):
     historique: list[EchangePrecedent] = Field(default_factory=list, max_length=20)
     # Profil de tendance (mots-clés anonymes), seulement si l'utilisateur y a consenti
     profil_tendance: list[Annotated[str, Field(max_length=80)]] = Field(default_factory=list, max_length=10)
+    # Compte connecté : Django affichera sous la réponse le professionnel
+    # suggéré par son algorithme d'orientation (jamais par le modèle)
+    suggestion_possible: bool = False
 
 
 class RessourceSuggeree(BaseModel):
@@ -88,6 +91,9 @@ class MessageSortie(BaseModel):
     urgence: bool
     intention: str | None
     ressource: RessourceSuggeree | None
+    # Vrai quand la personne cherche un professionnel ou que Titou l'oriente vers
+    # l'annuaire : Django ajoute alors la suggestion de son algorithme d'orientation
+    orientation_professionnel: bool = False
 
 
 class RessourceAIndexer(BaseModel):
@@ -116,8 +122,28 @@ def health():
     return {'statut': 'ok'}
 
 
+# Demande explicite d'un professionnel dans le message de la personne
+_DEMANDE_PROFESSIONNEL = re.compile(
+    r"professionnel|sp[ée]cialiste|psycholog|\bpsy\b|sophrolog|\bcoach|m[ée]diat(eur|rice)|"
+    r"assistante? social|mise en relation|parler [àa] quelqu|consulter quelqu|accompagnement",
+    re.IGNORECASE,
+)
+
+
+def orientation_vers_professionnel(message: str, reponse: str) -> bool:
+    return bool(_DEMANDE_PROFESSIONNEL.search(message)) or 'annuaire' in reponse.lower()
+
+
 @app.post('/message', response_model=MessageSortie)
 def traiter_message(entree: MessageEntree):
+    sortie = _repondre(entree)
+    # Une réponse d'urgence ne propose que les numéros d'écoute : aucune autre orientation
+    if not sortie.urgence:
+        sortie.orientation_professionnel = orientation_vers_professionnel(entree.message, sortie.reponse)
+    return sortie
+
+
+def _repondre(entree: MessageEntree) -> MessageSortie:
     message = nettoyer(entree.message)
 
     # Niveau 0 — sécurité, toujours vérifié en premier
@@ -145,7 +171,11 @@ def traiter_message(entree: MessageEntree):
     # Niveau 2b — génération encadrée, puis validation
     if generation_disponible():
         texte = _generer_valide(
-            message, ressources, [e.model_dump() for e in entree.historique], entree.profil_tendance
+            message,
+            ressources,
+            [e.model_dump() for e in entree.historique],
+            entree.profil_tendance,
+            entree.suggestion_possible,
         )
         if texte:
             return MessageSortie(
@@ -234,7 +264,11 @@ def _catalogue_ou_rien() -> list[dict]:
 
 
 def _generer_valide(
-    message: str, ressources: list[dict], historique: list[dict], profil: list[str] | None = None
+    message: str,
+    ressources: list[dict],
+    historique: list[dict],
+    profil: list[str] | None = None,
+    suggestion_possible: bool = False,
 ) -> str | None:
     """Réponse générée qui a passé le validateur, ou None.
 
@@ -259,11 +293,26 @@ def _generer_valide(
 
     if ressources:
         texte = generer(
-            message, ressources, historique, liste, echeance, accepter=accepter_en('ressources'), profil=profil
+            message,
+            ressources,
+            historique,
+            liste,
+            echeance,
+            accepter=accepter_en('ressources'),
+            profil=profil,
+            suggestion_possible=suggestion_possible,
         )
         if texte:
             return texte
-    return ecouter(message, historique, liste, echeance, accepter=accepter_en('ecoute'), profil=profil)
+    return ecouter(
+        message,
+        historique,
+        liste,
+        echeance,
+        accepter=accepter_en('ecoute'),
+        profil=profil,
+        suggestion_possible=suggestion_possible,
+    )
 
 
 @app.post('/reindexer')

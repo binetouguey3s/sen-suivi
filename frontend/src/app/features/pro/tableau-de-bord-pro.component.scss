@@ -384,3 +384,25 @@
 .tp__etat--erreur {
   color: var(--ss-alerte);
 }
+
+.tp__ecrire {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--ss-espace-2);
+  padding: 8px var(--ss-espace-2);
+  border-radius: var(--ss-rayon-bouton);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  text-decoration: none;
+}
+
+.tp__pastille {
+  padding: 0 8px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte-fort);
+  font-size: 12px;
+}

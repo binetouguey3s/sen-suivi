@@ -109,7 +109,8 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         score = instance.score_de_tendance
-        professionnels = suggerer_professionnels(instance.utilisateur, score)
+        suggestions = suggerer_professionnels(instance.utilisateur, score, instance.type_evaluation)
+        professionnels = [s.professionnel for s in suggestions]
         # Niveau faible : ressources uniquement. Sinon, si aucun professionnel
         # n'est disponible, liste vide + message.
         message = ''
@@ -123,6 +124,8 @@ class AutoEvaluationEcritureSerializer(serializers.Serializer):
             'texte_interpretation': texte_interpretation(score),
             'avertissement': "Ce résultat n'est pas un diagnostic.",
             'professionnels_suggeres': ProfessionnelPublicSerializer(professionnels, many=True).data,
+            # Pourquoi le premier professionnel est mis en avant (algorithme d'orientation)
+            'raison_suggestion': suggestions[0].raison if suggestions else '',
             'message': message,
         }
 

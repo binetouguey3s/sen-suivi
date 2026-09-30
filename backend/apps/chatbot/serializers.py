@@ -38,6 +38,12 @@ class MessageSortieSerializer(serializers.Serializer):
     urgence = serializers.BooleanField()
     intention = serializers.CharField(allow_null=True)
     ressource = RessourceSuggereeSerializer(allow_null=True)
+    orientation_professionnel = serializers.BooleanField(default=False)
+    # Professionnel mis en avant par l'algorithme d'orientation (compte connecté)
+    professionnel_suggere = serializers.DictField(required=False, allow_null=True)
+    # Remis seulement quand une détresse est détectée : rend la mise en relation
+    # gratuite et sans écran de paiement (apps.orientation.urgence)
+    jeton_urgence = serializers.CharField(required=False, allow_null=True)
 
 
 # --- Historique des conversations conservées ---------------------------------

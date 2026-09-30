@@ -51,7 +51,13 @@ en relation depuis leur profil ;
 - le forum, anonyme, pour échanger avec d'autres personnes ;
 - le journal d'humeur et les auto-évaluations, pour faire le point ;
 - les lieux de détente au Sénégal.
-Si la personne demande un spécialiste, oriente-la vers l'annuaire des professionnels de Sen Suivi.
+Si la personne demande un spécialiste, dis-lui quel type de professionnel correspond à ce \
+qu'elle vit (sophrologue ou coach en développement personnel pour le stress et la pression, \
+psychologue pour les inquiétudes, la solitude ou une perte, coach sportif ou sophrologue pour la \
+fatigue et le sommeil, médiateur familial pour un conflit familial, assistant social pour des \
+démarches) et oriente-la vers l'annuaire des professionnels de Sen Suivi. Une suggestion \
+personnalisée s'affiche sous ton message quand c'est possible : ne cite jamais de nom de \
+professionnel toi-même, et ne dis jamais que tu ne peux pas l'orienter.
 
 Numéros, chacun pour son usage, et aucun autre :
 - 800 805 805 : numéro vert d'écoute, pour parler à quelqu'un maintenant ;
@@ -282,6 +288,16 @@ def _contexte_profil(profil: list[str] | None) -> list[dict]:
     return [{'role': 'system', 'content': _CONSIGNES_PROFIL.format(profil=', '.join(profil))}]
 
 
+_CONSIGNE_SUGGESTION = """La personne est connectée : si tu l'orientes vers un professionnel, une \
+suggestion personnalisée, choisie par la plateforme parmi les professionnels de l'annuaire, \
+s'affiche juste sous ton message. Invite-la à y jeter un œil ou à parcourir l'annuaire, sans \
+citer de nom toi-même, et ne dis jamais que tu ne peux pas lui en proposer."""
+
+
+def _contexte_suggestion(suggestion_possible: bool) -> list[dict]:
+    return [{'role': 'system', 'content': _CONSIGNE_SUGGESTION}] if suggestion_possible else []
+
+
 def _contexte_catalogue(catalogue: list[dict] | None) -> list[dict]:
     """Titres de la bibliothèque, pour citer d'autres ressources si on le demande."""
     if not catalogue:
@@ -298,6 +314,7 @@ def generer(
     echeance: float | None = None,
     accepter: Callable[[str], bool] | None = None,
     profil: list[str] | None = None,
+    suggestion_possible: bool = False,
 ) -> str | None:
     """Mode ressources : réponse tirée des seules ressources fournies, ou None."""
     if not generation_disponible() or not ressources:
@@ -306,6 +323,7 @@ def generer(
         [{'role': 'system', 'content': PROMPT_RESSOURCES}, {'role': 'system', 'content': _contexte(ressources)}]
         + _contexte_catalogue(catalogue)
         + _contexte_profil(profil)
+        + _contexte_suggestion(suggestion_possible)
         + _messages_historique(historique)
         + [{'role': 'user', 'content': message}],
         echeance,
@@ -320,6 +338,7 @@ def ecouter(
     echeance: float | None = None,
     accepter: Callable[[str], bool] | None = None,
     profil: list[str] | None = None,
+    suggestion_possible: bool = False,
 ) -> str | None:
     """Mode écoute : accueil, sans aucun conseil, ou None."""
     if not generation_disponible():
@@ -328,6 +347,7 @@ def ecouter(
         [{'role': 'system', 'content': PROMPT_ECOUTE}]
         + _contexte_catalogue(catalogue)
         + _contexte_profil(profil)
+        + _contexte_suggestion(suggestion_possible)
         + _messages_historique(historique)
         + [{'role': 'user', 'content': message}],
         echeance,

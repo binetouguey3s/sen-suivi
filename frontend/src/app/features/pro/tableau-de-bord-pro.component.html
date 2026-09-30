@@ -73,6 +73,12 @@
           @if (d.statut === 'ACCEPTEE' && d.email) {
             <p class="tp__contact"><ss-icon nom="courriel" taille="sm" /> {{ d.email }}</p>
           }
+          @if (d.statut === 'ACCEPTEE') {
+            <a class="tp__ecrire" [routerLink]="['/pro/demandes', d.id]">
+              <ss-icon nom="chat" taille="sm" /> Écrire à {{ d.nom ?? d.pseudonyme }}
+              @if (d.non_lus) { <span class="tp__pastille">{{ d.non_lus }} nouveau{{ d.non_lus > 1 ? 'x' : '' }}</span> }
+            </a>
+          }
         </div>
         @if (d.statut === 'EN_ATTENTE') {
           <div class="tp__actions">

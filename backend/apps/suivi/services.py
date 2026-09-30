@@ -4,8 +4,6 @@ Isolée des vues et des sérialiseurs : une vue orchestre, elle ne calcule pas
 (style de code back-end).
 """
 
-from apps.comptes.models import Professionnel, StatutValidationPro
-
 
 VALEUR_MAX_PAR_DEFAUT = 4
 
@@ -62,15 +60,18 @@ def texte_interpretation(score):
     )
 
 
-def suggerer_professionnels(utilisateur, score):
-    """Jusqu'à 3 professionnels VALIDE ; aucun si le niveau est faible.
+def suggerer_professionnels(utilisateur, score, type_evaluation=None):
+    """Jusqu'à 3 professionnels ; aucun si le niveau est faible.
 
-    Priorité aux professionnels de la ville de l'utilisateur, puis aux autres.
+    Classement par l'algorithme d'orientation (apps.orientation.services) : le
+    besoin mesuré par ce test d'abord, puis langue, ville, disponibilité et
+    équité. Renvoie les suggestions, chacune avec sa phrase d'explication.
     """
     if score <= SEUIL_SUGGESTION_PROFESSIONNELS:
         return []
-    valides = list(Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE))
-    ville = (utilisateur.ville or '').strip().lower()
-    if ville:
-        valides.sort(key=lambda p: ville not in p.ville.lower())
-    return valides[:3]
+    from apps.orientation.correspondances import BESOIN_PAR_TEST
+    from apps.orientation.services import classer
+
+    besoins = [BESOIN_PAR_TEST[type_evaluation]] if type_evaluation in BESOIN_PAR_TEST else []
+    suggestions = classer(besoins, ville=(utilisateur.ville or None))
+    return [s for s in suggestions if s.professionnel.accepte_demandes][:3]

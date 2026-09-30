@@ -18,6 +18,8 @@ export interface FicheProfessionnel {
   consultation_cabinet: boolean;
   adresse_cabinet: string;
   consultation_distance: boolean;
+  // Disponibilité : suspendre les nouvelles demandes sans quitter l'annuaire
+  accepte_demandes: boolean;
 }
 
 export type ModificationFiche = Partial<Omit<FicheProfessionnel, 'id' | 'nom' | 'specialite_affichee'>>;

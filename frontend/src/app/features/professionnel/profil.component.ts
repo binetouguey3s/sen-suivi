@@ -1,29 +1,25 @@
 import { DOCUMENT } from '@angular/common';
-import { HttpClient, httpResource } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../../core/config/api.config';
 import { IMAGE_PAR_PROFESSIONNEL } from '../../core/config/images-professionnels';
+import { EtatAcces, MoyenPaiement, ProfessionnelPublic } from '../../core/models/orientation';
+import { AccesService } from '../../core/services/acces.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UrgenceService } from '../../core/services/urgence.service';
+import { BadgeOffreComponent } from '../../shared/badge-offre/badge-offre.component';
 import { ChampComponent } from '../../shared/champ/champ.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ModalComponent } from '../../shared/modal/modal.component';
 
-interface ProfessionnelPublic {
-  id: number;
-  nom: string;
-  specialite_affichee: string;
-  ville: string;
-  langue: string;
-  tarif_indicatif: number;
-  presentation: string;
-  domaines: string[];
-  consultation_cabinet: boolean;
-  adresse_cabinet: string;
-  consultation_distance: boolean;
-}
+const MOYENS_PAIEMENT: { valeur: MoyenPaiement; libelle: string }[] = [
+  { valeur: 'WAVE', libelle: 'Wave' },
+  { valeur: 'ORANGE_MONEY', libelle: 'Orange Money' },
+  { valeur: 'FREE_MONEY', libelle: 'Free Money' },
+];
 
 // Fiche d'un professionnel. Deux contextes : /professionnels/:id (fiche
 // publique, vue par un utilisateur) et /pro/profil (le professionnel
@@ -31,7 +27,7 @@ interface ProfessionnelPublic {
 @Component({
   selector: 'ss-profil-professionnel',
   standalone: true,
-  imports: [RouterLink, ChampComponent, IconComponent, ModalComponent],
+  imports: [RouterLink, BadgeOffreComponent, ChampComponent, IconComponent, ModalComponent],
   templateUrl: './profil.component.html',
   styleUrl: './profil.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +36,9 @@ export class ProfilProfessionnelComponent {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
+  private readonly acces = inject(AccesService);
+  // Détresse détectée par le chatbot : ni tarif, ni compteur, ni écran de paiement
+  protected readonly enDetresse = inject(UrgenceService).enDetresse;
 
   // Paramètre de route :id (withComponentInputBinding), absent sur /pro/profil
   readonly id = input<string>();
@@ -56,6 +55,16 @@ export class ProfilProfessionnelComponent {
   protected readonly message = signal('');
   protected readonly envoiEnCours = signal(false);
   protected readonly erreur = signal<string | null>(null);
+
+  // Écran de déblocage : seulement après l'offre de lancement, jamais en détresse
+  protected readonly deblocageOuvert = signal(false);
+  protected readonly etatAcces = signal<EtatAcces | null>(null);
+  protected readonly moyens = MOYENS_PAIEMENT;
+  protected readonly moyen = signal<MoyenPaiement>('WAVE');
+  protected readonly telephone = signal('');
+  protected readonly paiementEnCours = signal(false);
+  protected readonly messagePaiement = signal<string | null>(null);
+  protected readonly tarifAcces = computed(() => (this.etatAcces()?.tarif_fcfa ?? 0).toLocaleString('fr-FR'));
 
   protected readonly portrait = computed(() => {
     const p = this.pro.value();
@@ -88,6 +97,30 @@ export class ProfilProfessionnelComponent {
     inject(DestroyRef).onDestroy(() => racine.style.removeProperty('--ss-chat-decalage'));
   }
 
+  // Avant d'ouvrir le formulaire : l'offre est-elle terminée ? Sinon, rien ne change.
+  protected async ouvrirDemande(): Promise<void> {
+    if (!this.enDetresse()) {
+      try {
+        const etat = await this.acces.etat();
+        this.etatAcces.set(etat);
+        if (etat.verrouille) {
+          this.deblocageOuvert.set(true);
+          return;
+        }
+      } catch {
+        // État indisponible : le serveur tranchera à l'envoi
+      }
+    }
+    this.demandeOuverte.set(true);
+  }
+
+  protected async payer(): Promise<void> {
+    this.paiementEnCours.set(true);
+    const resultat = await this.acces.payer(this.moyen(), this.telephone().trim());
+    this.messagePaiement.set(resultat.message);
+    this.paiementEnCours.set(false);
+  }
+
   protected async envoyer(): Promise<void> {
     this.envoiEnCours.set(true);
     this.erreur.set(null);
@@ -98,8 +131,16 @@ export class ProfilProfessionnelComponent {
       this.demandeOuverte.set(false);
       this.message.set('');
       this.confirmationOuverte.set(true);
-    } catch {
-      this.erreur.set("L'envoi a échoué. Réessayez dans un instant.");
+    } catch (e) {
+      if (e instanceof HttpErrorResponse && e.status === 402) {
+        // Offre terminée entre-temps : écran de déblocage, la demande n'est pas partie
+        this.demandeOuverte.set(false);
+        this.etatAcces.set(await this.acces.etat().catch(() => null));
+        this.deblocageOuvert.set(true);
+      } else {
+        const detail = e instanceof HttpErrorResponse ? e.error?.professionnel?.[0] : null;
+        this.erreur.set(detail ?? "L'envoi a échoué. Réessayez dans un instant.");
+      }
     } finally {
       this.envoiEnCours.set(false);
     }

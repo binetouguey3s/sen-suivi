@@ -27,6 +27,10 @@ export const routes: Routes = [
           import('./features/ressources/bibliotheque.component').then((m) => m.BibliothequeComponent),
       },
       {
+        path: 'professionnels',
+        loadComponent: () => import('./features/annuaire/annuaire.component').then((m) => m.AnnuaireComponent),
+      },
+      {
         path: 'professionnels/:id',
         canActivate: [estConnecteGuard],
         loadComponent: () =>
@@ -49,6 +53,11 @@ export const routes: Routes = [
         path: '',
         loadComponent: () =>
           import('./features/pro/tableau-de-bord-pro.component').then((m) => m.TableauDeBordProComponent),
+      },
+      {
+        path: 'demandes/:id',
+        loadComponent: () =>
+          import('./features/demandes/conversation-relation.component').then((m) => m.ConversationRelationComponent),
       },
       {
         path: 'profil',
@@ -168,6 +177,16 @@ export const routes: Routes = [
         path: 'forum/:id',
         loadComponent: () =>
           import('./features/forum/detail.component').then((m) => m.ForumDetailComponent),
+      },
+      {
+        path: 'demandes',
+        loadComponent: () =>
+          import('./features/demandes/mes-demandes.component').then((m) => m.MesDemandesComponent),
+      },
+      {
+        path: 'demandes/:id',
+        loadComponent: () =>
+          import('./features/demandes/conversation-relation.component').then((m) => m.ConversationRelationComponent),
       },
     ],
   },

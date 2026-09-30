@@ -42,5 +42,7 @@ export interface ResultatEvaluation {
   texte_interpretation: string;
   avertissement: string;
   professionnels_suggeres: ProfessionnelSuggere[];
+  // Pourquoi le premier professionnel est proposé (algorithme d'orientation)
+  raison_suggestion: string;
   message: string;
 }

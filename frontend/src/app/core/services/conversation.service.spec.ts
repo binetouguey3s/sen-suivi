@@ -6,6 +6,7 @@ import { ReponseChatbot } from '../models/chatbot';
 import { AuthService } from './auth.service';
 import { ChatbotService } from './chatbot.service';
 import { ConversationService } from './conversation.service';
+import { UrgenceService } from './urgence.service';
 
 const REPONSE: ReponseChatbot = {
   conversation_id: 42,
@@ -30,6 +31,7 @@ describe('ConversationService', () => {
     identifiant.set(null);
     typeCompte.set(null);
     [envoyer, creer, lister, lire, supprimer].forEach((f) => f.mockReset());
+    sessionStorage.clear();
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
@@ -39,6 +41,34 @@ describe('ConversationService', () => {
     });
     service = TestBed.inject(ConversationService);
     TestBed.tick();
+  });
+
+  it('garde le jeton d’urgence remis quand une détresse est détectée', async () => {
+    envoyer.mockResolvedValue({ ...REPONSE, urgence: true, jeton_urgence: 'jeton-signe' });
+
+    await service.envoyer('Je n’en peux plus');
+
+    expect(TestBed.inject(UrgenceService).enDetresse()).toBe(true);
+    expect(TestBed.inject(UrgenceService).jeton()).toBe('jeton-signe');
+  });
+
+  it('affiche le professionnel suggéré par l’algorithme sous la réponse de Titou', async () => {
+    const pro = { id: 3, nom: 'Moussa Ba', specialite_affichee: 'Sophrologue', ville: 'Mbour', raison: 'Sophrologue, Moussa Ba accompagne le stress.' };
+    envoyer.mockResolvedValue({ ...REPONSE, orientation_professionnel: true, professionnel_suggere: pro });
+
+    await service.envoyer('Je veux un spécialiste');
+
+    const derniere = service.messages().at(-1)!;
+    expect(derniere.professionnel).toEqual(pro);
+    expect(derniere.orientationAnnuaire).toBe(false);
+  });
+
+  it('sans suggestion personnalisée, propose simplement l’annuaire', async () => {
+    envoyer.mockResolvedValue({ ...REPONSE, orientation_professionnel: true });
+
+    await service.envoyer('Je veux un spécialiste');
+
+    expect(service.messages().at(-1)!.orientationAnnuaire).toBe(true);
   });
 
   it('commence fermée, avec le message d’accueil de Titou', () => {

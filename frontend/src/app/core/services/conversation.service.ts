@@ -3,6 +3,7 @@ import { Injectable, computed, effect, inject, signal, untracked } from '@angula
 import { ConversationResume, MessageAffiche, MessageHistorique } from '../models/chatbot';
 import { AuthService } from './auth.service';
 import { ChatbotService } from './chatbot.service';
+import { UrgenceService } from './urgence.service';
 
 const MESSAGE_ACCUEIL =
   "Naka nga def ? Je suis là pour vous écouter. De quoi avez-vous envie de parler aujourd'hui ?";
@@ -28,6 +29,7 @@ function heureDe(date: Date): string {
 export class ConversationService {
   private readonly auth = inject(AuthService);
   private readonly chatbot = inject(ChatbotService);
+  private readonly urgence = inject(UrgenceService);
   private compteur = 0;
 
   private readonly ouverteInterne = signal(false);
@@ -96,7 +98,16 @@ export class ConversationService {
     try {
       const reponse = await this.chatbot.envoyer(contenu, this.conversationId(), conserver, historique);
       if (reponse.conversation_id) this.conversationId.set(reponse.conversation_id);
-      this.ajouter({ auteur: 'BOT', contenu: reponse.reponse, ressource: reponse.ressource, urgence: reponse.urgence });
+      // Détresse : la mise en relation devient gratuite et sans écran de paiement
+      if (reponse.jeton_urgence) this.urgence.memoriser(reponse.jeton_urgence);
+      this.ajouter({
+        auteur: 'BOT',
+        contenu: reponse.reponse,
+        ressource: reponse.ressource,
+        urgence: reponse.urgence,
+        professionnel: reponse.professionnel_suggere ?? null,
+        orientationAnnuaire: !!reponse.orientation_professionnel && !reponse.professionnel_suggere,
+      });
     } catch {
       this.ajouter({ auteur: 'BOT', contenu: MESSAGE_INDISPONIBLE });
     } finally {

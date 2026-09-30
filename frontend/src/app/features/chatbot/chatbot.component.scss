@@ -231,6 +231,32 @@
   }
 }
 
+.cb__pro {
+  align-items: flex-start;
+  border: 1px solid var(--ss-accent);
+}
+
+.cb__ressource-texte .cb__pro-etiquette {
+  color: var(--ss-texte-marque);
+  font-weight: var(--ss-poids-titre);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cb__ressource-texte .cb__pro-raison {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ss-texte);
+}
+
+.cb__pro-annuaire {
+  display: inline-block;
+  margin-top: var(--ss-espace-1);
+  color: var(--ss-texte-marque);
+  font-size: 13px;
+}
+
 .cb__bulle--typing {
   display: flex;
   align-items: center;

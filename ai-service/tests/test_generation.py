@@ -576,3 +576,48 @@ def test_l_encart_montre_une_ressource_du_catalogue_citee_par_titou():
 def test_un_titre_d_un_seul_mot_ne_suffit_pas_a_choisir_l_encart():
     catalogue = [{'ressource_id': 13, 'titre': 'Respirer', 'thematique': 'Respiration'}]
     assert main.ressource_evoquee('Prenez le temps de respirer un peu.', [], catalogue) is None
+
+
+# --- Orientation vers un professionnel (volet E) ------------------------------
+
+@pytest.mark.parametrize('message', ['Je veux parler à un psychologue', 'donne moi un spécialiste', 'une mise en relation svp'])
+def test_une_demande_de_professionnel_declenche_l_orientation(pipeline, message):
+    pipeline(REPONSE_EMPATHIQUE)
+    assert envoyer(message)['orientation_professionnel'] is True
+
+
+def test_une_reponse_qui_oriente_vers_l_annuaire_declenche_l_orientation(monkeypatch):
+    monkeypatch.setattr(main, 'rechercher_plusieurs', lambda message: [])
+    monkeypatch.setattr(main, 'generation_disponible', lambda: True)
+    monkeypatch.setattr(main, 'ecouter', modele("L'annuaire de Sen Suivi vous permet de trouver quelqu'un."))
+
+    assert envoyer('je ne sais plus quoi faire')['orientation_professionnel'] is True
+
+
+def test_une_detresse_n_oriente_jamais_vers_un_professionnel_payant():
+    corps = envoyer('je veux mourir, je veux un psychologue')
+
+    assert corps['urgence'] is True
+    assert corps['orientation_professionnel'] is False
+
+
+def test_une_conversation_ordinaire_n_oriente_pas(pipeline):
+    pipeline(REPONSE_EMPATHIQUE)
+    assert envoyer('Je suis un peu fatiguée ce soir')['orientation_professionnel'] is False
+
+
+def test_titou_sait_quand_une_suggestion_s_affichera_sous_son_message(monkeypatch):
+    monkeypatch.setattr(main, 'rechercher_plusieurs', lambda message: [])
+    monkeypatch.setattr(main, 'generation_disponible', lambda: True)
+    recu = {}
+
+    def ecouter_espion(*args, **options):
+        recu['suggestion_possible'] = options['suggestion_possible']
+        return "L'annuaire de Sen Suivi vous propose une piste juste en dessous."
+
+    monkeypatch.setattr(main, 'ecouter', ecouter_espion)
+
+    client.post('/message', json={'message': 'un spécialiste ?', 'suggestion_possible': True})
+
+    assert recu['suggestion_possible'] is True
+    assert generateur._contexte_suggestion(False) == []

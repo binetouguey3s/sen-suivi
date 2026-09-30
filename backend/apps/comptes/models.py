@@ -162,6 +162,9 @@ class Professionnel(CompteUtilisateur):
     adresse_cabinet = models.CharField('adresse du cabinet', max_length=150, blank=True)
     consultation_distance = models.BooleanField('consultation à distance', default=False)
     date_validation = models.DateTimeField('date de validation', null=True, blank=True)
+    # Disponibilité : un professionnel complet peut suspendre les nouvelles
+    # demandes ; il reste visible dans l'annuaire mais n'est plus suggéré
+    accepte_demandes = models.BooleanField('accepte de nouvelles demandes', default=True)
     statut_validation = models.CharField(
         'statut de validation',
         max_length=12,

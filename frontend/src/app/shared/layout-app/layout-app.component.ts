@@ -25,10 +25,14 @@ const LIENS_UTILISATEUR: LienNav[] = [
   { route: '/app', libelle: 'Accueil', icone: 'accueil', exact: true },
   { route: '/app/journal', libelle: 'Mon Journal', libelleMobile: 'Journal', icone: 'journal' },
   { route: '/app/forum', libelle: 'Forum', icone: 'forum' },
+  { route: '/app/demandes', libelle: 'Mes demandes', libelleMobile: 'Demandes', icone: 'courriel' },
   { route: '/ressources', libelle: 'Ressources', icone: 'ressources' },
   { route: '/lieux', libelle: 'Lieux & Soins', icone: 'lieux' },
   { route: '/app/parametres', libelle: 'Paramètres', libelleMobile: 'Réglages', icone: 'parametres' },
 ];
+
+// Barre basse mobile de l'utilisateur : les autres liens passent par le menu burger
+const ROUTES_MOBILE_UTILISATEUR = ['/app', '/app/journal', '/app/forum', '/app/parametres'];
 
 @Component({
   selector: 'ss-layout-app',
@@ -72,13 +76,13 @@ export class LayoutAppComponent {
   );
 
   // Navigation basse mobile, utilisateur : 2 liens, l'espace du chat, 2 liens.
-  // Ressources et Lieux & Soins restent accessibles depuis le menu burger
-  // plutôt que de surcharger la barre du bas à 6 entrées.
+  // Mes demandes, Ressources et Lieux & Soins restent accessibles depuis le
+  // menu burger plutôt que de surcharger la barre du bas.
   // Professionnel : les 4 liens côte à côte, comme sur sa maquette.
   protected readonly liensMobile = computed(() => {
     const l = this.liens();
     if (this.estProfessionnel()) return { gauche: l, droite: [] };
-    const choisis = [l[0], l[1], l[2], l[5]];
+    const choisis = ROUTES_MOBILE_UTILISATEUR.map((route) => l.find((lien) => lien.route === route)!);
     return { gauche: choisis.slice(0, 2), droite: choisis.slice(2) };
   });
 

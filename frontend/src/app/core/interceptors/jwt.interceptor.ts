@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, from, switchMap, throwError } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
+import { UrgenceService } from '../services/urgence.service';
 
 const ESPACES_PRIVES = ['/app', '/pro'];
 
@@ -16,8 +17,14 @@ export const jwtInterceptor: HttpInterceptorFn = (requete, suite) => {
     return suite(requete);
   }
 
-  const avecJeton = (r: HttpRequest<unknown>, jeton: string | null) =>
-    jeton ? r.clone({ setHeaders: { Authorization: `Bearer ${jeton}` } }) : r;
+  // Détresse détectée par le chatbot : la mise en relation reste gratuite, sans écran de paiement
+  const jetonUrgence = inject(UrgenceService).jeton();
+  const avecJeton = (r: HttpRequest<unknown>, jeton: string | null) => {
+    const entetes: Record<string, string> = {};
+    if (jeton) entetes['Authorization'] = `Bearer ${jeton}`;
+    if (jetonUrgence) entetes['X-Jeton-Urgence'] = jetonUrgence;
+    return Object.keys(entetes).length ? r.clone({ setHeaders: entetes }) : r;
+  };
 
   return from(auth.jetonAccesValide()).pipe(
     switchMap((jeton) => suite(avecJeton(requete, jeton))),

@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.comptes.permissions import EstUtilisateur
+from apps.orientation.services import suggerer
+from apps.orientation.urgence import emettre_jeton
 from apps.ressources.models import Ressource
 from apps.suivi.profil_tendance import a_consenti, profil_tendance
 
@@ -40,7 +42,9 @@ class ChatbotMessageView(APIView):
         donnees = entree.validated_data
 
         try:
-            resultat = traiter_message(donnees['message'], donnees['historique'], self._profil(request))
+            resultat = traiter_message(
+                donnees['message'], donnees['historique'], self._profil(request), self._suggestion_possible(request)
+            )
         except MicroserviceIAIndisponible:
             return Response(
                 {
@@ -57,10 +61,43 @@ class ChatbotMessageView(APIView):
             )
 
         conversation_id = self._conserver_si_necessaire(request, donnees, resultat)
+        resultat = {**resultat, **self._orientation(request, donnees, resultat)}
 
         sortie = MessageSortieSerializer(data={**resultat, 'conversation_id': conversation_id})
         sortie.is_valid(raise_exception=True)
         return Response(sortie.validated_data)
+
+    def _suggestion_possible(self, request):
+        return request.user.is_authenticated and getattr(request.user, 'utilisateur', None) is not None
+
+    def _orientation(self, request, donnees, resultat):
+        """Jeton d'urgence en cas de détresse ; sinon, si la personne cherche un
+        professionnel, celui que l'algorithme d'orientation met en avant."""
+        utilisateur = getattr(request.user, 'utilisateur', None) if request.user.is_authenticated else None
+        if utilisateur is None:
+            return {}
+        if resultat.get('urgence'):
+            return {'jeton_urgence': emettre_jeton(utilisateur)}
+        if not resultat.get('orientation_professionnel'):
+            return {}
+        textes = [e['contenu'] for e in donnees['historique'] if e['auteur'] == 'UTILISATEUR'] + [donnees['message']]
+        try:
+            suggestion = suggerer(utilisateur, textes=textes)
+        except Exception:  # la suggestion est un confort : son échec ne bloque jamais la réponse
+            journal.exception("Suggestion d'orientation indisponible")
+            return {}
+        if suggestion is None:
+            return {}
+        pro = suggestion.professionnel
+        return {
+            'professionnel_suggere': {
+                'id': pro.pk,
+                'nom': pro.nom,
+                'specialite_affichee': pro.get_specialite_display(),
+                'ville': pro.ville,
+                'raison': suggestion.raison,
+            }
+        }
 
     def _profil(self, request):
         """Profil de tendance d'un utilisateur connecté et consentant ; sinon aucun,

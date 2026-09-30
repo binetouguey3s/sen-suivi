@@ -1,5 +1,6 @@
 import { HttpClient, httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../../core/config/api.config';
@@ -18,6 +19,8 @@ interface Demande {
   ville: string;
   nom: string | null;
   email: string | null;
+  // Messages de la personne pas encore lus (messagerie privée)
+  non_lus: number;
 }
 
 type Onglet = 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE';
@@ -34,7 +37,7 @@ function finDeJour(date: Date): number {
 @Component({
   selector: 'ss-tableau-de-bord-pro',
   standalone: true,
-  imports: [IconComponent, SparklineComponent],
+  imports: [RouterLink, IconComponent, SparklineComponent],
   templateUrl: './tableau-de-bord-pro.component.html',
   styleUrl: './tableau-de-bord-pro.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

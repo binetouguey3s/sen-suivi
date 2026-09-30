@@ -56,7 +56,7 @@ class ProfessionnelPublicSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'nom', 'specialite', 'specialite_affichee',
             'ville', 'langue', 'tarif_indicatif', 'presentation',
-            'domaines', 'consultation_cabinet', 'adresse_cabinet', 'consultation_distance',
+            'domaines', 'consultation_cabinet', 'adresse_cabinet', 'consultation_distance', 'accepte_demandes',
         ]
 
 
@@ -83,7 +83,7 @@ class ProfessionnelProfilSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'nom', 'specialite_affichee',
             'ville', 'langue', 'tarif_indicatif', 'presentation',
-            'domaines', 'consultation_cabinet', 'adresse_cabinet', 'consultation_distance',
+            'domaines', 'consultation_cabinet', 'adresse_cabinet', 'consultation_distance', 'accepte_demandes',
         ]
         read_only_fields = ['id', 'nom']
 

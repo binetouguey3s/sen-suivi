@@ -1,0 +1,52 @@
+<header class="md__entete">
+  <h1>Mes demandes</h1>
+  <p>Suivez vos demandes de mise en relation. Dès qu'un professionnel accepte, vous pouvez lui écrire ici, en toute confidentialité.</p>
+</header>
+
+@if (demandes.isLoading() && !liste().length) {
+  <p class="md__etat">Chargement…</p>
+} @else if (demandes.error()) {
+  <p class="md__etat">Vos demandes sont momentanément indisponibles. Réessayez dans un instant.</p>
+} @else {
+  <ul class="md__liste">
+    @for (d of liste(); track d.id) {
+      <li class="md__carte">
+        <div class="md__haut">
+          <div>
+            <h2>{{ d.professionnel_nom }}</h2>
+            <span class="md__meta">{{ d.professionnel_specialite }} · {{ d.professionnel_ville }}</span>
+          </div>
+          <span class="md__statut" [class]="'md__statut md__statut--' + d.statut">{{ libelleStatut[d.statut] }}</span>
+        </div>
+        <p class="md__date">Demande envoyée le {{ date(d.date) }}</p>
+
+        @switch (d.statut) {
+          @case ('EN_ATTENTE') {
+            <p class="md__texte">{{ d.professionnel_nom }} n'a pas encore répondu. Votre identité reste masquée jusqu'à son acceptation.</p>
+          }
+          @case ('ACCEPTEE') {
+            <p class="md__texte">{{ d.professionnel_nom }} a accepté votre demande. Écrivez-lui pour convenir ensemble d'un premier échange{{ modalites(d) }}.</p>
+            @if (d.consultation_cabinet && d.adresse_cabinet) {
+              <p class="md__ligne"><ss-icon nom="batiment" taille="sm" /> {{ d.adresse_cabinet }}</p>
+            }
+            <a class="md__bouton" [routerLink]="['/app/demandes', d.id]">
+              <ss-icon nom="chat" taille="sm" /> Ouvrir la conversation
+              @if (d.non_lus) { <span class="md__pastille">{{ d.non_lus }}</span> }
+            </a>
+          }
+          @case ('REFUSEE') {
+            <p class="md__texte">{{ d.professionnel_nom }} ne peut pas donner suite pour le moment. D'autres professionnels peuvent vous accompagner.</p>
+            <a class="md__lien" routerLink="/professionnels">Voir l'annuaire</a>
+          }
+        }
+      </li>
+    } @empty {
+      <li class="md__vide">
+        <p>Vous n'avez encore envoyé aucune demande.</p>
+        <a class="md__bouton" routerLink="/professionnels">Découvrir les professionnels</a>
+      </li>
+    }
+  </ul>
+}
+
+<p class="md__mention">En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>, gratuitement.</p>

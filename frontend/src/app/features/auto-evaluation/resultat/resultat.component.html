@@ -21,6 +21,9 @@
             <h2 id="titre-pros">Des professionnels qui peuvent vous accompagner</h2>
             <span class="res__glisser" aria-hidden="true">Faites glisser <ss-icon nom="fleche" taille="sm" /></span>
           </div>
+          @if (r.raison_suggestion) {
+            <p class="res__raison"><ss-icon nom="suggestion" taille="sm" /> {{ r.raison_suggestion }}</p>
+          }
 
           <ul class="res__liste">
             @for (pro of r.professionnels_suggeres; track pro.id) {
@@ -43,6 +46,7 @@
               </li>
             }
           </ul>
+          <a class="res__annuaire" routerLink="/professionnels">Voir tout l'annuaire des professionnels</a>
         </section>
       } @else {
         <section class="res__carte res__sans-pros">

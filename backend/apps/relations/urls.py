@@ -5,4 +5,5 @@ from . import views
 urlpatterns = [
     path('demandes-contact', views.DemandeContactListCreateView.as_view()),
     path('demandes-contact/<int:pk>', views.DemandeContactReponseView.as_view()),
+    path('demandes-contact/<int:pk>/messages', views.MessagesRelationView.as_view()),
 ]

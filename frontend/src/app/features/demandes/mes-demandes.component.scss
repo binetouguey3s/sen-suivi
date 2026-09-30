@@ -1,0 +1,147 @@
+:host {
+  display: block;
+}
+
+.md__entete {
+  h1 {
+    margin: 0;
+    font-family: var(--ss-police-titres);
+    font-weight: var(--ss-poids-texte-fort);
+    font-size: 28px;
+    letter-spacing: var(--ss-interlettrage-moyen);
+    color: var(--ss-texte-marque);
+
+    @media (min-width: 900px) {
+      font-size: 42px;
+      letter-spacing: var(--ss-interlettrage-grand);
+    }
+  }
+
+  p {
+    max-width: 620px;
+    margin: var(--ss-espace-1) 0 0;
+    color: var(--ss-texte-doux);
+  }
+}
+
+.md__liste {
+  display: grid;
+  gap: var(--ss-espace-3);
+  margin: var(--ss-espace-4) 0 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.md__carte,
+.md__vide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-3);
+  border-radius: var(--ss-rayon-grande-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+}
+
+.md__vide p {
+  margin: 0;
+  color: var(--ss-texte-doux);
+}
+
+.md__haut {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ss-espace-2);
+  width: 100%;
+
+  h2 {
+    margin: 0;
+    font-family: var(--ss-police-titres);
+    font-size: 20px;
+    color: var(--ss-texte-marque);
+  }
+}
+
+.md__meta,
+.md__date {
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+}
+
+.md__date {
+  margin: 0;
+}
+
+.md__statut {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface-neutre);
+  color: var(--ss-texte);
+  font-size: 13px;
+  font-weight: var(--ss-poids-titre);
+}
+
+.md__statut--ACCEPTEE {
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte-fort);
+}
+
+.md__texte {
+  margin: 0;
+  color: var(--ss-texte);
+  line-height: 1.5;
+}
+
+.md__ligne {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+}
+
+.md__bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  padding: 10px var(--ss-espace-3);
+  border-radius: var(--ss-rayon-bouton);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
+  font-weight: var(--ss-poids-texte-fort);
+  text-decoration: none;
+}
+
+.md__pastille {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte-fort);
+  font-size: 12px;
+  text-align: center;
+}
+
+.md__lien {
+  color: var(--ss-texte-marque);
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.md__etat {
+  margin-top: var(--ss-espace-4);
+  color: var(--ss-texte-doux);
+}
+
+.md__mention {
+  margin-top: var(--ss-espace-5);
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}

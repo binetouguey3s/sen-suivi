@@ -77,7 +77,7 @@ class ConservationTests(APITestCase):
 
         self.client.post(URL_MESSAGE, {'message': 'Ça va', 'historique': historique}, format='json')
 
-        traiter.assert_called_once_with('Ça va', historique, None)
+        traiter.assert_called_once_with('Ça va', historique, None, False)
         self.assertFalse(MessageChatbot.objects.exists())
 
     def test_une_reponse_generee_par_le_modele_est_conservee(self, traiter):

@@ -339,3 +339,24 @@
   z-index: 20;
   cursor: pointer;
 }
+
+.res__raison {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: var(--ss-espace-2) 0 0;
+  color: var(--ss-texte);
+  line-height: 1.5;
+
+  ss-icon {
+    margin-top: 3px;
+    color: var(--ss-texte-marque);
+  }
+}
+
+.res__annuaire {
+  display: inline-block;
+  margin-top: var(--ss-espace-3);
+  color: var(--ss-texte-marque);
+  font-weight: var(--ss-poids-texte-fort);
+}

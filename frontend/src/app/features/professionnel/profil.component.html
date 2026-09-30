@@ -25,7 +25,9 @@
         <h1>{{ p.nom }}</h1>
         <span class="pp__specialite">{{ p.specialite_affichee }}</span>
         <p class="pp__ligne"><ss-icon nom="lieux" taille="sm" /> {{ p.ville }}</p>
-        <p class="pp__ligne pp__desktop"><ss-icon nom="billet" taille="sm" /> <strong>{{ tarif() }}</strong> la séance</p>
+        @if (!enDetresse()) {
+          <p class="pp__ligne pp__desktop"><ss-icon nom="billet" taille="sm" /> <strong>{{ tarif() }}</strong> la séance</p>
+        }
         @if (langues().length) {
           <ul class="pp__langues">
             @for (l of langues(); track l) { <li>{{ l }}</li> }
@@ -35,16 +37,23 @@
 
       <div class="pp__actions">
         <span class="pp__verifie"><ss-icon nom="verifie" taille="sm" /> Profil vérifié par Sen Suivi</span>
-        <p class="pp__tarif pp__mobile">
-          <span>Tarif habituel</span>
-          <strong>{{ tarif() }}</strong> / séance
-        </p>
+        @if (!enDetresse()) {
+          <p class="pp__tarif pp__mobile">
+            <span>Tarif habituel</span>
+            <strong>{{ tarif() }}</strong> / séance
+          </p>
+        }
         @if (peutDemander()) {
-          <div class="pp__demande-zone">
-            <button type="button" class="pp__demande" (click)="demandeOuverte.set(true)">
-              Demander une mise en relation <ss-icon nom="envoyer" taille="sm" />
-            </button>
-          </div>
+          <ss-badge-offre />
+          @if (p.accepte_demandes) {
+            <div class="pp__demande-zone">
+              <button type="button" class="pp__demande" (click)="ouvrirDemande()">
+                Demander une mise en relation <ss-icon nom="envoyer" taille="sm" />
+              </button>
+            </div>
+          } @else {
+            <p class="pp__indisponible">Ce professionnel ne prend pas de nouvelles demandes pour le moment. <a routerLink="/professionnels">Voir les autres professionnels</a></p>
+          }
         }
       </div>
     </section>
@@ -122,11 +131,34 @@
     </div>
   </ss-modal>
 
+  <ss-modal [(ouverte)]="deblocageOuvert">
+    <div class="pp__modale">
+      <h2>Continuer vers la mise en relation</h2>
+      <p class="pp__texte">La période de lancement, pendant laquelle la mise en relation était gratuite, est terminée. Pour contacter {{ p.nom }}, un accès de {{ etatAcces()?.duree_acces_jours }} jours coûte <strong>{{ tarifAcces() }} FCFA</strong>, payable par mobile money.</p>
+      <p class="pp__note"><ss-icon nom="coeur" taille="sm" /> Titou, le journal, les tests, la bibliothèque, le forum et l'annuaire restent gratuits, pour toujours.</p>
+      <div class="pp__moyens" role="radiogroup" aria-label="Moyen de paiement">
+        @for (m of moyens; track m.valeur) {
+          <button type="button" role="radio" class="pp__moyen" [class.pp__moyen--actif]="moyen() === m.valeur" [attr.aria-checked]="moyen() === m.valeur" (click)="moyen.set(m.valeur)">{{ m.libelle }}</button>
+        }
+      </div>
+      <ss-champ libelle="Numéro de téléphone" type="text" [(valeur)]="telephone" placeholder="77 123 45 67" />
+      @if (messagePaiement(); as msg) { <p class="pp__texte" role="status">{{ msg }}</p> }
+      <p class="pp__note">Besoin de parler à quelqu'un tout de suite ? Le <strong>800 805 805</strong> est gratuit, à toute heure.</p>
+      <div class="pp__modale-actions">
+        <button type="button" class="pp__bouton pp__bouton--contour" (click)="deblocageOuvert.set(false)">Plus tard</button>
+        <button type="button" class="pp__bouton" [disabled]="paiementEnCours() || !telephone().trim()" (click)="payer()">
+          {{ paiementEnCours() ? 'Envoi…' : 'Payer ' + tarifAcces() + ' FCFA' }}
+        </button>
+      </div>
+    </div>
+  </ss-modal>
+
   <ss-modal [(ouverte)]="confirmationOuverte">
     <div class="pp__confirmation">
       <span class="pp__confirmation-icone"><ss-icon nom="verifie" taille="lg" /></span>
       <h2>Demande envoyée</h2>
-      <p>{{ p.nom }} vous répondra prochainement.</p>
+      <p>{{ p.nom }} vous répondra prochainement. Dès son acceptation, vous pourrez lui écrire depuis « Mes demandes ».</p>
+      <a class="pp__bouton pp__bouton--contour" routerLink="/app/demandes">Suivre ma demande</a>
       <button type="button" class="pp__bouton" (click)="retourAccueil()"><ss-icon nom="fleche-gauche" taille="sm" /> Retour à l'accueil</button>
     </div>
   </ss-modal>

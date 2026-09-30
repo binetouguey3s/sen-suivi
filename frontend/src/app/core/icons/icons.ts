@@ -12,6 +12,8 @@ import {
   LucideMoon,
   LucideMonitor,
   LucidePause,
+  LucideGift,
+  LucideSparkles,
   LucidePlay,
   LucideUserCheck,
   LucideBanknote,
@@ -123,6 +125,8 @@ export const ICONES = {
   lune: LucideMoon,
   ecran: LucideMonitor,
   pause: LucidePause,
+  cadeau: LucideGift,
+  suggestion: LucideSparkles,
   lecture: LucidePlay,
 } as const;
 
