@@ -363,3 +363,50 @@
 .fo__confirmation-icone {
   color: var(--ss-texte-marque);
 }
+
+.fo__suspension,
+.fo__mes-messages {
+  margin: 0 var(--ss-marge-mobile) var(--ss-espace-3);
+  padding: var(--ss-espace-2) var(--ss-espace-3);
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+
+  @media (min-width: 900px) {
+    margin-inline: 0;
+  }
+}
+
+.fo__suspension {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ss-espace-1);
+  color: var(--ss-texte);
+}
+
+.fo__mes-messages {
+  summary {
+    color: var(--ss-texte-marque);
+    font-weight: var(--ss-poids-texte-fort);
+    cursor: pointer;
+  }
+
+  ul {
+    display: grid;
+    gap: var(--ss-espace-3);
+    margin: var(--ss-espace-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.fo__mes-messages-titre {
+  margin: 0;
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.fo__mes-messages-contenu {
+  margin: 4px 0 var(--ss-espace-1);
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+}

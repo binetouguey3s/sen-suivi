@@ -56,7 +56,7 @@
   </div>
 } @else {
   <ul class="tp__liste">
-    @for (d of affichees(); track d.id) {
+    @for (d of afficheesPage(); track d.id) {
       <li class="tp__demande">
         <div class="tp__contenu">
           <div class="tp__identite">
@@ -89,5 +89,6 @@
       </li>
     }
   </ul>
+  <ss-pagination [total]="affichees().length" [parPage]="10" [(page)]="page" />
 }
 

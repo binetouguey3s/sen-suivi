@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../config/api.config';
-import { RessourceAdmin, StatutModerationForum, StatutValidationPro } from '../models/administration';
+import { ActionModeration, RessourceAdmin, StatutModerationForum, StatutValidationPro } from '../models/administration';
 
 @Injectable({ providedIn: 'root' })
 export class AdministrationService {
@@ -23,6 +23,11 @@ export class AdministrationService {
     await firstValueFrom(
       this.http.patch(`${API_BASE_URL}/forum/moderation/commentaires/${id}`, { statut_moderation: statut }),
     );
+  }
+
+  // Décision humaine sur un élément de la file : elle l'emporte toujours sur celle de l'IA
+  async trancher(id: number, action: ActionModeration): Promise<void> {
+    await firstValueFrom(this.http.post(`${API_BASE_URL}/forum/moderation/file/${id}`, { action }));
   }
 
   async creerRessource(donnees: Partial<RessourceAdmin>): Promise<void> {

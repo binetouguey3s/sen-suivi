@@ -26,7 +26,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (r of liste(); track r.id) {
+      @for (r of listePage(); track r.id) {
         <tr>
           <td class="ar__titre">{{ r.titre }}</td>
           <td><span class="ar__chip"><ss-icon [nom]="iconeType(r.type_ressource)" taille="sm" /> {{ libelleType(r.type_ressource) }}</span></td>
@@ -42,6 +42,7 @@
       }
     </tbody>
   </table>
+  <ss-pagination [total]="liste().length" [parPage]="20" [(page)]="page" />
 }
 
 <ss-modal [(ouverte)]="modaleOuverte">

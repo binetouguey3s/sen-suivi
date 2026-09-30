@@ -23,7 +23,56 @@ export interface ProfessionnelAdmin {
   date_creation: string;
 }
 
-export type StatutModerationForum = 'EN_ATTENTE' | 'VISIBLE' | 'MASQUE' | 'SUPPRIME';
+export type StatutModerationForum = 'EN_ATTENTE' | 'VISIBLE' | 'MASQUE' | 'SUPPRIME' | 'BLOQUE';
+
+// Ce que la modération automatique a décidé, et pourquoi
+export interface DecisionIA {
+  id: number;
+  decision: string;
+  decision_affichee: string;
+  categorie: string;
+  gravite: number;
+  raison: string;
+  extrait: string;
+  niveau: 'REGLES' | 'MODELE' | 'REPLI';
+  date: string;
+  decision_humaine: '' | 'PUBLIER' | 'BLOQUER' | 'CLASSER';
+  motif_contestation: string;
+  date_contestation: string | null;
+}
+
+// File des administrateurs : doutes, détresse, blocages graves, contestations
+export interface ElementFileModeration {
+  id: number;
+  type: 'PUBLICATION' | 'COMMENTAIRE';
+  objet_id: number;
+  pseudonyme: string;
+  titre: string;
+  contenu: string;
+  statut_moderation: StatutModerationForum;
+  decision: string;
+  decision_affichee: string;
+  categorie: string;
+  gravite: number;
+  raison: string;
+  extrait: string;
+  niveau: 'REGLES' | 'MODELE' | 'REPLI';
+  priorite: number;
+  date: string;
+  motif_contestation: string;
+  date_contestation: string | null;
+}
+
+export type ActionModeration = 'PUBLIER' | 'BLOQUER' | 'CLASSER';
+
+export interface StatistiquesModeration {
+  total: number;
+  taux_blocage: number;
+  faux_positifs: number;
+  contestations: number;
+  a_traiter: number;
+  par_niveau: Record<string, number>;
+}
 
 export interface PublicationForumAdmin {
   id: number;
@@ -34,6 +83,7 @@ export interface PublicationForumAdmin {
   thematique_affichee: string;
   date: string;
   statut_moderation: StatutModerationForum;
+  decision_ia: DecisionIA | null;
 }
 
 export interface CommentaireForumAdmin {
@@ -44,6 +94,7 @@ export interface CommentaireForumAdmin {
   contenu: string;
   date: string;
   statut_moderation: StatutModerationForum;
+  decision_ia: DecisionIA | null;
 }
 
 export interface RessourceAdmin {

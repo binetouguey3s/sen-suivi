@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
@@ -8,6 +8,7 @@ import { ProfessionnelPublic, SuggestionOrientation } from '../../core/models/or
 import { AuthService } from '../../core/services/auth.service';
 import { BadgeOffreComponent } from '../../shared/badge-offre/badge-offre.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { PaginationComponent, tranche } from '../../shared/pagination/pagination.component';
 
 const CLE_SUGGESTION_IGNOREE = 'sen-suivi.suggestion-ignoree';
 
@@ -30,7 +31,7 @@ function premiereMajuscule(texte: string): string {
 @Component({
   selector: 'ss-annuaire',
   standalone: true,
-  imports: [RouterLink, IconComponent, BadgeOffreComponent],
+  imports: [RouterLink, IconComponent, BadgeOffreComponent, PaginationComponent],
   templateUrl: './annuaire.component.html',
   styleUrl: './annuaire.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -90,6 +91,10 @@ export class AnnuaireComponent {
         (!texte || `${p.nom} ${p.specialite_affichee} ${p.domaines.join(' ')}`.toLowerCase().includes(texte)),
     );
   });
+
+  // Pagination : retour à la première page quand les filtres changent
+  protected readonly page = linkedSignal({ source: () => [this.specialite(), this.ville(), this.langue(), this.aDistance(), this.enCabinet(), this.recherche()], computation: () => 1 });
+  protected readonly professionnelsPage = computed(() => tranche(this.professionnels(), this.page(), 9));
   protected readonly filtresActifs = computed(
     () => !!(this.specialite() || this.ville() || this.langue() || this.aDistance() || this.enCabinet() || this.recherche()),
   );

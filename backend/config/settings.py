@@ -176,3 +176,12 @@ ACCES_TARIF_FCFA = env.int('ACCES_TARIF_FCFA', default=2000)
 ACCES_DUREE_JOURS = env.int('ACCES_DUREE_JOURS', default=30)
 # Durée de validité du jeton remis par le chatbot quand il détecte une détresse
 URGENCE_JETON_HEURES = env.int('URGENCE_JETON_HEURES', default=24)
+
+# Modération du forum : analyse en arrière-plan (l'interface n'attend pas le
+# modèle) ; au-delà de MODERATION_SEUIL_INFRACTIONS blocages en
+# MODERATION_FENETRE_JOURS jours, suspension de MODERATION_SUSPENSION_JOURS jours.
+# Les messages de détresse ne comptent jamais.
+MODERATION_ASYNCHRONE = env.bool('MODERATION_ASYNCHRONE', default=True)
+MODERATION_SEUIL_INFRACTIONS = env.int('MODERATION_SEUIL_INFRACTIONS', default=3)
+MODERATION_FENETRE_JOURS = env.int('MODERATION_FENETRE_JOURS', default=30)
+MODERATION_SUSPENSION_JOURS = env.int('MODERATION_SUSPENSION_JOURS', default=7)

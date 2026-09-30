@@ -1,10 +1,11 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
 import { DemandeUtilisateur } from '../../core/services/demandes.service';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { PaginationComponent, tranche } from '../../shared/pagination/pagination.component';
 
 const LIBELLE_STATUT = { EN_ATTENTE: 'En attente', ACCEPTEE: 'Acceptée', REFUSEE: 'Déclinée' } as const;
 
@@ -13,7 +14,7 @@ const LIBELLE_STATUT = { EN_ATTENTE: 'En attente', ACCEPTEE: 'Acceptée', REFUSE
 @Component({
   selector: 'ss-mes-demandes',
   standalone: true,
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, PaginationComponent],
   templateUrl: './mes-demandes.component.html',
   styleUrl: './mes-demandes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +24,10 @@ export class MesDemandesComponent {
     defaultValue: [],
   });
   protected readonly liste = computed(() => (this.demandes.hasValue() ? this.demandes.value() : []));
+
+  // Pagination : 10 éléments par page
+  protected readonly page = signal(1);
+  protected readonly listePage = computed(() => tranche(this.liste(), this.page(), 10));
   protected readonly libelleStatut = LIBELLE_STATUT;
 
   protected modalites(d: DemandeUtilisateur): string {

@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../../core/config/api.config';
@@ -7,13 +7,14 @@ import { ProfessionnelAdmin, StatutValidationPro } from '../../../core/models/ad
 import { AdministrationService } from '../../../core/services/administration.service';
 import { valeurs } from '../../../core/utils/ressource';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { PaginationComponent, tranche } from '../../../shared/pagination/pagination.component';
 
 type Onglet = 'TOUS' | StatutValidationPro;
 
 @Component({
   selector: 'ss-admin-professionnels',
   standalone: true,
-  imports: [RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent, PaginationComponent],
   templateUrl: './professionnels.component.html',
   styleUrl: './professionnels.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +50,10 @@ export class AdminProfessionnelsComponent {
     { defaultValue: [] },
   );
   protected readonly liste = computed(() => valeurs(this.professionnels));
+
+  // Pagination : retour à la première page quand les filtres changent
+  protected readonly page = linkedSignal({ source: () => [this.onglet(), this.recherche()], computation: () => 1 });
+  protected readonly listePage = computed(() => tranche(this.liste(), this.page(), 20));
   protected readonly nombreSelectionnes = computed(() => this.selection().size);
 
   protected dateInscription(iso: string): string {

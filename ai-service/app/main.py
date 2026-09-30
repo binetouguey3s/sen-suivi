@@ -32,6 +32,7 @@ from pydantic import BaseModel, Field
 from app.classificateur_intention import REPONSE_PAR_INTENTION, classifier
 from app.detecteur_detresse import REPONSE_URGENCE, detecter_detresse
 from app.generateur_reponse import echeance_totale, ecouter, generation_disponible, generer
+from app.moderateur_forum import moderer
 from app.moteur_rag import NOMBRE_MAX_RESULTATS, catalogue, indexer_ressources, rechercher, rechercher_plusieurs
 from app.validateur_reponse import mots_significatifs, valider
 
@@ -313,6 +314,17 @@ def _generer_valide(
         profil=profil,
         suggestion_possible=suggestion_possible,
     )
+
+
+class TexteAModerer(BaseModel):
+    texte: str = Field(max_length=10000)
+
+
+@app.post('/moderer')
+def moderer_forum(entree: TexteAModerer):
+    """Modération d'un message du forum : niveau 0 (règles), niveau 1 (modèle),
+    niveau 2 (décision). Django applique la décision renvoyée."""
+    return moderer(entree.texte).en_dict()
 
 
 @app.post('/reindexer')

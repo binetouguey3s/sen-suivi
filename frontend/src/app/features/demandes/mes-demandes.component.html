@@ -9,7 +9,7 @@
   <p class="md__etat">Vos demandes sont momentanément indisponibles. Réessayez dans un instant.</p>
 } @else {
   <ul class="md__liste">
-    @for (d of liste(); track d.id) {
+    @for (d of listePage(); track d.id) {
       <li class="md__carte">
         <div class="md__haut">
           <div>
@@ -47,6 +47,7 @@
       </li>
     }
   </ul>
+  <ss-pagination [total]="liste().length" [parPage]="10" [(page)]="page" />
 }
 
 <p class="md__mention">En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>, gratuitement.</p>

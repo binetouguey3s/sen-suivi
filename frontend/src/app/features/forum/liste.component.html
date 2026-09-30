@@ -9,6 +9,25 @@
   </label>
 </header>
 
+@if (suspenduJusquAu(); as date) {
+  <p class="fo__suspension" role="status"><ss-icon nom="horloge" taille="sm" /> Plusieurs de vos messages n'ont pas respecté la charte : vous pourrez de nouveau publier le {{ date }}. Vous pouvez toujours lire le forum, et Titou reste à votre écoute.</p>
+}
+
+@if (nonPublies().length) {
+  <details class="fo__mes-messages">
+    <summary>Mes messages non publiés ({{ nonPublies().length }})</summary>
+    <ul>
+      @for (m of nonPublies(); track m.type + m.id) {
+        <li>
+          <p class="fo__mes-messages-titre">{{ m.titre }}</p>
+          <p class="fo__mes-messages-contenu">{{ m.contenu }}</p>
+          <ss-suivi-moderation [type]="m.type" [idMessage]="m.id" (publie)="apresPublication()" (reformuler)="reformuler($event)" />
+        </li>
+      }
+    </ul>
+  </details>
+}
+
 <div class="fo__grille">
   <div class="fo__colonne">
     <div class="fo__chips">
@@ -39,7 +58,7 @@
         <p>Aucune publication ne correspond à votre recherche.</p>
       </div>
     } @else {
-      @for (p of liste(); track p.id) {
+      @for (p of listePage(); track p.id) {
         <article class="fo__carte" (click)="ouvrirPublication(p.id)">
           <div class="fo__auteur">
             <span class="fo__avatar">{{ initiales(p.pseudonyme) }}</span>
@@ -55,6 +74,7 @@
           </div>
         </article>
       }
+      <ss-pagination [total]="liste().length" [parPage]="10" [(page)]="page" />
     }
   </div>
 
@@ -104,7 +124,7 @@
       }
     </div>
     @if (erreur()) { <p class="fo__erreur" role="alert">{{ erreur() }}</p> }
-    <p class="fo__note"><ss-icon nom="bouclier" taille="sm" /> Votre message est relu par un modérateur avant publication pour garantir un espace sûr et bienveillant.</p>
+    <p class="fo__note"><ss-icon nom="bouclier" taille="sm" /> Chaque message est vérifié en quelques secondes avant publication, pour garder un espace sûr et bienveillant. Vous pouvez parler de ce que vous traversez : seuls les propos qui visent quelqu'un sont retenus.</p>
     <div class="fo__modale-actions">
       <button type="button" class="fo__bouton fo__bouton--contour" (click)="modaleOuverte.set(false)">Annuler</button>
       <button type="button" class="fo__bouton" [disabled]="envoiEnCours()" (click)="publier()">
@@ -116,9 +136,11 @@
 
 <ss-modal [(ouverte)]="confirmationOuverte">
   <div class="fo__confirmation">
-    <span class="fo__confirmation-icone"><ss-icon nom="verifie" taille="lg" /></span>
+    <span class="fo__confirmation-icone"><ss-icon nom="bouclier" taille="lg" /></span>
     <h2>Publication envoyée</h2>
-    <p>Elle sera visible dès qu'un modérateur l'aura validée.</p>
-    <button type="button" class="fo__bouton" (click)="confirmationOuverte.set(false)">Fermer</button>
+    @if (envoyee(); as id) {
+      <ss-suivi-moderation type="PUBLICATION" [idMessage]="id" (publie)="apresPublication()" (reformuler)="reformuler($event)" />
+    }
+    <button type="button" class="fo__bouton fo__bouton--contour" (click)="confirmationOuverte.set(false)">Fermer</button>
   </div>
 </ss-modal>

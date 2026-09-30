@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 
 import { API_BASE_URL } from '../../../core/config/api.config';
 import { RessourceAdmin } from '../../../core/models/administration';
@@ -9,6 +9,7 @@ import { valeurs } from '../../../core/utils/ressource';
 import { ChampComponent } from '../../../shared/champ/champ.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ModalComponent } from '../../../shared/modal/modal.component';
+import { PaginationComponent, tranche } from '../../../shared/pagination/pagination.component';
 
 type Format = RessourceAdmin['type_ressource'];
 const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST'];
@@ -16,7 +17,7 @@ const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST'];
 @Component({
   selector: 'ss-admin-ressources',
   standalone: true,
-  imports: [ChampComponent, IconComponent, ModalComponent],
+  imports: [ChampComponent, IconComponent, ModalComponent, PaginationComponent],
   templateUrl: './ressources.component.html',
   styleUrl: './ressources.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +35,10 @@ export class AdminRessourcesComponent {
     defaultValue: [],
   });
   protected readonly liste = () => valeurs(this.ressources);
+
+  // Pagination : 10 éléments par page
+  protected readonly page = signal(1);
+  protected readonly listePage = computed(() => tranche(this.liste(), this.page(), 20));
 
   protected readonly modaleOuverte = signal(false);
   protected readonly enEdition = signal<RessourceAdmin | null>(null);

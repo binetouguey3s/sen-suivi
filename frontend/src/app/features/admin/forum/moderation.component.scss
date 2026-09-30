@@ -27,7 +27,7 @@
   }
 }
 
-.mf__contenu-choix-item--actif {
+.mf__contenu-choix button.mf__contenu-choix-item--actif {
   color: var(--ss-texte);
   border-bottom-color: var(--ss-primaire-fort);
 }
@@ -159,6 +159,7 @@
 }
 
 .mf__badge--MASQUE,
+.mf__badge--BLOQUE,
 .mf__badge--SUPPRIME {
   background: var(--ss-alerte-douce);
   color: var(--ss-alerte-sur-douce);
@@ -229,4 +230,109 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--ss-espace-2);
+}
+
+.mf__intro {
+  margin: var(--ss-espace-1) 0 0;
+  color: var(--ss-texte-doux);
+}
+
+.mf__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ss-espace-2);
+  margin: var(--ss-espace-3) 0 var(--ss-espace-4);
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: var(--ss-espace-1) var(--ss-espace-2);
+    border-radius: var(--ss-rayon-champ);
+    background: var(--ss-surface);
+    box-shadow: var(--ss-ombre);
+    color: var(--ss-texte-doux);
+    font-size: 14px;
+  }
+
+  strong {
+    color: var(--ss-texte-marque);
+    font-size: 18px;
+  }
+}
+
+.mf__stats .mf__stats-file {
+  background: var(--ss-surface-accent);
+}
+
+.mf__file {
+  display: grid;
+  gap: var(--ss-espace-3);
+  margin: var(--ss-espace-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mf__element {
+  padding: var(--ss-espace-3);
+  border-left: 4px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+}
+
+.mf__element--haute {
+  border-left-color: var(--ss-primaire);
+}
+
+.mf__element-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ss-espace-2);
+}
+
+.mf__priorite {
+  padding: 2px 8px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
+  font-size: 12px;
+  font-weight: var(--ss-poids-titre);
+}
+
+.mf__element-titre {
+  margin: var(--ss-espace-2) 0 0;
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.mf__element-contenu {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+}
+
+.mf__ia {
+  margin: var(--ss-espace-1) 0 0;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}
+
+.mf__ia-extrait {
+  margin: 4px 0 0;
+  padding-left: var(--ss-espace-2);
+  border-left: 2px solid var(--ss-bordure);
+  color: var(--ss-texte);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.mf__contestation {
+  margin: var(--ss-espace-1) 0 0;
+  padding: var(--ss-espace-1) var(--ss-espace-2);
+  border-radius: var(--ss-rayon-champ);
+  background: var(--ss-surface-douce);
+  font-size: 14px;
+}
+
+.mf__element .mf__actions {
+  margin-top: var(--ss-espace-2);
 }

@@ -1,4 +1,5 @@
-"""Forum : PublicationForum et CommentaireForum, tous deux modérés avant affichage."""
+"""Forum : PublicationForum et CommentaireForum, tous deux modérés avant affichage,
+et ModerationMessage, la trace de chaque décision de modération (IA ou humaine)."""
 
 from django.db import models
 
@@ -12,6 +13,8 @@ class StatutModeration(models.TextChoices):
     VISIBLE = 'VISIBLE', 'Visible'
     MASQUE = 'MASQUE', 'Masqué'
     SUPPRIME = 'SUPPRIME', 'Supprimé'
+    # Refusé par la modération automatique ; l'auteur peut demander un réexamen
+    BLOQUE = 'BLOQUE', 'Bloqué'
 
 
 class ThematiqueForum(models.TextChoices):
@@ -107,3 +110,88 @@ class CommentaireForum(models.Model):
 
     def __str__(self):
         return f'Commentaire de {self.utilisateur} sur « {self.publication.titre} »'
+
+
+class DecisionModeration(models.TextChoices):
+    PUBLIER = 'PUBLIER', 'Publié'
+    PUBLIER_ACCOMPAGNER = 'PUBLIER_ACCOMPAGNER', 'Publié et accompagné'
+    BLOQUER = 'BLOQUER', 'Bloqué'
+    BLOQUER_PRIORITAIRE = 'BLOQUER_PRIORITAIRE', 'Bloqué, priorité haute'
+    BLOQUER_SILENCIEUX = 'BLOQUER_SILENCIEUX', 'Bloqué sans message (spam)'
+    ATTENTE_HUMAINE = 'ATTENTE_HUMAINE', 'En attente de validation humaine'
+
+
+class DecisionHumaine(models.TextChoices):
+    PUBLIER = 'PUBLIER', 'Publié par un administrateur'
+    BLOQUER = 'BLOQUER', 'Bloqué par un administrateur'
+    CLASSER = 'CLASSER', 'Vu, aucune action'
+
+
+DECISIONS_BLOQUANTES = [
+    DecisionModeration.BLOQUER,
+    DecisionModeration.BLOQUER_PRIORITAIRE,
+    DecisionModeration.BLOQUER_SILENCIEUX,
+]
+
+
+class ModerationMessage(models.Model):
+    """Décision de modération d'une publication ou d'un commentaire.
+
+    Tout est tracé : ce que l'IA a décidé et pourquoi, ce qu'un administrateur
+    en a pensé, et la contestation éventuelle de l'auteur. Une décision
+    automatique peut toujours être contestée et infirmée.
+    """
+
+    publication = models.ForeignKey(
+        PublicationForum, on_delete=models.CASCADE, null=True, blank=True, related_name='moderations',
+        verbose_name='publication',
+    )
+    commentaire = models.ForeignKey(
+        CommentaireForum, on_delete=models.CASCADE, null=True, blank=True, related_name='moderations',
+        verbose_name='commentaire',
+    )
+    decision = models.CharField('décision automatique', max_length=20, choices=DecisionModeration.choices)
+    categorie = models.CharField('catégorie', max_length=24)
+    gravite = models.PositiveSmallIntegerField('gravité', default=0)
+    raison = models.CharField('raison', max_length=255, blank=True)
+    extrait = models.CharField('extrait', max_length=500, blank=True)
+    # REGLES (niveau 0), MODELE (niveau 1) ou REPLI (modèle indisponible)
+    niveau = models.CharField('niveau', max_length=10)
+    # Message montré à l'auteur (pédagogique en cas de blocage, soutien en cas de détresse)
+    message_auteur = models.TextField("message à l'auteur", blank=True)
+    date = models.DateTimeField('date', auto_now_add=True)
+
+    # File des administrateurs
+    a_traiter = models.BooleanField('dans la file des administrateurs', default=False)
+    priorite = models.PositiveSmallIntegerField('priorité', default=0)
+
+    # Droit de contestation de l'auteur
+    motif_contestation = models.TextField('motif de contestation', blank=True)
+    date_contestation = models.DateTimeField('date de contestation', null=True, blank=True)
+
+    # Décision humaine, qui l'emporte toujours sur celle de l'IA
+    decision_humaine = models.CharField(
+        'décision humaine', max_length=10, choices=DecisionHumaine.choices, blank=True
+    )
+    moderateur = models.ForeignKey(
+        'comptes.Administrateur', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='decisions_moderation', verbose_name='modérateur',
+    )
+    date_traitement = models.DateTimeField('date de traitement', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'décision de modération'
+        verbose_name_plural = 'décisions de modération'
+        ordering = ['-priorite', 'date']
+
+    def __str__(self):
+        return f'{self.get_decision_display()} — {self.categorie}'
+
+    @property
+    def objet(self):
+        return self.publication or self.commentaire
+
+    @property
+    def infirmee(self) -> bool:
+        """Un administrateur a publié ce que l'IA avait bloqué : un faux positif."""
+        return self.decision in DECISIONS_BLOQUANTES and self.decision_humaine == DecisionHumaine.PUBLIER

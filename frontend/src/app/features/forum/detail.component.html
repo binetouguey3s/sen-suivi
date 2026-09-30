@@ -50,8 +50,8 @@
         }
 
         <div class="fd__composer">
-          @if (envoye()) {
-            <p class="fd__envoye"><ss-icon nom="verifie" taille="sm" /> Votre message a été envoyé. Il sera visible après relecture par un modérateur.</p>
+          @if (envoye(); as idReponse) {
+            <ss-suivi-moderation type="COMMENTAIRE" [idMessage]="idReponse" (publie)="publication.reload()" (reformuler)="reformuler($event)" />
           } @else {
             @if (moi.value(); as compte) {
               <p class="fd__pseudo">Vous publiez sous le pseudonyme <strong>{{ compte.pseudonyme }}</strong></p>

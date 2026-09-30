@@ -133,6 +133,8 @@ class Utilisateur(CompteUtilisateur):
     # Ajouté suite à la correction du diagramme de classes : sert à prioriser
     # les professionnels de la même ville dans les suggestions.
     ville = models.CharField('ville', max_length=100, blank=True)
+    # Suspension temporaire du forum après plusieurs infractions (seuil lu dans le .env)
+    forum_suspendu_jusqu_au = models.DateTimeField('forum suspendu jusqu’au', null=True, blank=True)
 
     class Meta:
         verbose_name = 'utilisateur'

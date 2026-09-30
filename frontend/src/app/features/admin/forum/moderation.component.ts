@@ -1,29 +1,38 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal } from '@angular/core';
 
 import { API_BASE_URL } from '../../../core/config/api.config';
 import {
+  ActionModeration,
   CommentaireForumAdmin,
+  DecisionIA,
+  ElementFileModeration,
   PublicationForumAdmin,
+  StatistiquesModeration,
   StatutModerationForum,
 } from '../../../core/models/administration';
 import { AdministrationService } from '../../../core/services/administration.service';
 import { depuisMaintenant } from '../../../core/utils/temps';
 import { valeurs } from '../../../core/utils/ressource';
+import { PaginationComponent, tranche } from '../../../shared/pagination/pagination.component';
 
 type Onglet = 'TOUS' | StatutModerationForum;
-type Contenu = 'PUBLICATIONS' | 'COMMENTAIRES';
+type Contenu = 'FILE' | 'PUBLICATIONS' | 'COMMENTAIRES';
 
 const LIBELLE_STATUT: Record<StatutModerationForum, string> = {
   EN_ATTENTE: 'En attente',
   VISIBLE: 'Visible',
   MASQUE: 'Masqué',
   SUPPRIME: 'Supprimé',
+  BLOQUE: 'Bloqué',
 };
+
+const LIBELLE_NIVEAU = { REGLES: 'règles', MODELE: 'modèle', REPLI: 'modèle indisponible' } as const;
 
 @Component({
   selector: 'ss-admin-moderation-forum',
   standalone: true,
+  imports: [PaginationComponent],
   templateUrl: './moderation.component.html',
   styleUrl: './moderation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +40,8 @@ const LIBELLE_STATUT: Record<StatutModerationForum, string> = {
 export class AdminModerationForumComponent {
   private readonly administration = inject(AdministrationService);
 
-  protected readonly contenu = signal<Contenu>('PUBLICATIONS');
+  // La file de l'IA d'abord : c'est là que l'administrateur est attendu
+  protected readonly contenu = signal<Contenu>('FILE');
   protected readonly onglet = signal<Onglet>('EN_ATTENTE');
   protected readonly selection = signal<Set<number>>(new Set());
   protected readonly enCours = signal<number | null>(null);
@@ -42,6 +52,7 @@ export class AdminModerationForumComponent {
     { valeur: 'TOUS', libelle: 'Tous' },
     { valeur: 'EN_ATTENTE', libelle: 'En attente' },
     { valeur: 'VISIBLE', libelle: 'Visibles' },
+    { valeur: 'BLOQUE', libelle: 'Bloqués' },
     { valeur: 'MASQUE', libelle: 'Masqués' },
     { valeur: 'SUPPRIME', libelle: 'Supprimés' },
   ];
@@ -64,18 +75,34 @@ export class AdminModerationForumComponent {
     { defaultValue: [] },
   );
 
+  protected readonly file = httpResource<ElementFileModeration[]>(
+    () => (this.contenu() === 'FILE' ? `${API_BASE_URL}/forum/moderation/file` : undefined),
+    { defaultValue: [] },
+  );
+  protected readonly statistiques = httpResource<StatistiquesModeration>(() => `${API_BASE_URL}/forum/moderation/statistiques`);
+  protected readonly listeFile = computed(() => valeurs(this.file));
+
   protected readonly listePublications = computed(() => valeurs(this.publications));
   protected readonly listeCommentaires = computed(() => valeurs(this.commentaires));
-  protected readonly enChargement = computed(() =>
-    this.contenu() === 'PUBLICATIONS' ? this.publications.isLoading() : this.commentaires.isLoading(),
+
+  // Pagination : retour à la première page quand les filtres changent
+  protected readonly page = linkedSignal({ source: () => [this.contenu(), this.onglet()], computation: () => 1 });
+  protected readonly listeFilePage = computed(() => tranche(this.listeFile(), this.page(), 15));
+  protected readonly listePublicationsPage = computed(() => tranche(this.listePublications(), this.page(), 20));
+  protected readonly listeCommentairesPage = computed(() => tranche(this.listeCommentaires(), this.page(), 20));
+  private readonly ressourceActive = computed(() =>
+    this.contenu() === 'FILE' ? this.file : this.contenu() === 'PUBLICATIONS' ? this.publications : this.commentaires,
   );
-  protected readonly enErreur = computed(() =>
-    this.contenu() === 'PUBLICATIONS' ? !!this.publications.error() : !!this.commentaires.error(),
-  );
+  protected readonly enChargement = computed(() => this.ressourceActive().isLoading());
+  protected readonly enErreur = computed(() => !!this.ressourceActive().error());
   protected readonly nombreSelectionnes = computed(() => this.selection().size);
 
   protected libelle(statut: StatutModerationForum): string {
     return LIBELLE_STATUT[statut];
+  }
+
+  protected niveau(n: DecisionIA['niveau']): string {
+    return LIBELLE_NIVEAU[n] ?? n;
   }
 
   protected depuis(iso: string): string {
@@ -104,7 +131,22 @@ export class AdminModerationForumComponent {
   }
 
   private recharger(): void {
-    this.contenu() === 'PUBLICATIONS' ? this.publications.reload() : this.commentaires.reload();
+    this.ressourceActive().reload();
+    this.statistiques.reload();
+  }
+
+  // Décision humaine sur un élément de la file, en un clic
+  protected async trancher(element: ElementFileModeration, action: ActionModeration): Promise<void> {
+    this.enCours.set(element.id);
+    this.erreur.set(null);
+    try {
+      await this.administration.trancher(element.id, action);
+      this.recharger();
+    } catch {
+      this.erreur.set("L'action a échoué. Réessayez dans un instant.");
+    } finally {
+      this.enCours.set(null);
+    }
   }
 
   private async agirSur(id: number, statut: StatutModerationForum): Promise<void> {

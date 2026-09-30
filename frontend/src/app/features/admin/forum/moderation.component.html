@@ -1,8 +1,22 @@
 <header class="mf__entete">
   <h1>Modération du forum</h1>
+  <p class="mf__intro">L'IA relit chaque message en quelques secondes. Ici, vous voyez ses décisions et gardez toujours le dernier mot.</p>
 </header>
 
+@if (statistiques.value(); as s) {
+  <ul class="mf__stats" aria-label="Modération sur 30 jours">
+    <li><strong>{{ s.total }}</strong> messages relus</li>
+    <li><strong>{{ s.taux_blocage }} %</strong> bloqués</li>
+    <li><strong>{{ s.faux_positifs }}</strong> décisions infirmées</li>
+    <li><strong>{{ s.contestations }}</strong> contestations</li>
+    <li class="mf__stats-file"><strong>{{ s.a_traiter }}</strong> à traiter</li>
+  </ul>
+}
+
 <div class="mf__contenu-choix" role="tablist">
+  <button type="button" [class.mf__contenu-choix-item--actif]="contenu() === 'FILE'" (click)="changerContenu('FILE')">
+    File de l'IA
+  </button>
   <button type="button" [class.mf__contenu-choix-item--actif]="contenu() === 'PUBLICATIONS'" (click)="changerContenu('PUBLICATIONS')">
     Publications
   </button>
@@ -11,13 +25,15 @@
   </button>
 </div>
 
-<div class="mf__onglets" role="tablist">
-  @for (o of onglets; track o.valeur) {
-    <button type="button" role="tab" [class.mf__onglet--actif]="onglet() === o.valeur" (click)="changerOnglet(o.valeur)">
-      {{ o.libelle }}
-    </button>
-  }
-</div>
+@if (contenu() !== 'FILE') {
+  <div class="mf__onglets" role="tablist">
+    @for (o of onglets; track o.valeur) {
+      <button type="button" role="tab" [class.mf__onglet--actif]="onglet() === o.valeur" (click)="changerOnglet(o.valeur)">
+        {{ o.libelle }}
+      </button>
+    }
+  </div>
+}
 
 @if (erreur()) { <p class="mf__erreur" role="alert">{{ erreur() }}</p> }
 
@@ -25,6 +41,39 @@
   <p class="mf__etat">Chargement…</p>
 } @else if (enErreur()) {
   <p class="mf__etat mf__etat--erreur">Impossible de charger le forum pour le moment.</p>
+} @else if (contenu() === 'FILE') {
+  @if (!listeFile().length) {
+    <p class="mf__etat">Rien à traiter : la modération automatique n'a aucun doute en attente.</p>
+  } @else {
+    <ul class="mf__file">
+      @for (e of listeFilePage(); track e.id) {
+        <li class="mf__element" [class.mf__element--haute]="e.priorite >= 2">
+          <div class="mf__element-entete">
+            <span class="mf__pseudo">{{ e.pseudonyme }}</span>
+            <span class="mf__date">{{ e.type === 'PUBLICATION' ? 'Publication' : 'Réponse' }} · {{ depuis(e.date) }}</span>
+            @if (e.priorite >= 2) { <span class="mf__priorite">Priorité haute</span> }
+            <span class="mf__badge" [class]="'mf__badge--' + e.statut_moderation">{{ libelle(e.statut_moderation) }}</span>
+          </div>
+          <p class="mf__element-titre">{{ e.titre }}</p>
+          <p class="mf__element-contenu">{{ e.contenu }}</p>
+          <p class="mf__ia">
+            <strong>Décision de l'IA :</strong> {{ e.decision_affichee }} · {{ e.categorie }}@if (e.gravite) { (gravité {{ e.gravite }}) }
+            — {{ e.raison }} <em>({{ niveau(e.niveau) }})</em>
+          </p>
+          @if (e.extrait) { <p class="mf__ia-extrait">« {{ e.extrait }} »</p> }
+          @if (e.date_contestation) {
+            <p class="mf__contestation"><strong>Contestation de l'auteur :</strong> {{ e.motif_contestation || 'sans motif précisé' }}</p>
+          }
+          <div class="mf__actions">
+            <button type="button" class="mf__bouton" [disabled]="enCours() === e.id" (click)="trancher(e, 'PUBLIER')">Publier</button>
+            <button type="button" class="mf__bouton mf__bouton--contour" [disabled]="enCours() === e.id" (click)="trancher(e, 'BLOQUER')">Bloquer</button>
+            <button type="button" class="mf__bouton mf__bouton--contour" [disabled]="enCours() === e.id" (click)="trancher(e, 'CLASSER')">Vu, rien à faire</button>
+          </div>
+        </li>
+      }
+    </ul>
+    <ss-pagination [total]="listeFile().length" [parPage]="15" [(page)]="page" />
+  }
 } @else if (contenu() === 'PUBLICATIONS') {
   @if (!listePublications().length) {
     <p class="mf__etat">Aucune publication dans cette catégorie.</p>
@@ -42,7 +91,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (p of listePublications(); track p.id) {
+        @for (p of listePublicationsPage(); track p.id) {
           <tr>
             <td class="mf__case"><input type="checkbox" [attr.aria-label]="'Sélectionner ' + p.titre" [checked]="selection().has(p.id)" (change)="basculerSelection(p.id)" /></td>
             <td><span class="mf__pseudo">{{ p.pseudonyme }}</span></td>
@@ -51,6 +100,9 @@
             <td class="mf__extrait">
               <strong>{{ p.titre }}</strong>
               <p>{{ p.contenu }}</p>
+              @if (p.decision_ia; as ia) {
+                <p class="mf__ia">IA : {{ ia.decision_affichee }} · {{ ia.categorie }} — {{ ia.raison }}@if (ia.decision_humaine) { · <em>revu par un administrateur</em> }</p>
+              }
             </td>
             <td><span class="mf__badge" [class]="'mf__badge--' + p.statut_moderation">{{ libelle(p.statut_moderation) }}</span></td>
             <td>
@@ -70,6 +122,7 @@
         }
       </tbody>
     </table>
+    <ss-pagination [total]="listePublications().length" [parPage]="20" [(page)]="page" />
   }
 } @else {
   @if (!listeCommentaires().length) {
@@ -88,13 +141,18 @@
         </tr>
       </thead>
       <tbody>
-        @for (c of listeCommentaires(); track c.id) {
+        @for (c of listeCommentairesPage(); track c.id) {
           <tr>
             <td class="mf__case"><input type="checkbox" [attr.aria-label]="'Sélectionner la réponse de ' + c.pseudonyme" [checked]="selection().has(c.id)" (change)="basculerSelection(c.id)" /></td>
             <td><span class="mf__pseudo">{{ c.pseudonyme }}</span></td>
             <td class="mf__extrait"><em>{{ c.publication_titre }}</em></td>
             <td class="mf__date">{{ depuis(c.date) }}</td>
-            <td class="mf__extrait"><p>{{ c.contenu }}</p></td>
+            <td class="mf__extrait">
+              <p>{{ c.contenu }}</p>
+              @if (c.decision_ia; as ia) {
+                <p class="mf__ia">IA : {{ ia.decision_affichee }} · {{ ia.categorie }} — {{ ia.raison }}@if (ia.decision_humaine) { · <em>revu par un administrateur</em> }</p>
+              }
+            </td>
             <td><span class="mf__badge" [class]="'mf__badge--' + c.statut_moderation">{{ libelle(c.statut_moderation) }}</span></td>
             <td>
               <div class="mf__actions">
@@ -113,6 +171,7 @@
         }
       </tbody>
     </table>
+    <ss-pagination [total]="listeCommentaires().length" [parPage]="20" [(page)]="page" />
   }
 }
 

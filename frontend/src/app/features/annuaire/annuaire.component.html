@@ -67,7 +67,7 @@
       @if (filtresActifs()) { <button type="button" class="an__lien" (click)="effacerFiltres()">Effacer les filtres</button> }
     </p>
     <ul class="an__liste">
-      @for (p of professionnels(); track p.id) {
+      @for (p of professionnelsPage(); track p.id) {
         <li class="an__carte">
           <div class="an__carte-entete">
             @if (portrait(p); as src) {
@@ -98,6 +98,7 @@
         <li class="an__etat">Aucun professionnel ne correspond à ces filtres.</li>
       }
     </ul>
+    <ss-pagination [total]="professionnels().length" [parPage]="9" [(page)]="page" />
   }
 
   <p class="an__mention">Sen Suivi ne remplace pas un professionnel de santé. En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>.</p>

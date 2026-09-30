@@ -42,7 +42,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (p of liste(); track p.id) {
+      @for (p of listePage(); track p.id) {
         <tr>
           <td class="ap__case">
             @if (p.statut_validation === 'EN_ATTENTE') {
@@ -76,6 +76,7 @@
       }
     </tbody>
   </table>
+  <ss-pagination [total]="liste().length" [parPage]="20" [(page)]="page" />
 }
 
 @if (nombreSelectionnes()) {

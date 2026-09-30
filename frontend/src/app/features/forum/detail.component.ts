@@ -1,4 +1,4 @@
-import { httpResource } from '@angular/common/http';
+import { HttpErrorResponse, httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
@@ -9,13 +9,14 @@ import { ForumService } from '../../core/services/forum.service';
 import { depuisMaintenant } from '../../core/utils/temps';
 import { BanniereForumComponent } from '../../shared/banniere-forum/banniere-forum.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { SuiviModerationComponent } from '../../shared/suivi-moderation/suivi-moderation.component';
 
 const LIBELLE_THEMATIQUE = Object.fromEntries(THEMATIQUES_FORUM.map((t) => [t.valeur, t.libelle]));
 
 @Component({
   selector: 'ss-forum-detail',
   standalone: true,
-  imports: [RouterLink, BanniereForumComponent, IconComponent],
+  imports: [RouterLink, BanniereForumComponent, IconComponent, SuiviModerationComponent],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +38,8 @@ export class ForumDetailComponent {
   protected readonly reponse = signal('');
   protected readonly envoiEnCours = signal(false);
   protected readonly erreur = signal<string | null>(null);
-  protected readonly envoye = signal(false);
+  // Réponse qu'on vient d'envoyer, suivie pendant sa modération
+  protected readonly envoye = signal<number | null>(null);
 
   protected libelleThematique(valeur: string): string {
     return LIBELLE_THEMATIQUE[valeur] ?? valeur;
@@ -57,14 +59,20 @@ export class ForumDetailComponent {
     this.envoiEnCours.set(true);
     this.erreur.set(null);
     try {
-      await this.forumService.commenter(Number(this.id()), texte);
+      const envoi = await this.forumService.commenter(Number(this.id()), texte);
       this.reponse.set('');
-      this.envoye.set(true);
-    } catch {
-      this.erreur.set("L'envoi a échoué. Réessayez dans un instant.");
+      this.envoye.set(envoi.id);
+    } catch (e) {
+      const detail = e instanceof HttpErrorResponse && e.status === 403 ? e.error?.detail : null;
+      this.erreur.set(detail ?? "L'envoi a échoué. Réessayez dans un instant.");
     } finally {
       this.envoiEnCours.set(false);
     }
+  }
+
+  protected reformuler(contenu: string): void {
+    this.envoye.set(null);
+    this.reponse.set(contenu);
   }
 
   protected async retourAuForum(): Promise<void> {

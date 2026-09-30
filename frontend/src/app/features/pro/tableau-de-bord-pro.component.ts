@@ -1,5 +1,5 @@
 import { HttpClient, httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
@@ -8,6 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { SparklineComponent } from '../../shared/sparkline/sparkline.component';
 import { valeurs } from '../../core/utils/ressource';
+import { PaginationComponent, tranche } from '../../shared/pagination/pagination.component';
 
 interface Demande {
   id: number;
@@ -37,7 +38,7 @@ function finDeJour(date: Date): number {
 @Component({
   selector: 'ss-tableau-de-bord-pro',
   standalone: true,
-  imports: [RouterLink, IconComponent, SparklineComponent],
+  imports: [RouterLink, IconComponent, SparklineComponent, PaginationComponent],
   templateUrl: './tableau-de-bord-pro.component.html',
   styleUrl: './tableau-de-bord-pro.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,6 +70,10 @@ export class TableauDeBordProComponent {
     }).length;
   });
   protected readonly affichees = computed(() => valeurs(this.demandes).filter((d) => d.statut === this.onglet()));
+
+  // Pagination : retour à la première page quand les filtres changent
+  protected readonly page = linkedSignal({ source: () => [this.onglet()], computation: () => 1 });
+  protected readonly afficheesPage = computed(() => tranche(this.affichees(), this.page(), 10));
 
   // Courbes calculées à partir des vraies demandes, jamais inventées.
   // Nombre de demandes en attente à la fin de chacun des 14 derniers jours.
