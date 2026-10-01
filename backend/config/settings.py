@@ -185,3 +185,7 @@ MODERATION_ASYNCHRONE = env.bool('MODERATION_ASYNCHRONE', default=True)
 MODERATION_SEUIL_INFRACTIONS = env.int('MODERATION_SEUIL_INFRACTIONS', default=3)
 MODERATION_FENETRE_JOURS = env.int('MODERATION_FENETRE_JOURS', default=30)
 MODERATION_SUSPENSION_JOURS = env.int('MODERATION_SUSPENSION_JOURS', default=7)
+
+# Chatbot vocal : durée et poids maximaux d'un enregistrement (refus propre au-delà)
+VOCAL_DUREE_MAX_SECONDES = env.int('VOCAL_DUREE_MAX_SECONDES', default=60)
+VOCAL_TAILLE_MAX_MO = env.float('VOCAL_TAILLE_MAX_MO', default=10)

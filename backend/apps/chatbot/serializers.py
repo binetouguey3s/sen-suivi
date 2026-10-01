@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 
 from .models import MessageChatbot
@@ -25,6 +26,32 @@ class MessageEntreeSerializer(serializers.Serializer):
         return valeur.strip()
 
 
+class MessageVocalSerializer(serializers.Serializer):
+    """POST /api/chatbot/message-vocal (multipart) : l'audio, et le même contexte
+    qu'un message tapé. L'historique arrive en JSON dans un champ texte."""
+
+    audio = serializers.FileField()
+    duree = serializers.FloatField(required=False, min_value=0)
+    historique = serializers.JSONField(required=False, default=list)
+    conversation_id = serializers.IntegerField(required=False, allow_null=True)
+    consentement_conservation = serializers.BooleanField(required=False, default=False)
+
+    def validate_duree(self, duree):
+        if duree > settings.VOCAL_DUREE_MAX_SECONDES:
+            raise serializers.ValidationError(f"L'enregistrement dépasse {settings.VOCAL_DUREE_MAX_SECONDES} secondes.")
+        return duree
+
+    def validate_historique(self, historique):
+        echanges = EchangePrecedentSerializer(data=historique, many=True)
+        echanges.is_valid(raise_exception=True)
+        return list(echanges.validated_data)[-20:]
+
+
+class ReponseVocaleSerializer(serializers.Serializer):
+    texte = serializers.CharField(max_length=3000)
+    jeton_vocal = serializers.CharField()
+
+
 class RessourceSuggereeSerializer(serializers.Serializer):
     ressource_id = serializers.IntegerField()
     titre = serializers.CharField()
@@ -44,6 +71,10 @@ class MessageSortieSerializer(serializers.Serializer):
     # Remis seulement quand une détresse est détectée : rend la mise en relation
     # gratuite et sans écran de paiement (apps.orientation.urgence)
     jeton_urgence = serializers.CharField(required=False, allow_null=True)
+    # Autorise la lecture à voix haute de CETTE réponse, et d'aucun autre texte
+    jeton_vocal = serializers.CharField(required=False, allow_null=True)
+    # Message vocal : ce qui a été compris, affiché pour que la personne puisse corriger
+    transcription = serializers.CharField(required=False, allow_blank=True)
 
 
 # --- Historique des conversations conservées ---------------------------------

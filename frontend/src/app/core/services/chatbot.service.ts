@@ -25,6 +25,38 @@ export class ChatbotService {
     );
   }
 
+  // --- Vocal ---
+
+  // L'audio part en mémoire vers le serveur, qui le transcrit puis le traite
+  // exactement comme un message tapé
+  async envoyerVocal(
+    audio: Blob,
+    duree: number,
+    conversationId: number | null,
+    consentementConservation: boolean,
+    historique: EchangePrecedent[] = [],
+  ): Promise<ReponseChatbot> {
+    const extension = audio.type.includes('mp4') ? 'm4a' : audio.type.includes('ogg') ? 'ogg' : 'webm';
+    const donnees = new FormData();
+    donnees.append('audio', audio, `voix.${extension}`);
+    donnees.append('duree', String(Math.round(duree)));
+    donnees.append('historique', JSON.stringify(historique));
+    donnees.append('consentement_conservation', String(consentementConservation));
+    if (conversationId) donnees.append('conversation_id', String(conversationId));
+    return firstValueFrom(this.http.post<ReponseChatbot>(`${API_BASE_URL}/chatbot/message-vocal`, donnees));
+  }
+
+  // Audio d'une réponse validée, ou null si la synthèse n'est pas disponible
+  async lireAVoixHaute(texte: string, jetonVocal: string): Promise<Blob | null> {
+    const reponse = await firstValueFrom(
+      this.http.post(`${API_BASE_URL}/chatbot/reponse-vocale`, { texte, jeton_vocal: jetonVocal }, {
+        observe: 'response',
+        responseType: 'blob',
+      }),
+    );
+    return reponse.status === 200 && reponse.body?.size ? reponse.body : null;
+  }
+
   // --- Historique (comptes utilisateur, conversations conservées) ---
 
   lister(): Promise<ConversationResume[]> {

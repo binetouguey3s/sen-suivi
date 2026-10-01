@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 
-import { ConversationResume, MessageAffiche, MessageHistorique } from '../models/chatbot';
+import { ConversationResume, MessageAffiche, MessageHistorique, ReponseChatbot } from '../models/chatbot';
 import { AuthService } from './auth.service';
 import { ChatbotService } from './chatbot.service';
 import { UrgenceService } from './urgence.service';
@@ -13,6 +14,8 @@ const HISTORIQUE_TRANSMIS = 6;
 
 const MESSAGE_INDISPONIBLE =
   "Le chatbot n'est pas disponible pour le moment. En cas de détresse immédiate, appelez le 800 805 805 ou le 1515.";
+const MESSAGE_VOCAL_INDISPONIBLE =
+  "Je n'ai pas pu recevoir votre message vocal. Vous pouvez réessayer ou l'écrire. En cas de détresse immédiate, appelez le 800 805 805 ou le 1515.";
 
 export type VueChat = 'conversation' | 'historique';
 export type EtatHistorique = 'chargement' | 'pret' | 'erreur';
@@ -86,33 +89,61 @@ export class ConversationService {
     const contenu = texte.trim();
     if (!contenu || this.enCoursInterne()) return;
 
-    // Échanges déjà affichés, sans le message d'accueil (toujours le même)
-    const historique = this.messagesInternes()
-      .slice(1)
-      .slice(-HISTORIQUE_TRANSMIS)
-      .map((m) => ({ auteur: m.auteur, contenu: m.contenu }));
+    const historique = this.echangesRecents();
     this.ajouter({ auteur: 'UTILISATEUR', contenu });
     this.enCoursInterne.set(true);
     const conserver = this.peutConserver() && this.consentementInterne();
 
     try {
-      const reponse = await this.chatbot.envoyer(contenu, this.conversationId(), conserver, historique);
-      if (reponse.conversation_id) this.conversationId.set(reponse.conversation_id);
-      // Détresse : la mise en relation devient gratuite et sans écran de paiement
-      if (reponse.jeton_urgence) this.urgence.memoriser(reponse.jeton_urgence);
-      this.ajouter({
-        auteur: 'BOT',
-        contenu: reponse.reponse,
-        ressource: reponse.ressource,
-        urgence: reponse.urgence,
-        professionnel: reponse.professionnel_suggere ?? null,
-        orientationAnnuaire: !!reponse.orientation_professionnel && !reponse.professionnel_suggere,
-      });
+      this.recevoir(await this.chatbot.envoyer(contenu, this.conversationId(), conserver, historique));
     } catch {
       this.ajouter({ auteur: 'BOT', contenu: MESSAGE_INDISPONIBLE });
     } finally {
       this.enCoursInterne.set(false);
     }
+  }
+
+  // Message vocal : la transcription s'affiche comme message de la personne,
+  // modifiable, puis Titou répond exactement comme à un message tapé
+  async envoyerVocal(audio: Blob, duree: number): Promise<void> {
+    if (this.enCoursInterne()) return;
+    const historique = this.echangesRecents();
+    this.enCoursInterne.set(true);
+    const conserver = this.peutConserver() && this.consentementInterne();
+
+    try {
+      const reponse = await this.chatbot.envoyerVocal(audio, duree, this.conversationId(), conserver, historique);
+      if (reponse.transcription) this.ajouter({ auteur: 'UTILISATEUR', contenu: reponse.transcription, vocal: true });
+      this.recevoir(reponse);
+    } catch (e) {
+      const detail = e instanceof HttpErrorResponse ? (e.error?.detail ?? e.error?.duree?.[0]) : null;
+      this.ajouter({ auteur: 'BOT', contenu: detail ?? MESSAGE_VOCAL_INDISPONIBLE });
+    } finally {
+      this.enCoursInterne.set(false);
+    }
+  }
+
+  // Échanges déjà affichés, sans le message d'accueil (toujours le même)
+  private echangesRecents() {
+    return this.messagesInternes()
+      .slice(1)
+      .slice(-HISTORIQUE_TRANSMIS)
+      .map((m) => ({ auteur: m.auteur, contenu: m.contenu }));
+  }
+
+  private recevoir(reponse: ReponseChatbot): void {
+    if (reponse.conversation_id) this.conversationId.set(reponse.conversation_id);
+    // Détresse : la mise en relation devient gratuite et sans écran de paiement
+    if (reponse.jeton_urgence) this.urgence.memoriser(reponse.jeton_urgence);
+    this.ajouter({
+      auteur: 'BOT',
+      contenu: reponse.reponse,
+      ressource: reponse.ressource,
+      urgence: reponse.urgence,
+      professionnel: reponse.professionnel_suggere ?? null,
+      orientationAnnuaire: !!reponse.orientation_professionnel && !reponse.professionnel_suggere,
+      jetonVocal: reponse.jeton_vocal ?? null,
+    });
   }
 
   // Cocher la case enregistre aussi les messages déjà échangés : l'historique

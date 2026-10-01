@@ -7,6 +7,7 @@ que par lui, et il peut les effacer à tout moment.
 
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
@@ -270,3 +271,107 @@ class ConsentementEnCoursDeConversationTests(APITestCase):
         self.assertEqual(vide.status_code, 400)
         self.assertEqual(trop.status_code, 400)
         self.assertFalse(ConversationChatbot.objects.exists())
+
+
+# --- Chatbot vocal --------------------------------------------------------------
+
+WEBM = b'\x1a\x45\xdf\xa3' + b'\x00' * 1024
+
+
+def audio(taille=0, nom='voix.webm'):
+    from django.core.files.uploadedfile import SimpleUploadedFile
+
+    return SimpleUploadedFile(nom, WEBM + b'\x00' * taille, content_type='audio/webm')
+
+
+@patch('apps.chatbot.views.traiter_message')
+@patch('apps.chatbot.views.transcrire')
+class ChatbotVocalTests(APITestCase):
+    url = '/api/chatbot/message-vocal'
+
+    def setUp(self):
+        self.utilisateur = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+
+    def test_la_transcription_suit_exactement_le_pipeline_du_texte(self, transcrire, traiter):
+        transcrire.return_value = {'transcription': 'Je suis stressée', 'comprise': True}
+        traiter.return_value = reponse_ia(reponse='Je vous écoute.')
+
+        corps = self.client.post(self.url, {'audio': audio()}, format='multipart').data
+
+        traiter.assert_called_once_with('Je suis stressée', [], None, False)
+        self.assertEqual((corps['transcription'], corps['reponse']), ('Je suis stressée', 'Je vous écoute.'))
+        self.assertTrue(corps['jeton_vocal'])
+
+    def test_un_enregistrement_incompris_n_est_jamais_devine(self, transcrire, traiter):
+        transcrire.return_value = {'transcription': '', 'comprise': False, 'reponse_incomprise': 'Pouvez-vous réessayer ?'}
+
+        corps = self.client.post(self.url, {'audio': audio()}, format='multipart').data
+
+        traiter.assert_not_called()
+        self.assertEqual(corps['reponse'], 'Pouvez-vous réessayer ?')
+
+    @override_settings(VOCAL_DUREE_MAX_SECONDES=60)
+    def test_un_enregistrement_trop_long_est_refuse_proprement(self, transcrire, traiter):
+        reponse = self.client.post(self.url, {'audio': audio(), 'duree': 75}, format='multipart')
+        self.assertEqual(reponse.status_code, 400)
+        transcrire.assert_not_called()
+
+    def test_la_transcription_n_est_conservee_qu_avec_consentement(self, transcrire, traiter):
+        transcrire.return_value = {'transcription': 'Bonjour Titou', 'comprise': True}
+        traiter.return_value = reponse_ia()
+        self.client.force_authenticate(self.utilisateur)
+
+        self.client.post(self.url, {'audio': audio()}, format='multipart')
+        self.assertFalse(MessageChatbot.objects.exists())
+
+        self.client.post(self.url, {'audio': audio(), 'consentement_conservation': True}, format='multipart')
+        self.assertEqual(MessageChatbot.objects.filter(type_expediteur='UTILISATEUR').get().contenu, 'Bonjour Titou')
+
+    def test_l_audio_n_est_jamais_ecrit_sur_le_disque(self, transcrire, traiter):
+        transcrire.return_value = {'transcription': 'Bonjour', 'comprise': True}
+        traiter.return_value = reponse_ia()
+
+        # Au-delà de 2,5 Mo, Django écrit d'ordinaire l'envoi dans un fichier temporaire
+        with patch('django.core.files.uploadhandler.TemporaryFileUploadHandler.new_file',
+                   side_effect=AssertionError('écriture sur le disque interdite')):
+            reponse = self.client.post(self.url, {'audio': audio(taille=3 * 1024 * 1024)}, format='multipart')
+
+        self.assertEqual(reponse.status_code, 200)
+        self.assertEqual(len(transcrire.call_args.args[0]), len(WEBM) + 3 * 1024 * 1024)
+
+    def test_le_microservice_indisponible_invite_a_ecrire(self, transcrire, traiter):
+        from .services import MicroserviceIAIndisponible
+
+        transcrire.side_effect = MicroserviceIAIndisponible('panne')
+        reponse = self.client.post(self.url, {'audio': audio()}, format='multipart')
+        self.assertEqual(reponse.status_code, 503)
+        self.assertIn('écrire', reponse.data['detail'])
+
+
+@patch('apps.chatbot.views.synthetiser')
+class ReponseVocaleTests(APITestCase):
+    url = '/api/chatbot/reponse-vocale'
+
+    def test_seule_une_reponse_de_titou_peut_etre_lue(self, synthetiser):
+        reponse = self.client.post(self.url, {'texte': 'Texte inventé', 'jeton_vocal': 'faux'}, format='json')
+        self.assertEqual(reponse.status_code, 403)
+        synthetiser.assert_not_called()
+
+    def test_une_reponse_validee_est_lue_a_voix_haute(self, synthetiser):
+        from .vocal import jeton_vocal
+
+        synthetiser.return_value = b'ID3audio'
+        texte = 'Je vous écoute.'
+
+        reponse = self.client.post(self.url, {'texte': texte, 'jeton_vocal': jeton_vocal(texte)}, format='json')
+
+        self.assertEqual((reponse.status_code, reponse['Content-Type'], reponse.content), (200, 'audio/mpeg', b'ID3audio'))
+
+    # Test 8 (côté Django)
+    def test_un_echec_de_synthese_n_est_jamais_bloquant(self, synthetiser):
+        from .vocal import jeton_vocal
+
+        synthetiser.return_value = None
+        texte = 'Je vous écoute.'
+        reponse = self.client.post(self.url, {'texte': texte, 'jeton_vocal': jeton_vocal(texte)}, format='json')
+        self.assertEqual(reponse.status_code, 204)

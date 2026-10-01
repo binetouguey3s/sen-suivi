@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -25,22 +26,43 @@ describe('ConversationService', () => {
   const lister = vi.fn<ChatbotService['lister']>();
   const lire = vi.fn<ChatbotService['lire']>();
   const supprimer = vi.fn<ChatbotService['supprimer']>();
+  const envoyerVocal = vi.fn<ChatbotService['envoyerVocal']>();
   let service: ConversationService;
 
   beforeEach(() => {
     identifiant.set(null);
     typeCompte.set(null);
-    [envoyer, creer, lister, lire, supprimer].forEach((f) => f.mockReset());
+    [envoyer, creer, lister, lire, supprimer, envoyerVocal].forEach((f) => f.mockReset());
     sessionStorage.clear();
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useValue: { identifiant, typeCompte } },
-        { provide: ChatbotService, useValue: { envoyer, creer, lister, lire, supprimer } },
+        { provide: ChatbotService, useValue: { envoyer, creer, lister, lire, supprimer, envoyerVocal } },
       ],
     });
     service = TestBed.inject(ConversationService);
     TestBed.tick();
+  });
+
+  it('affiche la transcription d’un message vocal, puis la réponse de Titou', async () => {
+    envoyerVocal.mockResolvedValue({ ...REPONSE, transcription: 'Je dors mal', jeton_vocal: 'jeton-lecture' });
+
+    await service.envoyerVocal(new Blob(['son'], { type: 'audio/webm' }), 3);
+
+    const [utilisateur, bot] = service.messages().slice(-2);
+    expect(utilisateur.vocal).toBe(true);
+    expect(utilisateur.contenu).toBe('Je dors mal');
+    expect(bot.jetonVocal).toBe('jeton-lecture');
+  });
+
+  it('un message vocal refusé explique pourquoi, sans rien deviner', async () => {
+    envoyerVocal.mockRejectedValue(new HttpErrorResponse({ status: 422, error: { detail: 'Format audio non accepté.' } }));
+
+    await service.envoyerVocal(new Blob(['x']), 2);
+
+    expect(service.messages().at(-1)!.contenu).toBe('Format audio non accepté.');
+    expect(service.messages().filter((m) => m.auteur === 'UTILISATEUR')).toHaveLength(0);
   });
 
   it('garde le jeton d’urgence remis quand une détresse est détectée', async () => {

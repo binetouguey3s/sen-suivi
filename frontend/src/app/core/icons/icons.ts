@@ -13,6 +13,7 @@ import {
   LucideMonitor,
   LucidePause,
   LucideGift,
+  LucideVolume2,
   LucideSparkles,
   LucidePlay,
   LucideUserCheck,
@@ -126,6 +127,7 @@ export const ICONES = {
   ecran: LucideMonitor,
   pause: LucidePause,
   cadeau: LucideGift,
+  'haut-parleur': LucideVolume2,
   suggestion: LucideSparkles,
   lecture: LucidePlay,
 } as const;

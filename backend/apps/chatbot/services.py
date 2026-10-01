@@ -10,6 +10,38 @@ class MicroserviceIAIndisponible(Exception):
     pass
 
 
+class AudioRefuse(Exception):
+    """Audio trop long, trop lourd ou dans un format non accepté."""
+
+
+def transcrire(audio: bytes) -> dict:
+    """Texte de l'enregistrement (en mémoire, jamais sur le disque)."""
+    try:
+        reponse = httpx.post(
+            f'{settings.AI_SERVICE_URL}/transcrire',
+            content=audio,
+            headers={'Content-Type': 'application/octet-stream'},
+            timeout=settings.AI_SERVICE_DELAI_SECONDES,
+        )
+    except httpx.HTTPError as erreur:
+        raise MicroserviceIAIndisponible(type(erreur).__name__) from erreur
+    if reponse.status_code in (413, 422):
+        raise AudioRefuse(reponse.json().get('detail', 'Enregistrement refusé.'))
+    if reponse.status_code != 200:
+        raise MicroserviceIAIndisponible(str(reponse.status_code))
+    return reponse.json()
+
+
+def synthetiser(texte: str) -> bytes | None:
+    """Audio d'une réponse déjà validée, ou None : l'interface lira alors le texte
+    avec la voix du navigateur. Jamais d'erreur bloquante."""
+    try:
+        reponse = httpx.post(f'{settings.AI_SERVICE_URL}/reponse-vocale', json={'texte': texte}, timeout=20)
+        return reponse.content if reponse.status_code == 200 else None
+    except httpx.HTTPError:
+        return None
+
+
 def traiter_message(
     message: str, historique: list[dict] | None = None, profil: list[str] | None = None, suggestion_possible: bool = False
 ) -> dict:

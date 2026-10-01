@@ -25,8 +25,9 @@ import logging
 import re
 from typing import Annotated, Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from app.classificateur_intention import REPONSE_PAR_INTENTION, classifier
@@ -34,6 +35,9 @@ from app.detecteur_detresse import REPONSE_URGENCE, detecter_detresse
 from app.generateur_reponse import echeance_totale, ecouter, generation_disponible, generer
 from app.moderateur_forum import moderer
 from app.moteur_rag import NOMBRE_MAX_RESULTATS, catalogue, indexer_ressources, rechercher, rechercher_plusieurs
+from app.synthese_vocale import SyntheseIndisponible, synthetiser
+from app.transcription import AudioRefuse, TranscriptionIndisponible, comprehensible, transcrire
+from app.transcription import reglages as reglages_transcription
 from app.validateur_reponse import mots_significatifs, valider
 
 journal = logging.getLogger(__name__)
@@ -314,6 +318,55 @@ def _generer_valide(
         profil=profil,
         suggestion_possible=suggestion_possible,
     )
+
+
+# --- Vocal ------------------------------------------------------------------
+
+REPONSE_INCOMPRISE = (
+    "Je n'ai pas bien entendu ce que vous avez dit. Pouvez-vous réessayer, un peu plus près du micro, "
+    "ou écrire votre message ?"
+)
+
+
+@app.post('/transcrire')
+async def transcrire_voix(request: Request):
+    """Audio brut (corps de la requête) -> texte en français.
+
+    Le corps est lu en mémoire : aucun fichier temporaire, rien sur le disque.
+    La réponse du chatbot est ensuite produite par /message, exactement comme
+    pour un texte tapé : le niveau 0 (détresse) s'applique au texte transcrit
+    avant tout le reste.
+    """
+    taille_max = reglages_transcription()['taille_max']
+    annoncee = int(request.headers.get('content-length') or 0)
+    if annoncee > taille_max:
+        return JSONResponse({'detail': f"L'enregistrement dépasse {taille_max // (1024 * 1024)} Mo."}, status_code=413)
+    octets = await request.body()
+    try:
+        resultat = transcrire(octets)
+    except AudioRefuse as erreur:
+        return JSONResponse({'detail': str(erreur)}, status_code=422)
+    except TranscriptionIndisponible:
+        return JSONResponse({'detail': 'La transcription est momentanément indisponible.'}, status_code=503)
+    finally:
+        del octets
+    texte = nettoyer(resultat.texte)
+    return {'transcription': texte, 'comprise': comprehensible(texte), 'duree': resultat.duree,
+            'reponse_incomprise': REPONSE_INCOMPRISE}
+
+
+class TexteASynthetiser(BaseModel):
+    texte: str = Field(max_length=3000)
+
+
+@app.post('/reponse-vocale')
+def reponse_vocale(entree: TexteASynthetiser):
+    """Texte DÉJÀ VALIDÉ -> audio. En cas d'échec, 503 : l'interface garde le texte
+    et peut le lire avec la voix du navigateur."""
+    try:
+        return Response(content=synthetiser(entree.texte), media_type='audio/mpeg')
+    except SyntheseIndisponible:
+        return JSONResponse({'detail': 'La synthèse vocale est momentanément indisponible.'}, status_code=503)
 
 
 class TexteAModerer(BaseModel):

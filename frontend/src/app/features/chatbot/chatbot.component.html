@@ -122,14 +122,33 @@
                   </a>
                 }
               </div>
-              <span class="cb__heure">{{ m.heure }}</span>
+              <div class="cb__meta">
+                <span class="cb__heure">{{ m.heure }}</span>
+                <button
+                  type="button"
+                  class="cb__ecouter"
+                  [class.cb__ecouter--actif]="lecture.enLecture() === m.id"
+                  [attr.aria-label]="lecture.enLecture() === m.id ? 'Arrêter la lecture' : 'Écouter la réponse'"
+                  [attr.aria-pressed]="lecture.enLecture() === m.id"
+                  (click)="ecouter(m)"
+                >
+                  <ss-icon [nom]="lecture.enLecture() === m.id ? 'pause' : 'haut-parleur'" taille="sm" />
+                </button>
+              </div>
             </div>
           </div>
         } @else {
           <div class="cb__ligne cb__ligne--utilisateur">
             <div class="cb__colonne cb__colonne--utilisateur">
               <div class="cb__bulle cb__bulle--utilisateur"><p>{{ m.contenu }}</p></div>
-              <span class="cb__heure">{{ m.heure }}</span>
+              @if (m.vocal) {
+                <span class="cb__heure cb__vocal">
+                  <ss-icon nom="micro" taille="sm" /> Transcrit · {{ m.heure }} ·
+                  <button type="button" class="cb__corriger" (click)="corriger(m)">Corriger</button>
+                </span>
+              } @else {
+                <span class="cb__heure">{{ m.heure }}</span>
+              }
             </div>
           </div>
         }
@@ -162,8 +181,26 @@
           <p class="cb__etat--erreur cb__consentement-erreur" role="alert">L'échange n'a pas pu être conservé. Réessayez.</p>
         }
       }
+      @if (enregistreur.erreur(); as e) { <p class="cb__vocal-erreur" role="alert">{{ e }}</p> }
+      @if (enregistreur.etat() === 'enregistrement') {
+        <div class="cb__enregistrement" role="status">
+          <span class="cb__point-rouge" aria-hidden="true"></span>
+          <span class="cb__minuteur">Je vous écoute… {{ enregistreur.minuteur() }} / {{ dureeMax }}</span>
+          <button type="button" class="cb__bouton-texte" (click)="enregistreur.annuler()">Annuler</button>
+          <button type="button" class="cb__envoyer" aria-label="Arrêter et envoyer" (click)="parler()">
+            <ss-icon nom="envoyer" taille="sm" />
+          </button>
+        </div>
+      } @else {
       <div class="cb__champ">
-        <button type="button" class="cb__micro" aria-label="Message vocal (bientôt disponible)" disabled>
+        <button
+          type="button"
+          class="cb__micro"
+          [class.cb__micro--envoi]="enregistreur.etat() === 'envoi'"
+          [attr.aria-label]="enregistreur.etat() === 'envoi' ? 'Envoi du message vocal…' : 'Parler à Titou'"
+          [disabled]="conversation.enCours() || enregistreur.etat() === 'envoi'"
+          (click)="parler()"
+        >
           <ss-icon nom="micro" taille="sm" />
         </button>
         <input
@@ -180,6 +217,7 @@
           <ss-icon nom="envoyer" taille="sm" />
         </button>
       </div>
+      }
       <p class="cb__mention">Titou ne remplace pas un professionnel de santé.</p>
     </footer>
   }

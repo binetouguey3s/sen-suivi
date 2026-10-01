@@ -364,9 +364,121 @@
   flex-shrink: 0;
   border: none;
   background: none;
-  color: var(--ss-texte-doux);
+  color: var(--ss-texte-marque);
   border-radius: 50%;
-  cursor: not-allowed;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--ss-surface-douce);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.cb__micro--envoi {
+  animation: cb-pulsation 1s ease-in-out infinite;
+}
+
+// --- Vocal ---------------------------------------------------------------------
+
+.cb__enregistrement {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  padding: 6px 6px 6px var(--ss-espace-2);
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface);
+}
+
+.cb__point-rouge {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #d64545;
+  animation: cb-pulsation 1.2s ease-in-out infinite;
+}
+
+.cb__minuteur {
+  flex: 1;
+  color: var(--ss-texte);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cb__bouton-texte,
+.cb__corriger {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ss-texte-marque);
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cb__bouton-texte {
+  font-size: 14px;
+}
+
+.cb__vocal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cb__vocal-erreur {
+  margin: 0 0 var(--ss-espace-1);
+  color: var(--ss-texte);
+  font-size: 13px;
+}
+
+.cb__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cb__ecouter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--ss-texte-doux);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--ss-surface-douce);
+    color: var(--ss-texte-marque);
+  }
+}
+
+.cb__ecouter--actif {
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
+}
+
+@keyframes cb-pulsation {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb__point-rouge,
+  .cb__micro--envoi {
+    animation: none;
+  }
 }
 
 .cb__envoyer {

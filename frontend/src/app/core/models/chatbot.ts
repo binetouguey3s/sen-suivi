@@ -21,6 +21,10 @@ export interface ReponseChatbot {
   professionnel_suggere?: ProfessionnelSuggereChatbot | null;
   // Remis seulement quand une détresse est détectée
   jeton_urgence?: string | null;
+  // Autorise la lecture à voix haute de cette réponse
+  jeton_vocal?: string | null;
+  // Message vocal : ce que Titou a compris
+  transcription?: string;
 }
 
 export interface MessageAffiche {
@@ -33,6 +37,9 @@ export interface MessageAffiche {
   professionnel?: ProfessionnelSuggereChatbot | null;
   // Titou oriente vers un professionnel sans suggestion personnalisée (visiteur)
   orientationAnnuaire?: boolean;
+  // Message dit à voix haute (sa transcription s'affiche, modifiable)
+  vocal?: boolean;
+  jetonVocal?: string | null;
 }
 
 // Historique des conversations conservées (GET /api/chatbot/conversations)
