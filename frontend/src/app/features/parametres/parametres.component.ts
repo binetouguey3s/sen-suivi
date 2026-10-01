@@ -95,6 +95,7 @@ export class ParametresComponent {
   protected readonly confianceTelephone = signal('');
   protected readonly confianceEmail = signal('');
   protected readonly confianceAccord = signal(false);
+  protected readonly confianceAuto = signal(false);
   protected readonly aUnePersonneDeConfiance = signal(false);
   protected readonly erreursConfiance = signal<Record<string, string>>({});
   protected readonly confianceEnregistree = signal(false);
@@ -157,6 +158,7 @@ export class ParametresComponent {
     this.confianceTelephone.set(p?.telephone ?? '');
     this.confianceEmail.set(p?.email ?? '');
     this.confianceAccord.set(p?.accord_confirme ?? false);
+    this.confianceAuto.set(p?.alerte_automatique ?? false);
   }
 
   protected async enregistrerConfiance(evenement: Event): Promise<void> {
@@ -176,6 +178,7 @@ export class ParametresComponent {
           telephone: this.confianceTelephone().trim(),
           email: this.confianceEmail().trim(),
           accord_confirme: true,
+          alerte_automatique: this.confianceAuto(),
         }),
       );
       this.confianceEnregistree.set(true);

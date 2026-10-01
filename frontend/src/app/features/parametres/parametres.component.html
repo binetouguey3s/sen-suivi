@@ -115,6 +115,13 @@
             <input type="checkbox" [checked]="confianceAccord()" (change)="confianceAccord.set($any($event.target).checked)" />
             J'ai prévenu cette personne et elle est d'accord pour être contactée si j'en ai besoin.
           </label>
+          <label class="pa__accord">
+            <input type="checkbox" [checked]="confianceAuto()" (change)="confianceAuto.set($any($event.target).checked)" />
+            <span>Prévenir automatiquement cette personne par e-mail si j'exprime à Titou un risque pour ma vie.
+              <small class="pa__aide-ligne">Elle reçoit des conseils pour vous écouter et vous soutenir, jamais le contenu de vos échanges. Jamais d'alerte automatique si vous parlez de violences subies : vous restez seul·e à décider.</small>
+            </span>
+          </label>
+          @if (erreursConfiance()['alerte_automatique']) { <p class="pa__erreur" role="alert">{{ erreursConfiance()['alerte_automatique'] }}</p> }
           @if (erreursConfiance()['general']) { <p class="pa__erreur" role="alert">{{ erreursConfiance()['general'] }}</p> }
           @if (confianceEnregistree()) { <p class="pa__ok" role="status">Votre personne de confiance est enregistrée.</p> }
           <div class="pa__boutons">

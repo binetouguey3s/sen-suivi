@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.comptes.permissions import EstUtilisateur
+from apps.comptes.personne_confiance import alerter_automatiquement
 from apps.orientation.services import suggerer
 from apps.orientation.urgence import emettre_jeton
 from apps.ressources.models import Ressource
@@ -26,6 +27,7 @@ from .serializers import (
     ReponseVocaleSerializer,
 )
 from .services import AudioRefuse, MicroserviceIAIndisponible, synthetiser, traiter_message, transcrire
+from .signalement import signaler_equipe
 from .vocal import AudioEnMemoireUploadHandler, jeton_vocal, jeton_vocal_valide
 
 journal = logging.getLogger(__name__)
@@ -89,20 +91,35 @@ class ChatbotMessageView(APIView):
         utilisateur = getattr(request.user, 'utilisateur', None) if request.user.is_authenticated else None
         if utilisateur is None:
             return {}
+        supplement = {}
+        besoins = None
         if resultat.get('urgence'):
-            return {'jeton_urgence': emettre_jeton(utilisateur)}
-        if not resultat.get('orientation_professionnel'):
+            nature = resultat.get('nature_detresse')
+            # Mise en relation gratuite, sans écran de paiement
+            supplement['jeton_urgence'] = emettre_jeton(utilisateur)
+            textes = [e['contenu'] for e in donnees['historique'] if e['auteur'] == 'UTILISATEUR'] + [donnees['message']]
+            # Risque vital ou danger pour autrui, avec l'accord donné à l'avance : la
+            # personne de confiance est prévenue, sauf si le message la vise. Jamais
+            # pour des violences subies : l'auteur peut être un proche.
+            prevenue = self._alerter_personne_confiance(utilisateur, nature, textes)
+            supplement['personne_confiance_prevenue'] = prevenue
+            # L'équipe Sen Suivi est prévenue de toute situation grave
+            self._signaler_equipe(utilisateur, nature, prevenue)
+            # Un professionnel adapté reste proposé, en plus des numéros d'urgence
+            besoins = ['VIOLENCES'] if nature == 'VIOLENCES' else ['CRISE']
+        elif not resultat.get('orientation_professionnel'):
             return {}
         textes = [e['contenu'] for e in donnees['historique'] if e['auteur'] == 'UTILISATEUR'] + [donnees['message']]
         try:
-            suggestion = suggerer(utilisateur, textes=textes)
+            suggestion = suggerer(utilisateur, textes=textes, besoins=besoins)
         except Exception:  # la suggestion est un confort : son échec ne bloque jamais la réponse
             journal.exception("Suggestion d'orientation indisponible")
-            return {}
+            return supplement
         if suggestion is None:
-            return {}
+            return supplement
         pro = suggestion.professionnel
         return {
+            **supplement,
             'professionnel_suggere': {
                 'id': pro.pk,
                 'nom': pro.nom,
@@ -111,6 +128,19 @@ class ChatbotMessageView(APIView):
                 'raison': suggestion.raison,
             }
         }
+
+    def _alerter_personne_confiance(self, utilisateur, nature, textes):
+        try:
+            return alerter_automatiquement(utilisateur, nature, textes)
+        except Exception:  # l'alerte est un filet de plus : son échec ne retarde jamais la réponse d'urgence
+            journal.exception('Alerte automatique à la personne de confiance impossible')
+            return None
+
+    def _signaler_equipe(self, utilisateur, nature, prevenue):
+        try:
+            signaler_equipe(utilisateur, nature, prevenue)
+        except Exception:  # même règle : jamais au détriment de la réponse d'urgence
+            journal.exception("Signalement à l'équipe impossible")
 
     def _profil(self, request):
         """Profil de tendance d'un utilisateur connecté et consentant ; sinon aucun,

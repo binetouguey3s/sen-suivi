@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -37,6 +38,7 @@ import { IconComponent } from '../icon/icon.component';
                 </button>
               }
             </div>
+            @if (erreurEmail(); as e) { <p class="ai__erreur" role="alert">{{ e }}</p> }
             <p class="ai__note">{{ p.prenom }} reçoit seulement une invitation à prendre de vos nouvelles, jamais le contenu de vos échanges.</p>
           </div>
         } @else if (charge()) {
@@ -114,6 +116,12 @@ import { IconComponent } from '../icon/icon.component';
         color: var(--ss-texte-doux);
         font-size: 12px;
       }
+      .ai__erreur {
+        margin: var(--ss-espace-1) 0 0;
+        color: var(--ss-texte);
+        font-size: 13px;
+        font-weight: var(--ss-poids-texte-fort);
+      }
       .ai__lien {
         color: var(--ss-texte-marque);
         font-size: 14px;
@@ -133,6 +141,7 @@ export class AideImmediateComponent {
   protected readonly personne = signal<PersonneConfiance | null>(null);
   protected readonly charge = signal(false);
   protected readonly emailEnvoye = signal(false);
+  protected readonly erreurEmail = signal<string | null>(null);
 
   protected readonly lienSms = computed(() => {
     const p = this.personne();
@@ -155,11 +164,17 @@ export class AideImmediateComponent {
   }
 
   protected async envoyerEmail(): Promise<void> {
+    this.erreurEmail.set(null);
     try {
       await this.service.alerter('EMAIL');
       this.emailEnvoye.set(true);
-    } catch {
+    } catch (e) {
+      // L'e-mail n'est pas parti : on le dit, l'appel et le SMS restent proposés
       this.emailEnvoye.set(false);
+      this.erreurEmail.set(
+        (e instanceof HttpErrorResponse && e.error?.detail) ||
+          "L'e-mail n'a pas pu partir. Appelez ou envoyez un SMS, ou composez le 800 805 805.",
+      );
     }
   }
 }

@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 
+from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
@@ -105,3 +106,38 @@ class RappelsTests(APITestCase):
         self.assertEqual(self.a_retester(), [])
         AutoEvaluation.objects.create(utilisateur=self.awa, type_evaluation='STRESS', score_de_tendance=40)
         self.assertEqual(self.a_retester(), [])
+
+
+@override_settings(EMAIL_NOTIFICATIONS=True, EMAIL_ASYNCHRONE=False)
+class EnvoiEmailTests(APITestCase):
+    """Les notifications partent aussi par e-mail, sauf si la personne l'a désactivé."""
+
+    def setUp(self):
+        self.awa = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+
+    def test_une_notification_part_aussi_par_e_mail(self):
+        notifier(self.awa, 'Votre demande a été acceptée', 'Vous pouvez écrire au professionnel.')
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual((mail.outbox[0].to, mail.outbox[0].subject), (['awa@test.sn'], 'Votre demande a été acceptée'))
+        self.assertIn('800 805 805', mail.outbox[0].body)
+
+    def test_une_preference_desactivee_coupe_l_e_mail_mais_garde_la_cloche(self):
+        self.awa.preferences = {'reponse_professionnel': {'email': False, 'push': True}}
+        self.awa.save()
+
+        notifier(self.awa, 'Votre demande a été acceptée', '…', preference='reponse_professionnel')
+
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertTrue(NotificationEmail.objects.filter(destinataire=self.awa).exists())
+
+    @override_settings(EMAIL_NOTIFICATIONS=False)
+    def test_les_e_mails_de_notification_peuvent_etre_coupes_globalement(self):
+        notifier(self.awa, 'Objet', 'Contenu')
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_la_reinitialisation_du_mot_de_passe_envoie_un_vrai_lien(self):
+        self.client.post('/api/auth/mot-de-passe-oublie', {'email': 'awa@test.sn'}, format='json')
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('/nouveau-mot-de-passe?uid=', mail.outbox[0].body)

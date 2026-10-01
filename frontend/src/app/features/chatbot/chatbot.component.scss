@@ -673,3 +673,15 @@
   background: var(--ss-alerte);
   color: var(--ss-alerte-texte);
 }
+
+.cb__bulle .cb__prevenu {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: var(--ss-espace-2) 0 0;
+  padding: var(--ss-espace-1) var(--ss-espace-2);
+  border-radius: var(--ss-rayon-champ);
+  background: var(--ss-surface-accent);
+  color: var(--ss-texte);
+  font-size: 14px;
+}

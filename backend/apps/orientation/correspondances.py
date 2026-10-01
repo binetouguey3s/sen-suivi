@@ -13,6 +13,17 @@ from apps.comptes.models import SpecialitePro as M
 from apps.suivi.models import TypeEvaluation
 
 BESOINS = {
+    # Situations graves signalées par le chatbot (jamais déduites du modèle de langage)
+    'CRISE': {
+        'libelle': 'les moments de crise',
+        'metiers': [M.PSYCHOLOGUE],
+        'mots': ['crise', 'desespoir', 'detresse'],
+    },
+    'VIOLENCES': {
+        'libelle': 'les violences subies',
+        'metiers': [M.PSYCHOLOGUE, M.ASSISTANT_SOCIAL],
+        'mots': ['violence', 'agression', 'abus', 'trauma'],
+    },
     'STRESS': {
         'libelle': 'le stress et la tension',
         'metiers': [M.SOPHROLOGUE, M.COACH_DEVELOPPEMENT, M.PSYCHOLOGUE],

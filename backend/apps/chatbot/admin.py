@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ConversationChatbot, MessageChatbot
+from .models import ConversationChatbot, MessageChatbot, SignalementRisque
 
 
 class MessageChatbotInline(admin.TabularInline):
@@ -19,3 +19,9 @@ class ConversationChatbotAdmin(admin.ModelAdmin):
 class MessageChatbotAdmin(admin.ModelAdmin):
     list_display = ('conversation', 'type_expediteur', 'source_reponse', 'date_envoi')
     list_filter = ('type_expediteur', 'source_reponse')
+
+
+@admin.register(SignalementRisque)
+class SignalementRisqueAdmin(admin.ModelAdmin):
+    list_display = ('date', 'utilisateur', 'nature', 'personne_confiance_prevenue')
+    list_filter = ('nature', 'personne_confiance_prevenue')

@@ -22,6 +22,8 @@ import os
 import re
 import time
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturTimeout
 
 import httpx
 
@@ -203,6 +205,20 @@ def echeance_totale() -> float:
     return time.monotonic() + _reglages()['delai_total']
 
 
+# Appels aux fournisseurs dans des fils séparés : sans réseau, la résolution
+# d'adresse (DNS) peut bloquer bien au-delà du délai de httpx. L'attente, elle,
+# est toujours bornée : Titou répond avant que Django n'abandonne.
+_EXECUTEUR = ThreadPoolExecutor(max_workers=8, thread_name_prefix='fournisseur-llm')
+
+
+def _poster(url: str, headers: dict, corps: dict, delai: float) -> httpx.Response:
+    futur = _EXECUTEUR.submit(httpx.post, url, headers=headers, json=corps, timeout=delai)
+    try:
+        return futur.result(timeout=delai + 0.5)
+    except FuturTimeout as erreur:
+        raise httpx.TimeoutException('délai dépassé (réseau injoignable)') from erreur
+
+
 def _appeler(
     messages: list[dict], echeance: float | None = None, accepter: Callable[[str], bool] | None = None
 ) -> str | None:
@@ -229,11 +245,11 @@ def _appeler(
             if effort:
                 corps['reasoning_effort'] = effort
             try:
-                reponse = httpx.post(
+                reponse = _poster(
                     f"{fournisseur['url']}/chat/completions",
-                    headers={'Authorization': f"Bearer {fournisseur['cle']}"},
-                    json=corps,
-                    timeout=min(reglages['delai'], restant),
+                    {'Authorization': f"Bearer {fournisseur['cle']}"},
+                    corps,
+                    min(reglages['delai'], restant),
                 )
                 reponse.raise_for_status()
                 choix = reponse.json()['choices'][0]
@@ -294,6 +310,22 @@ s'affiche juste sous ton message. Invite-la à y jeter un œil ou à parcourir l
 citer de nom toi-même, et ne dis jamais que tu ne peux pas lui en proposer."""
 
 
+_CONSIGNE_CRISE = """SITUATION DE CRISE EN COURS : dans ses derniers messages, la personne a exprimé un \
+danger pour elle-même ou pour autrui. Les numéros d'urgence s'affichent déjà sous ton message.
+- Phrases très courtes, calmes, chaleureuses. Deux phrases au maximum.
+- Ne répète JAMAIS la même consigne que dans tes messages précédents (« appelez le 1515 » déjà dit : \
+propose autre chose).
+- Une seule chose concrète à la fois : s'éloigner de ce qui met en danger, sortir prendre l'air, \
+respirer lentement, s'asseoir, poser ce qu'on tient, rejoindre un endroit où il y a du monde, \
+parler à une personne présente à côté.
+- Si la personne refuse d'appeler, ne la contredis pas : accueille ce refus et propose une petite étape.
+- Ne juge jamais, ne fais aucun reproche, ne menace pas, ne dramatise pas."""
+
+
+def _contexte_crise(crise: bool) -> list[dict]:
+    return [{'role': 'system', 'content': _CONSIGNE_CRISE}] if crise else []
+
+
 def _contexte_suggestion(suggestion_possible: bool) -> list[dict]:
     return [{'role': 'system', 'content': _CONSIGNE_SUGGESTION}] if suggestion_possible else []
 
@@ -339,12 +371,14 @@ def ecouter(
     accepter: Callable[[str], bool] | None = None,
     profil: list[str] | None = None,
     suggestion_possible: bool = False,
+    crise: bool = False,
 ) -> str | None:
     """Mode écoute : accueil, sans aucun conseil, ou None."""
     if not generation_disponible():
         return None
     return _appeler(
         [{'role': 'system', 'content': PROMPT_ECOUTE}]
+        + _contexte_crise(crise)
         + _contexte_catalogue(catalogue)
         + _contexte_profil(profil)
         + _contexte_suggestion(suggestion_possible)

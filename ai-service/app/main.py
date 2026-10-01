@@ -33,6 +33,7 @@ from pydantic import BaseModel, Field
 from app.classificateur_intention import REPONSE_PAR_INTENTION, classifier
 from app.detecteur_detresse import REPONSE_URGENCE, detecter_detresse
 from app.generateur_reponse import echeance_totale, ecouter, generation_disponible, generer
+from app.gravite import REPONSE_DANGER_AUTRUI, REPONSE_VIOLENCES, danger_autrui, nature_grave, risque_vital, violences
 from app.moderateur_forum import moderer
 from app.moteur_rag import NOMBRE_MAX_RESULTATS, catalogue, indexer_ressources, rechercher, rechercher_plusieurs
 from app.synthese_vocale import SyntheseIndisponible, synthetiser
@@ -99,6 +100,8 @@ class MessageSortie(BaseModel):
     # Vrai quand la personne cherche un professionnel ou que Titou l'oriente vers
     # l'annuaire : Django ajoute alors la suggestion de son algorithme d'orientation
     orientation_professionnel: bool = False
+    # Nature d'une situation grave : RISQUE_VITAL, VIOLENCES ou DETRESSE (sinon vide)
+    nature_detresse: str | None = None
 
 
 class RessourceAIndexer(BaseModel):
@@ -141,11 +144,59 @@ def orientation_vers_professionnel(message: str, reponse: str) -> bool:
 
 @app.post('/message', response_model=MessageSortie)
 def traiter_message(entree: MessageEntree):
+    crise = crise_en_cours(entree.historique)
+    if crise and nature_grave(nettoyer(entree.message)) is None:
+        # Une crise reste une crise : « non », « je n'appellerai pas »… gardent
+        # les numéros, le professionnel et les alertes, avec une réponse adaptée
+        return _repondre_en_crise(entree, crise)
     sortie = _repondre(entree)
     # Une réponse d'urgence ne propose que les numéros d'écoute : aucune autre orientation
     if not sortie.urgence:
         sortie.orientation_professionnel = orientation_vers_professionnel(entree.message, sortie.reponse)
     return sortie
+
+
+# Nombre de messages récents de la personne pris en compte pour savoir si une crise est en cours
+MESSAGES_CRISE = 3
+
+REPONSE_SUIVI_CRISE = (
+    "Je reste avec vous. Vous n'êtes pas obligé·e d'appeler tout de suite : commencez par vous éloigner de "
+    "ce qui vous met en danger, et respirez lentement. Quand vous le pourrez, le 800 805 805 est gratuit, "
+    "et le 1515 ou le 18 répondent en cas de danger immédiat."
+)
+
+
+def crise_en_cours(historique: list[EchangePrecedent]) -> str | None:
+    """Nature de la situation grave exprimée dans les derniers messages, s'il y en a une."""
+    for echange in reversed([e for e in historique if e.auteur == 'UTILISATEUR'][-MESSAGES_CRISE:]):
+        nature = nature_grave(echange.contenu)
+        if nature:
+            return nature
+    return None
+
+
+def _repondre_en_crise(entree: MessageEntree, nature: str) -> MessageSortie:
+    message = nettoyer(entree.message)
+    texte = None
+    if generation_disponible():
+        historique = [e.model_dump() for e in entree.historique]
+        precedentes = [e['contenu'] for e in historique if e['auteur'] == 'BOT']
+        texte = ecouter(
+            message,
+            historique,
+            None,
+            echeance_totale(),
+            accepter=lambda t: valider(t, [], 'ecoute', precedentes).valide,
+            crise=True,
+        )
+    return MessageSortie(
+        reponse=texte or REPONSE_SUIVI_CRISE,
+        source_reponse='GENERATION' if texte else 'REGLE',
+        urgence=True,
+        intention=None,
+        ressource=None,
+        nature_detresse=nature,
+    )
 
 
 def _repondre(entree: MessageEntree) -> MessageSortie:
@@ -154,7 +205,20 @@ def _repondre(entree: MessageEntree) -> MessageSortie:
     # Niveau 0 — sécurité, toujours vérifié en premier
     if detecter_detresse(message):
         return MessageSortie(
-            reponse=REPONSE_URGENCE, source_reponse='REGLE', urgence=True, intention=None, ressource=None
+            reponse=REPONSE_URGENCE, source_reponse='REGLE', urgence=True, intention=None, ressource=None,
+            nature_detresse='RISQUE_VITAL' if risque_vital(message) else 'DETRESSE',
+        )
+    # Envie de tuer ou de blesser quelqu'un : réponse dédiée, sans le modèle ni le réseau
+    if danger_autrui(message):
+        return MessageSortie(
+            reponse=REPONSE_DANGER_AUTRUI, source_reponse='REGLE', urgence=True, intention=None, ressource=None,
+            nature_detresse='DANGER_AUTRUI',
+        )
+    # Violences subies : réponse dédiée, jamais confiée au modèle de langage
+    if violences(message):
+        return MessageSortie(
+            reponse=REPONSE_VIOLENCES, source_reponse='REGLE', urgence=True, intention=None, ressource=None,
+            nature_detresse='VIOLENCES',
         )
 
     # Niveau 1 — classification d'intention

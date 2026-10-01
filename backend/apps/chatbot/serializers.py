@@ -71,6 +71,9 @@ class MessageSortieSerializer(serializers.Serializer):
     # Remis seulement quand une détresse est détectée : rend la mise en relation
     # gratuite et sans écran de paiement (apps.orientation.urgence)
     jeton_urgence = serializers.CharField(required=False, allow_null=True)
+    nature_detresse = serializers.CharField(required=False, allow_null=True)
+    # Prénom de la personne de confiance prévenue automatiquement (risque vital, avec accord préalable)
+    personne_confiance_prevenue = serializers.CharField(required=False, allow_null=True)
     # Autorise la lecture à voix haute de CETTE réponse, et d'aucun autre texte
     jeton_vocal = serializers.CharField(required=False, allow_null=True)
     # Message vocal : ce qui a été compris, affiché pour que la personne puisse corriger

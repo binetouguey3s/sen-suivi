@@ -144,6 +144,24 @@ CORS_ALLOWED_ORIGINS = env.list(
 # Jeton d'urgence (apps.orientation.urgence) envoyé par le front en plus des en-têtes standard
 CORS_ALLOW_HEADERS = (*default_headers, 'x-jeton-urgence')
 
+# E-mails réels : serveur SMTP lu dans le .env (Gmail avec un mot de passe
+# d'application, Brevo…). Sans EMAIL_HOST, les e-mails s'affichent dans les
+# journaux du back-end au lieu de partir.
+EMAIL_HOST = env('EMAIL_HOST', default='')
+EMAIL_BACKEND = (
+    'django.core.mail.backends.smtp.EmailBackend' if EMAIL_HOST else 'django.core.mail.backends.console.EmailBackend'
+)
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
+EMAIL_TIMEOUT = env.int('EMAIL_TIMEOUT', default=10)
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Sen Suivi <no-reply@sensuivi.sn>')
+# Notifications aussi envoyées par e-mail (en plus de la cloche), selon les préférences de chacun
+EMAIL_NOTIFICATIONS = env.bool('EMAIL_NOTIFICATIONS', default=True)
+# Les notifications partent en arrière-plan : la page n'attend jamais le serveur d'e-mails
+EMAIL_ASYNCHRONE = env.bool('EMAIL_ASYNCHRONE', default=True)
+
 # Adresse du front-end, utilisée dans les liens envoyés par e-mail.
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 

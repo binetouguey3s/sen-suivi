@@ -224,10 +224,21 @@ class ChatbotOrientationTests(APITestCase):
         self.client.post('/api/chatbot/message', {'message': 'Bonjour'})
         self.assertFalse(traiter.call_args.args[3])
 
-    def test_une_detresse_remet_un_jeton_et_jamais_de_suggestion(self, traiter):
-        traiter.return_value = self.reponse_ia(urgence=True, orientation_professionnel=True)
+    def test_une_detresse_remet_un_jeton_et_propose_aussi_un_professionnel(self, traiter):
+        psychologue = professionnel('Fatou Sarr', 'PSYCHOLOGUE')
+        traiter.return_value = self.reponse_ia(urgence=True, nature_detresse='DETRESSE')
 
         corps = self.client.post('/api/chatbot/message', {'message': '…'}).data
 
         self.assertTrue(corps['jeton_urgence'])
-        self.assertNotIn('professionnel_suggere', corps)
+        # Mise en relation gratuite avec le métier adapté, en plus des numéros
+        self.assertEqual(corps['professionnel_suggere']['id'], psychologue.pk)
+
+    def test_des_violences_orientent_vers_psychologue_ou_assistant_social(self, traiter):
+        social = professionnel('Awa Sy', 'ASSISTANT_SOCIAL')
+        traiter.return_value = self.reponse_ia(urgence=True, nature_detresse='VIOLENCES')
+
+        corps = self.client.post('/api/chatbot/message', {'message': '…'}).data
+
+        self.assertEqual(corps['professionnel_suggere']['id'], social.pk)
+        self.assertIn('les violences subies', corps['professionnel_suggere']['raison'])

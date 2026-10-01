@@ -268,3 +268,10 @@
   flex-wrap: wrap;
   gap: var(--ss-espace-2);
 }
+
+.pa__aide-ligne {
+  display: block;
+  margin-top: 2px;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}

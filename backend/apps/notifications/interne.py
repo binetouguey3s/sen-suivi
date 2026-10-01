@@ -152,5 +152,5 @@ class CreerNotificationView(APIView):
         preference = donnees.get('preference')
         if preference and not compte.preferences.get(preference, {}).get('email', True):
             return Response({'ignoree': True, 'raison': 'Notification désactivée par le destinataire.'})
-        notification = notifier(compte, donnees['objet'], donnees['contenu'])
+        notification = notifier(compte, donnees['objet'], donnees['contenu'], preference)
         return Response({'id': notification.pk}, status=201)

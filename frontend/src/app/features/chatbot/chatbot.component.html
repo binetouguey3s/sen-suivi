@@ -93,6 +93,9 @@
             <div class="cb__colonne">
               <div class="cb__bulle cb__bulle--bot" [class.cb__bulle--urgence]="m.urgence">
                 <p>{{ m.contenu }}</p>
+                @if (m.personnePrevenue; as prenom) {
+                  <p class="cb__prevenu" role="status"><ss-icon nom="verifie" taille="sm" /> Comme vous l'aviez souhaité, nous avons prévenu {{ prenom }} par e-mail. Vous pouvez aussi l'appeler.</p>
+                }
                 @if (m.urgence) { <ss-aide-immediate /> }
                 @if (m.ressource) {
                   <a class="cb__ressource" [routerLink]="['/ressources', m.ressource.ressource_id]">

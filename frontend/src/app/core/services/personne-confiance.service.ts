@@ -11,6 +11,8 @@ export interface PersonneConfiance {
   telephone: string;
   email: string;
   accord_confirme: boolean;
+  // Consentement séparé : e-mail automatique en cas de risque vital (jamais pour des violences)
+  alerte_automatique: boolean;
   // Message proposé pour le SMS : aucun détail des échanges
   message_sms?: string;
   alerte_email_disponible?: boolean;

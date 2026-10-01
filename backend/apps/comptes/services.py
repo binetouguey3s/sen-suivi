@@ -5,6 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
+from apps.notifications.courriel import envoyer_en_arriere_plan
 from apps.notifications.models import NotificationEmail
 from apps.notifications.services import OBJET_REINITIALISATION
 
@@ -28,8 +29,13 @@ def demander_reinitialisation(email):
         objet=OBJET_REINITIALISATION,
         contenu=f'Pour choisir un nouveau mot de passe, ouvrez ce lien : {lien}',
     )
-    # Pas de serveur SMTP en développement : le lien s'affiche dans les journaux du back-end.
-    print(f'[Sen Suivi] Lien de réinitialisation pour {compte.email} : {lien}', flush=True)
+    # Sans serveur SMTP (développement), l'e-mail et son lien s'affichent dans les journaux du back-end
+    envoyer_en_arriere_plan(
+        compte.email,
+        OBJET_REINITIALISATION,
+        f"Bonjour,\n\nVous avez demandé à choisir un nouveau mot de passe. Ouvrez ce lien, valable quelques "
+        f"jours :\n{lien}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez simplement cet e-mail.",
+    )
 
 
 def confirmer_reinitialisation(uid, token, password):

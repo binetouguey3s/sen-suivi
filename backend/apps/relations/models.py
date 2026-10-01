@@ -60,6 +60,7 @@ class DemandeContact(models.Model):
             'Votre demande a été acceptée',
             f"{self.professionnel.nom} a accepté votre demande d'échange. Vous pouvez désormais lui écrire "
             "dans « Mes demandes », en toute confidentialité.",
+            preference='reponse_professionnel',
         )
 
     def refuser(self):
@@ -70,6 +71,7 @@ class DemandeContact(models.Model):
             self.utilisateur,
             "Votre demande n'a pas pu être acceptée",
             f"{self.professionnel.nom} ne peut pas donner suite à votre demande pour le moment.",
+            preference='reponse_professionnel',
         )
 
 

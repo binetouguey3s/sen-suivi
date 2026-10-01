@@ -21,6 +21,10 @@ export interface ReponseChatbot {
   professionnel_suggere?: ProfessionnelSuggereChatbot | null;
   // Remis seulement quand une détresse est détectée
   jeton_urgence?: string | null;
+  // Situation grave : RISQUE_VITAL, VIOLENCES ou DETRESSE
+  nature_detresse?: string | null;
+  // Prénom de la personne de confiance prévenue automatiquement (avec accord préalable)
+  personne_confiance_prevenue?: string | null;
   // Autorise la lecture à voix haute de cette réponse
   jeton_vocal?: string | null;
   // Message vocal : ce que Titou a compris
@@ -37,6 +41,8 @@ export interface MessageAffiche {
   professionnel?: ProfessionnelSuggereChatbot | null;
   // Titou oriente vers un professionnel sans suggestion personnalisée (visiteur)
   orientationAnnuaire?: boolean;
+  // Personne de confiance prévenue automatiquement par e-mail
+  personnePrevenue?: string | null;
   // Message dit à voix haute (sa transcription s'affiche, modifiable)
   vocal?: boolean;
   jetonVocal?: string | null;

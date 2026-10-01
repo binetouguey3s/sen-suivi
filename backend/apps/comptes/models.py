@@ -238,6 +238,9 @@ class PersonneConfiance(models.Model):
     email = models.EmailField('e-mail', blank=True)
     # L'utilisateur confirme avoir obtenu l'accord de la personne
     accord_confirme = models.BooleanField('accord de la personne confirmé', default=False)
+    # Consentement séparé, désactivé par défaut : prévenir automatiquement par
+    # e-mail en cas de risque vital exprimé. Jamais pour des violences subies.
+    alerte_automatique = models.BooleanField('alerte automatique en cas de risque vital', default=False)
     date_mise_a_jour = models.DateTimeField('mise à jour', auto_now=True)
 
     class Meta:

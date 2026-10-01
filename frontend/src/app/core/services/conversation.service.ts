@@ -143,6 +143,7 @@ export class ConversationService {
       professionnel: reponse.professionnel_suggere ?? null,
       orientationAnnuaire: !!reponse.orientation_professionnel && !reponse.professionnel_suggere,
       jetonVocal: reponse.jeton_vocal ?? null,
+      personnePrevenue: reponse.personne_confiance_prevenue ?? null,
     });
   }
 

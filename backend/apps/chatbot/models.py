@@ -89,3 +89,28 @@ class MessageChatbot(models.Model):
 
     def __str__(self):
         return f'{self.get_type_expediteur_display()} — {self.contenu[:50]}'
+
+
+class NatureRisque(models.TextChoices):
+    RISQUE_VITAL = 'RISQUE_VITAL', 'Risque pour sa vie'
+    DETRESSE = 'DETRESSE', 'Détresse intense'
+    DANGER_AUTRUI = 'DANGER_AUTRUI', 'Danger pour autrui'
+    VIOLENCES = 'VIOLENCES', 'Violences subies'
+
+
+class SignalementRisque(models.Model):
+    """Situation grave exprimée à Titou par un utilisateur connecté, signalée à
+    l'équipe Sen Suivi. Jamais le contenu des messages : la nature, l'heure, et
+    si la personne de confiance a été prévenue."""
+
+    utilisateur = models.ForeignKey(
+        'comptes.Utilisateur', on_delete=models.CASCADE, related_name='signalements_risque', verbose_name='utilisateur'
+    )
+    nature = models.CharField('nature', max_length=14, choices=NatureRisque.choices)
+    personne_confiance_prevenue = models.BooleanField('personne de confiance prévenue', default=False)
+    date = models.DateTimeField('date', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'signalement de situation à risque'
+        verbose_name_plural = 'signalements de situations à risque'
+        ordering = ['-date']
