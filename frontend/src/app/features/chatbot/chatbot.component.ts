@@ -5,6 +5,7 @@ import { MessageAffiche } from '../../core/models/chatbot';
 import { ConversationService } from '../../core/services/conversation.service';
 import { DUREE_MAX_SECONDES, EnregistreurVocalService } from '../../core/services/enregistreur-vocal.service';
 import { LectureVocaleService } from '../../core/services/lecture-vocale.service';
+import { AideImmediateComponent } from '../../shared/aide-immediate/aide-immediate.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ModalUrgenceComponent } from '../../shared/modal-urgence/modal-urgence.component';
 
@@ -16,7 +17,7 @@ const REPONSES_RAPIDES = ['Je me sens stressé', 'Je dors mal', 'Je cherche un p
 @Component({
   selector: 'ss-chatbot',
   standalone: true,
-  imports: [RouterLink, IconComponent, ModalUrgenceComponent],
+  imports: [RouterLink, AideImmediateComponent, IconComponent, ModalUrgenceComponent],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -5,6 +5,7 @@ import { VILLES_SENEGAL } from '../../core/models/comptes';
 import { AuthService, ErreurFormulaire } from '../../core/services/auth.service';
 import { Compte, CompteService } from '../../core/services/compte.service';
 import { FicheProfessionnel, FicheProfessionnelService } from '../../core/services/fiche-professionnel.service';
+import { PersonneConfianceService } from '../../core/services/personne-confiance.service';
 import { verifierMotDePasse } from '../../core/utils/mot-de-passe';
 import { ChampComponent } from '../../shared/champ/champ.component';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -50,6 +51,7 @@ const NOTIFICATIONS_PROFESSIONNEL: TypeNotification[] = [
 export class ParametresComponent {
   private readonly service = inject(CompteService);
   private readonly ficheService = inject(FicheProfessionnelService);
+  private readonly confianceService = inject(PersonneConfianceService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -87,6 +89,16 @@ export class ParametresComponent {
   protected readonly erreursFiche = signal<Record<string, string>>({});
   protected readonly ficheEnregistree = signal(false);
 
+  // Personne de confiance (utilisateur uniquement)
+  protected readonly confiancePrenom = signal('');
+  protected readonly confianceLien = signal('');
+  protected readonly confianceTelephone = signal('');
+  protected readonly confianceEmail = signal('');
+  protected readonly confianceAccord = signal(false);
+  protected readonly aUnePersonneDeConfiance = signal(false);
+  protected readonly erreursConfiance = signal<Record<string, string>>({});
+  protected readonly confianceEnregistree = signal(false);
+
   protected readonly suppressionOuverte = signal(false);
   protected readonly mdpSuppression = signal('');
   protected readonly erreurSuppression = signal<string | null>(null);
@@ -103,6 +115,7 @@ export class ParametresComponent {
       const c = await this.service.charger();
       this.remplir(c);
       if (c.type_compte === 'professionnel') this.remplirFiche(await this.ficheService.charger());
+      if (c.type_compte === 'utilisateur') this.remplirConfiance(await this.confianceService.charger());
     } catch {
       this.erreurChargement.set(true);
     } finally {
@@ -135,6 +148,47 @@ export class ParametresComponent {
     this.ficheCabinet.set(f.consultation_cabinet);
     this.ficheAdresse.set(f.adresse_cabinet);
     this.ficheDistance.set(f.consultation_distance);
+  }
+
+  private remplirConfiance(p: Awaited<ReturnType<PersonneConfianceService['charger']>>): void {
+    this.aUnePersonneDeConfiance.set(!!p);
+    this.confiancePrenom.set(p?.prenom ?? '');
+    this.confianceLien.set(p?.lien ?? '');
+    this.confianceTelephone.set(p?.telephone ?? '');
+    this.confianceEmail.set(p?.email ?? '');
+    this.confianceAccord.set(p?.accord_confirme ?? false);
+  }
+
+  protected async enregistrerConfiance(evenement: Event): Promise<void> {
+    evenement.preventDefault();
+    this.confianceEnregistree.set(false);
+    const e: Record<string, string> = {};
+    if (!this.confiancePrenom().trim()) e['prenom'] = 'Indiquez son prénom.';
+    if (!this.confianceTelephone().trim() && !this.confianceEmail().trim()) e['telephone'] = 'Indiquez au moins un téléphone ou un e-mail.';
+    if (!this.confianceAccord()) e['general'] = "Prévenez d'abord cette personne et assurez-vous qu'elle est d'accord.";
+    this.erreursConfiance.set(e);
+    if (Object.keys(e).length) return;
+    try {
+      this.remplirConfiance(
+        await this.confianceService.enregistrer({
+          prenom: this.confiancePrenom().trim(),
+          lien: this.confianceLien().trim(),
+          telephone: this.confianceTelephone().trim(),
+          email: this.confianceEmail().trim(),
+          accord_confirme: true,
+        }),
+      );
+      this.confianceEnregistree.set(true);
+    } catch (err) {
+      const champs = err instanceof ErreurFormulaire ? err.champs : { general: "L'enregistrement a échoué. Réessayez." };
+      this.erreursConfiance.set({ ...champs, general: champs['general'] ?? champs['accord_confirme'] ?? '' });
+    }
+  }
+
+  protected async retirerConfiance(): Promise<void> {
+    await this.confianceService.supprimer();
+    this.remplirConfiance(null);
+    this.confianceEnregistree.set(false);
   }
 
   protected async enregistrerFiche(evenement: Event): Promise<void> {

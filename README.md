@@ -97,7 +97,7 @@ Le front-end Angular se lance en développement avec `cd frontend && npm install
 
 ### Automatisations n8n
 
-Les cinq workflows sont exportés dans [`automations/`](./automations) :
+Les six workflows sont exportés dans [`automations/`](./automations) :
 
 | Workflow | Déclencheur | Effet |
 |---|---|---|
@@ -105,6 +105,7 @@ Les cinq workflows sont exportés dans [`automations/`](./automations) :
 | Rappel d'auto-évaluation | Chaque jour | Propose de refaire le test quand le dernier date de plus de `RAPPEL_TEST_JOURS` jours, sauf s'ils l'ont désactivé |
 | Nouvelle inscription professionnelle | Inscription d'un professionnel | Prévient les administrateurs qu'un profil attend validation |
 | Nouvelle demande de mise en relation | Demande envoyée par un utilisateur | Prévient le professionnel (pseudonyme uniquement), sauf s'il a désactivé cette notification |
+| Alerte à la personne de confiance | Demande de l'utilisateur en détresse | Envoie un e-mail à sa personne de confiance (sans le contenu des échanges). Nécessite un identifiant SMTP dans n8n |
 | Indexation RAG | Création ou modification d'une ressource | Réindexe les ressources du chatbot |
 
 Chaque fichier porte un identifiant fixe (`id`) : relancer l'import met à jour les

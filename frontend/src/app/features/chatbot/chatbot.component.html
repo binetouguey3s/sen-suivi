@@ -93,6 +93,7 @@
             <div class="cb__colonne">
               <div class="cb__bulle cb__bulle--bot" [class.cb__bulle--urgence]="m.urgence">
                 <p>{{ m.contenu }}</p>
+                @if (m.urgence) { <ss-aide-immediate /> }
                 @if (m.ressource) {
                   <a class="cb__ressource" [routerLink]="['/ressources', m.ressource.ressource_id]">
                     <span class="cb__ressource-icone"><ss-icon nom="marque-page" taille="sm" /></span>

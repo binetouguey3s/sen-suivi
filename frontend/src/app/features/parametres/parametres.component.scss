@@ -243,3 +243,28 @@
   justify-content: flex-end;
   gap: var(--ss-espace-2);
 }
+
+.pa__accord {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ss-espace-1);
+  color: var(--ss-texte);
+  font-size: 14px;
+  line-height: 1.5;
+
+  input {
+    margin-top: 3px;
+  }
+}
+
+.pa__erreur {
+  margin: 0;
+  color: var(--ss-texte);
+  font-size: 14px;
+}
+
+.pa__boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ss-espace-2);
+}

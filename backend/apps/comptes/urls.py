@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from . import views
+from . import personne_confiance, views
 
 urlpatterns = [
     path('auth/register', views.InscriptionUtilisateurView.as_view()),
@@ -11,6 +11,8 @@ urlpatterns = [
     path('auth/mot-de-passe-oublie/confirmer', views.ConfirmationReinitialisationView.as_view()),
     path('comptes/moi', views.CompteMoiView.as_view()),
     path('comptes/moi/mot-de-passe', views.ChangementMotDePasseView.as_view()),
+    path('comptes/moi/personne-confiance', personne_confiance.PersonneConfianceView.as_view()),
+    path('comptes/moi/personne-confiance/alerte', personne_confiance.AlerteConfianceView.as_view()),
     path('professionnels/inscription', views.InscriptionProfessionnelView.as_view()),
     path('professionnels/valides', views.ProfessionnelPublicListView.as_view()),
     path('professionnels', views.ProfessionnelListView.as_view()),

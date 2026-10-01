@@ -218,3 +218,48 @@ class Administrateur(CompteUtilisateur):
 
     def __str__(self):
         return f'{self.nom} (administrateur)'
+
+
+class PersonneConfiance(models.Model):
+    """Proche que l'utilisateur peut faire prévenir s'il traverse un moment très difficile.
+
+    Facultative, choisie par l'utilisateur, avec l'accord de la personne. Elle
+    n'est jamais prévenue automatiquement : seulement si l'utilisateur le
+    demande, depuis l'écran d'urgence. Elle ne reçoit jamais le contenu des
+    échanges, seulement l'invitation à prendre des nouvelles.
+    """
+
+    utilisateur = models.OneToOneField(
+        Utilisateur, on_delete=models.CASCADE, related_name='personne_confiance', verbose_name='utilisateur'
+    )
+    prenom = models.CharField('prénom', max_length=80)
+    lien = models.CharField('lien', max_length=60, blank=True)
+    telephone = models.CharField('téléphone', max_length=20, blank=True)
+    email = models.EmailField('e-mail', blank=True)
+    # L'utilisateur confirme avoir obtenu l'accord de la personne
+    accord_confirme = models.BooleanField('accord de la personne confirmé', default=False)
+    date_mise_a_jour = models.DateTimeField('mise à jour', auto_now=True)
+
+    class Meta:
+        verbose_name = 'personne de confiance'
+        verbose_name_plural = 'personnes de confiance'
+
+    def __str__(self):
+        return f'{self.prenom} (personne de confiance de {self.utilisateur})'
+
+
+class AlerteConfiance(models.Model):
+    """Trace d'une demande de l'utilisateur de prévenir sa personne de confiance.
+
+    Seulement la date et le canal : jamais le contenu de la conversation."""
+
+    personne = models.ForeignKey(
+        PersonneConfiance, on_delete=models.CASCADE, related_name='alertes', verbose_name='personne de confiance'
+    )
+    canal = models.CharField('canal', max_length=10)
+    date = models.DateTimeField('date', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'alerte à la personne de confiance'
+        verbose_name_plural = 'alertes à la personne de confiance'
+        ordering = ['-date']

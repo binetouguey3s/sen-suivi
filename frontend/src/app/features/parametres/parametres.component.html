@@ -102,6 +102,29 @@
           <ss-interrupteur libelle="Personnaliser les réponses de Titou" [actif]="personnalisation()" (actifChange)="basculerPersonnalisation($event)" />
         </div>
       </section>
+
+      <section class="pa__carte" id="personne-confiance">
+        <h2>Personne de confiance</h2>
+        <p class="pa__texte">Un proche que vous pourrez prévenir en un geste si vous traversez un moment très difficile. Rien n'est jamais envoyé automatiquement : c'est vous qui décidez, depuis l'écran d'aide immédiate. Cette personne ne reçoit jamais le contenu de vos échanges.</p>
+        <form class="pa__formulaire" (submit)="enregistrerConfiance($event)">
+          <ss-champ libelle="Prénom" [(valeur)]="confiancePrenom" [erreur]="erreursConfiance()['prenom'] ?? null" />
+          <ss-champ libelle="Lien (facultatif)" [(valeur)]="confianceLien" placeholder="Sœur, ami, voisine…" />
+          <ss-champ libelle="Téléphone" [(valeur)]="confianceTelephone" placeholder="77 123 45 67" [erreur]="erreursConfiance()['telephone'] ?? null" />
+          <ss-champ libelle="E-mail (facultatif)" type="email" [(valeur)]="confianceEmail" [erreur]="erreursConfiance()['email'] ?? null" />
+          <label class="pa__accord">
+            <input type="checkbox" [checked]="confianceAccord()" (change)="confianceAccord.set($any($event.target).checked)" />
+            J'ai prévenu cette personne et elle est d'accord pour être contactée si j'en ai besoin.
+          </label>
+          @if (erreursConfiance()['general']) { <p class="pa__erreur" role="alert">{{ erreursConfiance()['general'] }}</p> }
+          @if (confianceEnregistree()) { <p class="pa__ok" role="status">Votre personne de confiance est enregistrée.</p> }
+          <div class="pa__boutons">
+            <button type="submit" class="pa__bouton">Enregistrer</button>
+            @if (aUnePersonneDeConfiance()) {
+              <button type="button" class="pa__bouton pa__bouton--contour" (click)="retirerConfiance()">Retirer</button>
+            }
+          </div>
+        </form>
+      </section>
     }
 
     <section class="pa__carte">

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 
+import { AideImmediateComponent } from '../aide-immediate/aide-immediate.component';
 import { IconComponent } from '../icon/icon.component';
 
 interface ContactUrgence {
@@ -25,7 +26,7 @@ const CONTACTS_URGENCE: ContactUrgence[] = [
 @Component({
   selector: 'ss-modal-urgence',
   standalone: true,
-  imports: [IconComponent],
+  imports: [AideImmediateComponent, IconComponent],
   templateUrl: './modal-urgence.component.html',
   styleUrl: './modal-urgence.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
