@@ -40,6 +40,7 @@ export class ForumDetailComponent {
   protected readonly erreur = signal<string | null>(null);
   // Réponse qu'on vient d'envoyer, suivie pendant sa modération
   protected readonly envoye = signal<number | null>(null);
+  protected readonly publiee = signal(false);
 
   protected libelleThematique(valeur: string): string {
     return LIBELLE_THEMATIQUE[valeur] ?? valeur;
@@ -61,6 +62,7 @@ export class ForumDetailComponent {
     try {
       const envoi = await this.forumService.commenter(Number(this.id()), texte);
       this.reponse.set('');
+      this.publiee.set(false);
       this.envoye.set(envoi.id);
     } catch (e) {
       const detail = e instanceof HttpErrorResponse && e.status === 403 ? e.error?.detail : null;
@@ -68,6 +70,14 @@ export class ForumDetailComponent {
     } finally {
       this.envoiEnCours.set(false);
     }
+  }
+
+  // Réponse publiée : on arrête le suivi (sinon chaque mise à jour le relancerait)
+  // et on recharge la discussion pour l'afficher
+  protected apresPublication(): void {
+    this.envoye.set(null);
+    this.publiee.set(true);
+    this.publication.reload();
   }
 
   protected reformuler(contenu: string): void {

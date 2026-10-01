@@ -2,7 +2,8 @@
 
 <a routerLink="/app/forum" class="fd__retour"><ss-icon nom="fleche-gauche" taille="sm" /> Retour au forum</a>
 
-@if (publication.isLoading()) {
+<!-- Écran de chargement au premier affichage seulement : une mise à jour garde la page en place -->
+@if (publication.isLoading() && !publication.hasValue()) {
   <p class="fd__etat">Chargement de la publication…</p>
 } @else if (publication.error() || !publication.hasValue()) {
   <div class="fd__etat">
@@ -51,8 +52,11 @@
 
         <div class="fd__composer">
           @if (envoye(); as idReponse) {
-            <ss-suivi-moderation type="COMMENTAIRE" [idMessage]="idReponse" (publie)="publication.reload()" (reformuler)="reformuler($event)" />
+            <ss-suivi-moderation type="COMMENTAIRE" [idMessage]="idReponse" (publie)="apresPublication()" (reformuler)="reformuler($event)" />
           } @else {
+            @if (publiee()) {
+              <p class="fd__publiee" role="status"><ss-icon nom="verifie" taille="sm" /> Votre réponse est publiée. Merci pour votre soutien.</p>
+            }
             @if (moi.value(); as compte) {
               <p class="fd__pseudo">Vous publiez sous le pseudonyme <strong>{{ compte.pseudonyme }}</strong></p>
             }

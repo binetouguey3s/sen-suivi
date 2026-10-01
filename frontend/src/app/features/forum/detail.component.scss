@@ -322,3 +322,13 @@
   color: var(--ss-primaire-texte);
   cursor: pointer;
 }
+
+.fd__publiee {
+  display: flex;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  margin: 0 0 var(--ss-espace-2);
+  color: var(--ss-texte-marque);
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+}
