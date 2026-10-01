@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
 import { DIAPOS_BANDEAU, DUREE_DIAPO_MS, IMAGES_ACCUEIL } from '../../core/config/images-accueil';
-import { IMAGE_PAR_LIEU } from '../../core/config/images-lieux';
+import { imageDuLieu } from '../../core/config/images-lieux';
 import { IMAGE_PAR_PROFESSIONNEL } from '../../core/config/images-professionnels';
 import { NomIcone } from '../../core/icons/icons';
 import { LieuDetente } from '../../core/models/suivi';
@@ -89,7 +89,7 @@ export class AccueilComponent {
 
   // Uniquement les lieux dont on dispose d'une vraie photo
   protected readonly lieux = computed(() =>
-    valeurs(this.tousLesLieux).filter((l) => l.nom in IMAGE_PAR_LIEU).slice(0, 4),
+    valeurs(this.tousLesLieux).filter((l) => imageDuLieu(l.nom) !== null).slice(0, 4),
   );
 
   protected readonly specialite = signal<string | null>(null);
@@ -112,7 +112,7 @@ export class AccueilComponent {
   );
 
   protected imageLieu(lieu: LieuDetente): string {
-    return IMAGE_PAR_LIEU[lieu.nom];
+    return imageDuLieu(lieu.nom) ?? '';
   }
 
   protected portrait(pro: ProfessionnelPublic): string | null {

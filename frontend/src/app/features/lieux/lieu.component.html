@@ -6,54 +6,58 @@
     <a routerLink="/lieux">Retour au répertoire</a>
   </div>
 } @else if (lieu.value(); as l) {
-  <header class="lieu__hero" [class.lieu__hero--vide]="!image(l)">
-    @if (image(l); as src) {
-      <img [src]="src" [alt]="l.nom" />
-    }
+  <div class="lieu__page">
     <a class="lieu__retour" routerLink="/lieux"><ss-icon nom="fleche-gauche" taille="sm" /> Tous les lieux</a>
-    <div class="lieu__hero-texte">
-      <h1>{{ l.nom }}</h1>
-      <p class="lieu__chips">
-        <span><ss-icon nom="lieux" taille="sm" /> {{ l.ville }}</span>
-        <span>{{ l.categorie }}</span>
-      </p>
-    </div>
-  </header>
 
-  <div class="lieu__corps">
-    <div class="lieu__principal">
-      <p class="lieu__description">{{ l.description }}</p>
+    <header class="lieu__entete">
+      <div class="lieu__intro">
+        <p class="lieu__surtitre"><ss-icon nom="lieux" taille="sm" /> {{ l.ville }}, Sénégal</p>
+        <h1>{{ l.nom }}</h1>
+        <ul class="lieu__etiquettes">
+          <li>{{ l.categorie }}</li>
+          <li [class.lieu__etiquette--libre]="l.acces_libre">{{ l.acces_libre ? 'Accès libre' : 'Entrée payante' }}</li>
+        </ul>
+        <p class="lieu__description">{{ l.description }}</p>
+        <div class="lieu__actions">
+          @if (itineraire(); as lien) {
+            <a class="lieu__bouton" [href]="lien" target="_blank" rel="noopener">
+              <ss-icon nom="itineraire" taille="sm" /> Ouvrir l'itinéraire
+            </a>
+          }
+          <a class="lieu__bouton lieu__bouton--contour" routerLink="/ressources" [queryParams]="{ thematique: 'Respiration' }">
+            <ss-icon nom="exercice" taille="sm" /> Un exercice à faire sur place
+          </a>
+        </div>
+      </div>
 
+      <figure class="lieu__photo" [class.lieu__photo--vide]="!image(l)">
+        @if (image(l); as src) {
+          <img [src]="src" [alt]="l.nom" />
+        } @else {
+          <ss-icon nom="lieux" taille="xl" />
+        }
+      </figure>
+    </header>
+
+    <section class="lieu__details" aria-label="Infos pratiques">
       <ul class="lieu__infos">
         <li>
-          <ss-icon nom="lieux" />
+          <span class="lieu__infos-icone"><ss-icon nom="lieux" /></span>
           <div><span>Localisation</span><strong>{{ l.ville }}, Sénégal</strong></div>
         </li>
         <li>
-          <ss-icon nom="verifie" />
-          <div><span>Catégorie</span><strong>{{ l.categorie }}</strong></div>
+          <span class="lieu__infos-icone"><ss-icon nom="carte" /></span>
+          <div><span>Type de lieu</span><strong>{{ l.categorie }}</strong></div>
         </li>
         <li>
-          @if (l.acces_libre) {
-            <ss-icon nom="verifie" />
-          } @else {
-            <ss-icon nom="ticket" />
-          }
-          <div><span>Coût</span><strong>{{ l.acces_libre ? 'Accès libre' : 'Entrée payante' }}</strong></div>
+          <span class="lieu__infos-icone"><ss-icon [nom]="l.acces_libre ? 'verifie' : 'ticket'" /></span>
+          <div><span>Accès</span><strong>{{ l.acces_libre ? 'Libre et gratuit' : 'Entrée payante' }}</strong></div>
         </li>
       </ul>
-    </div>
-
-    <aside class="lieu__carte">
       <div class="lieu__mini-carte">
         <ss-carte-lieux [lieux]="pourCarte()" [selection]="l.id" [compact]="true" />
       </div>
-      @if (itineraire(); as lien) {
-        <a class="lieu__itineraire" [href]="lien" target="_blank" rel="noopener">
-          <ss-icon nom="itineraire" taille="sm" /> Ouvrir l'itinéraire
-        </a>
-      }
-    </aside>
+    </section>
   </div>
 
   @if (proches().length) {

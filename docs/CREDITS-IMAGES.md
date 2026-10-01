@@ -11,6 +11,10 @@ libres de droits privilégiant la représentation africaine et sénégalaise.
 | lieu-lac-rose.webp | Arnault | Wikimedia Commons | CC BY-SA |
 | lieu-somone.webp | Andersonphotography | Wikimedia Commons | CC BY-SA |
 | lieu-hann.webp | Soleil d'Afrique | Wikimedia Commons | CC BY-SA |
+| lieu-corniche-ouest.webp | À compléter | À compléter | À vérifier |
+| lieu-goree.webp | À compléter | À compléter | À vérifier |
+| lieu-popenguine.webp | À compléter | À compléter | À vérifier |
+| lieu-toubab-dialaw.webp | À compléter | À compléter | À vérifier |
 
 Profils des auteurs :
 - Jeff Attaway — https://www.flickr.com/people/33398364@N08

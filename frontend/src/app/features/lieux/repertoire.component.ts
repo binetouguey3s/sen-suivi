@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router, RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
-import { IMAGE_PAR_LIEU } from '../../core/config/images-lieux';
+import { imageDuLieu } from '../../core/config/images-lieux';
 import { LieuDetente } from '../../core/models/suivi';
 import { AuthService } from '../../core/services/auth.service';
 import { CarteLieuxComponent } from '../../shared/carte-lieux/carte-lieux.component';
@@ -55,7 +55,7 @@ export class RepertoireComponent {
   );
 
   protected image(lieu: LieuDetente): string | null {
-    return IMAGE_PAR_LIEU[lieu.nom] ?? null;
+    return imageDuLieu(lieu.nom);
   }
 
   protected saisirRecherche(evenement: Event): void {
