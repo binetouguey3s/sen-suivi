@@ -2,18 +2,6 @@
   display: block;
 }
 
-.pp__desktop {
-  @media (max-width: 899px) {
-    display: none !important;
-  }
-}
-
-.pp__mobile {
-  @media (min-width: 900px) {
-    display: none !important;
-  }
-}
-
 .pp__etat {
   padding: var(--ss-espace-8) var(--ss-marge-mobile);
   text-align: center;
@@ -29,23 +17,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--ss-espace-3);
-  max-width: 976px;
-  margin: 0 auto;
-
-  @media (min-width: 900px) {
-    gap: var(--ss-espace-4);
-  }
 }
 
-// Dans le layout public, la page porte ses propres marges ; dans l'espace
-// pro, le layout les fournit déjà.
+// Dans le layout public, la page porte ses propres marges, alignées sur la
+// colonne commune du site ; dans l'espace pro, le layout les fournit déjà.
 :host-context(ss-layout-public) .pp {
   // En bas : place pour la barre « Demander une mise en relation » (mobile)
   padding: var(--ss-espace-3) var(--ss-marge-mobile) 112px;
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-5) var(--ss-marge-desktop) var(--ss-espace-6);
-    max-width: calc(976px + 2 * var(--ss-marge-desktop));
+    padding: var(--ss-espace-5) var(--ss-gouttiere-page) var(--ss-espace-6);
   }
 }
 
@@ -75,23 +56,45 @@
   }
 }
 
-// --- En-tête ----------------------------------------------------------------------
+// --- Mise en page : contenu à gauche, carte de contact à droite --------------------
+
+.pp__mise-en-page {
+  display: grid;
+  gap: var(--ss-espace-3);
+
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: start;
+    gap: var(--ss-espace-5);
+  }
+}
+
+.pp__principal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-3);
+
+  @media (min-width: 900px) {
+    gap: var(--ss-espace-4);
+  }
+}
+
+// --- Identité -----------------------------------------------------------------------
 
 .pp__entete {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--ss-espace-2);
-  padding: var(--ss-espace-5) var(--ss-espace-3) var(--ss-espace-4);
+  gap: var(--ss-espace-3);
+  padding: var(--ss-espace-4) var(--ss-espace-3);
   background: var(--ss-surface);
   border-radius: var(--ss-rayon-grande-carte);
   box-shadow: var(--ss-ombre);
   text-align: center;
 
   @media (min-width: 900px) {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: start;
+    flex-direction: row;
+    align-items: center;
     gap: var(--ss-espace-4);
     padding: var(--ss-espace-5);
     text-align: left;
@@ -113,8 +116,8 @@
   box-shadow: var(--ss-ombre);
 
   @media (min-width: 900px) {
-    width: 120px;
-    height: 120px;
+    width: 136px;
+    height: 136px;
   }
 }
 
@@ -125,25 +128,20 @@
   background: var(--ss-primaire);
   color: var(--ss-primaire-texte);
   font-family: var(--ss-police-titres);
-  font-size: 36px;
+  font-size: 40px;
   font-weight: var(--ss-poids-titre);
 }
 
-// Pastille « vérifié » sur la photo (mobile)
 .pp__portrait-verifie {
   position: absolute;
-  right: 2px;
-  bottom: 6px;
+  right: 4px;
+  bottom: 8px;
   display: flex;
   padding: 3px;
   border-radius: 50%;
-  border: 3px solid var(--ss-primaire-texte);
+  border: 3px solid var(--ss-surface);
   background: var(--ss-primaire);
   color: var(--ss-primaire-texte);
-
-  @media (min-width: 900px) {
-    display: none;
-  }
 }
 
 .pp__identite {
@@ -160,18 +158,40 @@
   h1 {
     margin: 0;
     font-family: var(--ss-police-titres);
-    font-weight: var(--ss-poids-titre-fort);
-    font-size: 26px;
+    font-weight: var(--ss-poids-titre);
+    font-size: 28px;
     line-height: var(--ss-hauteur-ligne-titre);
     letter-spacing: var(--ss-interlettrage-moyen);
-    color: var(--ss-texte);
+    color: var(--ss-texte-marque);
 
     @media (min-width: 900px) {
-      font-weight: var(--ss-poids-titre);
       font-size: 40px;
       letter-spacing: var(--ss-interlettrage-grand);
-      color: var(--ss-texte-marque);
     }
+  }
+}
+
+.pp__verifie {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ss-texte-marque);
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte-fort);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pp__sous-titre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ss-espace-2);
+  margin: var(--ss-espace-1) 0 0;
+
+  @media (min-width: 900px) {
+    justify-content: flex-start;
   }
 }
 
@@ -185,17 +205,11 @@
 }
 
 .pp__ligne {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--ss-espace-1);
-  margin: 0;
+  gap: 6px;
   color: var(--ss-texte-doux);
   font-size: 15px;
-
-  strong {
-    color: var(--ss-texte-marque);
-    font-weight: var(--ss-poids-titre);
-  }
 }
 
 .pp__langues {
@@ -207,66 +221,142 @@
   margin: var(--ss-espace-1) 0 0;
   padding: 0;
 
+  @media (min-width: 900px) {
+    justify-content: flex-start;
+  }
+
   li {
     padding: 4px 12px;
-    border-radius: var(--ss-rayon-bouton);
+    border-radius: var(--ss-rayon-pilule);
     background: var(--ss-surface-neutre);
     color: var(--ss-texte);
     font-size: 13px;
   }
 }
 
-.pp__actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ss-espace-2);
+// --- Sections de contenu ---------------------------------------------------------------
+
+.pp__carte {
+  padding: var(--ss-espace-3);
+  background: var(--ss-surface);
+  border-radius: var(--ss-rayon-grande-carte);
+  box-shadow: var(--ss-ombre);
 
   @media (min-width: 900px) {
-    align-items: flex-end;
+    padding: var(--ss-espace-4);
+  }
+
+  h2 {
+    margin: 0 0 var(--ss-espace-2);
+    font-family: var(--ss-police-titres);
+    font-weight: var(--ss-poids-titre);
+    font-size: 20px;
+    color: var(--ss-texte-marque);
+
+    @media (min-width: 900px) {
+      font-size: 22px;
+    }
   }
 }
 
-.pp__verifie {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--ss-accent);
-  border-radius: var(--ss-rayon-champ);
-  background: var(--ss-surface-legere);
-  color: var(--ss-texte-marque);
-  font-size: 13px;
-  font-weight: var(--ss-poids-texte-fort);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.pp__texte {
+  margin: 0;
+  color: var(--ss-texte);
+  font-size: 16px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.pp__vide {
+  margin: 0;
+  color: var(--ss-texte-doux);
+  font-style: italic;
+}
+
+.pp__domaines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ss-espace-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-surface-douce);
+    color: var(--ss-texte-marque);
+    font-size: 15px;
+    font-weight: var(--ss-poids-texte-fort);
+  }
+}
+
+// --- Carte de contact ---------------------------------------------------------------
+
+.pp__contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-3);
+  background: var(--ss-surface);
+  border-radius: var(--ss-rayon-grande-carte);
+  box-shadow: var(--ss-ombre);
+
+  @media (min-width: 900px) {
+    position: sticky;
+    top: calc(var(--ss-espace-6) + 48px);
+    padding: var(--ss-espace-4);
+  }
+
+  h2 {
+    margin: 0;
+    font-family: var(--ss-police-titres);
+    font-weight: var(--ss-poids-titre);
+    font-size: 20px;
+    color: var(--ss-texte-marque);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: var(--ss-poids-texte-fort);
+    color: var(--ss-texte);
+  }
 }
 
 .pp__tarif {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
   margin: 0;
   color: var(--ss-texte-doux);
   font-size: 14px;
 
   span {
+    width: 100%;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
 
   strong {
-    margin-top: 2px;
     color: var(--ss-texte-marque);
     font-family: var(--ss-police-titres);
-    font-size: 22px;
+    font-size: 28px;
     font-weight: var(--ss-poids-titre-fort);
     font-variant-numeric: tabular-nums;
   }
+
+  em {
+    font-style: normal;
+  }
 }
 
-// Mobile : barre fixée en bas de l'écran ; desktop : dans l'en-tête
+// Mobile : barre fixée en bas de l'écran ; ordinateur : dans la carte de contact
 .pp__demande-zone {
   @media (max-width: 899px) {
     position: fixed;
@@ -287,126 +377,47 @@
   gap: 12px;
   width: 100%;
   min-height: 56px;
-  padding: var(--ss-espace-2) var(--ss-espace-4);
+  padding: var(--ss-espace-2) var(--ss-espace-3);
   border: none;
-  border-radius: var(--ss-rayon-carte);
+  border-radius: var(--ss-rayon-bouton);
   background: var(--ss-primaire);
   color: var(--ss-primaire-texte);
   font-family: inherit;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: var(--ss-poids-titre);
-  box-shadow: var(--ss-ombre-forte);
-  cursor: pointer;
-
-  @media (min-width: 900px) {
-    width: 320px;
-    min-height: 80px;
-    border-radius: var(--ss-rayon-carte);
-  }
-}
-
-// --- Sections -----------------------------------------------------------------------
-
-.pp__grille {
-  display: grid;
-  gap: var(--ss-espace-3);
-
-  @media (min-width: 900px) {
-    grid-template-columns: 2fr 1fr;
-    align-items: start;
-    gap: var(--ss-espace-4);
-  }
-}
-
-.pp__colonne {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ss-espace-3);
-
-  @media (min-width: 900px) {
-    gap: var(--ss-espace-4);
-  }
-}
-
-.pp__carte {
-  padding: var(--ss-espace-3);
-  background: var(--ss-surface);
-  border-radius: var(--ss-rayon-grande-carte);
   box-shadow: var(--ss-ombre);
-
-  @media (min-width: 900px) {
-    padding: var(--ss-espace-4);
-  }
-
-  h2 {
-    margin: 0 0 var(--ss-espace-2);
-    font-family: var(--ss-police-titres);
-    font-weight: var(--ss-poids-titre);
-    font-size: 20px;
-    color: var(--ss-texte);
-
-    @media (min-width: 900px) {
-      font-size: 22px;
-      color: var(--ss-texte-marque);
-    }
-  }
+  cursor: pointer;
 }
 
-.pp__texte {
-  margin: 0;
-  color: var(--ss-texte);
-  line-height: 1.7;
-  white-space: pre-line;
-}
-
-.pp__vide {
+.pp__discret {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
   margin: 0;
   color: var(--ss-texte-doux);
-  font-style: italic;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-.pp__domaines {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  li {
-    padding: 10px var(--ss-espace-2);
-    border: 1px solid var(--ss-bordure);
-    border-radius: var(--ss-rayon-bouton);
-    background: var(--ss-surface-legere);
-    color: var(--ss-texte);
-    font-size: 15px;
-  }
+.pp__separateur {
+  height: 1px;
+  margin: var(--ss-espace-1) 0;
+  background: var(--ss-bordure);
 }
 
 .pp__modalites {
   display: grid;
-  gap: 12px;
+  gap: var(--ss-espace-1);
   list-style: none;
   margin: 0;
   padding: 0;
 
-  @media (max-width: 899px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
   li {
     display: flex;
     align-items: center;
-
-    @media (max-width: 899px) {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
     gap: 12px;
-    padding: var(--ss-espace-2);
-    border: 1px solid var(--ss-bordure);
-    border-radius: var(--ss-rayon-carte);
+    padding: 12px;
+    border-radius: var(--ss-rayon-champ);
     background: var(--ss-surface-legere);
     color: var(--ss-texte);
   }
@@ -420,6 +431,7 @@
   em {
     color: var(--ss-texte-doux);
     font-size: 13px;
+    font-style: normal;
   }
 }
 

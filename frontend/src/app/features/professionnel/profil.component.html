@@ -11,55 +11,33 @@
       </p>
     }
 
-    <section class="pp__entete">
-      <div class="pp__portrait">
-        @if (portrait(); as src) {
-          <img class="pp__photo" [src]="src" [alt]="'Portrait illustratif de ' + p.nom" />
-        } @else {
-          <span class="pp__photo pp__photo--initiales" aria-hidden="true">{{ initiales() }}</span>
-        }
-        <span class="pp__portrait-verifie" aria-hidden="true"><ss-icon nom="verifie" taille="sm" /></span>
-      </div>
+    <div class="pp__mise-en-page">
+      <div class="pp__principal">
+        <section class="pp__entete">
+          <div class="pp__portrait">
+            @if (portrait(); as src) {
+              <img class="pp__photo" [src]="src" [alt]="'Portrait illustratif de ' + p.nom" />
+            } @else {
+              <span class="pp__photo pp__photo--initiales" aria-hidden="true">{{ initiales() }}</span>
+            }
+            <span class="pp__portrait-verifie" aria-hidden="true"><ss-icon nom="verifie" taille="sm" /></span>
+          </div>
 
-      <div class="pp__identite">
-        <h1>{{ p.nom }}</h1>
-        <span class="pp__specialite">{{ p.specialite_affichee }}</span>
-        <p class="pp__ligne"><ss-icon nom="lieux" taille="sm" /> {{ p.ville }}</p>
-        @if (!enDetresse()) {
-          <p class="pp__ligne pp__desktop"><ss-icon nom="billet" taille="sm" /> <strong>{{ tarif() }}</strong> la séance</p>
-        }
-        @if (langues().length) {
-          <ul class="pp__langues">
-            @for (l of langues(); track l) { <li>{{ l }}</li> }
-          </ul>
-        }
-      </div>
+          <div class="pp__identite">
+            <span class="pp__verifie"><ss-icon nom="verifie" taille="sm" /> Profil vérifié par Sen Suivi</span>
+            <h1>{{ p.nom }}</h1>
+            <p class="pp__sous-titre">
+              <span class="pp__specialite">{{ p.specialite_affichee }}</span>
+              <span class="pp__ligne"><ss-icon nom="lieux" taille="sm" /> {{ p.ville }}</span>
+            </p>
+            @if (langues().length) {
+              <ul class="pp__langues" aria-label="Langues parlées">
+                @for (l of langues(); track l) { <li>{{ l }}</li> }
+              </ul>
+            }
+          </div>
+        </section>
 
-      <div class="pp__actions">
-        <span class="pp__verifie"><ss-icon nom="verifie" taille="sm" /> Profil vérifié par Sen Suivi</span>
-        @if (!enDetresse()) {
-          <p class="pp__tarif pp__mobile">
-            <span>Tarif habituel</span>
-            <strong>{{ tarif() }}</strong> / séance
-          </p>
-        }
-        @if (peutDemander()) {
-          <ss-badge-offre />
-          @if (p.accepte_demandes) {
-            <div class="pp__demande-zone">
-              <button type="button" class="pp__demande" (click)="ouvrirDemande()">
-                Demander une mise en relation <ss-icon nom="envoyer" taille="sm" />
-              </button>
-            </div>
-          } @else {
-            <p class="pp__indisponible">Ce professionnel ne prend pas de nouvelles demandes pour le moment. <a routerLink="/professionnels">Voir les autres professionnels</a></p>
-          }
-        }
-      </div>
-    </section>
-
-    <div class="pp__grille">
-      <div class="pp__colonne">
         <section class="pp__carte">
           <h2>Présentation</h2>
           @if (p.presentation) {
@@ -76,7 +54,7 @@
             <h2>Domaines d'accompagnement</h2>
             @if (p.domaines.length) {
               <ul class="pp__domaines">
-                @for (d of p.domaines; track d) { <li>{{ d }}</li> }
+                @for (d of p.domaines; track d) { <li><ss-icon nom="verifie" taille="sm" /> {{ d }}</li> }
               </ul>
             } @else {
               <p class="pp__vide">Aucun domaine renseigné pour le moment.</p>
@@ -85,9 +63,29 @@
         }
       </div>
 
-      @if (aDesModalites() || estMaFiche()) {
-        <section class="pp__carte pp__carte--modalites">
-          <h2>Modalités</h2>
+      <!-- Carte de contact : reste visible au défilement sur ordinateur -->
+      <aside class="pp__contact" aria-label="Prendre contact">
+        <h2>{{ estMaFiche() ? 'Informations de contact' : 'Prendre contact' }}</h2>
+        @if (!enDetresse()) {
+          <p class="pp__tarif"><span>Tarif habituel</span><strong>{{ tarif() }}</strong><em>par séance</em></p>
+        }
+        @if (peutDemander()) {
+          <ss-badge-offre />
+          @if (p.accepte_demandes) {
+            <div class="pp__demande-zone">
+              <button type="button" class="pp__demande" (click)="ouvrirDemande()">
+                Demander une mise en relation <ss-icon nom="envoyer" taille="sm" />
+              </button>
+            </div>
+            <p class="pp__discret"><ss-icon nom="cadenas" taille="sm" /> Votre identité reste masquée tant que la demande n'est pas acceptée.</p>
+          } @else {
+            <p class="pp__indisponible">Ce professionnel ne prend pas de nouvelles demandes pour le moment. <a routerLink="/professionnels">Voir les autres professionnels</a></p>
+          }
+        }
+
+        @if (aDesModalites() || estMaFiche()) {
+          <div class="pp__separateur" aria-hidden="true"></div>
+          <h3>Modalités</h3>
           @if (aDesModalites()) {
             <ul class="pp__modalites">
               @if (p.consultation_cabinet) {
@@ -99,15 +97,15 @@
               @if (p.consultation_distance) {
                 <li>
                   <span class="pp__modalite-icone"><ss-icon nom="video" /></span>
-                  <span><strong>À distance</strong></span>
+                  <span><strong>À distance</strong><em>Échanges à distance</em></span>
                 </li>
               }
             </ul>
           } @else {
             <p class="pp__vide">Aucune modalité renseignée pour le moment.</p>
           }
-        </section>
-      }
+        }
+      </aside>
     </div>
 
     <p class="pp__mention">Sen Suivi ne remplace pas un professionnel de santé. En cas de détresse immédiate, appelez le <strong>800 805 805</strong> ou le <strong>1515</strong>.</p>
