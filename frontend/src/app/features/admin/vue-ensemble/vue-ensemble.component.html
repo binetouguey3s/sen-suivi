@@ -30,9 +30,41 @@
         <span>réponse(s) du forum en attente de modération</span>
       </div>
     </a>
+    <a class="ve__carte" routerLink="/admin/forum">
+      <ss-icon nom="bouclier" taille="lg" />
+      <div>
+        <strong>{{ v.file_moderation_ia }}</strong>
+        <span>élément(s) laissé(s) par l'IA à votre décision</span>
+      </div>
+    </a>
   </div>
 
-  @if (!v.professionnels_en_attente && !v.publications_en_attente && !v.commentaires_en_attente) {
+  <section class="ve__signalements" aria-labelledby="titre-signalements">
+    <h2 id="titre-signalements"><ss-icon nom="alerte" taille="sm" /> Situations à risque à suivre</h2>
+    <p class="ve__aide">Situations graves exprimées à Titou par des utilisateurs connectés. Seuls le pseudonyme, la nature et l'heure sont transmis : le contenu des messages reste confidentiel.</p>
+    @if (erreur(); as e) { <p class="ve__etat ve__etat--erreur" role="alert">{{ e }}</p> }
+    @if (v.signalements_a_suivre.length) {
+      <ul class="ve__liste">
+        @for (s of v.signalements_a_suivre; track s.id) {
+          <li>
+            <div class="ve__signalement">
+              <strong>{{ s.pseudonyme }}</strong>
+              <span class="ve__nature">{{ s.nature }}</span>
+              <span class="ve__moment">{{ moment(s.date) }}</span>
+              @if (s.personne_confiance_prevenue) {
+                <span class="ve__prevenue"><ss-icon nom="verifie" taille="sm" /> Personne de confiance prévenue</span>
+              }
+            </div>
+            <button type="button" class="ve__bouton" [disabled]="enCours() === s.id" (click)="marquerSuivi(s.id)">Marquer comme suivi</button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="ve__vide"><ss-icon nom="verifie" taille="sm" /> Aucune situation à risque en attente de suivi.</p>
+    }
+  </section>
+
+  @if (!v.professionnels_en_attente && !v.publications_en_attente && !v.commentaires_en_attente && !v.file_moderation_ia && !v.signalements_a_suivre.length) {
     <p class="ve__vide"><ss-icon nom="verifie" taille="sm" /> Aucune action en attente pour le moment.</p>
   }
 }

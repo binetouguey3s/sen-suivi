@@ -109,6 +109,12 @@ class SignalementRisque(models.Model):
     nature = models.CharField('nature', max_length=14, choices=NatureRisque.choices)
     personne_confiance_prevenue = models.BooleanField('personne de confiance prévenue', default=False)
     date = models.DateTimeField('date', auto_now_add=True)
+    # Suivi par l'équipe, selon son protocole pour les situations à risque
+    suivi_par = models.ForeignKey(
+        'comptes.Administrateur', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='signalements_suivis', verbose_name='suivi par',
+    )
+    date_suivi = models.DateTimeField('date du suivi', null=True, blank=True)
 
     class Meta:
         verbose_name = 'signalement de situation à risque'

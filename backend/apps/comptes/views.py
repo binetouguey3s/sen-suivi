@@ -5,6 +5,8 @@ génériques DRF, jamais de @api_view.
 """
 
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -179,8 +181,11 @@ class VueEnsembleAdminView(APIView):
     permission_classes = [EstAdministrateur]
 
     def get(self, request):
-        from apps.forum.models import CommentaireForum, PublicationForum
+        from apps.chatbot.models import SignalementRisque
+        from apps.forum.models import CommentaireForum, ModerationMessage, PublicationForum
         from apps.forum.models import StatutModeration as StatutModerationForum
+
+        a_suivre = SignalementRisque.objects.filter(date_suivi__isnull=True).select_related('utilisateur')
 
         return Response(
             {
@@ -193,6 +198,19 @@ class VueEnsembleAdminView(APIView):
                 'commentaires_en_attente': CommentaireForum.objects.filter(
                     statut_moderation=StatutModerationForum.EN_ATTENTE
                 ).count(),
+                # Doutes, détresse, blocages graves et contestations laissés par l'IA
+                'file_moderation_ia': ModerationMessage.objects.filter(a_traiter=True).count(),
+                # Situations graves exprimées à Titou : jamais le contenu des messages
+                'signalements_a_suivre': [
+                    {
+                        'id': s.pk,
+                        'pseudonyme': s.utilisateur.pseudonyme,
+                        'nature': s.get_nature_display(),
+                        'date': s.date,
+                        'personne_confiance_prevenue': s.personne_confiance_prevenue,
+                    }
+                    for s in a_suivre[:20]
+                ],
             }
         )
 
@@ -208,3 +226,20 @@ class ChangementMotDePasseView(APIView):
         request.user.set_password(serializer.validated_data['nouveau'])
         request.user.save(update_fields=['password'])
         return Response({'detail': 'Votre mot de passe a été modifié.'})
+
+
+class SuiviSignalementView(APIView):
+    """POST /api/administration/signalements/{id}/suivi — l'équipe a pris en charge
+    une situation à risque signalée par Titou."""
+
+    permission_classes = [EstAdministrateur]
+
+    def post(self, request, pk):
+        from apps.chatbot.models import SignalementRisque
+
+        signalement = get_object_or_404(SignalementRisque, pk=pk)
+        if signalement.date_suivi is None:
+            signalement.date_suivi = timezone.now()
+            signalement.suivi_par = request.user.administrateur
+            signalement.save(update_fields=['date_suivi', 'suivi_par'])
+        return Response({'id': signalement.pk, 'date_suivi': signalement.date_suivi})

@@ -30,8 +30,12 @@
   grid-template-columns: 1fr;
   gap: var(--ss-espace-3);
 
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
+  @media (min-width: 700px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -66,4 +70,92 @@
   margin-top: var(--ss-espace-4);
   color: var(--ss-texte-marque);
   font-weight: var(--ss-poids-texte-fort);
+}
+
+.ve__signalements {
+  margin-top: var(--ss-espace-5);
+  padding: var(--ss-espace-3);
+  border-radius: var(--ss-rayon-grande-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+
+  @media (min-width: 900px) {
+    padding: var(--ss-espace-4);
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--ss-espace-1);
+    margin: 0;
+    font-size: 20px;
+    color: var(--ss-texte-marque);
+  }
+}
+
+.ve__aide {
+  margin: var(--ss-espace-1) 0 var(--ss-espace-3);
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+}
+
+.ve__liste {
+  display: grid;
+  gap: var(--ss-espace-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ss-espace-2);
+    padding: 12px var(--ss-espace-2);
+    border-radius: var(--ss-rayon-champ);
+    background: var(--ss-surface-legere);
+  }
+}
+
+.ve__signalement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  color: var(--ss-texte);
+}
+
+.ve__nature {
+  padding: 2px 10px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
+  font-size: 13px;
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.ve__moment,
+.ve__prevenue {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}
+
+.ve__bouton {
+  padding: 8px var(--ss-espace-2);
+  border: none;
+  border-radius: var(--ss-rayon-bouton);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+  }
 }

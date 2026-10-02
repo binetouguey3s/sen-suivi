@@ -1,9 +1,20 @@
 // Types correspondant aux sérialiseurs Django (écrans d'administration).
 
+// Situation grave exprimée à Titou : jamais le contenu des messages
+export interface SignalementRisque {
+  id: number;
+  pseudonyme: string;
+  nature: string;
+  date: string;
+  personne_confiance_prevenue: boolean;
+}
+
 export interface VueEnsembleAdmin {
   professionnels_en_attente: number;
   publications_en_attente: number;
   commentaires_en_attente: number;
+  file_moderation_ia: number;
+  signalements_a_suivre: SignalementRisque[];
 }
 
 export type StatutValidationPro = 'EN_ATTENTE' | 'VALIDE' | 'REFUSE';

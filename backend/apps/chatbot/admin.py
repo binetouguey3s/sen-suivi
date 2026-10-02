@@ -23,5 +23,5 @@ class MessageChatbotAdmin(admin.ModelAdmin):
 
 @admin.register(SignalementRisque)
 class SignalementRisqueAdmin(admin.ModelAdmin):
-    list_display = ('date', 'utilisateur', 'nature', 'personne_confiance_prevenue')
+    list_display = ('date', 'utilisateur', 'nature', 'personne_confiance_prevenue', 'date_suivi', 'suivi_par')
     list_filter = ('nature', 'personne_confiance_prevenue')

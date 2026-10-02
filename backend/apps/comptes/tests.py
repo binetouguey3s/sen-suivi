@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase, override_settings
 from rest_framework.test import APITestCase
 
-from .models import Professionnel, StatutValidationPro, Utilisateur
+from .models import Administrateur, Professionnel, StatutValidationPro, Utilisateur
 
 MOT_DE_PASSE = 'MotDePasse2026!'
 
@@ -208,3 +208,35 @@ class FicheProfessionnelTests(APITestCase):
         utilisateur = Utilisateur.objects.create(email='curieux@test.sn', nom='Test', prenom='User')
         self.client.force_authenticate(utilisateur)
         self.assertEqual(self.client.get(self.url).status_code, 403)
+
+
+class SupervisionIATests(APITestCase):
+    """L'administrateur voit ce que l'IA lui laisse à traiter, sans jamais le contenu des messages."""
+
+    def setUp(self):
+        from apps.chatbot.models import SignalementRisque
+
+        self.admin = Administrateur.objects.create(email='admin@test.sn', nom='Admin')
+        self.awa = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+        self.signalement = SignalementRisque.objects.create(utilisateur=self.awa, nature='RISQUE_VITAL')
+        self.client.force_authenticate(self.admin)
+
+    def test_la_supervision_montre_les_situations_a_risque_a_suivre(self):
+        vue = self.client.get('/api/administration/vue-ensemble').data
+
+        self.assertEqual(vue['file_moderation_ia'], 0)
+        signalement = vue['signalements_a_suivre'][0]
+        self.assertEqual((signalement['pseudonyme'], signalement['nature']), (self.awa.pseudonyme, 'Risque pour sa vie'))
+        self.assertNotIn('Awa', str(vue))
+
+    def test_un_signalement_suivi_quitte_la_liste(self):
+        self.client.post(f'/api/administration/signalements/{self.signalement.pk}/suivi')
+
+        self.signalement.refresh_from_db()
+        self.assertEqual(self.signalement.suivi_par, self.admin)
+        self.assertEqual(self.client.get('/api/administration/vue-ensemble').data['signalements_a_suivre'], [])
+
+    def test_un_utilisateur_ne_peut_pas_marquer_un_signalement(self):
+        self.client.force_authenticate(self.awa)
+        reponse = self.client.post(f'/api/administration/signalements/{self.signalement.pk}/suivi')
+        self.assertEqual(reponse.status_code, 403)
