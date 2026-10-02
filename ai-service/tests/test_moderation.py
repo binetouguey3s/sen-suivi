@@ -49,6 +49,11 @@ def test_une_insulte_evidente_est_bloquee_par_les_regles_sans_modele(insulte):
 
     assert (resultat.decision, resultat.categorie, resultat.niveau) == (Decision.BLOQUER, 'INSULTE', 'REGLES')
     assert 'reformuler' in resultat.message
+    assert '«' not in resultat.message
+
+
+def test_les_coordonnees_sont_citees_pour_savoir_quoi_retirer():
+    assert '« 77 123 45 67 »' in moderer('Appelle-moi au 77 123 45 67').message
 
 
 # Test 10
@@ -90,7 +95,9 @@ def test_une_agression_dirigee_contre_un_membre_est_bloquee(monkeypatch):
 
     assert resultat.decision == Decision.BLOQUER_PRIORITAIRE
     assert resultat.priorite == 2
-    assert '« je vais venir te frapper »' in resultat.message
+    # L'admin voit l'extrait ; l'auteur, jamais ses propres mots blessants répétés
+    assert resultat.extrait == 'je vais venir te frapper'
+    assert 'frapper' not in resultat.message
 
 
 # Test 13

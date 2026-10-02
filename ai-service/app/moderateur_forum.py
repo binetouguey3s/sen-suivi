@@ -268,10 +268,12 @@ MESSAGE_ATTENTE = (
     "Votre message est en cours de relecture par l'équipe de Sen Suivi. Il sera publié très vite "
     "s'il respecte la charte du forum."
 )
+# Ce qui pose problème, dit simplement. Les propos blessants ne sont jamais
+# répétés à l'auteur : l'extrait reste visible pour l'équipe, dans la file admin.
 MOTIF_LISIBLE = {
-    'INSULTE': 'contient des mots blessants envers quelqu’un',
-    'HARCELEMENT': 'semble viser un membre de façon insistante ou menaçante',
-    'HAINE': 'vise un groupe de personnes',
+    'INSULTE': 'contient des mots blessants ou grossiers',
+    'HARCELEMENT': 'contient des propos qui visent un membre de façon insistante ou menaçante',
+    'HAINE': 'contient des propos qui visent un groupe de personnes',
     'CONTENU_SEXUEL': 'contient un contenu à caractère sexuel',
     'AGRESSION_SEXUELLE': 'contient des propos sexuels visant quelqu’un',
     'DONNEES_PERSONNELLES': 'contient des coordonnées ou des informations qui permettent d’identifier quelqu’un',
@@ -279,17 +281,21 @@ MOTIF_LISIBLE = {
 
 
 def _message_blocage(resultat: ResultatModeration) -> str:
-    """Toujours respectueux : ce qui pose problème, et une invitation à reformuler."""
+    """Toujours respectueux : ce qui pose problème, et une invitation à reformuler.
+
+    Seules les coordonnées sont citées (« 77 123 45 67 »), pour qu'on sache quoi
+    retirer ; une insulte ou un propos blessant n'est jamais répété à l'auteur.
+    """
     motif = MOTIF_LISIBLE.get(resultat.categorie, 'ne respecte pas la charte du forum')
-    cite = f' (« {resultat.extrait} »)' if resultat.extrait else ''
-    conseil = (
-        " Le forum est anonyme : pour votre sécurité, n'y partagez ni numéro, ni e-mail, ni compte."
-        if resultat.categorie == 'DONNEES_PERSONNELLES'
-        else ' Vous pouvez tout à fait exprimer ce que vous ressentez, sans viser personne.'
-    )
+    if resultat.categorie == 'DONNEES_PERSONNELLES':
+        cite = f' (« {resultat.extrait} »)' if resultat.extrait else ''
+        conseil = " Le forum est anonyme : pour votre sécurité, n'y partagez ni numéro, ni e-mail, ni compte."
+    else:
+        cite = ''
+        conseil = ' Vous pouvez tout à fait exprimer ce que vous ressentez, avec d’autres mots et sans viser personne.'
     return (
-        f"Votre message n'a pas été publié : un passage{cite} {motif}.{conseil} "
-        "Vous pouvez le reformuler, ou demander un réexamen par l'équipe si vous pensez qu'il s'agit d'une erreur."
+        f"Votre message n'a pas été publié : il {motif}{cite}.{conseil} "
+        "Merci de le reformuler, ou de demander un réexamen par l'équipe si vous pensez qu'il s'agit d'une erreur."
     )
 
 
