@@ -1,10 +1,28 @@
 <article class="cr" [class.cr--vedette]="vedette()">
   <a class="cr__lien" [routerLink]="['/ressources', ressource().id]">
     <div class="cr__visuel" [attr.data-type]="ressource().type_ressource">
-      <ss-icon [nom]="icone()" taille="xl" />
+      @if (visuel(); as v) {
+        @if (v.genre === 'photo') {
+          <img
+            class="cr__illustration"
+            [class.cr__illustration--entiere]="v.contenir"
+            [src]="v.src"
+            [style.object-position]="v.position"
+            alt=""
+            loading="lazy"
+          />
+        } @else {
+          <svg class="cr__illustration" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <use [attr.href]="v.href" />
+          </svg>
+        }
+      } @else {
+        <ss-icon [nom]="icone()" taille="xl" />
+      }
       @if (vedette()) {
         <span class="cr__badge">À lire aujourd'hui</span>
       }
+      <span class="cr__format"><ss-icon [nom]="icone()" taille="sm" /> {{ format() }}</span>
     </div>
 
     <div class="cr__corps">

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal } f
 import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
+import { visuelRessource } from '../../core/config/illustrations-ressources';
 import { FavorisService } from '../../core/services/favoris.service';
 import { Ressource } from '../../core/models/suivi';
 import {
@@ -67,6 +68,10 @@ export class ArticleComponent {
   protected readonly icone = computed(() => {
     const r = this.ressource.value();
     return r ? ICONE_PAR_TYPE[r.type_ressource] : 'article';
+  });
+  protected readonly visuel = computed(() => {
+    const r = this.ressource.value();
+    return r ? visuelRessource(r.titre, r.thematique) : null;
   });
   protected readonly ajout = computed(() => {
     const r = this.ressource.value();

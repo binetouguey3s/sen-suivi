@@ -42,6 +42,8 @@
 }
 
 .art__hero {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,6 +63,23 @@
   &[data-type='PODCAST'] {
     background: linear-gradient(135deg, var(--ss-fond), var(--ss-surface-douce));
   }
+}
+
+.art__illustration {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+img.art__illustration {
+  object-fit: cover;
+}
+
+img.art__illustration--entiere {
+  padding: var(--ss-espace-3);
+  background: #ffffff;
+  object-fit: contain;
 }
 
 .art__mise-en-page {

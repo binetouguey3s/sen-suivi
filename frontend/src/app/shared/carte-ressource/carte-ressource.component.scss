@@ -27,6 +27,7 @@
 
 .cr__visuel {
   position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,8 +48,54 @@
   height: 260px;
 }
 
+// Illustration aux couleurs de la charte, qui remplit tout le bandeau
+.cr__illustration {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+img.cr__illustration {
+  object-fit: cover;
+}
+
+// Pictogramme ou objet sur fond blanc : affiché entier, jamais coupé
+img.cr__illustration--entiere {
+  padding: var(--ss-espace-2);
+  background: #ffffff;
+  object-fit: contain;
+}
+
+.cr:hover .cr__illustration {
+  transform: scale(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr__illustration {
+    transition: none;
+  }
+}
+
+.cr__format {
+  position: absolute;
+  bottom: var(--ss-espace-2);
+  left: var(--ss-espace-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte-fort);
+}
+
 .cr__badge {
   position: absolute;
+  z-index: 1;
   top: var(--ss-espace-2);
   left: var(--ss-espace-2);
   background: var(--ss-surface);
@@ -70,7 +117,7 @@
 }
 
 .cr--vedette .cr__corps {
-  background: var(--ss-fond);
+  background: var(--ss-surface);
   flex: 1;
 }
 

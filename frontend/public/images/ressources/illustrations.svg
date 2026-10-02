@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <!-- Illustrations des ressources de Sen Suivi. Couleurs = variables CSS de la
+       charte (_themes.scss) : elles suivent le thème clair et le thème sombre. -->
+  <symbol id="respiration-examen" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<circle cx="200" cy="120" r="78" style="fill:none;stroke:var(--ss-accent);stroke-width:6;opacity:0.6;stroke-linecap:round;stroke-linejoin:round"/>
+<circle cx="200" cy="120" r="56" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<circle cx="200" cy="120" r="34" style="fill:var(--ss-surface)"/>
+<path d="M186 120 h28" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<rect x="120" y="190" width="160" height="16" rx="8" style="fill:var(--ss-surface)"/>
+<rect x="132" y="195" width="70" height="6" rx="3" style="fill:var(--ss-texte-marque)"/></symbol>
+  <symbol id="respiration-guidee" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M70 110 q35 -40 70 0 t70 0 t70 0 t70 0" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M70 145 q35 -40 70 0 t70 0 t70 0 t70 0" style="fill:none;stroke:var(--ss-accent);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M200 50 C248 72 244 122 200 146 C156 122 152 72 200 50 Z" style="fill:var(--ss-surface)"/>
+<path d="M200 62 V136 M200 92 l-16 -12 M200 112 l16 -12" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="famille" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M110 200 v-70 l90 -60 l90 60 v70 z" style="fill:var(--ss-surface)"/>
+<path d="M100 132 l100 -68 l100 68" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/>
+<circle cx="165" cy="130" r="12.6" style="fill:var(--ss-texte-marque)"/><path d="M143.4 185.8 q0 -40 21.6 -40 q21.6 0 21.6 40 z" style="fill:var(--ss-texte-marque)"/><circle cx="235" cy="130" r="12.6" style="fill:var(--ss-accent)"/><path d="M213.4 185.8 q0 -40 21.6 -40 q21.6 0 21.6 40 z" style="fill:var(--ss-accent)"/><circle cx="200" cy="150" r="9.1" style="fill:var(--ss-texte-marque)"/><path d="M184.4 190.3 q0 -40 15.600000000000001 -40 q15.600000000000001 0 15.600000000000001 40 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M200 98 c-6 -10 -20 -4 -14 6 l14 12 l14 -12 c6 -10 -8 -16 -14 -6 z" style="fill:var(--ss-accent)"/></symbol>
+  <symbol id="etudes" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M110 150 q45 -20 90 0 v50 q-45 -20 -90 0 z" style="fill:var(--ss-surface)"/>
+<path d="M290 150 q-45 -20 -90 0 v50 q45 -20 90 0 z" style="fill:var(--ss-surface-douce)"/>
+<path d="M200 150 v50" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M140 90 l60 -28 l60 28 l-60 28 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M170 104 v24 q30 16 60 0 v-24" style="fill:var(--ss-texte-marque)"/>
+<path d="M260 90 v34" style="fill:none;stroke:var(--ss-accent);stroke-width:5;stroke-linecap:round;stroke-linejoin:round"/><circle cx="260" cy="128" r="6" style="fill:var(--ss-accent)"/></symbol>
+  <symbol id="sommeil" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M230 70 a62 62 0 1 0 50 98 a50 50 0 1 1 -50 -98 z" style="fill:var(--ss-texte-marque)"/>
+<circle cx="120" cy="80" r="5" style="fill:var(--ss-accent)"/><circle cx="150" cy="130" r="4" style="fill:var(--ss-accent)"/><circle cx="100" cy="150" r="6" style="fill:var(--ss-accent)"/>
+<circle cx="140" cy="190" r="26" style="fill:var(--ss-surface)"/><path d="M140 175 v15 l10 8" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="stress-trafic" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="70" y="140" width="110" height="40" rx="14" style="fill:var(--ss-texte-marque)"/><rect x="88" y="120" width="70" height="30" rx="10" style="fill:var(--ss-texte-marque)"/>
+<circle cx="95" cy="182" r="10" style="fill:var(--ss-surface)"/><circle cx="155" cy="182" r="10" style="fill:var(--ss-surface)"/>
+<rect x="200" y="148" width="100" height="36" rx="13" style="fill:var(--ss-accent)"/><rect x="216" y="130" width="62" height="26" rx="9" style="fill:var(--ss-accent)"/>
+<circle cx="224" cy="186" r="9" style="fill:var(--ss-surface)"/><circle cx="276" cy="186" r="9" style="fill:var(--ss-surface)"/>
+<path d="M110 80 q30 -26 60 0 t60 0 t60 0" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:6;opacity:0.8;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="expression" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="90" y="70" width="140" height="80" rx="22" style="fill:var(--ss-texte-marque)"/><path d="M120 150 l-6 26 l30 -26 z" style="fill:var(--ss-texte-marque)"/>
+<rect x="190" y="120" width="130" height="70" rx="22" style="fill:var(--ss-surface)"/><path d="M290 190 l8 22 l-30 -22 z" style="fill:var(--ss-surface)"/>
+<path d="M115 100 h90 M115 120 h60" style="fill:none;stroke:var(--ss-surface);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/><path d="M215 148 h80 M215 166 h50" style="fill:none;stroke:var(--ss-accent);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="podcast" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="175" y="60" width="50" height="90" rx="25" style="fill:var(--ss-texte-marque)"/>
+<path d="M150 120 a50 50 0 0 0 100 0" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/><path d="M200 170 v30 M175 200 h50" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M120 95 q-14 25 0 50 M100 82 q-24 38 0 76" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M280 95 q14 25 0 50 M300 82 q24 38 0 76" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M200 92 c-5 -9 -17 -4 -12 5 l12 10 l12 -10 c5 -9 -7 -14 -12 -5 z" style="fill:var(--ss-surface)"/></symbol>
+  <symbol id="travail-echeance" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="90" y="90" width="150" height="95" rx="10" style="fill:var(--ss-texte-marque)"/><rect x="102" y="102" width="126" height="71" rx="5" style="fill:var(--ss-surface)"/>
+<path d="M70 192 h190" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:10;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M118 125 h70 M118 145 h50" style="fill:none;stroke:var(--ss-accent);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/>
+<circle cx="290" cy="110" r="44" style="fill:var(--ss-surface)"/><circle cx="290" cy="110" r="44" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M290 88 v22 l16 12" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="confiance" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M70 200 l90 -110 l50 60 l30 -30 l90 80 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M160 90 l20 24 h-40 z" style="fill:var(--ss-surface)"/>
+<path d="M160 90 v-50" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:5;stroke-linecap:round;stroke-linejoin:round"/><path d="M160 42 h36 l-10 12 l10 12 h-36 z" style="fill:var(--ss-accent)"/>
+<circle cx="300" cy="80" r="22" style="fill:var(--ss-accent)"/></symbol>
+  <symbol id="solitude" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="230" y="60" width="90" height="100" rx="8" style="fill:var(--ss-surface)"/><path d="M275 60 v100 M230 110 h90" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:5;stroke-linecap:round;stroke-linejoin:round"/>
+<circle cx="150" cy="110" r="15.400000000000002" style="fill:var(--ss-texte-marque)"/><path d="M123.6 178.2 q0 -40 26.400000000000002 -40 q26.400000000000002 0 26.400000000000002 40 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M90 200 h220" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M300 40 q8 -8 16 0 q8 -8 16 0" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/><path d="M250 30 q6 -6 12 0 q6 -6 12 0" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="organisation" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="110" y="60" width="180" height="140" rx="16" style="fill:var(--ss-surface)"/>
+<rect x="110" y="60" width="180" height="36" rx="16" style="fill:var(--ss-texte-marque)"/><rect x="110" y="80" width="180" height="16" style="fill:var(--ss-texte-marque)"/>
+<path d="M150 50 v22 M250 50 v22" style="fill:none;stroke:var(--ss-accent);stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/>
+<g style="fill:var(--ss-surface-douce)"><rect x="128" y="110" width="36" height="28" rx="6"/><rect x="182" y="110" width="36" height="28" rx="6"/><rect x="236" y="110" width="36" height="28" rx="6"/><rect x="128" y="152" width="36" height="28" rx="6"/><rect x="236" y="152" width="36" height="28" rx="6"/></g>
+<rect x="182" y="152" width="36" height="28" rx="6" style="fill:var(--ss-accent)"/><path d="M190 166 l7 7 l13 -14" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:5;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="prise-de-parole" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="180" y="55" width="40" height="70" rx="20" style="fill:var(--ss-texte-marque)"/><path d="M200 125 v55 M170 180 h60" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M240 70 q16 20 0 40 M258 58 q28 32 0 64" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<circle cx="95" cy="150" r="9.799999999999999" style="fill:var(--ss-texte-marque)"/><path d="M78.2 193.4 q0 -40 16.799999999999997 -40 q16.799999999999997 0 16.799999999999997 40 z" style="fill:var(--ss-texte-marque)"/><circle cx="140" cy="158" r="8.4" style="fill:var(--ss-accent)"/><path d="M125.6 195.2 q0 -40 14.399999999999999 -40 q14.399999999999999 0 14.399999999999999 40 z" style="fill:var(--ss-accent)"/><circle cx="260" cy="158" r="8.4" style="fill:var(--ss-accent)"/><path d="M245.6 195.2 q0 -40 14.399999999999999 -40 q14.399999999999999 0 14.399999999999999 40 z" style="fill:var(--ss-accent)"/><circle cx="305" cy="150" r="9.799999999999999" style="fill:var(--ss-texte-marque)"/><path d="M288.2 193.4 q0 -40 16.799999999999997 -40 q16.799999999999997 0 16.799999999999997 40 z" style="fill:var(--ss-texte-marque)"/></symbol>
+  <symbol id="colere" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M110 120 a40 40 0 0 1 70 -30 a50 50 0 0 1 90 20 a30 30 0 0 1 0 60 h-150 a25 25 0 0 1 -10 -50 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M205 175 l-15 28 h20 l-12 26" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M90 210 q40 -16 80 0 t80 0 t80 0" style="fill:none;stroke:var(--ss-accent);stroke-width:6;opacity:0.8;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="rupture" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M200 200 c-90 -50 -110 -110 -60 -130 c30 -12 50 10 60 28 c10 -18 30 -40 60 -28 c50 20 30 80 -60 130 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M200 98 l-12 24 l18 16 l-14 26" style="fill:none;stroke:var(--ss-surface);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/>
+<g transform="translate(200 135) rotate(-30)"><rect x="-29" y="-12" width="58" height="24" rx="8" style="fill:var(--ss-accent)"/>
+<path d="M-10 -5 v10 M0 -5 v10 M10 -5 v10" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:3;stroke-linecap:round;stroke-linejoin:round"/></g></symbol>
+  <symbol id="deuil" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="172" y="110" width="56" height="90" rx="8" style="fill:var(--ss-surface)"/>
+<path d="M200 110 v-12" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:4;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M200 50 c22 22 18 46 0 50 c-18 -4 -22 -28 0 -50 z" style="fill:var(--ss-accent)"/>
+<path d="M200 70 c8 10 6 22 0 24 c-6 -2 -8 -14 0 -24 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M110 200 c0 -40 30 -60 50 -60 c0 30 -20 60 -50 60 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M290 200 c0 -40 -30 -60 -50 -60 c0 30 20 60 50 60 z" style="fill:var(--ss-accent)"/></symbol>
+  <symbol id="reseaux-sociaux" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="160" y="40" width="90" height="170" rx="18" style="fill:var(--ss-texte-marque)"/><rect x="170" y="56" width="70" height="132" rx="8" style="fill:var(--ss-surface)"/>
+<circle cx="205" cy="196" r="5" style="fill:var(--ss-surface)"/>
+<rect x="180" y="70" width="50" height="34" rx="6" style="fill:var(--ss-surface-douce)"/><path d="M180 116 h50 M180 130 h34" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M110 90 c-8 -12 -26 -4 -18 8 l18 16 l18 -16 c8 -12 -10 -20 -18 -8 z" style="fill:var(--ss-accent)"/>
+<rect x="270" y="120" width="60" height="34" rx="12" style="fill:var(--ss-accent)"/><path d="M284 137 h32" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:5;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="recherche-emploi" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<rect x="90" y="100" width="150" height="100" rx="14" style="fill:var(--ss-texte-marque)"/><path d="M140 100 v-18 h50 v18" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M90 140 h150" style="fill:none;stroke:var(--ss-surface);stroke-width:5;stroke-linecap:round;stroke-linejoin:round"/>
+<circle cx="280" cy="120" r="38" style="fill:var(--ss-surface)"/><circle cx="280" cy="120" r="38" style="fill:none;stroke:var(--ss-accent);stroke-width:9;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M308 148 l30 30" style="fill:none;stroke:var(--ss-accent);stroke-width:12;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="motivation" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M150 200 h100 l-14 -50 h-72 z" style="fill:var(--ss-texte-marque)"/>
+<path d="M200 150 v-50" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M200 115 c-30 0 -46 -20 -44 -44 c26 0 44 18 44 44 z" style="fill:var(--ss-accent)"/>
+<path d="M200 100 c26 0 40 -18 38 -40 c-22 0 -38 16 -38 40 z" style="fill:var(--ss-accent)"/>
+<circle cx="300" cy="70" r="22" style="fill:var(--ss-surface)"/><path d="M300 34 v-12 M336 70 h12 M325 45 l9 -9" style="fill:none;stroke:var(--ss-accent);stroke-width:5;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="pause-travail" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<path d="M140 110 h110 v40 a45 45 0 0 1 -45 45 h-20 a45 45 0 0 1 -45 -45 z" style="fill:var(--ss-surface)"/>
+<path d="M140 110 h110" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M250 125 h12 a18 18 0 0 1 0 36 h-14" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M175 90 q-10 -14 0 -28 q10 -14 0 -28 M205 90 q-10 -14 0 -28 q10 -14 0 -28" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M120 205 h170" style="fill:none;stroke:var(--ss-texte-marque);stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="bien-etre" viewBox="0 0 400 240"><circle cx="320" cy="40" r="110" style="fill:var(--ss-surface-douce)"/><circle cx="60" cy="210" r="80" style="fill:var(--ss-accent);opacity:0.35"/><circle cx="350" cy="200" r="26" style="fill:var(--ss-accent);opacity:0.5"/>
+<circle cx="200" cy="135" r="60" style="fill:var(--ss-accent)"/>
+<path d="M200 60 v-20 M200 230 v-20 M125 135 h-20 M295 135 h-20 M147 82 l-14 -14 M253 82 l14 -14" style="fill:none;stroke:var(--ss-accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/>
+<path d="M200 165 c-30 -20 -36 -46 -18 -54 c10 -4 16 4 18 10 c2 -6 8 -14 18 -10 c18 8 12 34 -18 54 z" style="fill:var(--ss-surface)"/></symbol>
+</svg>

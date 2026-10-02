@@ -49,6 +49,31 @@ Originaux conservés dans images-brutes/accueil/.
 | fonctionnement.webp | sourire.jpg | À compléter | À compléter |
 | appel.webp | joyeux.jpg | À compléter | À compléter |
 
+## Bibliothèque de ressources
+
+Originaux conservés dans images-brutes/images-ressources/. Une photo par
+thématique ; les ressources sans photo (thématique Expression) gardent leur
+illustration aux couleurs de la charte (illustrations.svg, création Sen Suivi).
+
+| Fichier | Original | Source | Licence |
+|---|---|---|---|
+| ressource-bien-etre.webp | Bien-être.jpg | À compléter | À compléter |
+| ressource-confiance.webp | confiance.jpg | À compléter | À compléter |
+| ressource-deuil.webp | Deuil.jpg | À compléter | À compléter |
+| ressource-emotions.webp | Emotions.jpg | À compléter | À compléter |
+| ressource-etudes.webp | Etudes.jpg | À compléter | À compléter |
+| ressource-famille.webp | Famille.jpg | À compléter | À compléter |
+| ressource-lien-social.webp | lien social.jpg | À compléter | À compléter |
+| ressource-motivation.webp | Motivation.jpg | À compléter | À compléter |
+| ressource-numerique.webp | Numerique.jpg | À compléter | À compléter |
+| ressource-organisation.webp | Organisation.jpg | À compléter | À compléter |
+| ressource-podcast.webp | Podcast.jpg | À compléter | À compléter |
+| ressource-relations.webp | Relation infinie.jpg | À compléter | À compléter |
+| ressource-respiration.webp | Respiration.jpg | À compléter | À compléter |
+| ressource-sommeil.webp | Sommeil.jpg | À compléter | À compléter |
+| ressource-stress.webp | Stress.jpg | À compléter | À compléter |
+| ressource-travail.webp | Travail.jpg | À compléter | À compléter |
+
 ## Illustrations
 
 Illustrations vectorielles issues d'unDraw (undraw.co), licence unDraw,

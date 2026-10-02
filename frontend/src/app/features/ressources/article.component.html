@@ -16,7 +16,23 @@
     </nav>
 
     <div class="art__hero" [attr.data-type]="r.type_ressource">
-      <ss-icon [nom]="icone()" taille="xl" />
+      @if (visuel(); as v) {
+        @if (v.genre === 'photo') {
+          <img
+            class="art__illustration"
+            [class.art__illustration--entiere]="v.contenir"
+            [src]="v.src"
+            [style.object-position]="v.position"
+            [alt]="r.titre"
+          />
+        } @else {
+          <svg class="art__illustration" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <use [attr.href]="v.href" />
+          </svg>
+        }
+      } @else {
+        <ss-icon [nom]="icone()" taille="xl" />
+      }
     </div>
 
     <div class="art__mise-en-page">
