@@ -19,7 +19,7 @@
   --ss-fond:                  #eef5f2;   // menthe voilée, fond de l'espace connecté
   --ss-fond-public:           #eef5f2;   // fond des pages publiques et de l'admin : même menthe voilée que l'espace connecté, repose les yeux et détache les cartes blanches
   --ss-surface:               #ffffff;   // cartes
-  --ss-surface-douce:         #e9f4ef;   // zones de mise en avant
+  --ss-surface-douce:         #d4e8de;   // zones de mise en avant (se détachent du fond menthe #eef5f2)
   --ss-surface-legere:        #f4faf7;   // fonds très légers dans une carte
   --ss-surface-accent:        rgba(169, 214, 196, 0.45);   // bloc d'appel en menthe de marque
   --ss-surface-neutre:        #edeef1;   // onglets, pastilles, squelettes de chargement
@@ -29,7 +29,7 @@
   // Textes
   --ss-texte:                 #12354f;   // titres et texte principal
   --ss-texte-marque:          #1b4b6e;   // liens et titres de carte
-  --ss-texte-doux:            #666c7a;   // texte secondaire (4,5:1 sur les fonds menthe et gris)
+  --ss-texte-doux:            #5f6573;   // texte secondaire (4,5:1 sur le fond, les zones de mise en avant et le gris)
   --ss-texte-efface:          #edeef1;   // jours hors du mois dans le calendrier
   --ss-texte-inverse:         #ffffff;   // sur fond bleu
   --ss-texte-sur-photo:       #ffffff;   // posé sur une photo, identique dans les deux thèmes
