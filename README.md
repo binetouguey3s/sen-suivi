@@ -31,7 +31,7 @@ La génération encadrée par un modèle de langage (Groq), à partir des seules
 ```
 sen-suivi/
 ├── frontend/          # Angular 22 : interface web (composants standalone, signals)
-├── backend/           # Django 5.1 + DRF : API REST, JWT, 7 applications métier
+├── backend/           # Django 5.2 LTS + DRF : API REST, JWT, 7 applications métier
 ├── ai-service/        # FastAPI : chatbot (détresse, intention, RAG avec ChromaDB)
 ├── automations/       # Workflows n8n exportés (JSON)
 ├── docs/              # Crédits et licences des images
