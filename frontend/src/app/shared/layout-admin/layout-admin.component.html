@@ -1,6 +1,7 @@
 <div class="la">
   <header class="la__topbar-mobile">
-    <span class="la__logo" aria-hidden="true">SS</span>
+    <img class="la__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
+    <span class="la__titre-mobile">Administration</span>
     <button
       type="button"
       class="la__menu-bouton"
@@ -18,7 +19,7 @@
   }
 
   <aside id="menu-admin" class="la__sidebar" [class.la__sidebar--ouverte]="menuOuvert()">
-    <span class="la__logo la__logo--desktop" aria-hidden="true">SS</span>
+    <img class="la__logo la__logo--desktop" src="/logo-sen-suivi.png" alt="Sen Suivi" />
 
     <nav class="la__nav" aria-label="Navigation administration">
       @for (lien of liens; track lien.route) {

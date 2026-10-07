@@ -25,6 +25,13 @@
   --ss-surface-neutre:        #edeef1;   // onglets, pastilles, squelettes de chargement
   --ss-surface-forte:         #1b4b6e;   // blocs bleus (section Titou, panneau photo)
   --ss-surface-profonde:      #12354f;   // blocs bleu profond (barre latérale admin)
+  // Barre latérale admin : blanche comme celle de l'espace professionnel
+  --ss-barre-admin:              #ffffff;
+  --ss-barre-admin-bordure:      #edeef1;
+  --ss-barre-admin-texte:        #12354f;
+  --ss-barre-admin-texte-doux:   #5f6573;
+  --ss-barre-admin-actif:        #d4e8de;
+  --ss-barre-admin-actif-texte:  #1b4b6e;
 
   // Textes
   --ss-texte:                 #12354f;   // titres et texte principal
@@ -105,6 +112,13 @@
   --ss-surface-neutre:        rgba(232, 241, 238, 0.08);
   --ss-surface-forte:         #0a1e2c;   // blocs très sombres
   --ss-surface-profonde:      #0a1e2c;
+  // Barre latérale admin : le bleu de la marque, repère de l'espace admin
+  --ss-barre-admin:              #1b4b6e;
+  --ss-barre-admin-bordure:      rgba(255, 255, 255, 0.15);
+  --ss-barre-admin-texte:        #ffffff;
+  --ss-barre-admin-texte-doux:   #d6e6e1;
+  --ss-barre-admin-actif:        rgba(255, 255, 255, 0.14);
+  --ss-barre-admin-actif-texte:  #ffffff;
 
   // Textes
   --ss-texte:                 #e8f1ee;   // texte principal, menthe très pâle

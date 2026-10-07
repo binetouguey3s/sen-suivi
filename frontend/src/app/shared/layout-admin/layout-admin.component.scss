@@ -4,27 +4,47 @@
   background: var(--ss-fond-public);
 }
 
+// Mobile : barre du haut puis contenu, empilés ;
+// desktop : barre latérale et contenu côte à côte
 .la {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+  }
 }
 
 .la__topbar-mobile {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--ss-espace-2);
   padding: var(--ss-espace-2) var(--ss-marge-mobile);
-  background: var(--ss-surface-profonde);
+  background: var(--ss-barre-admin);
+  border-bottom: 1px solid var(--ss-barre-admin-bordure);
 
   @media (min-width: 900px) {
     display: none;
   }
 }
 
+.la__titre-mobile {
+  flex: 1;
+  color: var(--ss-barre-admin-texte);
+  font-family: var(--ss-police-titres);
+  font-weight: var(--ss-poids-titre);
+  font-size: 16px;
+}
+
 .la__menu-bouton {
-  border: none;
-  background: var(--ss-survol-sur-fonce);
-  color: var(--ss-surface-forte-texte);
+  display: flex;
+  border: 1px solid var(--ss-barre-admin-bordure);
+  background: var(--ss-barre-admin);
+  color: var(--ss-barre-admin-texte);
   border-radius: var(--ss-rayon-champ);
   padding: var(--ss-espace-1);
   cursor: pointer;
@@ -46,8 +66,17 @@
   flex-direction: column;
   width: 260px;
   flex-shrink: 0;
-  background: var(--ss-surface-profonde);
+  background: var(--ss-barre-admin);
+  border-right: 1px solid var(--ss-barre-admin-bordure);
   padding: var(--ss-espace-3) var(--ss-espace-2);
+
+  // Desktop : la barre reste visible pendant le défilement du contenu
+  @media (min-width: 900px) {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
 
   @media (max-width: 899px) {
     position: fixed;
@@ -55,32 +84,29 @@
     bottom: 0;
     left: 0;
     z-index: 31;
+    width: min(280px, 85vw);
+    overflow-y: auto;
     transform: translateX(-100%);
     transition: transform 0.2s ease;
 
     &.la__sidebar--ouverte {
       transform: translateX(0);
+      box-shadow: var(--ss-ombre-forte);
     }
   }
 }
 
+// Logo posé directement, comme dans l'espace professionnel :
+// le filtre global l'éclaircit en thème sombre, sur la barre bleue
 .la__logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--ss-rayon-champ);
-  background: var(--ss-accent);
-  color: var(--ss-accent-texte-fort);
-  font-family: var(--ss-police-titres);
-  font-weight: var(--ss-poids-titre-fort);
+  display: block;
+  height: 28px;
+  width: auto;
 }
 
 .la__logo--desktop {
-  width: 44px;
-  height: 44px;
-  margin-bottom: var(--ss-espace-4);
+  height: 40px;
+  margin: 0 auto var(--ss-espace-4);
 }
 
 .la__nav {
@@ -96,15 +122,15 @@
   gap: var(--ss-espace-2);
   padding: var(--ss-espace-2);
   border-radius: var(--ss-rayon-champ);
-  color: var(--ss-surface-forte-texte-doux);
+  color: var(--ss-barre-admin-texte-doux);
   text-decoration: none;
   font-weight: var(--ss-poids-texte-fort);
   font-size: 15px;
 }
 
 .la__lien--actif {
-  background: var(--ss-survol-sur-fonce);
-  color: var(--ss-surface-forte-texte);
+  background: var(--ss-barre-admin-actif);
+  color: var(--ss-barre-admin-actif-texte);
 }
 
 // Choix du thème, juste au-dessus du profil
@@ -117,7 +143,7 @@
   display: flex;
   align-items: center;
   gap: var(--ss-espace-2);
-  border-top: 1px solid var(--ss-trait-sur-fonce);
+  border-top: 1px solid var(--ss-barre-admin-bordure);
   padding-top: var(--ss-espace-3);
 }
 
@@ -143,7 +169,7 @@
 .la__nom {
   margin: 0;
   font-weight: var(--ss-poids-texte-fort);
-  color: var(--ss-surface-forte-texte);
+  color: var(--ss-barre-admin-texte);
   font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
@@ -152,13 +178,13 @@
 
 .la__role {
   font-size: 12px;
-  color: var(--ss-surface-forte-texte-doux);
+  color: var(--ss-barre-admin-texte-doux);
 }
 
 .la__deconnexion {
   border: none;
   background: none;
-  color: var(--ss-surface-forte-texte-doux);
+  color: var(--ss-barre-admin-texte-doux);
   cursor: pointer;
   padding: var(--ss-espace-1);
   flex-shrink: 0;
