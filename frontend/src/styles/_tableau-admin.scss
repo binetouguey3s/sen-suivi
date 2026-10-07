@@ -1,0 +1,111 @@
+// =============================================================
+//  Tableaux de l'administration : sur mobile, chaque ligne
+//  devient une carte. Le libellé de chaque colonne vient de
+//  l'attribut data-label de la cellule.
+//
+//  Cellules particulières (classes posées dans le gabarit) :
+//    .carte-case       case à cocher, placée en haut à droite
+//    .carte-principale nom ou titre, en tête de carte
+//    .carte-bloc       texte long : libellé au-dessus, texte aligné à gauche
+//    .carte-actions    boutons, en pied de carte
+// =============================================================
+
+@mixin tableau-en-cartes {
+  @media (max-width: 899px) {
+    display: block;
+    background: none;
+
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    tbody {
+      display: grid;
+      gap: var(--ss-espace-2);
+    }
+
+    tr {
+      position: relative;
+      display: block;
+      padding: var(--ss-espace-3);
+      border-radius: var(--ss-rayon-carte);
+      background: var(--ss-surface);
+      box-shadow: var(--ss-ombre);
+    }
+
+    td {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--ss-espace-2);
+      padding: 6px 0;
+      border-bottom: none;
+      text-align: right;
+      max-width: none;
+    }
+
+    td[data-label]::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ss-texte-doux);
+      text-align: left;
+    }
+
+    td.carte-case {
+      position: absolute;
+      top: var(--ss-espace-3);
+      right: var(--ss-espace-3);
+      width: auto;
+      padding: 0;
+    }
+
+    td.carte-case:empty {
+      display: none;
+    }
+
+    td.carte-principale {
+      display: block;
+      padding: 0 32px var(--ss-espace-2) 0;
+      margin-bottom: var(--ss-espace-1);
+      border-bottom: 1px solid var(--ss-bordure);
+      text-align: left;
+      font-size: 15px;
+    }
+
+    td.carte-bloc {
+      display: block;
+      text-align: left;
+
+      &::before {
+        display: block;
+        margin-bottom: 4px;
+      }
+    }
+
+    td.carte-actions {
+      display: block;
+      padding-top: var(--ss-espace-2);
+      margin-top: var(--ss-espace-1);
+      border-top: 1px solid var(--ss-bordure);
+      text-align: left;
+    }
+  }
+}
+
+// Rangée d'onglets en pilule : défile horizontalement au lieu de déborder
+@mixin onglets-defilants {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

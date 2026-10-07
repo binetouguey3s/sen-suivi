@@ -28,11 +28,11 @@
     <tbody>
       @for (r of listePage(); track r.id) {
         <tr>
-          <td class="ar__titre">{{ r.titre }}</td>
-          <td><span class="ar__chip"><ss-icon [nom]="iconeType(r.type_ressource)" taille="sm" /> {{ libelleType(r.type_ressource) }}</span></td>
-          <td>{{ r.thematique }}</td>
-          <td>{{ r.date_publication }}</td>
-          <td>
+          <td class="ar__titre carte-principale">{{ r.titre }}</td>
+          <td data-label="Format"><span class="ar__chip"><ss-icon [nom]="iconeType(r.type_ressource)" taille="sm" /> {{ libelleType(r.type_ressource) }}</span></td>
+          <td data-label="Thématique">{{ r.thematique }}</td>
+          <td data-label="Publication">{{ r.date_publication }}</td>
+          <td class="carte-actions">
             <div class="ar__actions">
               <button type="button" class="ar__lien" (click)="ouvrirEdition(r)"><ss-icon nom="parametres" taille="sm" /> Modifier</button>
               <button type="button" class="ar__lien ar__lien--danger" (click)="demanderSuppression(r)"><ss-icon nom="corbeille" taille="sm" /> Supprimer</button>

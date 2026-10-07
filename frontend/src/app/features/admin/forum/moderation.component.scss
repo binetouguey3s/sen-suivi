@@ -1,12 +1,19 @@
+@use 'tableau-admin' as *;
+
 :host {
   display: block;
   padding-bottom: 80px;
 }
 
 .mf__entete h1 {
-  margin: 0 0 var(--ss-espace-3);
-  font-size: 28px;
+  margin: 0 0 var(--ss-espace-2);
+  font-size: 24px;
   color: var(--ss-texte);
+
+  @media (min-width: 900px) {
+    margin-bottom: var(--ss-espace-3);
+    font-size: 28px;
+  }
 }
 
 .mf__contenu-choix {
@@ -14,8 +21,10 @@
   gap: var(--ss-espace-3);
   border-bottom: 1px solid var(--ss-bordure);
   margin-bottom: var(--ss-espace-2);
+  @include onglets-defilants;
 
   button {
+    flex-shrink: 0;
     border: none;
     background: none;
     padding: var(--ss-espace-1) 0 var(--ss-espace-2);
@@ -38,8 +47,8 @@
   border-radius: var(--ss-rayon-pilule);
   padding: 4px;
   gap: 4px;
-  overflow-x: auto;
   margin-bottom: var(--ss-espace-3);
+  @include onglets-defilants;
 
   button {
     border: none;
@@ -93,6 +102,8 @@
     color: var(--ss-texte);
     vertical-align: top;
   }
+
+  @include tableau-en-cartes;
 }
 
 .mf__case {
@@ -170,6 +181,12 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
+
+  // Mobile : boutons côte à côte en pied de carte
+  @media (max-width: 899px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 }
 
 .mf__bouton {
@@ -237,13 +254,20 @@
   color: var(--ss-texte-doux);
 }
 
+// Mobile : grille de deux colonnes, le chiffre au-dessus du libellé ;
+// desktop : pastilles alignées
 .mf__stats {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ss-espace-2);
   margin: var(--ss-espace-3) 0 var(--ss-espace-4);
   padding: 0;
   list-style: none;
+
+  @media (min-width: 900px) {
+    display: flex;
+    flex-wrap: wrap;
+  }
 
   li {
     padding: var(--ss-espace-1) var(--ss-espace-2);
@@ -252,6 +276,18 @@
     box-shadow: var(--ss-ombre);
     color: var(--ss-texte-doux);
     font-size: 14px;
+
+    @media (max-width: 899px) {
+      display: flex;
+      flex-direction: column;
+      padding: var(--ss-espace-2);
+      font-size: 13px;
+    }
+  }
+
+  // Nombre impair de pastilles : la dernière prend toute la largeur
+  li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 
   strong {

@@ -44,24 +44,22 @@
     <tbody>
       @for (p of listePage(); track p.id) {
         <tr>
-          <td class="ap__case">
-            @if (p.statut_validation === 'EN_ATTENTE') {
+          <td class="ap__case carte-case">@if (p.statut_validation === 'EN_ATTENTE') {
               <input type="checkbox" [attr.aria-label]="'Sélectionner ' + p.nom" [checked]="selection().has(p.id)" (change)="basculerSelection(p.id)" />
-            }
-          </td>
-          <td>
+            }</td>
+          <td class="carte-principale">
             <div class="ap__professionnel">
               <span class="ap__avatar">{{ p.nom.slice(0, 2).toUpperCase() }}</span>
               <strong>{{ p.nom }}</strong>
             </div>
           </td>
-          <td>{{ p.specialite_affichee }}</td>
-          <td>{{ p.ville }}</td>
-          <td>{{ dateInscription(p.date_creation) }}</td>
-          <td>
+          <td data-label="Spécialité">{{ p.specialite_affichee }}</td>
+          <td data-label="Ville">{{ p.ville }}</td>
+          <td data-label="Inscription">{{ dateInscription(p.date_creation) }}</td>
+          <td data-label="Statut">
             <span class="ap__badge" [class]="'ap__badge--' + p.statut_validation">{{ p.statut_validation_affiche }}</span>
           </td>
-          <td>
+          <td class="carte-actions">
             <div class="ap__actions">
               <a class="ap__lien" [routerLink]="['/professionnels', p.id]">Voir le profil</a>
               @if (p.statut_validation === 'EN_ATTENTE') {

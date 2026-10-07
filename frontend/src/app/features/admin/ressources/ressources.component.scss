@@ -1,3 +1,5 @@
+@use 'tableau-admin' as *;
+
 :host {
   display: block;
 }
@@ -16,8 +18,21 @@
 
   h1 {
     margin: 0;
-    font-size: 28px;
+    font-size: 24px;
     color: var(--ss-texte);
+
+    @media (min-width: 900px) {
+      font-size: 28px;
+    }
+  }
+
+  // Mobile : bouton d'ajout sur toute la largeur, facile à toucher
+  .ar__bouton {
+    justify-content: center;
+
+    @media (min-width: 900px) {
+      justify-content: flex-start;
+    }
   }
 
   p {
@@ -62,6 +77,8 @@
     color: var(--ss-texte);
     vertical-align: middle;
   }
+
+  @include tableau-en-cartes;
 }
 
 .ar__titre {

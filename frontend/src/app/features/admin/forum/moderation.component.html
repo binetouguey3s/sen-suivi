@@ -93,19 +93,19 @@
       <tbody>
         @for (p of listePublicationsPage(); track p.id) {
           <tr>
-            <td class="mf__case"><input type="checkbox" [attr.aria-label]="'Sélectionner ' + p.titre" [checked]="selection().has(p.id)" (change)="basculerSelection(p.id)" /></td>
-            <td><span class="mf__pseudo">{{ p.pseudonyme }}</span></td>
-            <td><span class="mf__chip">{{ p.thematique_affichee }}</span></td>
-            <td class="mf__date">{{ depuis(p.date) }}</td>
-            <td class="mf__extrait">
+            <td class="mf__case carte-case"><input type="checkbox" [attr.aria-label]="'Sélectionner ' + p.titre" [checked]="selection().has(p.id)" (change)="basculerSelection(p.id)" /></td>
+            <td class="carte-principale"><span class="mf__pseudo">{{ p.pseudonyme }}</span></td>
+            <td data-label="Thématique"><span class="mf__chip">{{ p.thematique_affichee }}</span></td>
+            <td class="mf__date" data-label="Date">{{ depuis(p.date) }}</td>
+            <td class="mf__extrait carte-bloc" data-label="Contenu">
               <strong>{{ p.titre }}</strong>
               <p>{{ p.contenu }}</p>
               @if (p.decision_ia; as ia) {
                 <p class="mf__ia">IA : {{ ia.decision_affichee }} · {{ ia.categorie }} — {{ ia.raison }}@if (ia.decision_humaine) { · <em>revu par un administrateur</em> }</p>
               }
             </td>
-            <td><span class="mf__badge" [class]="'mf__badge--' + p.statut_moderation">{{ libelle(p.statut_moderation) }}</span></td>
-            <td>
+            <td data-label="Statut"><span class="mf__badge" [class]="'mf__badge--' + p.statut_moderation">{{ libelle(p.statut_moderation) }}</span></td>
+            <td class="carte-actions">
               <div class="mf__actions">
                 @if (p.statut_moderation !== 'VISIBLE') {
                   <button type="button" class="mf__bouton" [disabled]="enCours() === p.id" (click)="agir(p.id, 'VISIBLE')">Laisser visible</button>
@@ -143,18 +143,18 @@
       <tbody>
         @for (c of listeCommentairesPage(); track c.id) {
           <tr>
-            <td class="mf__case"><input type="checkbox" [attr.aria-label]="'Sélectionner la réponse de ' + c.pseudonyme" [checked]="selection().has(c.id)" (change)="basculerSelection(c.id)" /></td>
-            <td><span class="mf__pseudo">{{ c.pseudonyme }}</span></td>
-            <td class="mf__extrait"><em>{{ c.publication_titre }}</em></td>
-            <td class="mf__date">{{ depuis(c.date) }}</td>
-            <td class="mf__extrait">
+            <td class="mf__case carte-case"><input type="checkbox" [attr.aria-label]="'Sélectionner la réponse de ' + c.pseudonyme" [checked]="selection().has(c.id)" (change)="basculerSelection(c.id)" /></td>
+            <td class="carte-principale"><span class="mf__pseudo">{{ c.pseudonyme }}</span></td>
+            <td class="mf__extrait carte-bloc" data-label="Publication concernée"><em>{{ c.publication_titre }}</em></td>
+            <td class="mf__date" data-label="Date">{{ depuis(c.date) }}</td>
+            <td class="mf__extrait carte-bloc" data-label="Contenu">
               <p>{{ c.contenu }}</p>
               @if (c.decision_ia; as ia) {
                 <p class="mf__ia">IA : {{ ia.decision_affichee }} · {{ ia.categorie }} — {{ ia.raison }}@if (ia.decision_humaine) { · <em>revu par un administrateur</em> }</p>
               }
             </td>
-            <td><span class="mf__badge" [class]="'mf__badge--' + c.statut_moderation">{{ libelle(c.statut_moderation) }}</span></td>
-            <td>
+            <td data-label="Statut"><span class="mf__badge" [class]="'mf__badge--' + c.statut_moderation">{{ libelle(c.statut_moderation) }}</span></td>
+            <td class="carte-actions">
               <div class="mf__actions">
                 @if (c.statut_moderation !== 'VISIBLE') {
                   <button type="button" class="mf__bouton" [disabled]="enCours() === c.id" (click)="agir(c.id, 'VISIBLE')">Laisser visible</button>

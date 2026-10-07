@@ -1,3 +1,5 @@
+@use 'tableau-admin' as *;
+
 :host {
   display: block;
   padding-bottom: 80px;
@@ -5,8 +7,12 @@
 
 .ap__entete h1 {
   margin: 0 0 var(--ss-espace-3);
-  font-size: 28px;
+  font-size: 24px;
   color: var(--ss-texte);
+
+  @media (min-width: 900px) {
+    font-size: 28px;
+  }
 }
 
 .ap__barre {
@@ -62,7 +68,8 @@
   border-radius: var(--ss-rayon-pilule);
   padding: 4px;
   gap: 4px;
-  overflow-x: auto;
+  align-self: flex-start;
+  @include onglets-defilants;
 
   button {
     border: none;
@@ -116,6 +123,8 @@
     color: var(--ss-texte);
     vertical-align: middle;
   }
+
+  @include tableau-en-cartes;
 }
 
 .ap__case {
@@ -227,5 +236,6 @@
 
 .ap__barre-selection-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--ss-espace-2);
 }
