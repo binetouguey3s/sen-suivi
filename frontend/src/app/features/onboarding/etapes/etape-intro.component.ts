@@ -12,8 +12,8 @@ import { OnboardingStore } from '../onboarding.store';
     <div class="intro">
       <h1 class="ob-titre" tabindex="-1">Faisons connaissance</h1>
       <p class="ob-sous-titre">
-        En 2 minutes, je découvre ce qui te fait du bien pour te proposer des ressources, des activités et des
-        professionnels qui te ressemblent.
+        En 2 minutes, je découvre ce qui vous fait du bien pour vous proposer des ressources, des activités et des
+        professionnels qui vous ressemblent.
       </p>
       <ul class="intro__atouts">
         <li><ss-icon nom="horloge" taille="sm" /> 2 minutes</li>
@@ -25,8 +25,8 @@ import { OnboardingStore } from '../onboarding.store';
         <div id="pourquoi" class="ob-carte intro__pourquoi">
           <ss-icon nom="info" taille="sm" />
           <p>
-            Tes réponses servent uniquement à adapter le ton de Titou et les contenus proposés. Toutes les questions
-            sont facultatives, et tu peux tout modifier ou supprimer depuis ton profil. Ce n’est pas un diagnostic.
+            Vos réponses servent uniquement à adapter le ton de Titou et les contenus proposés. Toutes les questions
+            sont facultatives, et vous pouvez tout modifier ou supprimer depuis votre profil. Ce n’est pas un diagnostic.
           </p>
         </div>
       }

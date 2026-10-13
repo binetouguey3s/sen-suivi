@@ -10,11 +10,11 @@ import { OnboardingStore } from '../onboarding.store';
   standalone: true,
   imports: [IconComponent],
   template: `
-    <h1 class="ob-titre" tabindex="-1">Parle-nous un peu de toi</h1>
+    <h1 class="ob-titre" tabindex="-1">Parlez-nous un peu de vous</h1>
     <p class="ob-sous-titre">Tout est facultatif. Ces infos adaptent le ton et les contenus.</p>
 
     <section class="ob-section">
-      <label class="ob-question" for="ob-prenom">Comment veux-tu qu’on t’appelle&nbsp;?</label>
+      <label class="ob-question" for="ob-prenom">Comment souhaitez-vous qu’on vous appelle&nbsp;?</label>
       <div class="ob-champ">
         <ss-icon nom="utilisateur" taille="sm" />
         <input
@@ -26,11 +26,11 @@ import { OnboardingStore } from '../onboarding.store';
           (input)="store.prenom.set($any($event.target).value)"
         />
       </div>
-      <p class="ob-aide">Ton vrai nom n’apparaît jamais sur le forum.</p>
+      <p class="ob-aide">Votre vrai nom n’apparaît jamais sur le forum.</p>
     </section>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-genre">Tu es…</p>
+      <p class="ob-question" id="ob-genre">Vous êtes…</p>
       <div class="ob-puces" role="radiogroup" aria-labelledby="ob-genre">
         @for (c of genres; track c.valeur) {
           <button type="button" class="ob-puce" role="radio" [attr.aria-checked]="store.genre() === c.valeur" (click)="choisir(store.genre, c.valeur)">
@@ -42,7 +42,7 @@ import { OnboardingStore } from '../onboarding.store';
     </section>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-age">Ta tranche d’âge</p>
+      <p class="ob-question" id="ob-age">Votre tranche d’âge</p>
       <div class="ob-puces" role="radiogroup" aria-labelledby="ob-age">
         @for (c of tranches; track c.valeur) {
           <button type="button" class="ob-puce" role="radio" [attr.aria-checked]="store.trancheAge() === c.valeur" (click)="choisir(store.trancheAge, c.valeur)">
@@ -54,7 +54,7 @@ import { OnboardingStore } from '../onboarding.store';
     </section>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-situation">Ta situation</p>
+      <p class="ob-question" id="ob-situation">Votre situation</p>
       <div class="ob-puces" role="radiogroup" aria-labelledby="ob-situation">
         @for (c of situations; track c.valeur) {
           <button type="button" class="ob-puce" role="radio" [attr.aria-checked]="store.situation() === c.valeur" (click)="choisir(store.situation, c.valeur)">
@@ -66,7 +66,7 @@ import { OnboardingStore } from '../onboarding.store';
     </section>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-langue">Ta langue préférée</p>
+      <p class="ob-question" id="ob-langue">Votre langue préférée</p>
       <div class="ob-puces" role="radiogroup" aria-labelledby="ob-langue">
         @for (c of langues; track c.valeur) {
           <button type="button" class="ob-puce" role="radio" [attr.aria-checked]="store.langue() === c.valeur" (click)="choisir(store.langue, c.valeur)">

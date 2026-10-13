@@ -147,7 +147,7 @@ export class OnboardingStore {
       }
       return true;
     } catch {
-      this.erreur.set('Tes réponses n’ont pas pu être enregistrées. Vérifie ta connexion et réessaie.');
+      this.erreur.set('Vos réponses n’ont pas pu être enregistrées. Vérifiez votre connexion et réessayez.');
       return false;
     } finally {
       this.enregistrement.set(false);

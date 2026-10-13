@@ -12,12 +12,12 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       <img class="splash__logo" src="/logo-sen-suivi.png" alt="" />
       <h1 class="ob-titre splash__titre" tabindex="-1">Un esprit sain pour une société saine</h1>
       <p class="ob-sous-titre splash__texte">
-        Sen Suivi t’aide à prendre soin de ton bien-être au quotidien : respirer, écouter, écrire, et te faire
-        accompagner quand tu en as besoin.
+        Sen Suivi vous aide à prendre soin de votre bien-être au quotidien : respirer, écouter, écrire, et vous faire
+        accompagner quand vous en avez besoin.
       </p>
       <ul class="splash__atouts">
         <li><ss-icon nom="cadenas" taille="sm" /> Confidentiel</li>
-        <li><ss-icon nom="horloge" taille="sm" /> À ton rythme</li>
+        <li><ss-icon nom="horloge" taille="sm" /> À votre rythme</li>
         <li><ss-icon nom="globe" taille="sm" /> Français et wolof</li>
       </ul>
     </div>

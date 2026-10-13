@@ -11,14 +11,14 @@ import { OnboardingStore } from '../onboarding.store';
   imports: [IconComponent],
   template: `
     <div class="entete">
-      <h1 class="ob-titre" tabindex="-1">Qu’est-ce qui te fait du bien&nbsp;?</h1>
+      <h1 class="ob-titre" tabindex="-1">Qu’est-ce qui vous fait du bien&nbsp;?</h1>
       @if (store.bienEtre().length) {
         <span class="compteur"><ss-icon nom="coche" taille="sm" /> {{ store.bienEtre().length }} choix</span>
       }
     </div>
-    <p class="ob-sous-titre">Choisis tout ce qui te parle. Tu pourras le modifier à tout moment.</p>
+    <p class="ob-sous-titre">Choisissez tout ce qui vous parle. Vous pourrez le modifier à tout moment.</p>
 
-    <div class="ob-section tuiles" role="group" aria-label="Ce qui te fait du bien">
+    <div class="ob-section tuiles" role="group" aria-label="Ce qui vous fait du bien">
       @for (b of activites; track b.valeur) {
         @let choisi = store.bienEtre().includes(b.valeur);
         <button type="button" class="tuile" [attr.aria-pressed]="choisi" (click)="basculer(b.valeur)">
@@ -47,7 +47,7 @@ import { OnboardingStore } from '../onboarding.store';
           <span class="tuile__icone"><ss-icon nom="spiritualite" taille="md" /></span>
           <div>
             <h2 id="ob-spi-titre">Spiritualité et prière</h2>
-            <p>Qu’est-ce qui t’apaise le plus&nbsp;?</p>
+            <p>Qu’est-ce qui vous apaise le plus&nbsp;?</p>
           </div>
         </div>
         <div class="ob-puces">
@@ -61,7 +61,7 @@ import { OnboardingStore } from '../onboarding.store';
         </div>
         <p class="ob-note feuille__note">
           <ss-icon nom="cadenas" taille="sm" />
-          Facultatif. Sert uniquement à te proposer des contenus apaisants qui te ressemblent.
+          Facultatif. Sert uniquement à vous proposer des contenus apaisants qui vous ressemblent.
         </p>
         <button type="button" class="feuille__valider" (click)="fermer()">
           Valider{{ store.spiritualite().length ? ' · ' + store.spiritualite().length + ' choix' : '' }}

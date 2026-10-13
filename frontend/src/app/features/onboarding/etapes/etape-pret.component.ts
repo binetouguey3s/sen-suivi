@@ -15,12 +15,12 @@ function libelle(liste: readonly Choix[], valeur: string): string {
   standalone: true,
   imports: [IconComponent, RouterLink],
   template: `
-    <h1 class="ob-titre" tabindex="-1">Ton parcours est prêt{{ store.prenom() ? ', ' + store.prenom() : '' }}&nbsp;!</h1>
-    <p class="ob-sous-titre">Voici ce que Titou a retenu pour toi.</p>
+    <h1 class="ob-titre" tabindex="-1">Votre parcours est prêt{{ store.prenom() ? ', ' + store.prenom() : '' }}&nbsp;!</h1>
+    <p class="ob-sous-titre">Voici ce que Titou a retenu pour vous.</p>
 
     <section class="ob-section ob-carte profil">
       <div class="profil__entete">
-        <strong><ss-icon nom="suggestion" taille="sm" /> Ton profil bien-être</strong>
+        <strong><ss-icon nom="suggestion" taille="sm" /> Votre profil bien-être</strong>
         <button type="button" (click)="modifier.emit()">Modifier</button>
       </div>
       @if (etiquettes().length) {
@@ -30,7 +30,7 @@ function libelle(liste: readonly Choix[], valeur: string): string {
           }
         </ul>
       } @else {
-        <p class="ob-aide">Tu n’as rien indiqué : Titou te proposera des contenus variés pour commencer.</p>
+        <p class="ob-aide">Vous n’avez rien indiqué : Titou vous proposera des contenus variés pour commencer.</p>
       }
     </section>
 
@@ -51,7 +51,7 @@ function libelle(liste: readonly Choix[], valeur: string): string {
 
     <a class="pause" routerLink="/ressources">
       <span>
-        <small>Ta première pause</small>
+        <small>Votre première pause</small>
         2 minutes de respiration guidée, maintenant&nbsp;?
       </span>
       <span class="pause__lecture" aria-hidden="true"><ss-icon nom="lecture" taille="sm" /></span>

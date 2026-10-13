@@ -68,12 +68,12 @@ describe('OnboardingComponent', () => {
   it('salue la personne par son prénom sur la présentation', async () => {
     await allerA(1);
     expect(titre()).toBe('Faisons connaissance');
-    expect(hote.querySelector('.ob__bulle')!.textContent).toContain('Salut Awa');
+    expect(hote.querySelector('.ob__bulle')!.textContent).toContain('Bonjour Awa');
   });
 
   it('affiche la progression pendant les six étapes', async () => {
     await allerA(2);
-    expect(titre()).toContain('Parle-nous un peu de toi');
+    expect(titre()).toContain('Parlez-nous un peu de vous');
     expect(hote.querySelector('[role="progressbar"]')!.getAttribute('aria-valuenow')).toBe('1');
     await allerA(1);
     expect(hote.querySelector('[role="progressbar"]')!.getAttribute('aria-valuenow')).toBe('2');
@@ -83,7 +83,7 @@ describe('OnboardingComponent', () => {
     await allerA(4);
     for (const s of ['Stress', 'Travail', 'Sommeil']) await cliquer(bouton(s));
     expect(bouton('Famille').disabled).toBe(true);
-    expect(hote.textContent).toContain('Tu as atteint le maximum');
+    expect(hote.textContent).toContain('Vous avez atteint le maximum');
   });
 
   it('ouvre le choix spirituel quand on sélectionne « Spiritualité et prière »', async () => {
@@ -106,7 +106,7 @@ describe('OnboardingComponent', () => {
     expect(preferences.onboarding.genre).toBe('femme');
     expect(preferences.personnalisation_chatbot).toBe(false);
     expect(definirConservation).not.toHaveBeenCalled();
-    expect(titre()).toContain('Ton parcours est prêt, Awa');
+    expect(titre()).toContain('Votre parcours est prêt, Awa');
   });
 
   it('« Passer » garde les réponses déjà données puis ouvre l’espace', async () => {

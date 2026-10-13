@@ -11,11 +11,11 @@ import { OnboardingStore } from '../onboarding.store';
   standalone: true,
   imports: [IconComponent, InterrupteurComponent],
   template: `
-    <h1 class="ob-titre" tabindex="-1">Quand prendre soin de toi&nbsp;?</h1>
-    <p class="ob-sous-titre">On s’adapte à ton rythme, pas l’inverse.</p>
+    <h1 class="ob-titre" tabindex="-1">Quand prendre soin de vous&nbsp;?</h1>
+    <p class="ob-sous-titre">On s’adapte à votre rythme, pas l’inverse.</p>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-moments">Tes moments préférés</p>
+      <p class="ob-question" id="ob-moments">Vos moments préférés</p>
       <div class="ob-puces" role="group" aria-labelledby="ob-moments">
         @for (m of moments; track m.valeur) {
           @let choisi = store.moments().includes(m.valeur);
@@ -28,7 +28,7 @@ import { OnboardingStore } from '../onboarding.store';
     </section>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-duree">Le temps que tu peux y consacrer</p>
+      <p class="ob-question" id="ob-duree">Le temps que vous pouvez y consacrer</p>
       <div class="durees" role="radiogroup" aria-labelledby="ob-duree">
         @for (d of durees; track d.valeur) {
           <button
@@ -47,7 +47,7 @@ import { OnboardingStore } from '../onboarding.store';
     </section>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-formats">Tes formats préférés</p>
+      <p class="ob-question" id="ob-formats">Vos formats préférés</p>
       <div class="ob-puces" role="group" aria-labelledby="ob-formats">
         @for (f of formats; track f.valeur) {
           @let choisi = store.formats().includes(f.valeur);

@@ -12,7 +12,7 @@ import { OnboardingStore } from '../onboarding.store';
   imports: [IconComponent, InterrupteurComponent],
   template: `
     <h1 class="ob-titre" tabindex="-1">Accompagnement et confidentialité</h1>
-    <p class="ob-sous-titre">Tu gardes la main sur tes données, à tout moment.</p>
+    <p class="ob-sous-titre">Vous gardez la main sur vos données, à tout moment.</p>
 
     <section class="ob-section">
       <p class="ob-question" id="ob-echange">Échanger avec un professionnel, un jour&nbsp;?</p>
@@ -35,7 +35,7 @@ import { OnboardingStore } from '../onboarding.store';
 
     @if (store.echangePro() !== 'pas_maintenant') {
       <section class="ob-section">
-        <p class="ob-question" id="ob-metiers">Quel accompagnement t’intéresserait&nbsp;?</p>
+        <p class="ob-question" id="ob-metiers">Quel accompagnement vous intéresserait&nbsp;?</p>
         <div class="ob-puces" role="group" aria-labelledby="ob-metiers">
           @for (m of metiers; track m.valeur) {
             @let choisi = store.metiers().includes(m.valeur);
@@ -67,7 +67,7 @@ import { OnboardingStore } from '../onboarding.store';
     }
 
     <section class="ob-section">
-      <p class="ob-question">Tes données, tes choix</p>
+      <p class="ob-question">Vos données, vos choix</p>
       <div class="ob-carte">
         <div class="ob-reglage">
           <span class="ob-reglage__icone"><ss-icon nom="suggestion" taille="sm" /></span>
@@ -88,7 +88,7 @@ import { OnboardingStore } from '../onboarding.store';
       </div>
       <p class="ob-note">
         <ss-icon nom="cadenas" taille="sm" />
-        Tout est modifiable ou supprimable depuis ton profil.
+        Tout est modifiable ou supprimable depuis votre profil.
       </p>
     </section>
   `,

@@ -10,10 +10,10 @@ import { OnboardingStore } from '../onboarding.store';
   standalone: true,
   imports: [IconComponent],
   template: `
-    <h1 class="ob-titre" tabindex="-1">Comment te sens-tu en ce moment&nbsp;?</h1>
+    <h1 class="ob-titre" tabindex="-1">Comment vous sentez-vous en ce moment&nbsp;?</h1>
     <p class="ob-sous-titre">Il n’y a pas de bonne ou de mauvaise réponse.</p>
 
-    <section class="ob-section ob-carte humeurs" role="radiogroup" aria-label="Ton humeur">
+    <section class="ob-section ob-carte humeurs" role="radiogroup" aria-label="Votre humeur">
       @for (h of humeurs; track h.valeur) {
         <button
           type="button"
@@ -29,7 +29,7 @@ import { OnboardingStore } from '../onboarding.store';
     </section>
 
     <section class="ob-section">
-      <label class="ob-question" for="ob-energie">Ton énergie ces derniers jours</label>
+      <label class="ob-question" for="ob-energie">Votre énergie ces derniers jours</label>
       <input
         id="ob-energie"
         class="energie"
@@ -48,7 +48,7 @@ import { OnboardingStore } from '../onboarding.store';
     </section>
 
     <section class="ob-section">
-      <p class="ob-question" id="ob-sommeil">Ton sommeil cette semaine</p>
+      <p class="ob-question" id="ob-sommeil">Votre sommeil cette semaine</p>
       <div class="ob-options" role="radiogroup" aria-labelledby="ob-sommeil">
         @for (s of sommeils; track s.valeur) {
           <button
@@ -68,7 +68,7 @@ import { OnboardingStore } from '../onboarding.store';
 
     <p class="ob-note">
       <ss-icon nom="info" taille="sm" />
-      Ce n’est pas un diagnostic, juste le point de départ de ton journal d’humeur.
+      Ce n’est pas un diagnostic, juste le point de départ de votre journal d’humeur.
     </p>
   `,
   styleUrl: './etapes.scss',

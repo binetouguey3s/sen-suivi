@@ -11,15 +11,15 @@ import { OnboardingStore } from '../onboarding.store';
   imports: [IconComponent],
   template: `
     <div class="entete">
-      <h1 class="ob-titre" tabindex="-1">Qu’est-ce qui occupe ton esprit&nbsp;?</h1>
+      <h1 class="ob-titre" tabindex="-1">Qu’est-ce qui occupe votre esprit&nbsp;?</h1>
       <span class="compteur" [class.compteur--plein]="store.maxAtteint()" aria-live="polite">
         @if (store.maxAtteint()) { <ss-icon nom="coche" taille="sm" /> }
         {{ store.preoccupations().length }}/{{ max }}
       </span>
     </div>
-    <p class="ob-sous-titre">Choisis jusqu’à {{ max }} sujets. Tu pourras en changer quand tu veux.</p>
+    <p class="ob-sous-titre">Choisissez jusqu’à {{ max }} sujets. Vous pourrez en changer quand vous voulez.</p>
 
-    <div class="ob-section ob-puces" role="group" aria-label="Sujets qui t'occupent l'esprit">
+    <div class="ob-section ob-puces" role="group" aria-label="Sujets qui vous occupent l'esprit">
       @for (p of sujets; track p.valeur) {
         @let choisi = store.preoccupations().includes(p.valeur);
         <button
@@ -41,7 +41,7 @@ import { OnboardingStore } from '../onboarding.store';
     </button>
 
     @if (store.maxAtteint()) {
-      <p class="ob-aide">Tu as atteint le maximum : désélectionne un sujet pour en choisir un autre.</p>
+      <p class="ob-aide">Vous avez atteint le maximum : désélectionnez un sujet pour en choisir un autre.</p>
     }
   `,
   styleUrl: './etapes.scss',
