@@ -103,15 +103,22 @@ function libelle(liste: readonly Choix[], valeur: string): string {
       overflow-x: auto;
       list-style: none;
       scroll-snap-type: x mandatory;
-      @media (min-width: 900px) {
+      // Dès la tablette, les trois cartes se partagent toute la largeur
+      @media (min-width: 600px) {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         margin: 0;
         padding: 0 0 6px;
+        overflow: visible;
       }
     }
     .suggestions li {
       flex: none;
       width: 150px;
       scroll-snap-align: start;
+      @media (min-width: 600px) {
+        width: auto;
+      }
     }
     .suggestion {
       display: flex;
@@ -129,6 +136,10 @@ function libelle(liste: readonly Choix[], valeur: string): string {
       width: 100%;
       height: 76px;
       margin-bottom: 6px;
+      @media (min-width: 900px) {
+        height: auto;
+        aspect-ratio: 16 / 10;
+      }
       object-fit: cover;
       border-radius: 10px;
     }

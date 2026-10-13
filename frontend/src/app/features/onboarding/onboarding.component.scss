@@ -36,18 +36,36 @@
   margin: 0 auto;
   padding: var(--ss-espace-2) var(--ss-marge-mobile) 0;
 
+  // Tablette : une colonne un peu plus large
+  @media (min-width: 600px) {
+    max-width: 560px;
+  }
+
+  // Desktop : les deux colonnes suivent la largeur de l'écran, quelle qu'elle soit.
+  // Le contenu reste à une largeur lisible, centré dans sa colonne.
   @media (min-width: 900px) {
+    --ob-largeur-contenu: clamp(480px, 42vw, 820px);
+
     grid-template-areas:
       'photo entete'
       'photo contenu'
       'photo pied';
-    grid-template-columns: minmax(360px, 640px) minmax(0, 520px);
+    grid-template-columns: minmax(340px, 1fr) minmax(0, 1fr);
     grid-template-rows: auto auto 1fr;
-    justify-content: start;
-    column-gap: clamp(48px, 10vw, 140px);
+    column-gap: clamp(32px, 5vw, 120px);
     row-gap: var(--ss-espace-3);
-    max-width: none;
-    padding: var(--ss-espace-4) var(--ss-espace-6) 0 var(--ss-espace-4);
+    max-width: 2400px;
+    padding: var(--ss-espace-4) var(--ss-espace-4) 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .ob__entete,
+  .ob__contenu,
+  .ob__pied {
+    justify-self: center;
+    width: 100%;
+    max-width: var(--ob-largeur-contenu);
   }
 }
 

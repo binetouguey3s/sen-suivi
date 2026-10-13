@@ -15,7 +15,7 @@
   outline: none;
 
   @media (min-width: 900px) {
-    font-size: 30px;
+    font-size: clamp(30px, 2vw, 40px);
   }
 }
 
