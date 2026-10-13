@@ -77,7 +77,7 @@ class PublicationForumListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(Q(titre__icontains=recherche) | Q(contenu__icontains=recherche))
 
         return queryset
-
+    # Permet de passer par le middleware de sécurité pour les tests
     def create(self, request, *args, **kwargs):
         _verifier_suspension(request)
         serializer = self.get_serializer(data=request.data)
@@ -103,6 +103,8 @@ class CommentaireForumCreateView(generics.CreateAPIView):
     permission_classes = [EstUtilisateur]
     serializer_class = CommentaireForumEcritureSerializer
 
+    # Serializer 
+    
     def get_serializer_context(self):
         contexte = super().get_serializer_context()
         contexte['publication'] = get_object_or_404(
@@ -142,7 +144,7 @@ class PublicationForumModerationDetailView(generics.UpdateAPIView):
     http_method_names = ['patch']
     queryset = PublicationForum.objects.all()
 
-
+# Sert de commentaire pour le forum 
 class CommentaireForumModerationListView(generics.ListAPIView):
     """GET /api/forum/moderation/commentaires?statut=EN_ATTENTE — tous, réservé à l'administration."""
 

@@ -83,7 +83,7 @@ class ChatbotMessageView(APIView):
         return Response(sortie.validated_data)
 
     def _suggestion_possible(self, request):
-        return request.user.is_authenticated and getattr(request.user, 'utilisateur', None) is not None
+        return request.user.is_authenticated and getattr(request.user, 'utilisateur', None) is not None 
 
     def _orientation(self, request, donnees, resultat):
         """Jeton d'urgence en cas de détresse ; sinon, si la personne cherche un
