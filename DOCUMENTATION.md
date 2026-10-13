@@ -26,6 +26,7 @@
    - 5.1 Choix techniques et pourquoi
    - 5.2 Pipeline complet d'un message (`main.py`)
    - 5.3 Niveau 0 — Détection de détresse
+   - 5.3 bis Cadrage — Demandes hors sujet
    - 5.4 Niveau 1 — Classification d'intention
    - 5.5 Niveau 2a — Moteur RAG (ChromaDB)
    - 5.6 Niveau 2b — Génération encadrée (LLM)
@@ -592,6 +593,9 @@ POST /message
         ├─ danger_autrui(message) → REPONSE_DANGER_AUTRUI, stop
         ├─ violences(message)    → REPONSE_VIOLENCES, stop
         │
+        ├─ CADRAGE : detecter_hors_sujet(message)
+        │   └─ Oui → recadrage prédéfini, intention=HORS_SUJET, stop (sans LLM)
+        │
         ├─ NIVEAU 1 : classifier(message)
         │   └─ intention reconnue + pas de LLM → réponse prédéfinie, stop
         │
@@ -617,6 +621,16 @@ def detecter_detresse(message: str) -> bool:
 ```
 
 Si déclenché → `REPONSE_URGENCE` avec les numéros sénégalais (800 805 805, 1515, 18) et l'Hôpital de Fann. Le LLM n'est jamais appelé pour une réponse d'urgence.
+
+### 5.3 bis Cadrage — Demandes hors sujet
+
+**Fichiers :** `app/detecteur_hors_sujet.py`, `app/config/hors_sujet.py`
+
+Exécuté juste après le niveau 0 et avant la classification d'intention. Titou répond à tout ce qui touche au bien-être et à l'usage de Sen Suivi ; une demande de tâche ou d'information sans lien (calcul, devoir, code, traduction, lettre ou CV, culture générale, actualité, météo, sport, recette, politique, religion en débat, conseil médical, juridique ou financier, questions sur le modèle) reçoit un recadrage prédéfini : `source_reponse='REGLE'`, `intention='HORS_SUJET'`, sans appel au LLM.
+
+- Un **signal de bien-être** (stress, peur, fatigue, « je me sens »…) ou une **mention de la plateforme** l'emporte toujours : « j'ai un examen de maths demain et je panique » reste dans le cadre, on répond à l'émotion.
+- Cinq catégories (`CALCUL_DEVOIRS`, `TACHE`, `INFORMATION`, `CONSEIL_EXPERT`, `PERSONNEL`), deux recadrages chacune, au vouvoiement ; jamais deux fois de suite le même.
+- En complément, la section « Ton périmètre » du prompt (`_CADRE`) interdit au LLM de traiter une tâche, même en partie, et le validateur rejette toute réponse qui en résout une.
 
 ### 5.4 Niveau 1 — Classification d'intention
 
@@ -705,6 +719,7 @@ Règles vérifiées :
 - Maximum d'une question
 - Numéros de téléphone : seulement les 3 autorisés
 - Pas de répétition d'une réponse précédente (similarité Jaccard)
+- Aucune tâche résolue (`RESOLUTIONS`, `MOTS_ANGLAIS`) : calcul résolu, code, texte en anglais
 
 La raison du rejet est journalisée, jamais le message de l'utilisateur.
 

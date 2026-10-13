@@ -14,12 +14,15 @@ from app.config.regles_reponse import (
     CONSEILS_INTERDITS,
     EXHORTATIONS,
     FORMULES_CREUSES,
+    MOTS_ANGLAIS,
+    MOTS_ANGLAIS_MAX,
     MOTS_VIDES,
     NUMEROS_AUTORISES,
     PHRASES_MAX,
     PHRASES_MAX_ECOUTE,
     PROMESSES_INTERDITES,
     QUESTIONS_MAX,
+    RESOLUTIONS,
     SIMILARITE_REPETITION_MAX,
     TERMES_CLINIQUES,
     TERMES_PAYANTS,
@@ -62,6 +65,9 @@ _EXHORTATIONS = [
     (mot, re.compile(r'(?:^|[.!?…]\s*)' + re.escape(mot) + r'(?![a-z])|(?<![a-z])' + re.escape(mot) + r'\s*!'))
     for mot in EXHORTATIONS
 ]
+
+# Résolution d'une tâche hors du bien-être (calcul, code)
+_RESOLUTIONS = [(nom, re.compile(motif, re.MULTILINE)) for nom, motif in RESOLUTIONS.items()]
 
 # Tutoiement : pronoms de la deuxième personne du singulier
 _TUTOIEMENT = re.compile(r"(?<![a-z])(?:tu|toi|ton|ta|tes|te|t')(?![a-z])")
@@ -132,6 +138,12 @@ def valider(
     for mot, motif in _EXHORTATIONS:
         if motif.search(normalise):
             return ResultatValidation(False, f'formule creuse : « {mot} »')
+
+    for nom, motif in _RESOLUTIONS:
+        if motif.search(normalise):
+            return ResultatValidation(False, f'résolution : {nom}')
+    if sum(mot in MOTS_ANGLAIS for mot in re.findall(r'[a-z]+', normalise)) > MOTS_ANGLAIS_MAX:
+        return ResultatValidation(False, 'résolution : texte en anglais')
 
     if _TUTOIEMENT.search(normalise):
         return ResultatValidation(False, 'tutoiement')

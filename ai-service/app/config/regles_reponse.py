@@ -97,6 +97,19 @@ CONSEILS_INTERDITS = [
     'automedication',
 ]
 
+# Titou ne traite jamais une tâche hors du bien-être : une réponse qui résout
+# un calcul, contient du code ou un texte en anglais est rejetée.
+# Expressions régulières, cherchées sur le texte normalisé
+RESOLUTIONS = {
+    'calcul résolu': r'=\s*-?\d|(?<![a-z])(?:vaut|egale?|font) (?:a )?-?\d',
+    'code': r'```|(?<![a-z])(?:def|function|return|import|printf?|console\.log)(?:\s+\w+)?\s*[(:]|[{};]\s*$',
+}
+# Mots-outils anglais : au-delà de ce nombre, la réponse est une traduction ou un texte en anglais
+MOTS_ANGLAIS = {
+    'the', 'and', 'you', 'is', 'are', 'of', 'to', 'with', 'your', 'this', 'that', 'for', 'my', 'i', 'it', 'in',
+}
+MOTS_ANGLAIS_MAX = 5
+
 # Seuls numéros autorisés dans une réponse (chiffres sans espaces)
 NUMEROS_AUTORISES = {'800805805', '1515', '18'}
 
