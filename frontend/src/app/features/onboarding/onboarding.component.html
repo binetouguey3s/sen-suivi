@@ -1,39 +1,122 @@
-<div class="ob">
+<div class="ob" [attr.data-ecran]="ecran()">
+  <!-- En-tête : retour, progression des six étapes, « Passer » -->
   <header class="ob__entete">
-    <img src="/logo-sen-suivi.png" alt="Sen Suivi" />
-    @if (!derniere()) {
-      <button type="button" class="ob__passer" (click)="terminer()">Passer</button>
+    @if (ecran() === 'splash') {
+      <div class="ob__langue" role="group" aria-label="Langue préférée">
+        <button type="button" [attr.aria-pressed]="store.langue() !== 'wo'" (click)="store.langue.set('fr')">FR</button>
+        <span aria-hidden="true">·</span>
+        <button type="button" [attr.aria-pressed]="store.langue() === 'wo'" (click)="store.langue.set('wo')">WO</button>
+      </div>
+    } @else {
+      <button type="button" class="ob__retour" aria-label="Écran précédent" (click)="precedent()">
+        <ss-icon nom="fleche-gauche" taille="sm" />
+      </button>
+
+      @if (enEtape()) {
+        <div class="ob__progression">
+          <div
+            class="ob__segments"
+            role="progressbar"
+            aria-label="Progression de l'onboarding"
+            [attr.aria-valuenow]="numero()"
+            aria-valuemin="1"
+            [attr.aria-valuemax]="etapes.length"
+          >
+            @for (e of etapes; track e) {
+              <span [class.ob__segment--fait]="$index < numero()" [class.ob__segment--actuel]="$index === numero() - 1"></span>
+            }
+          </div>
+          <span class="ob__numero">Étape {{ numero() }} sur {{ etapes.length }}</span>
+        </div>
+      }
+
+      @if (ecran() !== 'pret') {
+        <button type="button" class="ob__passer" [disabled]="store.enregistrement()" (click)="passer()">Passer</button>
+      }
     }
   </header>
 
-  <main
-    #carte
-    class="ob__carte"
-    [class.ob--entree]="phase() === 'entree'"
-    [class.ob--sortie]="phase() === 'sortie'"
-    [class.ob--avant]="sens() === 'avant'"
-    [class.ob--arriere]="sens() === 'arriere'"
-  >
-    <div class="ob__visuel">
-      <div #illustration class="ob__illustration"><img [src]="etape().image" alt="" /></div>
-    </div>
-    <div #texte class="ob__texte">
-      <span class="ob__badge">Étape {{ index() + 1 }} sur {{ etapes.length }}</span>
-      <h1 #titre tabindex="-1">{{ etape().titre }}</h1>
-      <p>{{ etape().texte }}</p>
+  <!-- Photo : bandeau sur mobile, panneau fixe sur desktop -->
+  <figure class="ob__photo" [class.ob__photo--haute]="ecran() === 'splash' || ecran() === 'intro'">
+    <!-- Recréée à chaque écran pour rejouer le fondu -->
+    @for (i of [info()]; track i.photo) {
+      <img [src]="i.photo" [alt]="i.alt" [style.object-position]="i.cadrage" />
+    }
+    <div class="ob__voile" aria-hidden="true"></div>
 
-      <div class="ob__pied">
-        <div class="ob__points" aria-hidden="true">
-          @for (e of etapes; track $index) {
-            <span [class.ob__point--actif]="$index === index()"></span>
-          }
-        </div>
-        <button type="button" class="ob__suivant" [class.ob__suivant--final]="derniere()" (click)="suivant()">
-          {{ derniere() ? 'Commencer' : 'Suivant' }} <ss-icon [nom]="derniere() ? 'verifie' : 'fleche'" taille="sm" />
-        </button>
-      </div>
+    @switch (ecran()) {
+      @case ('splash') {
+        <span class="ob__flottant ob__flottant--haut-gauche" aria-hidden="true"><ss-icon nom="respirer" taille="sm" /> Respirer</span>
+        <span class="ob__flottant ob__flottant--milieu-droite" aria-hidden="true"><ss-icon nom="ecouter" taille="sm" /> Écouter</span>
+        <span class="ob__flottant ob__flottant--bas-gauche" aria-hidden="true"><ss-icon nom="stylo" taille="sm" /> Écrire</span>
+      }
+      @case ('intro') {
+        <p class="ob__bulle">
+          <small>Titou</small>
+          Salut{{ store.prenom() ? ' ' + store.prenom() : '' }}&nbsp;! On fait connaissance&nbsp;?
+        </p>
+      }
+      @case ('esprit') {
+        @for (p of store.libellesPreoccupations(); track p; let i = $index) {
+          <span class="ob__flottant ob__flottant--sujet-{{ i }}" aria-hidden="true">{{ p }}</span>
+        }
+      }
+      @case ('rythme') {
+        <p class="ob__bulle">
+          <small><ss-icon nom="suggestion" taille="sm" /> Titou · maintenant</small>
+          2 minutes pour respirer avant tes cours&nbsp;?
+        </p>
+      }
+      @case ('accompagnement') {
+        <span class="ob__flottant ob__flottant--haut-gauche" aria-hidden="true">Facultatif</span>
+        <span class="ob__flottant ob__flottant--haut-gauche-2" aria-hidden="true">Modifiable</span>
+      }
+    }
+
+    @if (enEtape()) {
+      <figcaption class="ob__etiquette">
+        <ss-icon [nom]="info().icone ?? 'suggestion'" taille="sm" />
+        Étape {{ numero() }} sur {{ etapes.length }} · {{ info().libelle }}
+      </figcaption>
+    }
+
+    <!-- Signature : desktop uniquement -->
+    <div class="ob__signature" aria-hidden="true">
+      <img src="/logo-sen-suivi.png" alt="" />
+      <span><strong>Sen Suivi</strong> Un esprit sain pour une société saine</span>
+    </div>
+  </figure>
+
+  <main #contenu class="ob__contenu">
+    <div class="ob__ecran" [attr.data-ecran]="ecran()">
+      @switch (ecran()) {
+        @case ('splash') { <ss-etape-splash /> }
+        @case ('intro') { <ss-etape-intro /> }
+        @case ('profil') { <ss-etape-profil /> }
+        @case ('humeur') { <ss-etape-humeur /> }
+        @case ('esprit') { <ss-etape-esprit /> }
+        @case ('bien-etre') { <ss-etape-bien-etre /> }
+        @case ('rythme') { <ss-etape-rythme /> }
+        @case ('accompagnement') { <ss-etape-accompagnement /> }
+        @case ('pret') { <ss-etape-pret (modifier)="aller('profil')" /> }
+      }
     </div>
   </main>
+
+  <footer class="ob__pied">
+    @if (store.erreur()) {
+      <p class="ob__erreur" role="alert">{{ store.erreur() }}</p>
+    }
+    <button type="button" class="ob__suivant" [disabled]="store.enregistrement()" (click)="suivant()">
+      {{ store.enregistrement() ? 'Enregistrement…' : libelleBouton() }}
+      <ss-icon nom="fleche" taille="sm" />
+    </button>
+    @if (ecran() === 'intro') {
+      <a class="ob__lien" href="#pourquoi" (click)="$event.preventDefault(); store.pourquoiOuvert.set(!store.pourquoiOuvert())">
+        Pourquoi ces questions&nbsp;?
+      </a>
+    }
+  </footer>
 
   <p class="ob__annonce" aria-live="polite">{{ annonce() }}</p>
 </div>

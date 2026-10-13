@@ -224,7 +224,7 @@ export class ParametresComponent {
   }
 
   protected actif(cle: string, canal: 'email' | 'push'): boolean {
-    const preference = this.compte()?.preferences?.[cle];
+    const preference = this.compte()?.preferences?.[cle] as { email?: boolean; push?: boolean } | boolean | undefined;
     return typeof preference === 'object' ? (preference[canal] ?? true) : true;
   }
 

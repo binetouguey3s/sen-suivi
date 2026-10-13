@@ -1,429 +1,483 @@
+@use 'verre' as *;
+
+// Fond « Matin clair » : menthe voilée vers bleu ciel. Le bleu ciel n'existe
+// pas dans les tokens : il est propre à l'onboarding. En sombre, on reste sur
+// le bleu nuit du thème.
 :host {
+  --ob-fond-haut: var(--ss-fond);
+  --ob-fond-bas: #dcebf7;
+  --ob-photo-rayon: var(--ss-rayon-carte);
+
   display: block;
   min-height: 100vh;
-  background: linear-gradient(160deg, var(--ss-surface-legere), var(--ss-surface) 55%, var(--ss-fond));
+  min-height: 100dvh;
+  background: linear-gradient(165deg, var(--ob-fond-haut) 0%, var(--ss-surface-legere) 45%, var(--ob-fond-bas) 100%);
 }
 
+:host-context([data-theme='sombre']) {
+  --ob-fond-bas: var(--ss-surface);
+}
+
+// ─── Grille : une colonne sur mobile, photo + contenu sur desktop ─────────
+
 .ob {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-areas:
+    'entete'
+    'photo'
+    'contenu'
+    'pied';
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--ss-espace-2);
+  width: 100%;
+  max-width: 480px;
   min-height: 100vh;
-  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: var(--ss-espace-2) var(--ss-marge-mobile) 0;
 
   @media (min-width: 900px) {
-    padding: var(--ss-espace-3) var(--ss-marge-desktop);
+    grid-template-areas:
+      'photo entete'
+      'photo contenu'
+      'photo pied';
+    grid-template-columns: minmax(360px, 640px) minmax(0, 520px);
+    grid-template-rows: auto auto 1fr;
+    justify-content: start;
+    column-gap: clamp(48px, 10vw, 140px);
+    row-gap: var(--ss-espace-3);
+    max-width: none;
+    padding: var(--ss-espace-4) var(--ss-espace-6) 0 var(--ss-espace-4);
   }
 }
 
+// ─── En-tête ──────────────────────────────────────────────────────────────
+
 .ob__entete {
+  grid-area: entete;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--ss-espace-2);
+  min-height: 36px;
 
-  img {
-    height: 52px;
-    width: auto;
+  @media (min-width: 900px) {
+    padding-top: var(--ss-espace-1);
+  }
+}
+
+.ob__retour {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ss-bordure);
+  border-radius: 50%;
+  background: var(--ss-surface);
+  color: var(--ss-texte);
+  cursor: pointer;
+  box-shadow: var(--ss-ombre);
+}
+
+.ob__progression {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ob__segments {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  max-width: 220px;
+
+  span {
+    flex: 1;
+    height: 4px;
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-bordure);
+    transition: background var(--ss-duree) var(--ss-ease);
+  }
+
+  .ob__segment--fait {
+    background: var(--ss-primaire);
+  }
+
+  .ob__segment--actuel {
+    background: var(--ss-accent);
+  }
+}
+
+.ob__numero {
+  display: none;
+  font-size: 11px;
+  color: var(--ss-texte-doux);
+
+  @media (min-width: 900px) {
+    display: block;
   }
 }
 
 .ob__passer {
-  background: none;
+  margin-left: auto;
   border: none;
-  color: var(--ss-texte-doux);
+  background: none;
+  color: var(--ss-texte-marque);
   font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
   cursor: pointer;
 
-  &:focus-visible {
-    outline: 2px solid var(--ss-primaire);
-    outline-offset: 4px;
-    border-radius: var(--ss-rayon-champ);
+  &:disabled {
+    opacity: 0.5;
   }
 }
 
-.ob__carte {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-self: center;
-  width: 100%;
-  max-width: 1040px;
-  margin: var(--ss-espace-3) 0;
-  background: var(--ss-surface);
-  border-radius: var(--ss-rayon-grande-carte);
-  box-shadow: var(--ss-ombre);
-  overflow: hidden;
-  // Le navigateur garde le défilement vertical, le TS gère le balayage horizontal
-  touch-action: pan-y;
-
-  @media (min-width: 900px) {
-    flex: 0 0 auto;
-    flex-direction: row;
-    margin: auto;
-    min-height: 480px;
-  }
-}
-
-.ob__visuel {
+.ob__langue {
+  @include ss-verre(12px);
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--ss-espace-4);
-  background: var(--ss-surface-legere);
+  gap: 2px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: var(--ss-rayon-pilule);
+  font-size: 12px;
 
-  @media (min-width: 900px) {
-    flex: 1;
+  button {
+    border: none;
+    background: none;
+    color: var(--ss-texte-doux);
+    font-size: 12px;
+    font-weight: var(--ss-poids-texte-fort);
+    cursor: pointer;
   }
+
+  [aria-pressed='true'] {
+    color: var(--ss-texte);
+    font-weight: var(--ss-poids-titre-fort);
+  }
+}
+
+// ─── Photo ────────────────────────────────────────────────────────────────
+
+.ob__photo {
+  grid-area: photo;
+  position: relative;
+  height: 150px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--ob-photo-rayon);
+  background: var(--ss-vide-debut);
+  box-shadow: var(--ss-ombre-forte);
 
   img {
     width: 100%;
-    max-width: 360px;
-    max-height: 320px;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
+    animation: ob-fondu 480ms var(--ss-ease);
   }
-}
-
-// Enveloppe de l'image : porte l'entrée et le glissement, l'image porte le flottement
-.ob__illustration {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.ob__texte {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ss-espace-2);
-  padding: var(--ss-espace-4);
 
   @media (min-width: 900px) {
-    flex: 1;
-    padding: var(--ss-espace-6);
+    position: sticky;
+    top: var(--ss-espace-4);
+    align-self: start;
+    height: calc(100dvh - 2 * var(--ss-espace-4));
+    min-height: 560px;
+    --ob-photo-rayon: 28px;
   }
+}
 
-  h1 {
-    font-size: 28px;
-    color: var(--ss-texte-marque);
-    letter-spacing: var(--ss-interlettrage-moyen);
+// Hauteurs du bandeau mobile, écran par écran (maquette Figma)
+.ob[data-ecran='splash'] .ob__photo {
+  height: 372px;
+}
+.ob[data-ecran='intro'] .ob__photo {
+  height: 330px;
+}
+.ob[data-ecran='bien-etre'] .ob__photo {
+  height: 176px;
+}
+.ob[data-ecran='rythme'] .ob__photo {
+  height: 170px;
+}
+.ob[data-ecran='pret'] .ob__photo {
+  height: 200px;
+}
 
-    // Focus déplacé par le code à chaque étape : pas d'anneau sur un titre
-    &:focus {
-      outline: none;
-    }
-
-    @media (min-width: 900px) {
-      font-size: 38px;
-    }
+@media (min-width: 900px) {
+  .ob[data-ecran] .ob__photo {
+    height: calc(100dvh - 2 * var(--ss-espace-4));
   }
+}
 
-  p {
-    margin: 0;
+// Voile discret en bas de photo : garde la signature lisible
+.ob__voile {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--ss-photo-voile-nul) 55%, var(--ss-photo-voile-leger) 100%);
+  pointer-events: none;
+}
+
+// Éléments en verre posés sur la photo (seul usage du verre de l'écran)
+.ob__flottant,
+.ob__etiquette,
+.ob__bulle,
+.ob__signature {
+  @include ss-verre(14px);
+  position: absolute;
+  margin: 0;
+}
+
+.ob__flottant {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--ss-rayon-pilule);
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte-fort);
+  animation: ob-flotte 6s ease-in-out infinite;
+}
+
+.ob__flottant--haut-gauche {
+  top: 14px;
+  left: 14px;
+}
+.ob__flottant--haut-gauche-2 {
+  top: 50px;
+  left: 14px;
+  animation-delay: -2s;
+}
+.ob__flottant--milieu-droite {
+  top: 42%;
+  right: 14px;
+  animation-delay: -2s;
+}
+.ob__flottant--bas-gauche {
+  bottom: 16%;
+  left: 14px;
+  animation-delay: -4s;
+}
+.ob__flottant--sujet-0 {
+  top: 14px;
+  left: 14px;
+}
+.ob__flottant--sujet-1 {
+  top: 14px;
+  right: 14px;
+  animation-delay: -2s;
+}
+.ob__flottant--sujet-2 {
+  top: 46%;
+  right: 22%;
+  animation-delay: -4s;
+}
+
+.ob__etiquette {
+  left: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--ss-rayon-pilule);
+  font-size: 11px;
+  font-weight: var(--ss-poids-texte-fort);
+
+  // Sur desktop, l'étape est déjà indiquée sous la barre de progression
+  @media (min-width: 900px) {
+    display: none;
+  }
+}
+
+.ob__bulle {
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  max-width: 290px;
+  padding: 8px 12px;
+  border-radius: 14px 14px 14px 4px;
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte-fort);
+  line-height: 1.35;
+
+  small {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: var(--ss-poids-texte);
     color: var(--ss-texte-doux);
   }
 }
 
-.ob__badge {
-  background: var(--ss-surface-douce);
-  color: var(--ss-texte-marque);
-  border-radius: var(--ss-rayon-pilule);
-  padding: 4px var(--ss-espace-2);
-  font-size: 12px;
-  font-weight: var(--ss-poids-texte-fort);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.ob__pied {
-  display: flex;
+.ob__signature {
+  display: none;
+  left: 20px;
+  bottom: 20px;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: auto;
-  padding-top: var(--ss-espace-3);
-}
+  gap: 10px;
+  padding: 10px 16px 10px 10px;
+  border-radius: 16px;
 
-// Chaque point occupe 8px ; le point actif s'étire à 24px par scaleX,
-// les points suivants se décalent de 16px par translateX.
-.ob__points {
-  display: flex;
-  gap: 6px;
-  padding-inline-end: 16px; // place réservée à l'étirement du point actif
+  img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    padding: 4px;
+    border-radius: 10px;
+    background: #ffffff; // le logo bleu reste lisible dans les deux thèmes
+    animation: none;
+  }
 
   span {
-    position: relative;
-    width: 8px;
-    height: 8px;
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 8px;
-      border-radius: var(--ss-rayon-pilule);
-    }
-
-    // Point gris
-    &::before {
-      width: 8px;
-      background: var(--ss-texte-doux);
-      opacity: 0.4;
-    }
-
-    // Pilule menthe, largeur fixe de 24px, ramenée à 8px par scaleX
-    &::after {
-      width: 24px;
-      background: var(--ss-accent);
-      opacity: 0;
-      transform: scaleX(0.3333);
-      transform-origin: left center;
-    }
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    color: var(--ss-texte-doux);
   }
 
-  .ob__point--actif {
-    &::before {
-      opacity: 0;
-    }
-
-    &::after {
-      opacity: 1;
-      transform: none;
-    }
+  strong {
+    font-size: 13px;
+    color: var(--ss-texte);
   }
 
-  .ob__point--actif ~ span {
-    transform: translateX(16px);
+  @media (min-width: 900px) {
+    display: flex;
+  }
+}
+
+@media (min-width: 900px) {
+  .ob__pied {
+    align-self: start;
+  }
+
+  // Accueil et présentation : bloc centré verticalement face à la photo
+  .ob[data-ecran='splash'],
+  .ob[data-ecran='intro'] {
+    grid-template-rows: auto 1fr 1fr;
+
+    .ob__contenu {
+      align-self: end;
+    }
+  }
+}
+
+// ─── Contenu ──────────────────────────────────────────────────────────────
+
+.ob__contenu {
+  grid-area: contenu;
+  min-width: 0;
+}
+
+.ob__ecran > * {
+  display: block;
+  animation: ob-entree var(--ss-duree) var(--ss-ease);
+}
+
+// ─── Pied : bouton principal toujours accessible ──────────────────────────
+
+.ob__pied {
+  grid-area: pied;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  padding: var(--ss-espace-2) 0 calc(var(--ss-espace-3) + env(safe-area-inset-bottom));
+  background: linear-gradient(0deg, var(--ob-fond-bas) 65%, transparent);
+
+  @media (min-width: 900px) {
+    padding-bottom: var(--ss-espace-4);
   }
 }
 
 .ob__suivant {
-  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--ss-espace-1);
+  width: 100%;
+  min-height: 50px;
+  border: none;
+  border-radius: var(--ss-rayon-pilule);
   background: var(--ss-primaire);
   color: var(--ss-primaire-texte);
-  border: none;
-  border-radius: var(--ss-rayon-bouton);
-  padding: var(--ss-espace-2) var(--ss-espace-4);
-  font-weight: var(--ss-poids-texte-fort);
   font-size: 15px;
-  box-shadow: var(--ss-ombre);
+  font-weight: var(--ss-poids-titre);
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(27, 75, 110, 0.22);
+  transition:
+    transform 0.15s var(--ss-ease),
+    box-shadow 0.15s var(--ss-ease);
 
-  // Ombre renforcée préparée à l'avance : au survol, seule son opacité change
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--ss-ombre-forte);
-    opacity: 0;
-    pointer-events: none;
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
   }
 
-  &:focus-visible {
-    outline: 2px solid var(--ss-primaire);
-    outline-offset: 3px;
+  &:disabled {
+    opacity: 0.7;
+    cursor: progress;
   }
 }
 
-@media (hover: hover) {
-  .ob__suivant:hover::after {
-    opacity: 1;
-  }
+.ob__lien {
+  font-size: 13px;
+  font-weight: var(--ss-poids-texte-fort);
+  color: var(--ss-texte-marque);
 }
 
-// Zone lue par les lecteurs d'écran, invisible à l'écran
+.ob__erreur {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ss-alerte-sur-douce);
+  text-align: center;
+}
+
+// Focus visible commun
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--ss-primaire);
+  outline-offset: 3px;
+}
+
 .ob__annonce {
   position: absolute;
   width: 1px;
   height: 1px;
-  margin: -1px;
-  padding: 0;
   overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+  clip: rect(0 0 0 0);
 }
 
-// ─── Animations ──────────────────────────────────────────────────────────────
-// Tout le mouvement est ici. Il ne s'applique que si la personne n'a pas
-// demandé à réduire les animations ET si le TS n'a pas posé .sans-animation.
-// Seules transform et opacity sont animées.
+// ─── Mouvement ────────────────────────────────────────────────────────────
 
-@media (prefers-reduced-motion: no-preference) {
-  :host(:not(.sans-animation)) {
-    // Sens du glissement : on avance, le contenu part à gauche et arrive de la droite
-    .ob--avant {
-      --ob-entree-x: 24px;
-      --ob-sortie-x: -24px;
-    }
-
-    .ob--arriere {
-      --ob-entree-x: -24px;
-      --ob-sortie-x: 24px;
-    }
-
-    // 1. Entrée en cascade : badge, titre, description, points, bouton
-    .ob__badge {
-      --ob-rang: 0;
-    }
-
-    h1 {
-      --ob-rang: 1;
-    }
-
-    p {
-      --ob-rang: 2;
-    }
-
-    .ob__points {
-      --ob-rang: 3;
-    }
-
-    .ob__suivant {
-      --ob-rang: 4;
-    }
-
-    .ob--entree {
-      .ob__illustration {
-        animation: ob-apparition-visuel 420ms var(--ss-ease) both;
-      }
-
-      .ob__texte {
-        animation: ob-glisse-entree var(--ss-duree) var(--ss-ease) both;
-      }
-
-      .ob__badge,
-      h1,
-      p,
-      .ob__points,
-      .ob__suivant {
-        animation: ob-monte var(--ss-duree) var(--ss-ease) calc(var(--ob-rang) * 80ms) both;
-      }
-    }
-
-    // 2. Sortie de l'étape, repart de la position du doigt s'il y a eu balayage
-    .ob--sortie {
-      .ob__illustration,
-      .ob__texte {
-        animation: ob-sortie calc(var(--ss-duree) * 0.75) var(--ss-ease) both;
-      }
-    }
-
-    // 3. Retour élastique quand le balayage n'atteint pas le seuil
-    .ob--retour {
-      .ob__illustration,
-      .ob__texte {
-        transition: transform var(--ss-duree) var(--ss-ease);
-      }
-    }
-
-    // will-change seulement pendant un mouvement, retiré dès la phase de repos
-    .ob--entree,
-    .ob--sortie,
-    .ob--glisse,
-    .ob--retour {
-      .ob__illustration,
-      .ob__texte {
-        will-change: transform, opacity;
-      }
-    }
-
-    // 4. Points de progression : étirement et fondu gris → menthe
-    .ob__points span,
-    .ob__points span::before,
-    .ob__points span::after {
-      transition:
-        transform var(--ss-duree) var(--ss-ease),
-        opacity var(--ss-duree) var(--ss-ease);
-    }
-
-    // Pendant l'entrée, l'étirement attend que la rangée de points apparaisse
-    .ob--entree .ob__points span,
-    .ob--entree .ob__points span::before,
-    .ob--entree .ob__points span::after {
-      transition-delay: calc(3 * 80ms);
-    }
-
-    // 6. Boutons : soulèvement au survol, enfoncement à l'appui
-    .ob__suivant {
-      transition: transform 180ms var(--ss-ease);
-
-      &::after {
-        transition: opacity 180ms var(--ss-ease);
-      }
-
-      ss-icon {
-        transition: transform 180ms var(--ss-ease);
-      }
-
-      &:active {
-        transform: scale(0.97);
-      }
-    }
-
-    @media (hover: hover) {
-      .ob__suivant:hover {
-        transform: translateY(-2px);
-
-        ss-icon {
-          transform: translateX(3px);
-        }
-
-        &:active {
-          transform: translateY(-2px) scale(0.97);
-        }
-      }
-
-      .ob__suivant--final:hover ss-icon {
-        transform: rotate(-8deg) scale(1.15);
-      }
-    }
-  }
-
-  // 5. Flottement de l'illustration, coupé si l'économiseur de données est actif
-  :host(:not(.sans-animation):not(.economie-donnees)) .ob__illustration img {
-    animation: ob-flotte 6s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes ob-monte {
+@keyframes ob-entree {
   from {
     opacity: 0;
     transform: translateY(12px);
   }
 }
 
-@keyframes ob-apparition-visuel {
+@keyframes ob-fondu {
   from {
     opacity: 0;
-    transform: translateX(var(--ob-entree-x, 0px)) scale(0.98);
-  }
-}
-
-@keyframes ob-glisse-entree {
-  from {
-    transform: translateX(var(--ob-entree-x, 0px));
-  }
-}
-
-@keyframes ob-sortie {
-  from {
-    transform: translateX(var(--ob-depart, 0px));
-  }
-
-  to {
-    opacity: 0;
-    transform: translateX(calc(var(--ob-depart, 0px) + var(--ob-sortie-x, -24px)));
+    transform: scale(1.03);
   }
 }
 
 @keyframes ob-flotte {
-  to {
-    transform: translateY(-6px);
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob__ecran > *,
+  .ob__photo img,
+  .ob__flottant {
+    animation: none;
   }
 }

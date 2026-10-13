@@ -1,165 +1,119 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { Compte, CompteService } from '../../core/services/compte.service';
+import { ConversationService } from '../../core/services/conversation.service';
 import { OnboardingComponent } from './onboarding.component';
 
-// Accès aux membres protégés du composant, réservé aux tests
-type Interne = { index: () => number; phase: () => string };
-
-// jsdom n'a pas toujours PointerEvent : on fabrique un événement équivalent
-function pointeur(type: string, x: number, y = 0): Event {
-  const e = new MouseEvent(type, { clientX: x, clientY: y, bubbles: true });
-  Object.defineProperties(e, { pointerId: { value: 1 }, pointerType: { value: 'touch' } });
-  return e;
-}
-
-function simulerMouvementReduit(actif: boolean): void {
-  vi.stubGlobal('matchMedia', (requete: string) => ({
-    matches: actif && requete.includes('reduce'),
-    media: requete,
-    addEventListener: () => undefined,
-    removeEventListener: () => undefined,
-  }));
-}
+const COMPTE: Compte = {
+  id: 1,
+  type_compte: 'utilisateur',
+  nom: 'Diop',
+  prenom: 'Awa',
+  email: 'awa@exemple.sn',
+  ville: 'Dakar',
+  pseudonyme: 'Jamm',
+  preferences: { nouvelle_demande: { email: false } },
+};
 
 describe('OnboardingComponent', () => {
   let fixture: ComponentFixture<OnboardingComponent>;
   let hote: HTMLElement;
+  let modifier: ReturnType<typeof vi.fn>;
+  let definirConservation: ReturnType<typeof vi.fn>;
 
-  const interne = (): Interne => fixture.componentInstance as unknown as Interne;
-  const badge = (): string => hote.querySelector('.ob__badge')!.textContent!.trim();
-  const carte = (): HTMLElement => hote.querySelector('.ob__carte')!;
-  const boutonSuivant = (): HTMLButtonElement => hote.querySelector('.ob__suivant')!;
+  const titre = (): string => hote.querySelector('h1')!.textContent!.replace(/\s+/g, ' ').trim();
+  const suivant = (): HTMLButtonElement => hote.querySelector('.ob__suivant')!;
+  const bouton = (texte: string): HTMLButtonElement =>
+    [...hote.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent!.trim() === texte)!;
 
-  function creer(): void {
+  async function cliquer(el: HTMLElement): Promise<void> {
+    el.click();
+    fixture.detectChanges();
+    // Laisse se terminer l'enregistrement (promesses) avant de relire l'écran
+    await new Promise((r) => setTimeout(r));
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  async function allerA(nombre: number): Promise<void> {
+    for (let i = 0; i < nombre; i++) await cliquer(suivant());
+  }
+
+  beforeEach(async () => {
+    modifier = vi.fn(async (d: Partial<Compte>) => ({ ...COMPTE, ...d }));
+    definirConservation = vi.fn(async () => undefined);
+    await TestBed.configureTestingModule({
+      imports: [OnboardingComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: CompteService,
+          useValue: { compte: () => COMPTE, charger: async () => COMPTE, modifier },
+        },
+        { provide: ConversationService, useValue: { definirConservation } },
+      ],
+    }).compileComponents();
     fixture = TestBed.createComponent(OnboardingComponent);
     hote = fixture.nativeElement;
     fixture.detectChanges();
-  }
-
-  // Laisse passer toute la transition (sortie + entrée en cascade)
-  function finirTransition(): void {
-    vi.advanceTimersByTime(1000);
-    fixture.detectChanges();
-  }
-
-  function balayer(dx: number): void {
-    carte().dispatchEvent(pointeur('pointerdown', 300));
-    carte().dispatchEvent(pointeur('pointermove', 300 + dx / 2));
-    carte().dispatchEvent(pointeur('pointermove', 300 + dx));
-    carte().dispatchEvent(pointeur('pointerup', 300 + dx));
-  }
-
-  function touche(key: string): void {
-    document.dispatchEvent(new KeyboardEvent('keydown', { key }));
-  }
-
-  beforeEach(() => {
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
-    simulerMouvementReduit(false);
-    TestBed.configureTestingModule({
-      imports: [OnboardingComponent],
-      providers: [provideRouter([])],
-    });
   });
 
-  afterEach(() => {
-    fixture?.destroy();
-    vi.useRealTimers();
-    vi.unstubAllGlobals();
+  it("commence par l'écran d'accueil, sans barre de progression", () => {
+    expect(titre()).toBe('Un esprit sain pour une société saine');
+    expect(hote.querySelector('[role="progressbar"]')).toBeNull();
   });
 
-  it("avance et recule d'étape en mettant à jour l'index et le badge", () => {
-    creer();
-    expect(badge()).toBe('Étape 1 sur 3');
-
-    boutonSuivant().click();
-    finirTransition();
-    expect(interne().index()).toBe(1);
-    expect(badge()).toBe('Étape 2 sur 3');
-
-    touche('ArrowLeft');
-    finirTransition();
-    expect(interne().index()).toBe(0);
-    expect(badge()).toBe('Étape 1 sur 3');
-
-    touche('ArrowRight');
-    finirTransition();
-    expect(badge()).toBe('Étape 2 sur 3');
+  it('salue la personne par son prénom sur la présentation', async () => {
+    await allerA(1);
+    expect(titre()).toBe('Faisons connaissance');
+    expect(hote.querySelector('.ob__bulle')!.textContent).toContain('Salut Awa');
   });
 
-  it('ignore un second déclenchement pendant la transition', () => {
-    creer();
-    boutonSuivant().click();
-    boutonSuivant().click();
-    finirTransition();
-    expect(interne().index()).toBe(1);
+  it('affiche la progression pendant les six étapes', async () => {
+    await allerA(2);
+    expect(titre()).toContain('Parle-nous un peu de toi');
+    expect(hote.querySelector('[role="progressbar"]')!.getAttribute('aria-valuenow')).toBe('1');
+    await allerA(1);
+    expect(hote.querySelector('[role="progressbar"]')!.getAttribute('aria-valuenow')).toBe('2');
   });
 
-  it("annonce l'étape et place le focus sur le titre", () => {
-    creer();
-    boutonSuivant().click();
-    finirTransition();
-    expect(hote.querySelector('[aria-live="polite"]')!.textContent!.trim()).toBe('Étape 2 sur 3');
-    expect(document.activeElement).toBe(hote.querySelector('h1'));
+  it('limite les préoccupations à trois sujets', async () => {
+    await allerA(4);
+    for (const s of ['Stress', 'Travail', 'Sommeil']) await cliquer(bouton(s));
+    expect(bouton('Famille').disabled).toBe(true);
+    expect(hote.textContent).toContain('Tu as atteint le maximum');
   });
 
-  it("change d'étape avec un balayage supérieur au seuil", () => {
-    creer();
-    balayer(-100);
-    finirTransition();
-    expect(interne().index()).toBe(1);
-
-    balayer(100);
-    finirTransition();
-    expect(interne().index()).toBe(0);
+  it('ouvre le choix spirituel quand on sélectionne « Spiritualité et prière »', async () => {
+    await allerA(5);
+    await cliquer(bouton('Spiritualité et prière'));
+    expect(hote.querySelector('[role="dialog"]')).not.toBeNull();
   });
 
-  it('ne change rien avec un balayage inférieur au seuil', () => {
-    creer();
-    balayer(-40);
-    finirTransition();
-    expect(interne().index()).toBe(0);
-    expect(badge()).toBe('Étape 1 sur 3');
+  it('enregistre les réponses à la fin, sans effacer les autres préférences', async () => {
+    await allerA(2);
+    await cliquer(bouton('Une femme'));
+    await allerA(5);
+    expect(suivant().textContent).toContain('Créer mon parcours');
+    await cliquer(suivant());
+
+    expect(modifier).toHaveBeenCalledTimes(1);
+    const { preferences } = modifier.mock.calls[0][0];
+    expect(preferences.nouvelle_demande).toEqual({ email: false });
+    expect(preferences.onboarding.statut).toBe('termine');
+    expect(preferences.onboarding.genre).toBe('femme');
+    expect(preferences.personnalisation_chatbot).toBe(false);
+    expect(definirConservation).not.toHaveBeenCalled();
+    expect(titre()).toContain('Ton parcours est prêt, Awa');
   });
 
-  it('« Passer » mène directement à la fin du parcours', () => {
-    creer();
-    const navigation = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    (hote.querySelector('.ob__passer') as HTMLButtonElement).click();
-    expect(navigation).toHaveBeenCalledWith('/app');
-  });
-
-  it("avec .sans-animation, l'étape change immédiatement, sans phase de transition", () => {
-    simulerMouvementReduit(true);
-    creer();
-    expect(hote.classList).toContain('sans-animation');
-    expect(interne().phase()).toBe('repos');
-
-    boutonSuivant().click();
-    fixture.detectChanges();
-    // Aucune minuterie avancée : le changement est instantané
-    expect(interne().index()).toBe(1);
-    expect(interne().phase()).toBe('repos');
-    expect(carte().classList).not.toContain('ob--sortie');
-    expect(carte().classList).not.toContain('ob--entree');
-    expect(vi.getTimerCount()).toBe(0);
-  });
-
-  it('retire les écouteurs et les minuteries à la destruction', () => {
-    creer();
-    const composant = interne();
-    const elementCarte = carte();
-
-    fixture.destroy();
-    expect(vi.getTimerCount()).toBe(0);
-
-    touche('ArrowRight');
-    elementCarte.dispatchEvent(pointeur('pointerdown', 300));
-    elementCarte.dispatchEvent(pointeur('pointermove', 150));
-    elementCarte.dispatchEvent(pointeur('pointerup', 150));
-    vi.advanceTimersByTime(1000);
-    expect(composant.index()).toBe(0);
+  it('« Passer » garde les réponses déjà données puis ouvre l’espace', async () => {
+    const naviguer = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    await allerA(2);
+    await cliquer(bouton('Passer'));
+    expect(modifier.mock.calls[0][0].preferences.onboarding.statut).toBe('passe');
+    expect(naviguer).toHaveBeenCalledWith('/app');
   });
 });

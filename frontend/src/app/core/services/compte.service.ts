@@ -4,12 +4,15 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../config/api.config';
+import { ProfilOnboarding } from '../models/onboarding';
 import { AuthService, ErreurFormulaire } from './auth.service';
 
 // Canaux par type de notification, et consentement à la personnalisation de Titou
+// et réponses de l'onboarding de personnalisation
 export interface Preferences {
   personnalisation_chatbot?: boolean;
-  [cle: string]: { email?: boolean; push?: boolean } | boolean | undefined;
+  onboarding?: ProfilOnboarding;
+  [cle: string]: { email?: boolean; push?: boolean } | ProfilOnboarding | boolean | undefined;
 }
 
 export interface Compte {
