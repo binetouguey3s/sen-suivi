@@ -4,6 +4,8 @@ Toujours dans cet ordre :
 - Nettoyage de l'entrée
 - Niveau 0  : détection de détresse (sécurité) — si déclenchée, on s'arrête là,
               le modèle de langage n'est jamais appelé.
+- Cadrage   : une demande hors du bien-être (calcul, devoir, code, actualité…)
+              reçoit un recadrage prédéfini, sans appel au modèle.
 - Niveau 1  : classification d'intention. Sans modèle de langage, la réponse
               validée prédéfinie de l'intention est renvoyée ; avec un modèle,
               elle devient le filet de sécurité, car un texte fixe ignore le
@@ -32,6 +34,7 @@ from pydantic import BaseModel, Field
 
 from app.classificateur_intention import REPONSE_PAR_INTENTION, classifier
 from app.detecteur_detresse import REPONSE_URGENCE, detecter_detresse
+from app.detecteur_hors_sujet import detecter_hors_sujet, reponse_recadrage
 from app.generateur_reponse import echeance_totale, ecouter, generation_disponible, generer
 from app.gravite import REPONSE_DANGER_AUTRUI, REPONSE_VIOLENCES, danger_autrui, nature_grave, risque_vital, violences
 from app.moderateur_forum import moderer
@@ -221,6 +224,15 @@ def _repondre(entree: MessageEntree) -> MessageSortie:
             nature_detresse='VIOLENCES',
         )
 
+    # Cadrage — hors du bien-être : recadrage prédéfini, jamais le modèle
+    categorie = detecter_hors_sujet(message)
+    if categorie:
+        precedentes = [e.contenu for e in entree.historique if e.auteur == 'BOT']
+        return MessageSortie(
+            reponse=reponse_recadrage(categorie, precedentes), source_reponse='REGLE', urgence=False,
+            intention='HORS_SUJET', ressource=None,
+        )
+
     # Niveau 1 — classification d'intention
     resultat = classifier(message)
     intention = resultat.intention if resultat.reconnue_avec_confiance and resultat.intention in REPONSE_PAR_INTENTION else None
@@ -279,6 +291,11 @@ def _repondre(entree: MessageEntree) -> MessageSortie:
 
 # Un titre d'un seul mot porteur de sens (« Respirer ») se retrouve partout
 MOTS_TITRE_MIN = 2
+# Sans guillemets, un titre court (« Parler de ce qu'on ressent… ») se retrouve
+# dans une simple phrase d'écoute : il faut plus de mots pour le reconnaître
+MOTS_TITRE_MIN_SANS_CITATION = 3
+
+_CITATION = re.compile(r'«([^»]+)»')
 
 
 def ressource_evoquee(texte: str, ressources: list[dict], catalogue: list[dict] | None = None) -> dict | None:
@@ -286,13 +303,16 @@ def ressource_evoquee(texte: str, ressources: list[dict], catalogue: list[dict] 
 
     Titre cité (tous ses mots porteurs de sens présents), parmi les ressources
     trouvées puis dans tout le catalogue : Titou peut en citer une autre.
-    Aucun titre cité : aucun encart. Mieux vaut aucun encart qu'un encart
-    hors sujet sous une réponse qui n'en parle pas.
+    Si la réponse cite entre « », seul le texte cité compte. Aucun titre cité :
+    aucun encart. Mieux vaut aucun encart qu'un encart hors sujet sous une
+    réponse qui n'en parle pas.
     """
-    mots_reponse = mots_significatifs(texte)
+    citations = _CITATION.findall(texte)
+    mots_reponse = mots_significatifs(' '.join(citations) if citations else texte)
+    minimum = MOTS_TITRE_MIN if citations else MOTS_TITRE_MIN_SANS_CITATION
     for ressource in [*ressources, *(catalogue or [])]:
         mots_titre = mots_significatifs(ressource['titre'])
-        if len(mots_titre) >= MOTS_TITRE_MIN and mots_titre <= mots_reponse:
+        if len(mots_titre) >= minimum and mots_titre <= mots_reponse:
             return ressource
     return None
 

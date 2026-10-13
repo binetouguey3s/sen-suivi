@@ -573,6 +573,24 @@ def test_l_encart_montre_une_ressource_du_catalogue_citee_par_titou():
     assert main.ressource_evoquee(texte, [AUTRE], catalogue)['ressource_id'] == 12
 
 
+PARLER = {'ressource_id': 14, 'titre': "Parler de ce qu'on ressent, même quand ça ne se fait pas", 'thematique': 'Expression'}
+
+
+def test_une_phrase_d_ecoute_n_affiche_pas_un_titre_court_qui_lui_ressemble():
+    texte = "Je reste là pour vous écouter si vous souhaitez parler de ce que vous ressentez."
+    assert main.ressource_evoquee(texte, [PARLER], [PARLER]) is None
+
+
+def test_un_titre_court_cite_entre_guillemets_affiche_l_encart():
+    texte = "La ressource « Parler de ce qu'on ressent, même quand ça ne se fait pas » peut vous aider."
+    assert main.ressource_evoquee(texte, [], [PARLER])['ressource_id'] == 14
+
+
+def test_avec_une_citation_seul_le_titre_cite_compte():
+    texte = "Pour parler de ce que vous ressentez, essayez « Gérer la pression familiale sans culpabiliser »."
+    assert main.ressource_evoquee(texte, [PARLER, AUTRE])['ressource_id'] == 9
+
+
 def test_un_titre_d_un_seul_mot_ne_suffit_pas_a_choisir_l_encart():
     catalogue = [{'ressource_id': 13, 'titre': 'Respirer', 'thematique': 'Respiration'}]
     assert main.ressource_evoquee('Prenez le temps de respirer un peu.', [], catalogue) is None
