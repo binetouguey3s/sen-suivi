@@ -213,10 +213,20 @@
   margin: 0;
 }
 
+// Lien vers « Mon profil » : la zone cliquable dépasse le rond de 32 px
 .layout-app__avatar--mobile {
   width: 32px;
   height: 32px;
   font-size: 12px;
+  position: relative;
+  text-decoration: none;
+  outline-offset: 2px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
 }
 
 .layout-app__contenu {

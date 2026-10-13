@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Compte, CompteService } from '../../core/services/compte.service';
 import { ConversationService } from '../../core/services/conversation.service';
 import { OnboardingComponent } from './onboarding.component';
+import { OnboardingStore } from './onboarding.store';
 
 const COMPTE: Compte = {
   id: 1,
@@ -52,7 +53,7 @@ describe('OnboardingComponent', () => {
           provide: CompteService,
           useValue: { compte: () => COMPTE, charger: async () => COMPTE, modifier },
         },
-        { provide: ConversationService, useValue: { definirConservation } },
+        { provide: ConversationService, useValue: { definirConservation, consentementConservation: () => false } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(OnboardingComponent);
@@ -115,5 +116,46 @@ describe('OnboardingComponent', () => {
     await cliquer(bouton('Passer'));
     expect(modifier.mock.calls[0][0].preferences.onboarding.statut).toBe('passe');
     expect(naviguer).toHaveBeenCalledWith('/app');
+  });
+});
+
+describe('OnboardingComponent, questionnaire refait', () => {
+  it('repart des réponses déjà enregistrées', async () => {
+    const compte: Compte = {
+      ...COMPTE,
+      preferences: {
+        personnalisation_chatbot: true,
+        onboarding: {
+          version: 1,
+          statut: 'termine',
+          date: '2026-10-01T10:00:00Z',
+          genre: 'femme',
+          preoccupations: ['stress', 'etudes'],
+          rien_de_particulier: false,
+          bien_etre: ['musique'],
+          spiritualite: [],
+          moments: [],
+          formats: [],
+          rappels: false,
+          metiers: [],
+        },
+      },
+    };
+    await TestBed.configureTestingModule({
+      imports: [OnboardingComponent],
+      providers: [
+        provideRouter([]),
+        { provide: CompteService, useValue: { compte: () => compte, charger: async () => compte, modifier: vi.fn() } },
+        { provide: ConversationService, useValue: { definirConservation: vi.fn(), consentementConservation: () => false } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(OnboardingComponent);
+    const store = fixture.debugElement.injector.get(OnboardingStore);
+
+    expect(store.genre()).toBe('femme');
+    expect(store.preoccupations()).toEqual(['stress', 'etudes']);
+    expect(store.bienEtre()).toEqual(['musique']);
+    expect(store.rappels()).toBe(false);
+    expect(store.personnalisation()).toBe(true);
   });
 });

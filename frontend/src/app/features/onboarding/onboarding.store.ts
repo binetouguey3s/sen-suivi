@@ -58,15 +58,51 @@ export class OnboardingStore {
   readonly erreur = signal('');
 
   constructor() {
-    // Juste après l'inscription, le compte n'est pas encore chargé : on récupère le prénom
-    if (!this.compteService.compte()) {
-      this.compteService
-        .charger()
-        .then((c) => {
-          if (!this.prenom()) this.prenom.set(c.prenom ?? '');
-        })
-        .catch(() => undefined);
+    // Réponses déjà données (questionnaire refait, page « Mon profil ») : on repart d'elles
+    const compte = this.compteService.compte();
+    if (compte) {
+      this.hydraterDepuis(compte.preferences);
+      return;
     }
+    // Juste après l'inscription, le compte n'est pas encore chargé : on récupère le prénom
+    this.compteService
+      .charger()
+      .then((c) => {
+        if (!this.prenom()) this.prenom.set(c.prenom ?? '');
+        this.hydraterDepuis(c.preferences);
+      })
+      .catch(() => undefined);
+  }
+
+  private hydraterDepuis(preferences: Preferences | undefined): void {
+    this.personnalisation.set(preferences?.personnalisation_chatbot === true);
+    this.conserverEchanges.set(this.conversation.consentementConservation());
+    if (preferences?.onboarding) this.hydrater(preferences.onboarding);
+  }
+
+  // Remplit chaque étape à partir de réponses déjà enregistrées.
+  // Les listes manquantes (anciennes versions) restent simplement vides.
+  hydrater(profil: ProfilOnboarding): void {
+    this.prenom.set(this.compteService.compte()?.prenom ?? this.prenom());
+    this.genre.set(profil.genre ?? null);
+    this.trancheAge.set(profil.tranche_age ?? null);
+    this.situation.set(profil.situation ?? null);
+    this.langue.set(profil.langue ?? null);
+    this.humeur.set(profil.humeur ?? null);
+    this.energie.set(profil.energie ?? 50);
+    this.sommeil.set(profil.sommeil ?? null);
+    this.preoccupations.set([...(profil.preoccupations ?? [])]);
+    this.rienDeParticulier.set(profil.rien_de_particulier ?? false);
+    this.bienEtre.set([...(profil.bien_etre ?? [])]);
+    this.spiritualite.set([...(profil.spiritualite ?? [])]);
+    this.moments.set([...(profil.moments ?? [])]);
+    this.duree.set(profil.duree ?? null);
+    this.formats.set([...(profil.formats ?? [])]);
+    this.rappels.set(profil.rappels ?? true);
+    this.frequenceRappels.set(profil.frequence_rappels ?? '3_semaine');
+    this.echangePro.set(profil.echange_pro ?? null);
+    this.metiers.set([...(profil.metiers ?? [])]);
+    this.aiseAvec.set(profil.aise_avec ?? null);
   }
 
   // Écran final : trois ressources, les plus proches des réponses d'abord
@@ -124,9 +160,20 @@ export class OnboardingStore {
     };
   }
 
+  // Fin de l'onboarding (ou « Passer ») : réponses, prénom et consentements
+  enregistrer(statut: ProfilOnboarding['statut']): Promise<boolean> {
+    return this.sauver(statut, statut === 'termine');
+  }
+
+  // Modification d'une section depuis « Mon profil » : les réponses et le prénom
+  // seulement. Les consentements ont leurs propres interrupteurs sur la page.
+  enregistrerReponses(): Promise<boolean> {
+    return this.sauver('termine', false);
+  }
+
   // Fusionne avec les préférences existantes : le PATCH remplace tout le JSON,
   // il ne faut pas effacer les réglages de notifications déjà enregistrés.
-  async enregistrer(statut: ProfilOnboarding['statut']): Promise<boolean> {
+  private async sauver(statut: ProfilOnboarding['statut'], avecConsentements: boolean): Promise<boolean> {
     this.enregistrement.set(true);
     this.erreur.set('');
     try {
@@ -135,14 +182,14 @@ export class OnboardingStore {
         ...compte.preferences,
         onboarding: this.profil(statut),
       };
-      if (statut === 'termine') preferences.personnalisation_chatbot = this.personnalisation();
+      if (avecConsentements) preferences.personnalisation_chatbot = this.personnalisation();
 
       const prenom = this.prenom().trim();
       await this.compteService.modifier({
         preferences,
         ...(statut === 'termine' && prenom && prenom !== compte.prenom ? { prenom } : {}),
       });
-      if (statut === 'termine' && this.conserverEchanges()) {
+      if (avecConsentements && this.conserverEchanges()) {
         await this.conversation.definirConservation(true);
       }
       return true;

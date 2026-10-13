@@ -1,17 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { InterrupteurComponent } from '../../../shared/interrupteur/interrupteur.component';
 import { AISANCES, ECHANGES_PRO, METIERS } from '../onboarding.donnees';
 import { OnboardingStore } from '../onboarding.store';
 
-// Étape 6 : envie d'être accompagné, et consentements sur les données
+// Étape 6 : envie d'être accompagné, et consentements sur les données.
+// Depuis « Mon profil », les consentements ont leur propre carte : on les masque.
 @Component({
   selector: 'ss-etape-accompagnement',
   standalone: true,
   imports: [IconComponent, InterrupteurComponent],
   template: `
-    <h1 class="ob-titre" tabindex="-1">Accompagnement et confidentialité</h1>
+    <h1 class="ob-titre" tabindex="-1">{{ consentements() ? 'Accompagnement et confidentialité' : 'Accompagnement' }}</h1>
     <p class="ob-sous-titre">Vous gardez la main sur vos données, à tout moment.</p>
 
     <section class="ob-section">
@@ -66,37 +67,40 @@ import { OnboardingStore } from '../onboarding.store';
       </section>
     }
 
-    <section class="ob-section">
-      <p class="ob-question">Vos données, vos choix</p>
-      <div class="ob-carte">
-        <div class="ob-reglage">
-          <span class="ob-reglage__icone"><ss-icon nom="suggestion" taille="sm" /></span>
-          <span>
-            <strong>Personnaliser mes suggestions</strong>
-            <small>Utiliser mes réponses pour choisir mes ressources et adapter Titou.</small>
-          </span>
-          <ss-interrupteur libelle="Personnaliser mes suggestions" [(actif)]="personnalisation" />
+    @if (consentements()) {
+      <section class="ob-section">
+        <p class="ob-question">Vos données, vos choix</p>
+        <div class="ob-carte">
+          <div class="ob-reglage">
+            <span class="ob-reglage__icone"><ss-icon nom="suggestion" taille="sm" /></span>
+            <span>
+              <strong>Personnaliser mes suggestions</strong>
+              <small>Utiliser mes réponses pour choisir mes ressources et adapter Titou.</small>
+            </span>
+            <ss-interrupteur libelle="Personnaliser mes suggestions" [(actif)]="personnalisation" />
+          </div>
+          <div class="ob-reglage">
+            <span class="ob-reglage__icone"><ss-icon nom="chat" taille="sm" /></span>
+            <span>
+              <strong>Conserver mes échanges avec Titou</strong>
+              <small>Désactivé : rien n’est gardé après la conversation.</small>
+            </span>
+            <ss-interrupteur libelle="Conserver mes échanges avec Titou" [(actif)]="conserver" />
+          </div>
         </div>
-        <div class="ob-reglage">
-          <span class="ob-reglage__icone"><ss-icon nom="chat" taille="sm" /></span>
-          <span>
-            <strong>Conserver mes échanges avec Titou</strong>
-            <small>Désactivé : rien n’est gardé après la conversation.</small>
-          </span>
-          <ss-interrupteur libelle="Conserver mes échanges avec Titou" [(actif)]="conserver" />
-        </div>
-      </div>
-      <p class="ob-note">
-        <ss-icon nom="cadenas" taille="sm" />
-        Tout est modifiable ou supprimable depuis votre profil.
-      </p>
-    </section>
+        <p class="ob-note">
+          <ss-icon nom="cadenas" taille="sm" />
+          Tout est modifiable ou supprimable depuis votre profil.
+        </p>
+      </section>
+    }
   `,
   styleUrl: './etapes.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EtapeAccompagnementComponent {
   protected readonly store = inject(OnboardingStore);
+  readonly consentements = input(true);
   protected readonly echanges = ECHANGES_PRO;
   protected readonly metiers = METIERS;
   protected readonly aisances = AISANCES;

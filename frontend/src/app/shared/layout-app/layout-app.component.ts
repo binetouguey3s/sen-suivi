@@ -28,10 +28,13 @@ const LIENS_UTILISATEUR: LienNav[] = [
   { route: '/app/demandes', libelle: 'Mes demandes', libelleMobile: 'Demandes', icone: 'courriel' },
   { route: '/ressources', libelle: 'Ressources', icone: 'ressources' },
   { route: '/lieux', libelle: 'Lieux & Soins', icone: 'lieux' },
+  { route: '/app/profil', libelle: 'Mon profil', libelleMobile: 'Profil', icone: 'profil' },
   { route: '/app/parametres', libelle: 'Paramètres', libelleMobile: 'Réglages', icone: 'parametres' },
 ];
 
-// Barre basse mobile de l'utilisateur : les autres liens passent par le menu burger
+// Barre basse mobile de l'utilisateur : les autres liens passent par le menu burger.
+// « Mon profil » s'ouvre depuis l'avatar de la barre du haut : un cinquième lien
+// à côté du bouton de Titou rendrait les libellés illisibles sur 360 px.
 const ROUTES_MOBILE_UTILISATEUR = ['/app', '/app/journal', '/app/forum', '/app/parametres'];
 
 @Component({

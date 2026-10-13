@@ -1,0 +1,721 @@
+@use 'verre' as *;
+
+// Page « Mon profil » : même direction que l'onboarding (photos, puces, verre
+// sur ce qui flotte). Uniquement des tokens --ss-* : le mode sombre suit seul.
+
+:host {
+  display: block;
+}
+
+.pr {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-3);
+  max-width: 1040px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+.pr-annonce {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pr-chargement {
+  color: var(--ss-texte-doux);
+}
+
+.pr-erreur {
+  margin: 0;
+  color: var(--ss-alerte);
+  font-size: 14px;
+}
+
+// ─── 1. Bandeau ──────────────────────────────────────────────────────────
+
+.pr-bandeau {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  border-radius: var(--ss-rayon-grande-carte);
+  box-shadow: var(--ss-ombre-forte);
+
+  @media (min-width: 900px) {
+    height: 240px;
+  }
+
+  // Voile dégradé vers le bas : le texte reste lisible sur la photo
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--ss-photo-voile-nul) 35%, var(--ss-photo-voile) 100%);
+    pointer-events: none;
+  }
+}
+
+.pr-bandeau__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.pr-bandeau__modifier {
+  @include ss-verre(14px);
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+
+  // Desktop : la cloche des notifications occupe le coin haut droit de la page
+  @media (min-width: 900px) {
+    top: auto;
+    bottom: 14px;
+  }
+}
+
+.pr-identite {
+  @include ss-verre(14px);
+  position: absolute;
+  z-index: 1;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 460px;
+  padding: 12px 16px 12px 12px;
+  border-radius: 20px;
+
+  h1 {
+    font-size: 22px;
+    font-weight: var(--ss-poids-titre-fort);
+    letter-spacing: var(--ss-interlettrage-moyen);
+    color: inherit;
+
+    @media (min-width: 900px) {
+      font-size: 28px;
+    }
+  }
+
+  p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  p span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.pr-identite__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte);
+  font-family: var(--ss-police-titres);
+  font-size: 20px;
+  font-weight: var(--ss-poids-titre-fort);
+}
+
+.pr-identite__texte {
+  min-width: 0;
+}
+
+.pr-accroche {
+  margin: calc(var(--ss-espace-1) * -1) 0 0;
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+}
+
+// ─── Éléments communs ────────────────────────────────────────────────────
+
+.pr-pastille {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ss-surface-legere);
+  color: var(--ss-texte-marque);
+}
+
+.pr-pastille--claire {
+  background: var(--ss-surface);
+}
+
+.pr-lien {
+  min-height: 44px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--ss-texte-marque);
+  font: inherit;
+  font-size: 13px;
+  font-weight: var(--ss-poids-titre);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pr-lien:focus-visible,
+.pr-bouton:focus-visible,
+.pr-journal:focus-visible,
+.pr-bandeau__modifier:focus-visible,
+.pr-modale__fermer:focus-visible {
+  outline: 2px solid var(--ss-primaire);
+  outline-offset: 3px;
+}
+
+.pr-vide {
+  margin: 0;
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+}
+
+.pr-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}
+
+.pr-phrase {
+  margin: 0;
+  font-size: 14px;
+}
+
+// Puces des choix : le style de .ob-puce choisie, en plus petit, non cliquables
+.pr-puces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 30px;
+    padding: 0 12px;
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-primaire);
+    color: var(--ss-primaire-texte);
+    font-size: 12px;
+    font-weight: var(--ss-poids-texte-fort);
+  }
+}
+
+.pr-puces--neutres li {
+  background: var(--ss-surface-neutre);
+  color: var(--ss-texte);
+}
+
+// ─── 2. Progression ──────────────────────────────────────────────────────
+
+.pr-progression {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: var(--ss-surface-accent);
+
+  strong {
+    font-size: 14px;
+  }
+}
+
+.pr-progression__texte {
+  flex: 1;
+  min-width: 0;
+}
+
+.pr-progression__barre {
+  height: 4px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-bordure);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ss-primaire);
+  }
+}
+
+// ─── 3. Sections et cartes ───────────────────────────────────────────────
+
+.pr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h2 {
+    font-size: 18px;
+    color: var(--ss-texte-marque);
+  }
+}
+
+.pr-section__titre {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pr-enregistre {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ss-texte-marque);
+  font-size: 12px;
+  font-weight: var(--ss-poids-titre);
+}
+
+.pr-grille {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  @media (min-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+.pr-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--ss-bordure);
+  border-radius: 20px;
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+  // Apparition en cascade, 60 ms d'écart (--i : rang de la carte)
+  animation: pr-entree var(--ss-duree) var(--ss-ease) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.pr-carte__entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: -6px;
+
+  h3 {
+    flex: 1;
+    font-family: var(--ss-police-texte);
+    font-size: 15px;
+    font-weight: var(--ss-poids-titre);
+    color: var(--ss-texte);
+  }
+}
+
+.pr-lignes {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 14px;
+
+  dt {
+    color: var(--ss-texte-doux);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: var(--ss-poids-texte-fort);
+  }
+
+  dd.pr-vide {
+    font-weight: var(--ss-poids-texte);
+  }
+}
+
+.pr-journal {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  min-height: 44px;
+  color: var(--ss-texte-marque);
+  font-size: 13px;
+  font-weight: var(--ss-poids-titre);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ─── 4. Confidentialité ──────────────────────────────────────────────────
+
+.pr-carte--reglages {
+  gap: 0;
+}
+
+.pr-reglage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  & + & {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ss-bordure);
+  }
+
+  > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  h3 {
+    font-family: var(--ss-police-texte);
+    font-size: 14px;
+    font-weight: var(--ss-poids-titre);
+    color: var(--ss-texte);
+  }
+
+  p {
+    margin: 2px 0 0;
+    color: var(--ss-texte-doux);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+.pr-carte--reglages .pr-erreur {
+  margin-top: 12px;
+}
+
+// ─── 5. Mes données ──────────────────────────────────────────────────────
+
+.pr-donnees {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--ss-surface-legere);
+
+  h2 {
+    font-size: 18px;
+    color: var(--ss-texte-marque);
+  }
+
+  p {
+    margin: 0;
+    color: var(--ss-texte-doux);
+    font-size: 14px;
+  }
+}
+
+.pr-donnees__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+// ─── Boutons ─────────────────────────────────────────────────────────────
+
+.pr-bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: none;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
+  font: inherit;
+  font-size: 15px;
+  font-weight: var(--ss-poids-titre);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s var(--ss-ease);
+
+  &:hover:not(:disabled) {
+    background: var(--ss-primaire-fort);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+.pr-bouton--secondaire {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid var(--ss-primaire);
+  background: transparent;
+  color: var(--ss-texte-marque);
+  font-size: 14px;
+
+  &:hover:not(:disabled) {
+    background: var(--ss-surface);
+  }
+}
+
+// Seul usage du rouge sur la page
+.pr-bouton--danger {
+  min-height: 44px;
+  padding: 0 10px;
+  background: none;
+  color: var(--ss-alerte);
+  font-size: 14px;
+
+  &:hover:not(:disabled) {
+    background: none;
+    text-decoration: underline;
+  }
+}
+
+.pr-bouton--alerte {
+  background: var(--ss-alerte);
+  color: var(--ss-alerte-texte);
+
+  &:hover:not(:disabled) {
+    background: var(--ss-alerte);
+    filter: brightness(0.95);
+  }
+}
+
+.pr-bouton--texte {
+  padding: 0 12px;
+  background: none;
+  color: var(--ss-texte-doux);
+
+  &:hover:not(:disabled) {
+    background: none;
+    color: var(--ss-texte);
+  }
+}
+
+// ─── 6. État vide ────────────────────────────────────────────────────────
+
+.pr-vide-carte {
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+  animation: pr-entree var(--ss-duree) var(--ss-ease) backwards;
+
+  @media (min-width: 700px) {
+    grid-template-columns: minmax(0, 300px) 1fr;
+  }
+}
+
+.pr-vide-carte__photo {
+  position: relative;
+  min-height: 220px;
+  margin: 0;
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+  }
+}
+
+.pr-bulle {
+  @include ss-verre(14px);
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  max-width: 240px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 14px 14px 14px 4px;
+  font-size: 12px;
+  font-weight: var(--ss-poids-titre);
+
+  small {
+    display: block;
+    font-size: 11px;
+    font-weight: var(--ss-poids-texte);
+    opacity: 0.8;
+  }
+}
+
+.pr-vide-carte__texte {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: var(--ss-espace-3);
+
+  h2 {
+    font-size: 22px;
+    color: var(--ss-texte-marque);
+  }
+
+  p {
+    margin: 0;
+    color: var(--ss-texte-doux);
+  }
+}
+
+// ─── 7. Modales ──────────────────────────────────────────────────────────
+
+.pr-modale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+
+  h2 {
+    font-size: 20px;
+    color: var(--ss-texte-marque);
+  }
+
+  > p {
+    margin: 0;
+  }
+}
+
+.pr-modale__entete {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+}
+
+// Poignée de la feuille mobile, comme la feuille « Spiritualité et prière »
+.pr-modale__poignee {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-bordure);
+  transform: translateX(-50%);
+
+  @media (min-width: 900px) {
+    display: none;
+  }
+}
+
+.pr-modale__fermer {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--ss-surface-neutre);
+  color: var(--ss-texte);
+  cursor: pointer;
+}
+
+// Boutons toujours visibles en bas de la feuille, même sur une longue étape
+.pr-modale__pied {
+  position: sticky;
+  bottom: calc(var(--ss-espace-5) * -1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 0 calc(var(--ss-espace-3) * -1) calc(var(--ss-espace-5) * -1);
+  padding: var(--ss-espace-2) var(--ss-espace-3) var(--ss-espace-3);
+  border-top: 1px solid var(--ss-bordure);
+  background: var(--ss-surface);
+
+  @media (min-width: 900px) {
+    margin-inline: calc(var(--ss-espace-5) * -1);
+    padding-inline: var(--ss-espace-5);
+  }
+}
+
+.pr-select {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-1);
+
+  label {
+    font-size: 14px;
+    font-weight: var(--ss-poids-texte-fort);
+  }
+
+  select {
+    min-height: 48px;
+    padding: 0 var(--ss-espace-2);
+    border: 1px solid var(--ss-bordure);
+    border-radius: var(--ss-rayon-champ);
+    background: var(--ss-surface);
+    color: var(--ss-texte);
+    font: inherit;
+  }
+}
+
+@keyframes pr-entree {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pr-carte,
+  .pr-vide-carte {
+    animation: none;
+  }
+}

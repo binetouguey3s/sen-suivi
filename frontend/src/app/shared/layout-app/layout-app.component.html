@@ -49,7 +49,7 @@
       <span class="layout-app__actions-mobile">
         <ss-cloche-notifications />
         @if (!estProfessionnel()) {
-          <span class="layout-app__avatar layout-app__avatar--mobile">{{ initiales() }}</span>
+          <a class="layout-app__avatar layout-app__avatar--mobile" routerLink="/app/profil" aria-label="Mon profil">{{ initiales() }}</a>
         }
         <button
           type="button"

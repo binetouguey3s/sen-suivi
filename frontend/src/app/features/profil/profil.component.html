@@ -1,0 +1,306 @@
+<p class="pr-annonce" aria-live="polite">{{ annonce() }}</p>
+
+@if (compte(); as c) {
+  <div class="pr">
+    <!-- 1. Bandeau : la seule photo de la page, identité posée dessus en verre -->
+    <section class="pr-bandeau" aria-labelledby="pr-prenom">
+      <img class="pr-bandeau__photo" src="/images/onboarding/pret.webp" alt="" />
+      <button type="button" class="pr-bandeau__modifier" aria-label="Modifier mes informations" (click)="ouvrirInfos()">
+        <ss-icon nom="ecrire" taille="sm" />
+      </button>
+      <div class="pr-identite">
+        <span class="pr-identite__avatar" aria-hidden="true">{{ initiales() }}</span>
+        <div class="pr-identite__texte">
+          <h1 id="pr-prenom">{{ prenom() || 'Mon profil' }}</h1>
+          <p>
+            @if (c.pseudonyme) {
+              <span>{{ '@' + c.pseudonyme }} · visible sur le forum à la place de votre nom</span>
+            }
+            @if (c.ville) {
+              <span><ss-icon nom="lieux" taille="sm" /> {{ c.ville }}</span>
+            }
+          </p>
+        </div>
+      </div>
+    </section>
+    <p class="pr-accroche">Voici ce que Titou sait de vous. Tout est facultatif et modifiable.</p>
+
+    @if (rempli()) {
+      <!-- 2. Progression, masquée quand tout est renseigné -->
+      @if (pourcentage() < 100) {
+        <div class="pr-progression">
+          <span class="pr-pastille pr-pastille--claire"><ss-icon nom="suggestion" taille="sm" /></span>
+          <div class="pr-progression__texte">
+            <strong>Votre profil est complété à {{ pourcentage() }}&nbsp;%</strong>
+            <div class="pr-progression__barre" aria-hidden="true">
+              <span [style.width.%]="pourcentage()"></span>
+            </div>
+          </div>
+          @if (premiereVide(); as vide) {
+            <button type="button" class="pr-lien" (click)="ouvrir(vide)">Compléter</button>
+          }
+        </div>
+      }
+
+      <!-- 3. Profil bien-être -->
+      <section class="pr-section" aria-labelledby="pr-titre-bien-etre">
+        <h2 id="pr-titre-bien-etre">Mon profil bien-être</h2>
+        <div class="pr-grille">
+          <article class="pr-carte" style="--i: 0">
+            <ng-container *ngTemplateOutlet="entete; context: { section: 'profil' }" />
+            <dl class="pr-lignes">
+              @for (l of aPropos(); track l.libelle) {
+                <dt>{{ l.libelle }}</dt>
+                <dd [class.pr-vide]="!l.valeur">{{ l.valeur ?? 'Non renseigné' }}</dd>
+              }
+            </dl>
+          </article>
+
+          <article class="pr-carte" style="--i: 1">
+            <ng-container *ngTemplateOutlet="entete; context: { section: 'esprit' }" />
+            @if (preoccupations().length) {
+              <ul class="pr-puces">
+                @for (p of preoccupations(); track p) {
+                  <li>{{ p }}</li>
+                }
+              </ul>
+            } @else if (onboarding()?.rien_de_particulier) {
+              <ul class="pr-puces pr-puces--neutres"><li>Rien de particulier</li></ul>
+            } @else {
+              <p class="pr-vide">Non renseigné</p>
+            }
+          </article>
+
+          <article class="pr-carte" style="--i: 2">
+            <ng-container *ngTemplateOutlet="entete; context: { section: 'bien-etre' }" />
+            @if (bienEtre().length) {
+              <ul class="pr-puces">
+                @for (b of bienEtre(); track b.valeur) {
+                  <li><ss-icon [nom]="b.icone!" taille="sm" /> {{ b.libelle }}</li>
+                }
+              </ul>
+              @if (spiritualite()) {
+                <p class="pr-note"><ss-icon nom="spiritualite" taille="sm" /> Spiritualité : {{ spiritualite() }}</p>
+              }
+            } @else {
+              <p class="pr-vide">Non renseigné</p>
+            }
+          </article>
+
+          <article class="pr-carte" style="--i: 3">
+            <ng-container *ngTemplateOutlet="entete; context: { section: 'rythme' }" />
+            @if (sectionsRemplies().has('rythme')) {
+              @if (moments().length) {
+                <ul class="pr-puces">
+                  @for (m of moments(); track m) {
+                    <li>{{ m }}</li>
+                  }
+                </ul>
+              }
+              @if (dureeEtFormats()) {
+                <p class="pr-note"><ss-icon nom="horloge" taille="sm" /> {{ dureeEtFormats() }}</p>
+              }
+            } @else {
+              <p class="pr-vide">Non renseigné</p>
+            }
+            <p class="pr-note"><ss-icon nom="cloche" taille="sm" /> {{ rappels() }}</p>
+          </article>
+
+          <article class="pr-carte" style="--i: 4">
+            <ng-container *ngTemplateOutlet="entete; context: { section: 'accompagnement' }" />
+            @if (sectionsRemplies().has('accompagnement')) {
+              @if (envieEchange()) {
+                <p class="pr-phrase">{{ envieEchange() }}</p>
+              }
+              @if (metiers().length) {
+                <ul class="pr-puces">
+                  @for (m of metiers(); track m) {
+                    <li>{{ m }}</li>
+                  }
+                </ul>
+              }
+              @if (aiseAvec()) {
+                <p class="pr-note"><ss-icon nom="utilisateur" taille="sm" /> {{ aiseAvec() }}</p>
+              }
+            } @else {
+              <p class="pr-vide">Non renseigné. Vous pourrez indiquer si un échange avec un professionnel vous intéresse.</p>
+            }
+          </article>
+        </div>
+
+        <a class="pr-journal" routerLink="/app/journal">
+          <ss-icon nom="journal" taille="sm" />
+          Votre humeur de départ est le premier point de votre journal · Voir mon journal
+          <ss-icon nom="fleche" taille="sm" />
+        </a>
+      </section>
+    } @else {
+      <!-- 6. État vide : onboarding passé ou jamais fait -->
+      <section class="pr-vide-carte" aria-labelledby="pr-titre-vide">
+        <figure class="pr-vide-carte__photo">
+          <img src="/images/onboarding/bienvenue.webp" alt="" />
+          <p class="pr-bulle"><small>Titou</small>On fait connaissance&nbsp;?</p>
+        </figure>
+        <div class="pr-vide-carte__texte">
+          <h2 id="pr-titre-vide">Faites connaissance avec Titou en 2 minutes</h2>
+          <p>Vos réponses permettent de vous proposer des ressources, des activités et des professionnels qui vous ressemblent. Tout reste facultatif.</p>
+          <a class="pr-bouton" routerLink="/bienvenue">Commencer <ss-icon nom="fleche" taille="sm" /></a>
+        </div>
+      </section>
+    }
+
+    <!-- 4. Confidentialité -->
+    <section class="pr-section" aria-labelledby="pr-titre-confidentialite">
+      <div class="pr-section__titre">
+        <h2 id="pr-titre-confidentialite">Mes choix de confidentialité</h2>
+        @if (confirmation()) {
+          <span class="pr-enregistre"><ss-icon nom="coche" taille="sm" /> Enregistré</span>
+        }
+      </div>
+      <div class="pr-carte pr-carte--reglages">
+        <div class="pr-reglage">
+          <span class="pr-pastille"><ss-icon nom="suggestion" taille="sm" /></span>
+          <div>
+            <h3>Personnaliser mes suggestions</h3>
+            <p>Titou utilise vos réponses et la tendance de votre humeur pour choisir vos ressources et adapter son ton. Jamais le texte de votre journal.</p>
+          </div>
+          <ss-interrupteur libelle="Personnaliser mes suggestions" [actif]="personnalisation()" (actifChange)="basculerPersonnalisation($event)" />
+        </div>
+        <div class="pr-reglage">
+          <span class="pr-pastille"><ss-icon nom="chat" taille="sm" /></span>
+          <div>
+            <h3>Conserver mes échanges avec Titou</h3>
+            <p>
+              {{ conversation.consentementConservation()
+                ? 'Activé : vous pouvez relire vos conversations et les effacer à tout moment.'
+                : 'Désactivé : rien n’est gardé après la conversation.' }}
+            </p>
+          </div>
+          <ss-interrupteur
+            libelle="Conserver mes échanges avec Titou"
+            [actif]="conversation.consentementConservation()"
+            (actifChange)="basculerConservation($event)"
+          />
+        </div>
+        @if (erreurConfidentialite()) {
+          <p class="pr-erreur" role="alert">Votre choix n’a pas pu être enregistré. Vérifiez votre connexion et réessayez.</p>
+        }
+      </div>
+    </section>
+
+    <!-- 5. Mes données -->
+    <section class="pr-donnees" aria-labelledby="pr-titre-donnees">
+      <h2 id="pr-titre-donnees">Mes données</h2>
+      <p>Vous pouvez refaire le questionnaire à partir de vos réponses actuelles, ou les effacer.</p>
+      <div class="pr-donnees__actions">
+        <a class="pr-bouton pr-bouton--secondaire" routerLink="/bienvenue">
+          <ss-icon nom="ecrire" taille="sm" /> Refaire le questionnaire
+        </a>
+        @if (onboarding()) {
+          <button type="button" class="pr-bouton pr-bouton--danger" (click)="confirmationEffacer.set(true)">
+            <ss-icon nom="corbeille" taille="sm" /> Effacer mes réponses
+          </button>
+        }
+      </div>
+    </section>
+  </div>
+} @else if (erreurChargement()) {
+  <p class="pr-erreur" role="alert">Votre profil n’a pas pu être chargé. Vérifiez votre connexion et rechargez la page.</p>
+} @else {
+  <p class="pr-chargement">Chargement de votre profil…</p>
+}
+
+<!-- En-tête commun des cinq cartes : pastille, titre, Modifier ou Ajouter -->
+<ng-template #entete let-section="section">
+  <div class="pr-carte__entete">
+    <span class="pr-pastille"><ss-icon [nom]="info(section).icone" taille="sm" /></span>
+    <h3>{{ info(section).titre }}</h3>
+    <button
+      type="button"
+      class="pr-lien"
+      [attr.aria-label]="(sectionsRemplies().has(section) ? 'Modifier : ' : 'Ajouter : ') + info(section).titre"
+      (click)="ouvrir(section)"
+    >
+      {{ sectionsRemplies().has(section) ? 'Modifier' : 'Ajouter' }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- 7. Modification d'une section : l'écran même de l'onboarding -->
+<ss-modal [ouverte]="sectionOuverte() !== null" (ouverteChange)="!$event && sectionOuverte.set(null)">
+  <div class="pr-modale" #zoneSection>
+    <div class="pr-modale__entete">
+      <span class="pr-modale__poignee" aria-hidden="true"></span>
+      <button type="button" class="pr-modale__fermer" aria-label="Fermer sans enregistrer" (click)="sectionOuverte.set(null)">
+        <ss-icon nom="fermer" taille="sm" />
+      </button>
+    </div>
+    @switch (sectionOuverte()) {
+      @case ('profil') { <ss-etape-profil /> }
+      @case ('esprit') { <ss-etape-esprit /> }
+      @case ('bien-etre') { <ss-etape-bien-etre /> }
+      @case ('rythme') { <ss-etape-rythme /> }
+      @case ('accompagnement') { <ss-etape-accompagnement [consentements]="false" /> }
+    }
+    @if (store.erreur()) {
+      <p class="pr-erreur" role="alert">{{ store.erreur() }}</p>
+    }
+    <div class="pr-modale__pied">
+      <button type="button" class="pr-bouton pr-bouton--texte" (click)="sectionOuverte.set(null)">Annuler</button>
+      <button type="button" class="pr-bouton" [disabled]="store.enregistrement()" (click)="enregistrerSection()">
+        {{ store.enregistrement() ? 'Enregistrement…' : 'Enregistrer' }}
+      </button>
+    </div>
+  </div>
+</ss-modal>
+
+<!-- Prénom et ville -->
+<ss-modal [(ouverte)]="infosOuvertes">
+  <form class="pr-modale" (submit)="enregistrerInfos($event)">
+    <div class="pr-modale__entete">
+      <h2>Mes informations</h2>
+      <button type="button" class="pr-modale__fermer" aria-label="Fermer sans enregistrer" (click)="infosOuvertes.set(false)">
+        <ss-icon nom="fermer" taille="sm" />
+      </button>
+    </div>
+    <ss-champ libelle="Prénom" autocomplete="given-name" [maxlength]="150" [(valeur)]="prenomSaisi" [erreur]="erreursInfos()['prenom'] ?? null" />
+    <div class="pr-select">
+      <label for="pr-ville">Ville</label>
+      <select id="pr-ville" [value]="villeSaisie()" (change)="villeSaisie.set($any($event.target).value)">
+        <option value="">Non renseignée</option>
+        @for (v of villes; track v) {
+          <option [value]="v">{{ v }}</option>
+        }
+      </select>
+      @if (erreursInfos()['ville']; as erreur) {
+        <p class="pr-erreur">{{ erreur }}</p>
+      }
+    </div>
+    <p class="pr-note"><ss-icon nom="cadenas" taille="sm" /> Sur le forum, seul votre pseudonyme apparaît.</p>
+    <div class="pr-modale__pied">
+      <button type="button" class="pr-bouton pr-bouton--texte" (click)="infosOuvertes.set(false)">Annuler</button>
+      <button type="submit" class="pr-bouton" [disabled]="enregistrementInfos()">
+        {{ enregistrementInfos() ? 'Enregistrement…' : 'Enregistrer' }}
+      </button>
+    </div>
+  </form>
+</ss-modal>
+
+<!-- Confirmation avant d'effacer les réponses -->
+<ss-modal [(ouverte)]="confirmationEffacer">
+  <div class="pr-modale">
+    <div class="pr-modale__entete">
+      <h2>Effacer vos réponses&nbsp;?</h2>
+    </div>
+    <p>Vos réponses à l’onboarding seront effacées. Votre compte, votre journal et vos échanges ne sont pas touchés.</p>
+    @if (erreurEffacer()) {
+      <p class="pr-erreur" role="alert">L’effacement n’a pas abouti. Vérifiez votre connexion et réessayez.</p>
+    }
+    <div class="pr-modale__pied">
+      <button type="button" class="pr-bouton pr-bouton--texte" (click)="confirmationEffacer.set(false)">Annuler</button>
+      <button type="button" class="pr-bouton pr-bouton--alerte" [disabled]="effacement()" (click)="effacer()">
+        {{ effacement() ? 'Effacement…' : 'Effacer' }}
+      </button>
+    </div>
+  </div>
+</ss-modal>
