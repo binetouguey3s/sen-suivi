@@ -79,3 +79,21 @@ img[src$='logo-sen-suivi.png'] {
 .leaflet-tooltip.ss-etiquette::before {
   display: none;
 }
+
+// Impression (et PDF) : marges de page, fond blanc, et rien de ce qui flotte
+// au-dessus des pages (fenêtre de Titou, modale d'urgence)
+@page {
+  margin: 2cm;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  ss-fenetre-chat,
+  ss-modal-urgence {
+    display: none !important;
+  }
+}

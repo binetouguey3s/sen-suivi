@@ -3,6 +3,9 @@
 // l'application passe par <ss-icon>, jamais par un import Lucide direct.
 import {
   LucideActivity,
+  LucideEllipsis,
+  LucideFileDown,
+  LucideLink,
   LucideBot,
   LucideChevronDown,
   LucideGlobe,
@@ -111,6 +114,9 @@ export const ICONES = {
   calendrier: LucideCalendarCheck,
   'marque-page': LucideBookmark,
   partage: LucideShare2,
+  lien: LucideLink,
+  pdf: LucideFileDown,
+  'plus-options': LucideEllipsis,
   'chevron-droite': LucideChevronRight,
   'chevron-gauche': LucideChevronLeft,
   carte: LucideMap,

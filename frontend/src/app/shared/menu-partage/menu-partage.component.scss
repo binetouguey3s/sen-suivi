@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+
+// « Lien copié » : visible, et lu par les lecteurs d'écran (role="status")
+.mp__annonce {
+  margin: 0;
+  color: var(--ss-texte-marque);
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+
+  &:not(:empty) {
+    margin-top: var(--ss-espace-1);
+  }
+}
+
+// Ordinateur : popover posé sous le bouton (position calculée en JS)
+.mp {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 248px;
+  padding: 6px;
+  border: 1px solid var(--ss-bordure);
+  border-radius: 16px;
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre-forte);
+  animation: mp-apparition 0.16s var(--ss-ease);
+}
+
+.mp__voile {
+  display: none;
+}
+
+.mp__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--ss-texte);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  ss-icon {
+    color: var(--ss-texte-marque);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--ss-surface-legere);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: -2px;
+  }
+}
+
+// Mobile : feuille en bas d'écran, sur un voile
+@media (max-width: 599px) {
+  .mp__voile {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 59;
+    background: var(--ss-voile);
+  }
+
+  .mp {
+    inset: auto 0 0;
+    width: auto;
+    padding: var(--ss-espace-2) var(--ss-espace-2) calc(var(--ss-espace-3) + env(safe-area-inset-bottom, 0px));
+    border-radius: var(--ss-rayon-carte) var(--ss-rayon-carte) 0 0;
+    animation-name: mp-montee;
+  }
+}
+
+@media print {
+  .mp,
+  .mp__voile,
+  .mp__annonce {
+    display: none;
+  }
+}
+
+@keyframes mp-apparition {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes mp-montee {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp {
+    animation: none;
+  }
+}

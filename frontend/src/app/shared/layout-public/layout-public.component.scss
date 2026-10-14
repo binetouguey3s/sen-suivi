@@ -543,3 +543,19 @@
   background: var(--ss-alerte);
   border: 2px solid var(--ss-alerte-texte);
 }
+
+// Impression (et PDF) : seule la page compte, sans l'interface autour
+@media print {
+  :host {
+    min-height: 0;
+    background: none;
+  }
+
+  .lp__entete,
+  .lp__tiroir,
+  .lp__voile,
+  .lp__pied,
+  .lp__chat {
+    display: none !important;
+  }
+}

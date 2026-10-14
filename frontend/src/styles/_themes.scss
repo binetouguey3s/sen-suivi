@@ -215,3 +215,16 @@
     @include tokens-sombre;
   }
 }
+
+// -------------------------------------------------------------
+//  Impression (et PDF) : toujours en clair, quel que soit le
+//  thème affiché. Placé en dernier pour l'emporter sur le sombre.
+// -------------------------------------------------------------
+@media print {
+  :root,
+  :root[data-theme],
+  [data-theme='sombre'] {
+    @include tokens-clair;
+    color-scheme: light;
+  }
+}

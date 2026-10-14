@@ -171,12 +171,6 @@ img.art__illustration--entiere {
   color: var(--ss-primaire-texte) !important;
 }
 
-.art__confirmation {
-  color: var(--ss-texte-marque) !important;
-  font-size: 14px !important;
-  margin-top: var(--ss-espace-1) !important;
-}
-
 .art__intro {
   font-style: italic;
   font-size: 17px !important;
@@ -304,5 +298,107 @@ blockquote {
 
   @media (min-width: 900px) {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// Bas de page du PDF : n'existe qu'à l'impression
+.art__pied-impression {
+  display: none;
+}
+
+// ─── Impression / « Enregistrer au format PDF » ──────────────────────────
+// Le thème clair est imposé à l'impression (_themes.scss) ; ici, la mise en
+// page : le texte de la ressource seul, lisible, sans éléments d'interface.
+@media print {
+  // Les marges @page (2 cm) remplacent la gouttière de l'écran
+  .art {
+    padding: 0;
+    color: #000000;
+    font-size: 12pt;
+  }
+
+  .art__fil,
+  .art__actions,
+  .art__lateral,
+  .art__suite,
+  ss-menu-partage {
+    display: none !important;
+  }
+
+  .art__hero {
+    height: 6cm;
+    border-radius: 12px;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .art__mise-en-page {
+    display: block;
+    margin-top: 0.8cm;
+  }
+
+  .art__thematique {
+    border: 1px solid #000000;
+    background: none;
+    color: #000000;
+  }
+
+  .art__meta {
+    border-bottom-color: #999999;
+    color: #333333;
+    font-size: 10pt;
+  }
+
+  .art__texte {
+    h1 {
+      font-size: 24pt;
+      color: #000000;
+      margin-bottom: 0.4cm;
+    }
+
+    h2 {
+      font-size: 15pt;
+      color: #000000;
+      margin: 0.8cm 0 0.2cm;
+    }
+
+    // Un titre de section n'est jamais seul en bas de page
+    h1,
+    h2,
+    h3 {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    p {
+      color: #000000;
+      font-size: 12pt;
+      orphans: 3;
+      widows: 3;
+    }
+  }
+
+  .art__intro {
+    font-size: 12pt !important;
+  }
+
+  blockquote {
+    border-left: 3px solid #555555;
+    border-radius: 0;
+    background: none;
+    color: #000000;
+    font-size: 12pt;
+    break-inside: avoid;
+  }
+
+  .art__pied-impression {
+    display: block;
+    margin-top: 1cm;
+    padding-top: 0.3cm;
+    border-top: 1px solid #999999;
+    color: #333333 !important;
+    font-size: 9pt !important;
+    break-inside: avoid;
   }
 }

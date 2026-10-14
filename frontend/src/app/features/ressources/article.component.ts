@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
@@ -15,12 +15,13 @@ import {
 } from '../../core/utils/ressources';
 import { CarteRessourceComponent } from '../../shared/carte-ressource/carte-ressource.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { MenuPartageComponent } from '../../shared/menu-partage/menu-partage.component';
 import { valeurs } from '../../core/utils/ressource';
 
 @Component({
   selector: 'ss-article',
   standalone: true,
-  imports: [RouterLink, IconComponent, CarteRessourceComponent],
+  imports: [RouterLink, IconComponent, CarteRessourceComponent, MenuPartageComponent],
   templateUrl: './article.component.html',
   styleUrl: './article.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,7 +37,8 @@ export class ArticleComponent {
     defaultValue: [],
   });
 
-  protected readonly lienCopie = signal(false);
+  // Adresse partagée : propre, sans paramètres ni ancre (la ressource s'ouvre sans compte)
+  protected readonly urlPropre = computed(() => `${window.location.origin}/ressources/${this.id()}`);
 
   protected readonly blocs = computed<BlocContenu[]>(() => {
     const r = this.ressource.value();
@@ -85,21 +87,5 @@ export class ArticleComponent {
 
   protected allerA(id: string): void {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  protected async partager(): Promise<void> {
-    const url = window.location.href;
-    const titre = this.ressource.value()?.titre ?? 'Sen Suivi';
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: titre, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        this.lienCopie.set(true);
-        setTimeout(() => this.lienCopie.set(false), 2500);
-      }
-    } catch {
-      // partage annulé par l'utilisateur : rien à faire
-    }
   }
 }

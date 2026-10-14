@@ -47,12 +47,21 @@
             <button type="button" [class.art__actif]="estFavori()" [attr.aria-pressed]="estFavori()" aria-label="Ajouter aux favoris" (click)="basculerFavori()">
               <ss-icon nom="coeur" taille="sm" />
             </button>
-            <button type="button" aria-label="Partager" (click)="partager()"><ss-icon nom="partage" taille="sm" /></button>
+            <button
+              #partageHaut
+              type="button"
+              aria-label="Partager"
+              aria-haspopup="menu"
+              [attr.aria-controls]="partage.identifiant"
+              [attr.aria-expanded]="partage.ouvertPour(partageHaut)"
+              (click)="partage.basculer(partageHaut)"
+            >
+              <ss-icon nom="partage" taille="sm" />
+            </button>
           </span>
         </div>
-        @if (lienCopie()) {
-          <p class="art__confirmation" role="status">Lien copié dans le presse-papiers.</p>
-        }
+        <!-- Un seul menu, ouvert par les deux boutons « Partager » -->
+        <ss-menu-partage #partage [titre]="r.titre" [url]="urlPropre()" />
 
         @if (introduction(); as intro) {
           <p class="art__intro">{{ intro }}</p>
@@ -71,6 +80,12 @@
             }
           }
         }
+
+        <!-- Visible seulement à l'impression (PDF) -->
+        <p class="art__pied-impression">
+          Ressource Sen Suivi — {{ urlPropre() }} · Sen Suivi ne remplace pas un professionnel de santé.
+          En cas d'urgence : SAMU 1515.
+        </p>
       </article>
 
       <aside class="art__lateral">
@@ -86,7 +101,15 @@
               <ss-icon nom="marque-page" taille="sm" />
               {{ estFavori() ? 'Article sauvegardé' : "Sauvegarder l'article" }}
             </button>
-            <button type="button" class="art__bouton-contour" (click)="partager()">
+            <button
+              #partageLateral
+              type="button"
+              class="art__bouton-contour"
+              aria-haspopup="menu"
+              [attr.aria-controls]="partage.identifiant"
+              [attr.aria-expanded]="partage.ouvertPour(partageLateral)"
+              (click)="partage.basculer(partageLateral)"
+            >
               <ss-icon nom="partage" taille="sm" /> Partager
             </button>
           </section>
