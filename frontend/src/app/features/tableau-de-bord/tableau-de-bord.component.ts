@@ -8,8 +8,10 @@ import { MoodSelectorComponent } from '../../shared/mood-selector/mood-selector.
 import { API_BASE_URL } from '../../core/config/api.config';
 import { imageDuLieu } from '../../core/config/images-lieux';
 import { AuthService } from '../../core/services/auth.service';
+import { CompteService } from '../../core/services/compte.service';
 import { SuiviHumeurService } from '../../core/services/suivi-humeur.service';
 import { valeurs } from '../../core/utils/ressource';
+import { Suggestion, suggererRessources } from '../../core/utils/suggestions';
 import {
   LieuDetente,
   NIVEAUX_HUMEUR,
@@ -39,6 +41,7 @@ function scoreDe(niveau: NiveauHumeur): number {
 export class TableauDeBordComponent {
   protected readonly auth = inject(AuthService);
   private readonly suiviHumeurService = inject(SuiviHumeurService);
+  private readonly compteService = inject(CompteService);
 
   protected readonly suivi = httpResource<SuiviHumeur[]>(
     () => `${API_BASE_URL}/suivi-humeur?periode=30j`,
@@ -108,9 +111,21 @@ export class TableauDeBordComponent {
     return jours;
   });
 
-  protected readonly ressourceDuJour = computed<Ressource | null>(
-    () => valeurs(this.ressources)[0] ?? null,
+  // « Pour vous » : profil de l'onboarding, seulement avec le consentement à la personnalisation
+  private readonly preferences = computed(() => this.compteService.compte()?.preferences);
+  private readonly consentement = computed(() => this.preferences()?.personnalisation_chatbot === true);
+  protected readonly suggestions = computed<Suggestion[]>(() =>
+    suggererRessources(valeurs(this.ressources), this.preferences()?.onboarding, this.humeurDuJour(), this.consentement()),
   );
+  // Sans onboarding ou sans consentement : inviter à personnaliser depuis Mon profil
+  protected readonly personnalisable = computed(() => !this.consentement() || !this.preferences()?.onboarding);
+
+  constructor() {
+    if (!this.compteService.compte()) {
+      // Sans compte chargé, « Pour vous » montre simplement les nouveautés
+      this.compteService.charger().catch(() => undefined);
+    }
+  }
 
   // Priorité à un lieu dont on a une vraie photo (docs/CREDITS-IMAGES.md) ;
   // à défaut, le premier lieu renvoyé par l'API.

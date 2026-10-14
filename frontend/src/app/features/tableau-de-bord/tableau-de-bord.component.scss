@@ -45,6 +45,112 @@
   box-shadow: var(--ss-ombre);
 }
 
+// « Pour vous » : 3 ressources choisies par des règles simples, en pleine largeur
+.tdb__pour-vous {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-2);
+}
+
+.tdb__pour-vous-entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ss-espace-2);
+
+  .tdb__titre-carte {
+    margin: 0;
+  }
+
+  .tdb__lien-decouvrir {
+    cursor: pointer;
+  }
+}
+
+.tdb__pour-vous-grille {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ss-espace-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ss-espace-3);
+  }
+
+  li {
+    display: flex;
+  }
+}
+
+.tdb__suggestion {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ss-espace-1);
+  padding: var(--ss-espace-3);
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+  color: var(--ss-texte);
+  text-decoration: none;
+  transition: box-shadow 0.15s var(--ss-ease), transform 0.15s var(--ss-ease);
+
+  &:hover {
+    box-shadow: var(--ss-ombre-forte);
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: 3px;
+  }
+
+  .tdb__ressource-titre {
+    flex: 1;
+    margin: var(--ss-espace-1) 0 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.tdb__suggestion-theme {
+  padding: 2px var(--ss-espace-2);
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+.tdb__suggestion-duree,
+.tdb__suggestion-raison {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.tdb__suggestion-duree {
+  color: var(--ss-texte-doux);
+}
+
+.tdb__suggestion-raison {
+  color: var(--ss-texte-marque);
+  font-weight: var(--ss-poids-texte-fort);
+}
+
 .tdb__carte--lieu {
   grid-column: 1 / -1;
   overflow: hidden;

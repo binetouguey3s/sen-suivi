@@ -45,20 +45,6 @@
       </p>
     </section>
 
-    @if (ressources.isLoading()) {
-      <section class="tdb__carte"><p class="tdb__etat">Chargement…</p></section>
-    } @else if (ressourceDuJour(); as ressource) {
-      <section class="tdb__carte tdb__carte--ressource">
-        <p class="tdb__eyebrow">Ressource du jour</p>
-        <h3 class="tdb__ressource-titre">{{ ressource.titre }}</h3>
-        <a class="tdb__lien-decouvrir" [routerLink]="['/ressources', ressource.id]">
-          Découvrir <ss-icon nom="fleche" taille="sm" />
-        </a>
-      </section>
-    } @else {
-      <section class="tdb__carte"><p class="tdb__etat">Aucune ressource disponible pour le moment.</p></section>
-    }
-
     <section class="tdb__carte">
       <p class="tdb__eyebrow">Auto-évaluation suggérée</p>
       <h3 class="tdb__ressource-titre">Test de niveau de stress actuel</h3>
@@ -68,6 +54,35 @@
       <a class="tdb__bouton-contour" routerLink="/app/evaluation/STRESS">Démarrer le test</a>
     </section>
   </div>
+
+  <section class="tdb__pour-vous" aria-labelledby="tdb-pour-vous">
+    <div class="tdb__pour-vous-entete">
+      <h2 id="tdb-pour-vous" class="tdb__titre-carte">Pour vous</h2>
+      @if (personnalisable()) {
+        <a class="tdb__lien-decouvrir" routerLink="/app/profil">
+          Personnaliser <ss-icon nom="fleche" taille="sm" />
+        </a>
+      }
+    </div>
+    @if (ressources.isLoading()) {
+      <p class="tdb__etat">Chargement…</p>
+    } @else if (suggestions().length) {
+      <ul class="tdb__pour-vous-grille">
+        @for (s of suggestions(); track s.ressource.id) {
+          <li>
+            <a class="tdb__suggestion" [routerLink]="['/ressources', s.ressource.id]">
+              <span class="tdb__suggestion-theme">{{ s.ressource.thematique }}</span>
+              <h3 class="tdb__ressource-titre">{{ s.ressource.titre }}</h3>
+              <span class="tdb__suggestion-duree"><ss-icon nom="horloge" taille="sm" /> {{ s.ressource.duree_lecture }} min</span>
+              <span class="tdb__suggestion-raison"><ss-icon nom="suggestion" taille="sm" /> {{ s.raison }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="tdb__etat">Aucune ressource disponible pour le moment.</p>
+    }
+  </section>
 
   @if (lieux.isLoading()) {
     <section class="tdb__carte tdb__carte--lieu"><p class="tdb__etat">Chargement…</p></section>
