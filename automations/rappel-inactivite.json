@@ -8,13 +8,13 @@
           "interval": [
             {
               "field": "days",
-              "triggerAtHour": 9
+              "triggerAtHour": 8
             }
           ]
         }
       },
-      "id": "declencheur",
-      "name": "Chaque jour à 9 h",
+      "id": "declencheur-matin",
+      "name": "Chaque jour à 8 h",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -24,8 +24,161 @@
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "moment-matin",
+              "name": "moment",
+              "value": "matin",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "moment-matin",
+      "name": "Moment : matin",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 12,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "declencheur-midi",
+      "name": "Chaque jour à 12 h 30",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "moment-midi",
+              "name": "moment",
+              "value": "midi",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "moment-midi",
+      "name": "Moment : midi",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "id": "declencheur-soir",
+      "name": "Chaque jour à 18 h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "moment-soir",
+              "name": "moment",
+              "value": "soir",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "moment-soir",
+      "name": "Moment : soir",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "id": "declencheur-coucher",
+      "name": "Chaque jour à 21 h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "moment-coucher",
+              "name": "moment",
+              "value": "coucher",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "moment-coucher",
+      "name": "Moment : coucher",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        480
+      ]
+    },
+    {
+      "parameters": {
         "method": "GET",
-        "url": "http://backend:8000/api/interne/utilisateurs-inactifs",
+        "url": "=http://backend:8000/api/interne/utilisateurs-inactifs?moment={{ $json.moment }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -41,8 +194,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        240,
-        0
+        480,
+        240
       ]
     },
     {
@@ -67,13 +220,90 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        480,
-        0
+        720,
+        240
       ]
     }
   ],
   "connections": {
-    "Chaque jour à 9 h": {
+    "Chaque jour à 8 h": {
+      "main": [
+        [
+          {
+            "node": "Moment : matin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Moment : matin": {
+      "main": [
+        [
+          {
+            "node": "Utilisateurs inactifs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chaque jour à 12 h 30": {
+      "main": [
+        [
+          {
+            "node": "Moment : midi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Moment : midi": {
+      "main": [
+        [
+          {
+            "node": "Utilisateurs inactifs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chaque jour à 18 h": {
+      "main": [
+        [
+          {
+            "node": "Moment : soir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Moment : soir": {
+      "main": [
+        [
+          {
+            "node": "Utilisateurs inactifs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chaque jour à 21 h": {
+      "main": [
+        [
+          {
+            "node": "Moment : coucher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Moment : coucher": {
       "main": [
         [
           {

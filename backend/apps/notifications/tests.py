@@ -10,7 +10,9 @@ from rest_framework.test import APITestCase
 from apps.comptes.models import Professionnel, StatutValidationPro, Utilisateur
 from apps.suivi.models import AutoEvaluation, SuiviHumeur
 
-from .interne import OBJET_RAPPEL, OBJET_RAPPEL_TEST
+from apps.ressources.models import Ressource
+
+from .interne import CONTENU_RAPPEL, OBJET_RAPPEL, OBJET_RAPPEL_TEST
 from .models import NotificationEmail
 from .services import notifier
 
@@ -106,6 +108,151 @@ class RappelsTests(APITestCase):
         self.assertEqual(self.a_retester(), [])
         AutoEvaluation.objects.create(utilisateur=self.awa, type_evaluation='STRESS', score_de_tendance=40)
         self.assertEqual(self.a_retester(), [])
+
+
+@override_settings(N8N_API_KEY=CLE, RAPPEL_JOURNAL_JOURS=3, RAPPEL_TEST_JOURS=30, RAPPEL_FREQUENCE_MAX_JOURS=7)
+class RappelsOnboardingTests(APITestCase):
+    """Ce que la personne a choisi dans l'onboarding : rappels, fréquence, moments, contenu."""
+
+    def setUp(self):
+        self.awa = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+        Utilisateur.objects.filter(pk=self.awa.pk).update(date_creation=timezone.now() - timedelta(days=60))
+        self.awa.refresh_from_db()
+
+    def choisir(self, consentement=False, **onboarding):
+        self.awa.preferences = {
+            'onboarding': {'statut': 'termine', 'rappels': True, 'frequence_rappels': '3_semaine', **onboarding},
+            **({'personnalisation_chatbot': True} if consentement else {}),
+        }
+        self.awa.save()
+
+    def inactifs(self, moment=None):
+        url = '/api/interne/utilisateurs-inactifs' + (f'?moment={moment}' if moment else '')
+        return self.client.get(url, headers={'X-Cle-Interne': CLE}).data
+
+    def rappel_il_y_a(self, jours, objet=OBJET_RAPPEL):
+        envoi = notifier(self.awa, objet, 'Rappel')
+        NotificationEmail.objects.filter(pk=envoi.pk).update(date_envoi=timezone.now() - timedelta(days=jours))
+
+    # --- Rappels coupés ------------------------------------------------------
+
+    def test_rappels_desactives_dans_l_onboarding_aucun_rappel_de_journal(self):
+        self.choisir(rappels=False)
+        self.assertEqual(self.inactifs(), [])
+
+    def test_frequence_jamais_aucun_rappel_de_journal(self):
+        self.choisir(frequence_rappels='jamais')
+        self.assertEqual(self.inactifs(), [])
+
+    def test_le_reglage_des_parametres_doit_aussi_etre_d_accord(self):
+        self.choisir()
+        self.awa.preferences['rappel_journal'] = {'email': False}
+        self.awa.save()
+        self.assertEqual(self.inactifs(), [])
+
+    def test_couper_les_rappels_de_journal_laisse_le_rappel_d_auto_evaluation(self):
+        self.choisir(rappels=False)
+        test = AutoEvaluation.objects.create(utilisateur=self.awa, type_evaluation='STRESS', score_de_tendance=40)
+        AutoEvaluation.objects.filter(pk=test.pk).update(date=timezone.now() - timedelta(days=35))
+        reponse = self.client.get('/api/interne/utilisateurs-a-retester', headers={'X-Cle-Interne': CLE}).data
+        self.assertEqual(len(reponse), 1)
+
+    # --- Fréquence ----------------------------------------------------------
+
+    def test_quotidien_un_rappel_par_jour_au_plus(self):
+        self.choisir(frequence_rappels='quotidien')
+        self.rappel_il_y_a(1)
+        self.assertEqual(len(self.inactifs()), 1)
+        notifier(self.awa, OBJET_RAPPEL, 'Rappel du jour')
+        self.assertEqual(self.inactifs(), [])
+
+    def test_trois_par_semaine_au_plus(self):
+        self.choisir(frequence_rappels='3_semaine')
+        self.rappel_il_y_a(1)
+        self.rappel_il_y_a(3)
+        self.assertEqual(len(self.inactifs()), 1)
+        self.rappel_il_y_a(5, OBJET_RAPPEL_TEST)
+        self.assertEqual(self.inactifs(), [])
+        # Au-delà de 7 jours, un ancien rappel ne compte plus
+        NotificationEmail.objects.filter(destinataire=self.awa, objet=OBJET_RAPPEL_TEST).update(
+            date_envoi=timezone.now() - timedelta(days=8)
+        )
+        self.assertEqual(len(self.inactifs()), 1)
+
+    def test_sans_onboarding_la_regle_generale_reste(self):
+        self.rappel_il_y_a(3)
+        self.assertEqual(self.inactifs(), [])
+
+    # --- Moment de la journée ----------------------------------------------
+
+    def test_seulement_au_moment_choisi(self):
+        self.choisir(moments=['soir', 'coucher'])
+        self.assertEqual(len(self.inactifs('soir')), 1)
+        self.assertEqual(len(self.inactifs('coucher')), 1)
+        self.assertEqual(self.inactifs('matin'), [])
+        self.assertEqual(self.inactifs('midi'), [])
+
+    def test_aucun_moment_choisi_le_matin(self):
+        self.choisir(moments=[])
+        self.assertEqual(len(self.inactifs('matin')), 1)
+        self.assertEqual(self.inactifs('soir'), [])
+
+    def test_sans_onboarding_le_matin(self):
+        self.assertEqual(len(self.inactifs('matin')), 1)
+        self.assertEqual(self.inactifs('soir'), [])
+
+    def test_un_moment_inconnu_est_refuse(self):
+        reponse = self.client.get('/api/interne/utilisateurs-inactifs?moment=nuit', headers={'X-Cle-Interne': CLE})
+        self.assertEqual(reponse.status_code, 400)
+
+    # --- Contenu -------------------------------------------------------------
+
+    def ressources(self):
+        Ressource.objects.create(titre='Comprendre le stress', type_ressource='ARTICLE', contenu='…', thematique='Stress', duree_lecture=6)
+        Ressource.objects.create(titre='Respirer avant de dormir', type_ressource='PODCAST', contenu='…', thematique='Respiration', duree_lecture=5)
+        Ressource.objects.create(titre='Bien manger', type_ressource='PODCAST', contenu='…', thematique='Alimentation')
+
+    def test_avec_consentement_une_ressource_qui_repond_a_une_preoccupation(self):
+        self.ressources()
+        self.choisir(consentement=True, preoccupations=['stress'], formats=['audio'], moments=['soir'])
+
+        rappel, = self.inactifs('soir')
+
+        self.assertEqual(
+            rappel['contenu'].split(' Si vous')[0],
+            'Bonjour Awa, et si vous preniez 5 minutes pour vous ce soir ? '
+            'Une idée : « Respirer avant de dormir » (5 min).',
+        )
+        self.assertIn('Sen Suivi ne remplace pas un professionnel de santé.', rappel['contenu'])
+
+    def test_sans_format_preferant_la_thematique_la_plus_proche_reste_possible(self):
+        self.ressources()
+        self.choisir(consentement=True, preoccupations=['stress'])
+        rappel, = self.inactifs('matin')
+        self.assertIn('ce matin', rappel['contenu'])
+        self.assertRegex(rappel['contenu'], '« (Comprendre le stress|Respirer avant de dormir) »')
+
+    def test_sans_consentement_le_texte_reste_inchange(self):
+        self.ressources()
+        self.choisir(preoccupations=['stress'], formats=['audio'])
+        rappel, = self.inactifs()
+        self.assertEqual(rappel['contenu'], CONTENU_RAPPEL.format(prenom='Awa'))
+
+    def test_sans_ressource_adaptee_le_texte_reste_inchange(self):
+        self.choisir(consentement=True, preoccupations=['deuil'])
+        rappel, = self.inactifs()
+        self.assertEqual(rappel['contenu'], CONTENU_RAPPEL.format(prenom='Awa'))
+
+    def test_le_rappel_d_auto_evaluation_garde_toujours_l_avertissement(self):
+        self.ressources()
+        self.choisir(consentement=True, preoccupations=['stress'])
+        test = AutoEvaluation.objects.create(utilisateur=self.awa, type_evaluation='STRESS', score_de_tendance=40)
+        AutoEvaluation.objects.filter(pk=test.pk).update(date=timezone.now() - timedelta(days=35))
+
+        rappel, = self.client.get('/api/interne/utilisateurs-a-retester', headers={'X-Cle-Interne': CLE}).data
+
+        self.assertIn('une idée : « ', rappel['contenu'])
+        self.assertTrue(rappel['contenu'].endswith('Sen Suivi ne remplace pas un professionnel de santé.'))
 
 
 @override_settings(EMAIL_NOTIFICATIONS=True, EMAIL_ASYNCHRONE=False)

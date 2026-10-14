@@ -139,6 +139,40 @@ describe('ProfilComponent', () => {
       expect(carte('Ce qui m’occupe l’esprit').textContent).toContain('Sommeil');
     });
 
+    it('modifier le rythme met à jour moments et fréquence, sans toucher au reste', async () => {
+      carte('Mon rythme').querySelector<HTMLButtonElement>('.pr-lien')!.click();
+      await stabiliser();
+      bouton('À midi').click();
+      bouton('Chaque jour').click();
+      await stabiliser();
+      bouton('Enregistrer').click();
+      await stabiliser();
+
+      const { preferences } = modifier.mock.calls[0][0];
+      expect(preferences.onboarding.moments).toEqual(['matin', 'soir', 'midi']);
+      expect(preferences.onboarding.rappels).toBe(true);
+      expect(preferences.onboarding.frequence_rappels).toBe('quotidien');
+      expect(preferences.onboarding.preoccupations).toEqual(['stress', 'etudes']);
+      expect(preferences.nouvelle_demande).toEqual({ email: false });
+      expect(preferences.personnalisation_chatbot).toBe(true);
+      expect(carte('Mon rythme').textContent).toContain('Rappels chaque jour');
+    });
+
+    it('couper les rappels est enregistré dans l’onboarding', async () => {
+      carte('Mon rythme').querySelector<HTMLButtonElement>('.pr-lien')!.click();
+      await stabiliser();
+      hote.querySelector<HTMLButtonElement>('[role="dialog"] [role="switch"][aria-label="Recevoir des rappels"]')!.click();
+      await stabiliser();
+      bouton('Enregistrer').click();
+      await stabiliser();
+
+      const { preferences } = modifier.mock.calls[0][0];
+      expect(preferences.onboarding.rappels).toBe(false);
+      expect(preferences.onboarding.frequence_rappels).toBeUndefined();
+      expect(preferences.nouvelle_demande).toEqual({ email: false });
+      expect(carte('Mon rythme').textContent).toContain('Rappels désactivés');
+    });
+
     it('« Annuler » ne garde rien de la modification', async () => {
       carte('Ce qui m’occupe l’esprit').querySelector<HTMLButtonElement>('.pr-lien')!.click();
       await stabiliser();
