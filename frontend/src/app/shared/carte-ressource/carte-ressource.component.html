@@ -20,16 +20,21 @@
         <ss-icon [nom]="icone()" taille="xl" />
       }
       @if (vedette()) {
-        <span class="cr__badge">À lire aujourd'hui</span>
+        <span class="cr__badge">{{ estPodcast() ? 'À écouter aujourd’hui' : 'À lire aujourd’hui' }}</span>
       }
       <span class="cr__format"><ss-icon [nom]="icone()" taille="sm" /> {{ format() }}</span>
     </div>
 
     <div class="cr__corps">
-      <span class="cr__thematique">{{ ressource().thematique }}</span>
+      <span class="cr__etiquettes">
+        <span class="cr__thematique">{{ ressource().thematique }}</span>
+        @if (estPodcast()) {
+          <span class="cr__audio"><ss-icon nom="ecouter" taille="sm" /> Audio</span>
+        }
+      </span>
       <h3 class="cr__titre">{{ ressource().titre }}</h3>
       <p class="cr__meta">
-        <span><ss-icon nom="horloge" taille="sm" /> {{ ressource().duree_lecture }} min</span>
+        <span><ss-icon [nom]="estPodcast() ? 'ecouter' : 'horloge'" taille="sm" /> {{ ressource().duree_lecture }} min</span>
         @if (vedette()) {
           <span><ss-icon nom="calendrier" taille="sm" /> {{ ajout() }}</span>
         }

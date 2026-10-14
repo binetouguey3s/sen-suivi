@@ -145,6 +145,7 @@ Un verre d'eau, un repas simple, un échange avec un proche : ces petits rituels
     },
     {
         'titre': "Parler de ce qu'on ressent, même quand ça ne se fait pas",
+        'url_audio': '/audio/podcasts/parler-de-ce-qu-on-ressent.mp3',
         'type_ressource': 'PODCAST',
         'thematique': 'Expression',
         'duree_lecture': 18,
@@ -162,6 +163,7 @@ Vous n'êtes pas obligé de tout dire d'un coup. Commencez par une phrase simple
     },
     {
         'titre': 'Podcast : la teranga commence par soi-même',
+        'url_audio': '/audio/podcasts/la-teranga-commence-par-soi-meme.mp3',
         'type_ressource': 'PODCAST',
         'thematique': 'Bien-être',
         'duree_lecture': 22,

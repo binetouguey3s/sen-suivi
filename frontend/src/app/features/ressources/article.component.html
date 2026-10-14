@@ -41,7 +41,11 @@
         <h1>{{ r.titre }}</h1>
 
         <div class="art__meta">
-          <span><ss-icon nom="horloge" taille="sm" /> {{ r.duree_lecture }} min</span>
+          @if (estPodcast()) {
+            <span><ss-icon nom="ecouter" taille="sm" /> {{ dureeAffichee() }}</span>
+          } @else {
+            <span><ss-icon nom="horloge" taille="sm" /> {{ r.duree_lecture }} min</span>
+          }
           <span><ss-icon nom="calendrier" taille="sm" /> {{ ajout() }}</span>
           <span class="art__actions">
             <button type="button" [class.art__actif]="estFavori()" [attr.aria-pressed]="estFavori()" aria-label="Ajouter aux favoris" (click)="basculerFavori()">
@@ -62,6 +66,19 @@
         </div>
         <!-- Un seul menu, ouvert par les deux boutons « Partager » -->
         <ss-menu-partage #partage [titre]="r.titre" [url]="urlPropre()" />
+
+        @if (estPodcast()) {
+          <ss-lecteur-audio
+            class="art__lecteur"
+            [src]="r.url_audio"
+            [titre]="r.titre"
+            [image]="imagePodcast()"
+            [resume]="texteResume()"
+            [cle]="r.id"
+            (dureeConnue)="dureeAudio.set($event)"
+          />
+          <h2 class="art__resume-titre">Résumé de l’épisode</h2>
+        }
 
         @if (introduction(); as intro) {
           <p class="art__intro">{{ intro }}</p>
@@ -99,7 +116,7 @@
             </ol>
             <button type="button" class="art__bouton-plein" [attr.aria-pressed]="estFavori()" (click)="basculerFavori()">
               <ss-icon nom="marque-page" taille="sm" />
-              {{ estFavori() ? 'Article sauvegardé' : "Sauvegarder l'article" }}
+              {{ libelleSauvegarde() }}
             </button>
             <button
               #partageLateral

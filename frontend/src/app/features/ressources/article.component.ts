@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { API_BASE_URL } from '../../core/config/api.config';
@@ -15,13 +15,14 @@ import {
 } from '../../core/utils/ressources';
 import { CarteRessourceComponent } from '../../shared/carte-ressource/carte-ressource.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { LecteurAudioComponent } from '../../shared/lecteur-audio/lecteur-audio.component';
 import { MenuPartageComponent } from '../../shared/menu-partage/menu-partage.component';
 import { valeurs } from '../../core/utils/ressource';
 
 @Component({
   selector: 'ss-article',
   standalone: true,
-  imports: [RouterLink, IconComponent, CarteRessourceComponent, MenuPartageComponent],
+  imports: [RouterLink, IconComponent, CarteRessourceComponent, MenuPartageComponent, LecteurAudioComponent],
   templateUrl: './article.component.html',
   styleUrl: './article.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -80,6 +81,27 @@ export class ArticleComponent {
     return r ? ajouteLe(r.date_publication) : '';
   });
   protected readonly estFavori = computed(() => this.favoris.estFavori(Number(this.id())));
+
+  // ─── Podcast ─────────────────────────────────────────────────────────────
+
+  protected readonly estPodcast = computed(() => this.ressource.value()?.type_ressource === 'PODCAST');
+  // Durée réelle de l'audio, dès que le lecteur l'a lue dans les métadonnées
+  protected readonly dureeAudio = signal<number | null>(null);
+  protected readonly dureeAffichee = computed(() => {
+    const secondes = this.dureeAudio();
+    if (secondes === null) return `${this.ressource.value()?.duree_lecture ?? 0} min`;
+    return `${Math.max(1, Math.round(secondes / 60))} min`;
+  });
+  // Texte lu par la voix du navigateur quand l'épisode n'a pas de fichier
+  protected readonly texteResume = computed(() => this.blocs().map((b) => b.texte).join(' '));
+  protected readonly imagePodcast = computed(() => {
+    const v = this.visuel();
+    return v?.genre === 'photo' ? v.src : null;
+  });
+  protected readonly libelleSauvegarde = computed(() => {
+    if (this.estPodcast()) return this.estFavori() ? 'Podcast sauvegardé' : 'Sauvegarder le podcast';
+    return this.estFavori() ? 'Article sauvegardé' : "Sauvegarder l'article";
+  });
 
   protected basculerFavori(): void {
     void this.favoris.basculer(Number(this.id()));

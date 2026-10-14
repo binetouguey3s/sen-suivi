@@ -8,7 +8,7 @@ class RessourceSerializer(serializers.ModelSerializer):
         model = Ressource
         fields = [
             'id', 'titre', 'type_ressource', 'contenu', 'thematique',
-            'duree_lecture', 'date_publication',
+            'duree_lecture', 'date_publication', 'url_audio',
         ]
 
 

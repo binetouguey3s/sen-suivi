@@ -481,7 +481,7 @@ GET/POST /api/demandes-contact/{id}/messages → messagerie privée
 
 | Modèle | Description |
 |---|---|
-| `Ressource` | Titre, type (ARTICLE/EXERCICE/PODCAST), contenu, thématique, durée de lecture, date de publication. |
+| `Ressource` | Titre, type (ARTICLE/EXERCICE/PODCAST), contenu, thématique, durée de lecture, date de publication, `url_audio` (fichier d'un podcast : « /audio/podcasts/… » ou adresse https). |
 | `Favori` | Association utilisateur ↔ ressource, unique. |
 | `LieuDetente` | Lieu de détente au Sénégal avec coordonnées GPS (latitude/longitude), catégorie, accès libre. |
 
@@ -492,6 +492,20 @@ python manage.py reindexer_ressources
 # Envoie toutes les ressources au microservice IA (POST /reindexer)
 # pour reconstruire l'index ChromaDB après ajout ou modification.
 ```
+
+**Audio des podcasts :** la page d'un podcast affiche un lecteur (`shared/lecteur-audio`). Sans fichier, ou si le fichier est introuvable, elle propose d'écouter le résumé avec la voix française du navigateur. Un vrai enregistrement est préférable : déposez le MP3 dans `frontend/public/audio/podcasts/` sous le nom indiqué dans `url_audio`. À défaut, la synthèse vocale d'ai-service peut le produire (variables `SYNTHESE_*` du `.env`) :
+
+```bash
+# En local (le dossier frontend/ est à côté de backend/)
+python manage.py generer_audio_podcasts
+
+# Avec Docker : le front-end n'est pas monté dans le conteneur backend
+docker compose exec backend python manage.py generer_audio_podcasts --dossier /tmp/podcasts
+docker compose cp backend:/tmp/podcasts/. frontend/public/audio/podcasts/
+docker compose up -d --build frontend
+```
+
+La commande lit le titre puis le contenu (intertitres en pause, citations lues normalement), découpe le texte sous la limite d'ai-service, et renseigne `url_audio`. Les podcasts qui ont déjà leur fichier sont laissés de côté (`--tous` pour les régénérer). Si la synthèse n'est pas configurée, elle l'indique et ne modifie rien.
 
 **Endpoints :**
 

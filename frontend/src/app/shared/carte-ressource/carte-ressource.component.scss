@@ -121,6 +121,27 @@ img.cr__illustration--entiere {
   flex: 1;
 }
 
+// Thématique, et pastille « Audio » sur un podcast
+.cr__etiquettes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+}
+
+.cr__audio {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px var(--ss-espace-1);
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-pilule);
+  color: var(--ss-texte-marque);
+  font-size: 13px;
+  font-weight: var(--ss-poids-texte-fort);
+}
+
 .cr__thematique {
   background: var(--ss-surface-douce);
   color: var(--ss-texte-marque);

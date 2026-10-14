@@ -167,6 +167,11 @@ FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 
 # Microservice IA (FastAPI), séparé du back-end.
 AI_SERVICE_URL = env('AI_SERVICE_URL', default='http://localhost:8001')
+
+# Dossier des MP3 des podcasts, servis par le front-end sous /audio/podcasts/
+# (commande generer_audio_podcasts). Dans Docker, le front-end n'est pas monté :
+# passer --dossier, puis copier les fichiers (voir DOCUMENTATION.md).
+PODCASTS_AUDIO_DIR = env('PODCASTS_AUDIO_DIR', default=str(BASE_DIR.parent / 'frontend' / 'public' / 'audio' / 'podcasts'))
 # Attente maximale d'une réponse du chatbot : plus long que la cascade de modèles côté IA
 AI_SERVICE_DELAI_SECONDES = env.float('AI_SERVICE_DELAI_SECONDES', default=25)
 

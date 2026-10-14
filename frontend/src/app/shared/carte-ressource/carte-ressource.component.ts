@@ -26,6 +26,7 @@ export class CarteRessourceComponent {
   protected readonly visuel = computed(() => visuelRessource(this.ressource().titre, this.ressource().thematique));
   protected readonly estFavori = computed(() => this.favoris.estFavori(this.ressource().id));
   protected readonly ajout = computed(() => ajouteLe(this.ressource().date_publication));
+  protected readonly estPodcast = computed(() => this.ressource().type_ressource === 'PODCAST');
 
   protected basculerFavori(evenement: Event): void {
     evenement.preventDefault();

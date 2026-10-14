@@ -301,6 +301,21 @@ blockquote {
   }
 }
 
+// Podcast : le lecteur sous les métadonnées, puis le résumé de l'épisode
+.art__lecteur {
+  margin-top: var(--ss-espace-3);
+}
+
+.art__texte .art__resume-titre {
+  margin: var(--ss-espace-4) 0 var(--ss-espace-1);
+  color: var(--ss-texte-doux);
+  font-family: var(--ss-police-texte);
+  font-size: 13px;
+  font-weight: var(--ss-poids-texte-fort);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 // Bas de page du PDF : n'existe qu'à l'impression
 .art__pied-impression {
   display: none;
@@ -321,6 +336,7 @@ blockquote {
   .art__actions,
   .art__lateral,
   .art__suite,
+  .art__lecteur,
   ss-menu-partage {
     display: none !important;
   }

@@ -66,10 +66,53 @@ describe('ArticleComponent, partage', () => {
     expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/ressources/12`);
   });
 
+  it('pas de lecteur audio pour un exercice ou un article', () => {
+    expect(hote.querySelector('ss-lecteur-audio')).toBeNull();
+    expect(hote.textContent).not.toContain('Résumé de l’épisode');
+  });
+
   it('prévoit le bas de page du PDF avec l’adresse et le rappel d’urgence', () => {
     const pied = hote.querySelector('.art__pied-impression')!.textContent!.replace(/\s+/g, ' ');
     expect(pied).toContain(`Ressource Sen Suivi — ${window.location.origin}/ressources/12`);
     expect(pied).toContain('Sen Suivi ne remplace pas un professionnel de santé');
     expect(pied).toContain('SAMU 1515');
+  });
+});
+
+describe('ArticleComponent, podcast', () => {
+  it('affiche le lecteur sous le titre, le résumé, et « Sauvegarder le podcast »', async () => {
+    await TestBed.configureTestingModule({
+      imports: [ArticleComponent],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FavorisService, useValue: { estFavori: () => false, basculer: vi.fn() } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(ArticleComponent);
+    fixture.componentRef.setInput('id', '8');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(`${API_BASE_URL}/ressources/8`).flush({
+      ...RESSOURCE,
+      id: 8,
+      titre: 'Podcast : la teranga commence par soi-même',
+      type_ressource: 'PODCAST',
+      contenu: 'Un épisode pour souffler.\n\n## Au programme\n\nTrois voix.',
+      url_audio: '/audio/podcasts/la-teranga-commence-par-soi-meme.mp3',
+    });
+    http.match(`${API_BASE_URL}/ressources`).forEach((r) => r.flush([]));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const hote: HTMLElement = fixture.nativeElement;
+
+    const lecteur = hote.querySelector('ss-lecteur-audio')!;
+    expect(lecteur).not.toBeNull();
+    expect(lecteur.querySelector('audio')!.getAttribute('src')).toBe('/audio/podcasts/la-teranga-commence-par-soi-meme.mp3');
+    // Juste sous le titre et les métadonnées, avant le chapô
+    expect(lecteur.compareDocumentPosition(hote.querySelector('.art__intro')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(hote.querySelector('.art__resume-titre')!.textContent).toContain('Résumé de l’épisode');
+    expect(hote.textContent).toContain('Sauvegarder le podcast');
   });
 });

@@ -1,7 +1,17 @@
 """Ressources : Ressource (bibliothèque), Favori, LieuDetente."""
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+
+# Fichier audio d'un podcast : chemin servi par le front-end (« /audio/podcasts/… »)
+# ou adresse https. Jamais d'http en clair ni de chemin relatif ambigu.
+PREFIXES_AUDIO = ('/', 'https://')
+
+
+def valider_url_audio(valeur: str) -> None:
+    if valeur and not valeur.startswith(PREFIXES_AUDIO):
+        raise ValidationError("Indiquez un chemin qui commence par « / » ou une adresse « https:// ».")
 
 
 class TypeRessource(models.TextChoices):
@@ -20,6 +30,15 @@ class Ressource(models.Model):
     # Ajoutés suite à la correction du diagramme de classes.
     duree_lecture = models.PositiveSmallIntegerField('durée (minutes)', default=5)
     date_publication = models.DateField('date de publication', default=timezone.localdate)
+    # Un podcast sans fichier reste publiable : la page propose alors d'écouter
+    # le résumé avec la voix du navigateur
+    url_audio = models.CharField(
+        'fichier audio',
+        max_length=300,
+        blank=True,
+        validators=[valider_url_audio],
+        help_text="Obligatoire pour un podcast : « /audio/podcasts/mon-episode.mp3 » ou une adresse https.",
+    )
 
     class Meta:
         verbose_name = 'ressource'
@@ -28,6 +47,10 @@ class Ressource(models.Model):
 
     def __str__(self):
         return self.titre
+
+    @property
+    def podcast_sans_audio(self) -> bool:
+        return self.type_ressource == TypeRessource.PODCAST and not self.url_audio
 
 
 class Favori(models.Model):

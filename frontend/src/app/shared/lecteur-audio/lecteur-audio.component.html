@@ -1,0 +1,102 @@
+<section class="la" aria-label="Écouter l'épisode">
+  @if (avecAudio()) {
+    <audio
+      #audio
+      preload="metadata"
+      [src]="src()"
+      (loadedmetadata)="surMetadonnees()"
+      (timeupdate)="surProgression()"
+      (play)="surLecture()"
+      (pause)="surPause()"
+      (ended)="surFin()"
+      (waiting)="chargement.set(true)"
+      (playing)="chargement.set(false)"
+      (error)="surErreur()"
+    ></audio>
+  }
+
+  @if (avecAudio() && !erreur()) {
+    <div class="la__principal">
+      <button
+        type="button"
+        class="la__lecture"
+        [class.la__lecture--chargement]="chargement()"
+        [attr.aria-label]="enLecture() ? 'Mettre en pause' : 'Écouter le podcast'"
+        (click)="basculer()"
+      >
+        @if (chargement()) {
+          <span class="la__roue" aria-hidden="true"></span>
+        } @else {
+          <ss-icon [nom]="enLecture() ? 'pause' : 'lecture'" />
+        }
+      </button>
+
+      <div class="la__piste">
+        <input
+          class="la__curseur"
+          type="range"
+          min="0"
+          step="1"
+          aria-label="Position dans l'épisode"
+          [max]="duree() || 0"
+          [value]="position()"
+          [attr.aria-valuetext]="valeurTexte()"
+          [style.--progression]="progression()"
+          (input)="chercher($event)"
+          (keydown)="clavierCurseur($event)"
+        />
+        <p class="la__temps">
+          <span>{{ tempsEcoule() }}</span>
+          <span>{{ duree() ? tempsTotal() : '--:--' }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="la__commandes">
+      <button type="button" class="la__bouton" aria-label="Reculer de 15 secondes" (click)="sauter(-sautBoutons)">
+        <ss-icon nom="reculer" taille="sm" /> −15 s
+      </button>
+      <button type="button" class="la__bouton" aria-label="Avancer de 15 secondes" (click)="sauter(sautBoutons)">
+        +15 s <ss-icon nom="avancer" taille="sm" />
+      </button>
+      <button
+        type="button"
+        class="la__bouton la__bouton--vitesse"
+        [attr.aria-label]="'Vitesse de lecture : ' + libelleVitesse() + '. Changer la vitesse'"
+        (click)="changerVitesse()"
+      >
+        {{ libelleVitesse() }}
+      </button>
+      @if (reprise(); as depart) {
+        <button type="button" class="la__bouton la__bouton--reprise" (click)="reprendre()">
+          <ss-icon nom="lecture" taille="sm" /> Reprendre à {{ minutesSecondes(depart) }}
+        </button>
+      }
+    </div>
+  } @else {
+    <!-- Repli : pas de fichier, ou fichier introuvable -->
+    @if (erreur()) {
+      <p class="la__erreur" role="alert">
+        L’audio n’a pas pu être chargé.
+        <button type="button" class="la__lien" (click)="reessayer()">Réessayer</button>
+      </p>
+    }
+    @if (synthesePossible && resume()) {
+      <div class="la__resume">
+        @if (resumeEtat() === 'lecture') {
+          <button type="button" class="la__bouton la__bouton--principal" (click)="pauseResume()">
+            <ss-icon nom="pause" taille="sm" /> Pause
+          </button>
+        } @else {
+          <button type="button" class="la__bouton la__bouton--principal" (click)="ecouterResume()">
+            <ss-icon nom="ecouter" taille="sm" /> {{ resumeEtat() === 'pause' ? 'Reprendre le résumé' : 'Écouter le résumé' }}
+          </button>
+        }
+        @if (resumeEtat() !== 'arrete') {
+          <button type="button" class="la__bouton" (click)="arreterResume()">Arrêter</button>
+        }
+        <p class="la__aide">Lu par la voix de votre appareil.</p>
+      </div>
+    }
+  }
+</section>
