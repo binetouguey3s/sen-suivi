@@ -84,6 +84,15 @@
     }
   </section>
 
+  <section class="tdb__conseil" aria-labelledby="tdb-conseil">
+    <span class="tdb__conseil-icone" aria-hidden="true"><ss-icon nom="ampoule" taille="sm" /></span>
+    <div class="tdb__conseil-texte">
+      <h2 id="tdb-conseil" class="tdb__eyebrow">Conseil du jour · {{ conseil().thematique }}</h2>
+      <p aria-live="polite">{{ conseil().texte }}</p>
+    </div>
+    <button type="button" class="tdb__conseil-suivant" (click)="conseilSuivant()">Un autre conseil</button>
+  </section>
+
   @if (lieux.isLoading()) {
     <section class="tdb__carte tdb__carte--lieu"><p class="tdb__etat">Chargement…</p></section>
   } @else if (lieuProche(); as lieu) {

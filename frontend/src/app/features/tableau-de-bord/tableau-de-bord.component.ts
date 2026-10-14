@@ -12,6 +12,7 @@ import { CompteService } from '../../core/services/compte.service';
 import { SuiviHumeurService } from '../../core/services/suivi-humeur.service';
 import { valeurs } from '../../core/utils/ressource';
 import { Suggestion, suggererRessources } from '../../core/utils/suggestions';
+import { Conseil, conseilDuJour } from './conseils';
 import {
   LieuDetente,
   NIVEAUX_HUMEUR,
@@ -119,6 +120,16 @@ export class TableauDeBordComponent {
   );
   // Sans onboarding ou sans consentement : inviter à personnaliser depuis Mon profil
   protected readonly personnalisable = computed(() => !this.consentement() || !this.preferences()?.onboarding);
+
+  // « Conseil du jour » : le même toute la journée ; « Un autre conseil » passe au suivant
+  private readonly decalageConseil = signal(0);
+  protected readonly conseil = computed<Conseil>(() =>
+    conseilDuJour(new Date(), this.preferences()?.onboarding, this.consentement(), this.decalageConseil()),
+  );
+
+  protected conseilSuivant(): void {
+    this.decalageConseil.update((n) => n + 1);
+  }
 
   constructor() {
     if (!this.compteService.compte()) {

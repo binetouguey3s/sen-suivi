@@ -87,6 +87,21 @@ class EnvoiAutoEvaluationTests(APITestCase):
         self.assertFalse(AutoEvaluation.objects.exists())
 
 
+class NoteDuJournalTests(APITestCase):
+    """La note du journal accepte 1 000 caractères (limite de l'interface)."""
+
+    def test_une_note_de_1000_caracteres_est_enregistree_en_entier(self):
+        utilisateur = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+        self.client.force_authenticate(utilisateur)
+        note = 'Aujourd’hui, ce qui m’a fait du bien ' + 'x' * 963
+
+        reponse = self.client.post('/api/suivi-humeur', {'score_humeur': 'BIEN', 'note': note, 'etiquettes': ''}, format='json')
+
+        self.assertEqual(reponse.status_code, 201, reponse.data)
+        self.assertEqual(len(note), 1000)
+        self.assertEqual(SuiviHumeur.objects.get(utilisateur=utilisateur).note, note)
+
+
 class ProfilTendanceTests(APITestCase):
     """Résumé anonyme : quelques mots-clés, jamais de donnée brute."""
 

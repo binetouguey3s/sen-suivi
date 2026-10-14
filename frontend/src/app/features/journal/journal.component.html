@@ -8,15 +8,21 @@
 
   <label class="journal__label" for="journal-note">Ajouter un mot sur votre journée (facultatif)</label>
   <textarea
+    #champNote
     id="journal-note"
     class="journal__note"
     rows="4"
-    maxlength="500"
+    [attr.maxlength]="noteMax"
     placeholder="Écrivez ce que vous avez sur le cœur…"
     [value]="note()"
     (input)="note.set($any($event.target).value)"
   ></textarea>
-  <p class="journal__compteur">{{ note().length }} / 500</p>
+  <div class="journal__phrases" role="group" aria-label="Phrases pour commencer">
+    @for (phrase of phrases; track phrase) {
+      <button type="button" class="journal__phrase" (click)="commencer(phrase)">{{ phrase }}</button>
+    }
+  </div>
+  <p class="journal__compteur">{{ note().length }} / {{ noteMax }}</p>
 
   <p class="journal__label">Qu'est-ce qui a influencé votre humeur ?</p>
   <div class="journal__chips">

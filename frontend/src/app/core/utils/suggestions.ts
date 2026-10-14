@@ -20,8 +20,8 @@ export interface Suggestion {
 export const NOMBRE_SUGGESTIONS = 3;
 export const RAISON_NOUVEAUTE = 'Nouveauté';
 
-// Préoccupation de l'onboarding → thématiques de la bibliothèque
-const THEMATIQUES_PAR_PREOCCUPATION: Record<string, readonly string[]> = {
+// Préoccupation de l'onboarding → thématiques de la bibliothèque (et des conseils du jour)
+export const THEMATIQUES_PAR_PREOCCUPATION: Record<string, readonly string[]> = {
   stress: ['Stress', 'Respiration'],
   etudes: ['Études'],
   travail: ['Travail'],

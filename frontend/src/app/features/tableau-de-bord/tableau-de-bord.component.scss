@@ -151,6 +151,84 @@
   font-weight: var(--ss-poids-texte-fort);
 }
 
+// « Conseil du jour » : carte discrète, sans ombre
+.tdb__conseil {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ss-espace-2);
+  padding: var(--ss-espace-2) var(--ss-espace-3);
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-carte);
+  background: var(--ss-surface-legere);
+
+  @media (min-width: 900px) {
+    flex-wrap: nowrap;
+  }
+}
+
+.tdb__conseil-icone {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
+}
+
+.tdb__conseil-texte {
+  // Mobile : le texte prend la ligne, le bouton passe dessous
+  flex: 1 1 calc(100% - 56px);
+  min-width: 0;
+
+  @media (min-width: 900px) {
+    flex-basis: 0;
+  }
+
+  .tdb__eyebrow {
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ss-texte);
+    font-size: 15px;
+  }
+}
+
+.tdb__conseil-suivant {
+  flex: none;
+  min-height: 44px;
+  // Aligné sur le texte : icône (40) + écart (16) − marge intérieure du bouton (16)
+  margin-left: 40px;
+
+  @media (min-width: 900px) {
+    margin-left: auto;
+  }
+
+  padding: 0 var(--ss-espace-2);
+  border: none;
+  border-radius: var(--ss-rayon-bouton);
+  background: none;
+  color: var(--ss-texte-marque);
+  font: inherit;
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ss-surface);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: 2px;
+  }
+}
+
 .tdb__carte--lieu {
   grid-column: 1 / -1;
   overflow: hidden;

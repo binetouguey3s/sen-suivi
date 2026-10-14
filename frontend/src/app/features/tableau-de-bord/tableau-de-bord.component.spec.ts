@@ -43,7 +43,7 @@ async function afficher(preferences: Preferences) {
   fixture.detectChanges();
   const hote: HTMLElement = fixture.nativeElement;
   const cartes = [...hote.querySelectorAll<HTMLAnchorElement>('.tdb__suggestion')];
-  return { hote, cartes };
+  return { hote, cartes, fixture };
 }
 
 describe('TableauDeBordComponent, « Pour vous »', () => {
@@ -74,5 +74,17 @@ describe('TableauDeBordComponent, « Pour vous »', () => {
     expect(cartes.map((c) => c.getAttribute('href'))).toEqual(['/ressources/4', '/ressources/3', '/ressources/2']);
     expect(cartes[0].textContent).toContain('Nouveauté');
     expect(hote.querySelector('a[href="/app/profil"]')!.textContent).toContain('Personnaliser');
+  });
+
+  it('affiche le conseil du jour, et « Un autre conseil » passe au suivant', async () => {
+    const { hote, fixture } = await afficher({});
+    const texte = () => hote.querySelector('.tdb__conseil p')!.textContent!.trim();
+    const avant = texte();
+    expect(avant.length).toBeGreaterThan(20);
+
+    hote.querySelector<HTMLButtonElement>('.tdb__conseil-suivant')!.click();
+    fixture.detectChanges();
+
+    expect(texte()).not.toBe(avant);
   });
 });

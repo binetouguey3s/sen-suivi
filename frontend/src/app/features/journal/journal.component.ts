@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 
 import { RouterLink } from '@angular/router';
 
@@ -8,6 +8,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
 import { SuiviHumeurService } from '../../core/services/suivi-humeur.service';
 import { INFLUENCES_HUMEUR, NIVEAUX_HUMEUR, NiveauHumeur, SuiviHumeur } from '../../core/models/suivi';
 import { valeurs } from '../../core/utils/ressource';
+import { NOTE_MAX, ajouterDebut, phrasesDuJour } from './phrases';
 
 @Component({
   selector: 'ss-journal',
@@ -36,6 +37,10 @@ export class JournalComponent {
 
   protected readonly humeurChoisie = signal<NiveauHumeur | null>(null);
   protected readonly note = signal('');
+  protected readonly noteMax = NOTE_MAX;
+  // Trois débuts de phrase, les mêmes toute la journée
+  protected readonly phrases = phrasesDuJour(new Date());
+  private readonly champNote = viewChild<ElementRef<HTMLTextAreaElement>>('champNote');
   protected readonly etiquettesChoisies = signal<string[]>([]);
   protected readonly enregistrementEnCours = signal(false);
   protected readonly erreur = signal<string | null>(null);
@@ -44,6 +49,17 @@ export class JournalComponent {
   protected readonly entreesRecentes = computed(() =>
     [...valeurs(this.suivi)].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 5),
   );
+
+  // Le début de phrase s'ajoute à la note, et le curseur se place à la fin pour continuer
+  protected commencer(phrase: string): void {
+    this.note.update((note) => ajouterDebut(note, phrase));
+    const champ = this.champNote()?.nativeElement;
+    if (champ) {
+      champ.value = this.note();
+      champ.focus();
+      champ.setSelectionRange(champ.value.length, champ.value.length);
+    }
+  }
 
   protected basculerEtiquette(etiquette: string): void {
     this.etiquettesChoisies.update((liste) =>
