@@ -11,7 +11,7 @@ from apps.comptes.models import Utilisateur
 from apps.ressources.models import Ressource
 
 from .models import AutoEvaluation, OptionReponse, QuestionEvaluation, SuiviHumeur, TypeEvaluation
-from .profil_tendance import profil_tendance
+from .profil_tendance import ELEMENTS_MAX, LONGUEUR_MAX, profil_tendance
 from .services import calculer_score_de_tendance, interpreter_score
 
 URL_AUTO_EVALUATIONS = '/api/auto-evaluations'
@@ -164,3 +164,83 @@ class ProfilTendanceTests(APITestCase):
 
     def test_sans_aucune_donnee_le_profil_est_vide(self):
         self.assertEqual(profil_tendance(self.utilisateur), [])
+
+
+ONBOARDING_COMPLET = {
+    'version': 1, 'statut': 'termine', 'date': '2026-10-01T10:00:00Z',
+    'genre': 'femme', 'tranche_age': '18-24', 'situation': 'etudiant', 'langue': 'fr',
+    'humeur': 2, 'energie': 30, 'sommeil': 'difficile',
+    'preoccupations': ['stress', 'sommeil'], 'rien_de_particulier': False,
+    'bien_etre': ['musique', 'respiration', 'spiritualite'], 'spiritualite': ['coran', 'dhikr'],
+    'moments': ['soir'], 'duree': '5-10', 'formats': ['audio'], 'rappels': True, 'frequence_rappels': '3_semaine',
+    'echange_pro': 'plus_tard', 'metiers': ['SOPHROLOGUE'], 'aise_avec': 'femme',
+}
+
+
+class ProfilOnboardingTests(APITestCase):
+    """Ce que la personne a dit dans l'onboarding, en mots-clés : jamais de donnée brute."""
+
+    def setUp(self):
+        self.utilisateur = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+
+    def _avec(self, onboarding):
+        self.utilisateur.preferences = {'personnalisation_chatbot': True, 'onboarding': onboarding}
+        self.utilisateur.save()
+        return profil_tendance(self.utilisateur)
+
+    def test_un_onboarding_complet_donne_des_libelles(self):
+        self.assertEqual(self._avec(ONBOARDING_COMPLET), [
+            'préoccupations : stress, sommeil',
+            'ce qui fait du bien : musique, respiration, spiritualité et prière',
+            'moment préféré : le soir',
+            'format préféré : audio',
+            'durée : 5-10 min',
+            'situation : étudiant·e',
+            'langue : français',
+            'souhaite échanger avec un professionnel : plus tard',
+            "métiers qui l'intéressent : sophrologue",
+        ])
+
+    def test_jamais_genre_age_spiritualite_detaillee_humeur_ni_aisance(self):
+        texte = ' '.join(self._avec(ONBOARDING_COMPLET)).lower()
+        for interdit in ('femme', '18', 'coran', 'dhikr', 'énergie', 'humeur', 'difficile', 'aise'):
+            self.assertNotIn(interdit, texte)
+
+    def test_un_onboarding_passe_partiel_ne_donne_que_les_champs_remplis(self):
+        profil = self._avec({'statut': 'passe', 'preoccupations': ['etudes'], 'bien_etre': [], 'metiers': []})
+        self.assertEqual(profil, ['préoccupations : études et examens'])
+
+    def test_rien_de_particulier(self):
+        profil = self._avec({'statut': 'termine', 'preoccupations': [], 'rien_de_particulier': True})
+        self.assertEqual(profil, ['préoccupations : rien de particulier'])
+
+    def test_pas_de_metiers_si_la_personne_ne_veut_pas_de_professionnel(self):
+        profil = self._avec({'statut': 'termine', 'echange_pro': 'pas_maintenant', 'metiers': ['PSYCHOLOGUE']})
+        self.assertEqual(profil, ["souhaite échanger avec un professionnel : pas pour l’instant"])
+
+    def test_sans_onboarding_rien_n_est_ajoute(self):
+        self.utilisateur.preferences = {'personnalisation_chatbot': True}
+        self.utilisateur.save()
+        self.assertEqual(profil_tendance(self.utilisateur), [])
+
+    def test_des_codes_inconnus_sont_ignores(self):
+        self.assertEqual(self._avec({'preoccupations': ['inconnu', 7], 'moments': 'soir'}), ['moment préféré : le soir'])
+
+    def test_les_limites_du_microservice_sont_respectees(self):
+        # Journal et tests chargés, onboarding complet : jamais plus de 10 éléments de 80 caractères
+        for decalage in range(12):
+            SuiviHumeur.objects.create(utilisateur=self.utilisateur, date=timezone.localdate() - timedelta(days=decalage),
+                                       score_humeur='BIEN' if decalage > 6 else 'MAL')
+        for type_evaluation in ('STRESS', 'ANXIETE', 'FATIGUE'):
+            AutoEvaluation.objects.create(utilisateur=self.utilisateur, type_evaluation=type_evaluation, score_de_tendance=80)
+        onboarding = {**ONBOARDING_COMPLET, 'metiers': list(
+            ['PSYCHOLOGUE', 'ASSISTANT_SOCIAL', 'COACH_DEVELOPPEMENT', 'SOPHROLOGUE', 'MEDIATEUR_FAMILIAL', 'COACH_SPORTIF']
+        )}
+
+        profil = self._avec(onboarding)
+
+        self.assertLessEqual(len(profil), ELEMENTS_MAX)
+        self.assertTrue(all(len(e) <= LONGUEUR_MAX for e in profil))
+        # La tendance du journal passe d'abord, l'onboarding garde sa place
+        self.assertTrue(profil[0].startswith('humeur'))
+        self.assertIn('préoccupations : stress, sommeil', profil)

@@ -79,6 +79,17 @@ class AlgorithmeOrientationTests(APITestCase):
             DemandeContact.objects.create(utilisateur=self.awa, professionnel=self.sophro)
         self.assertEqual(suggerer(self.awa, besoins=['FATIGUE']).professionnel, jumeau)
 
+    def test_un_metier_prefere_departage_a_adequation_egale(self):
+        coach = professionnel('Khady Diop', 'COACH_DEVELOPPEMENT')
+        sans = suggerer(self.awa, besoins=[])
+        avec = suggerer(self.awa, besoins=[], metiers_preferes=['COACH_DEVELOPPEMENT'])
+        self.assertNotEqual(sans.professionnel, coach)
+        self.assertEqual(avec.professionnel, coach)
+
+    def test_un_metier_prefere_ne_passe_jamais_devant_le_besoin_exprime(self):
+        suggestion = suggerer(self.awa, textes=['je dors mal'], metiers_preferes=['MEDIATEUR_FAMILIAL'])
+        self.assertEqual(suggestion.professionnel, self.sophro)
+
     def test_le_classement_est_reproductible(self):
         premier = [s.professionnel.pk for s in classer(['STRESS', 'FAMILLE'])]
         self.assertEqual(premier, [s.professionnel.pk for s in classer(['STRESS', 'FAMILLE'])])
@@ -214,6 +225,42 @@ class ChatbotOrientationTests(APITestCase):
 
         self.assertEqual(corps['professionnel_suggere']['id'], self.sophro.pk)
         self.assertIn('le stress et la tension', corps['professionnel_suggere']['raison'])
+
+    def test_le_metier_cite_par_titou_est_celui_de_la_carte(self, traiter):
+        traiter.return_value = self.reponse_ia(orientation_professionnel=True)
+
+        corps = self.client.post('/api/chatbot/message', {'message': 'Je veux un spécialiste pour mon stress'}).data
+
+        # Titou reçoit, avant de répondre, le métier de la carte qui s'affichera
+        self.assertEqual(traiter.call_args.kwargs['specialite_suggeree'], 'Sophrologue')
+        self.assertEqual(corps['professionnel_suggere']['specialite_affichee'], 'Sophrologue')
+
+    def test_sans_professionnel_disponible_aucun_metier_n_est_transmis(self, traiter):
+        self.sophro.accepte_demandes = False
+        self.sophro.save()
+        traiter.return_value = self.reponse_ia(orientation_professionnel=True)
+
+        corps = self.client.post('/api/chatbot/message', {'message': 'Je veux un spécialiste pour mon stress'}).data
+
+        self.assertIsNone(traiter.call_args.kwargs['specialite_suggeree'])
+        self.assertNotIn('professionnel_suggere', corps)
+
+    def test_les_metiers_de_l_onboarding_ne_comptent_qu_avec_consentement(self, traiter):
+        professionnel('Ousmane Sow', 'COACH_SPORTIF')
+        onboarding = {'statut': 'termine', 'echange_pro': 'oui', 'metiers': ['COACH_SPORTIF']}
+        traiter.return_value = self.reponse_ia(orientation_professionnel=True)
+
+        self.awa.preferences = {'onboarding': onboarding}
+        self.awa.save()
+        self.client.post('/api/chatbot/message', {'message': 'Bonjour'})
+        self.assertEqual(traiter.call_args.kwargs['specialite_suggeree'], 'Sophrologue')
+
+        self.awa.preferences = {'onboarding': onboarding, 'personnalisation_chatbot': True}
+        self.awa.save()
+        # Comme une vraie requête : le compte est relu, pas repris de la précédente
+        self.client.force_authenticate(Utilisateur.objects.get(pk=self.awa.pk))
+        self.client.post('/api/chatbot/message', {'message': 'Bonjour'})
+        self.assertEqual(traiter.call_args.kwargs['specialite_suggeree'], 'Coach sportif')
 
     def test_le_microservice_sait_qu_une_suggestion_peut_s_afficher(self, traiter):
         traiter.return_value = self.reponse_ia()

@@ -506,12 +506,13 @@ def test_le_profil_de_tendance_est_transmis_au_modele(monkeypatch):
     assert recu['profil'] == profil
 
 
-def test_le_profil_arrive_au_modele_comme_consigne_de_ton():
+def test_le_profil_arrive_au_modele_comme_consigne_sans_dicter_le_contenu():
     messages = generateur._contexte_profil(['humeur en baisse sur 7 jours'])
 
     assert messages[0]['role'] == 'system'
     assert 'humeur en baisse sur 7 jours' in messages[0]['content']
-    assert 'TON seulement' in messages[0]['content']
+    assert 'jamais le contenu' in messages[0]['content']
+    assert "tu n'inventes rien" in messages[0]['content']
 
 
 def test_sans_profil_aucune_consigne_n_est_ajoutee():

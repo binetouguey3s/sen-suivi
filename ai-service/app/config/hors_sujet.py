@@ -29,6 +29,10 @@ MENTIONS_PLATEFORME = [
     'titou', 'sen suivi', 'journal d\'humeur', 'mon journal', 'auto-evaluation*', 'autoevaluation*',
     'bibliotheque', 'forum', 'annuaire', 'professionnel*', 'mise en relation', 'confidentialite',
     'parametres', 'numero d\'urgence', 'numeros d\'urgence', 'lieux de detente', 'lieu de detente',
+    # La personne, son profil et ses données : toujours dans le cadre
+    'mon profil', 'mes informations', 'mes infos', 'mes donnees', 'donnees personnelles', 'mon prenom',
+    "comment je m'appelle", "je m'appelle comment", 'que savez vous de moi', 'que sais tu de moi',
+    'savez sur moi', 'sais sur moi', 'me connaitre', 'me connaissez', 'me connais', 'plateforme',
 ]
 
 # Demandes de tâche ou d'information, par catégorie : la catégorie choisit le recadrage

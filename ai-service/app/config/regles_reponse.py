@@ -110,6 +110,25 @@ MOTS_ANGLAIS = {
 }
 MOTS_ANGLAIS_MAX = 5
 
+# Les six métiers de l'annuaire (libellés de Django) et la façon de les repérer
+# dans une réponse normalisée. « coach » seul est ambigu : il n'est pas compté.
+METIERS = {
+    'Psychologue': r'psycholog',
+    'Assistant social': r'assistante?s? socia',
+    'Coach en développement personnel': r'coachs? en developpement|developpement personnel',
+    'Sophrologue': r'sophrolog',
+    'Médiateur familial': r'mediat(?:eur|rice)',
+    'Coach sportif': r'coachs? sporti',
+}
+# Une réponse qui oriente vers un professionnel : le métier cité y est contrôlé
+ORIENTATION = r'annuaire|mise en relation|professionnel|consulter|vous orienter|rapprocher'
+
+# Mots sans poids quand on compare deux phrases voisines : « Beaucoup de
+# personnes traversent cela. » redit « … ce que beaucoup de personnes traversent. »
+MOTS_DE_LIAISON = {'cela', 'ca', 'ceci', 'aussi', 'donc', 'alors', 'vraiment', 'bien', 'souvent'}
+MOTS_REDITE_MIN = 3
+SIMILARITE_REDITE_MAX = 0.8
+
 # Seuls numéros autorisés dans une réponse (chiffres sans espaces)
 NUMEROS_AUTORISES = {'800805805', '1515', '18'}
 

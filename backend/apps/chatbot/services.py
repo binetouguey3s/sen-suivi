@@ -43,11 +43,21 @@ def synthetiser(texte: str) -> bytes | None:
 
 
 def traiter_message(
-    message: str, historique: list[dict] | None = None, profil: list[str] | None = None, suggestion_possible: bool = False
+    message: str,
+    historique: list[dict] | None = None,
+    profil: list[str] | None = None,
+    suggestion_possible: bool = False,
+    *,
+    personnalisation: bool = False,
+    prenom: str | None = None,
+    specialite_suggeree: str | None = None,
 ) -> dict:
     """`profil` : mots-clés du profil de tendance, seulement si l'utilisateur y a consenti.
     `suggestion_possible` : compte utilisateur connecté, à qui Django affichera
-    le professionnel suggéré par l'algorithme d'orientation sous la réponse."""
+    le professionnel suggéré par l'algorithme d'orientation sous la réponse.
+    `personnalisation` et `prenom` : consentement donné, et le prénom seul.
+    `specialite_suggeree` : métier du professionnel qui sera affiché, pour que
+    le texte de Titou cite le même."""
     try:
         reponse = httpx.post(
             f'{settings.AI_SERVICE_URL}/message',
@@ -56,6 +66,9 @@ def traiter_message(
                 'historique': historique or [],
                 'profil_tendance': profil or [],
                 'suggestion_possible': suggestion_possible,
+                'personnalisation': personnalisation,
+                'prenom': prenom,
+                'specialite_suggeree': specialite_suggeree,
             },
             # Plus long que le budget de la cascade de modèles côté IA (LLM_DELAI_TOTAL_SECONDES)
             timeout=settings.AI_SERVICE_DELAI_SECONDES,

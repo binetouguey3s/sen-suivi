@@ -14,7 +14,7 @@ from apps.comptes.personne_confiance import alerter_automatiquement
 from apps.orientation.services import suggerer
 from apps.orientation.urgence import emettre_jeton
 from apps.ressources.models import Ressource
-from apps.suivi.profil_tendance import a_consenti, profil_tendance
+from apps.suivi.profil_tendance import a_consenti, metiers_preferes, profil_tendance
 
 from .models import ConversationChatbot, MessageChatbot, TypeExpediteur
 from .serializers import (
@@ -31,6 +31,9 @@ from .signalement import signaler_equipe
 from .vocal import AudioEnMemoireUploadHandler, jeton_vocal, jeton_vocal_valide
 
 journal = logging.getLogger(__name__)
+
+# Limite du microservice IA pour le prénom
+PRENOM_MAX = 40
 
 
 class ChatbotMessageView(APIView):
@@ -50,9 +53,20 @@ class ChatbotMessageView(APIView):
 
     def repondre(self, request, donnees, supplement=None):
         """Pipeline complet d'un message, qu'il ait été tapé ou dit à voix haute."""
+        utilisateur = self._utilisateur(request)
+        consenti = utilisateur is not None and a_consenti(utilisateur)
+        # Le professionnel est choisi AVANT la réponse : Titou cite son métier,
+        # et la carte affichée sous le message est forcément la même
+        suggestion = self._suggestion(utilisateur, donnees, consenti)
         try:
             resultat = traiter_message(
-                donnees['message'], donnees['historique'], self._profil(request), self._suggestion_possible(request)
+                donnees['message'],
+                donnees['historique'],
+                self._profil(request),
+                self._suggestion_possible(request),
+                personnalisation=consenti,
+                prenom=self._prenom(utilisateur) if consenti else None,
+                specialite_suggeree=suggestion.professionnel.get_specialite_display() if suggestion else None,
             )
         except MicroserviceIAIndisponible:
             return Response(
@@ -73,7 +87,7 @@ class ChatbotMessageView(APIView):
         conversation_id = self._conserver_si_necessaire(request, donnees, resultat)
         resultat = {
             **resultat,
-            **self._orientation(request, donnees, resultat),
+            **self._orientation(request, donnees, resultat, suggestion),
             'jeton_vocal': jeton_vocal(resultat['reponse']),
             **(supplement or {}),
         }
@@ -83,16 +97,34 @@ class ChatbotMessageView(APIView):
         return Response(sortie.validated_data)
 
     def _suggestion_possible(self, request):
-        return request.user.is_authenticated and getattr(request.user, 'utilisateur', None) is not None 
+        return self._utilisateur(request) is not None
 
-    def _orientation(self, request, donnees, resultat):
-        """Jeton d'urgence en cas de détresse ; sinon, si la personne cherche un
-        professionnel, celui que l'algorithme d'orientation met en avant."""
-        utilisateur = getattr(request.user, 'utilisateur', None) if request.user.is_authenticated else None
+    def _utilisateur(self, request):
+        return getattr(request.user, 'utilisateur', None) if request.user.is_authenticated else None
+
+    def _prenom(self, utilisateur):
+        """Le prénom seul : jamais le nom, l'e-mail, la ville ni le pseudonyme."""
+        return (utilisateur.prenom or '').strip()[:PRENOM_MAX] or None
+
+    def _suggestion(self, utilisateur, donnees, consenti):
+        """Professionnel que l'algorithme d'orientation mettrait en avant, ou None."""
+        if utilisateur is None:
+            return None
+        textes = [e['contenu'] for e in donnees['historique'] if e['auteur'] == 'UTILISATEUR'] + [donnees['message']]
+        try:
+            # Les métiers choisis dans l'onboarding ne comptent qu'avec le consentement
+            return suggerer(utilisateur, textes=textes, metiers_preferes=metiers_preferes(utilisateur) if consenti else None)
+        except Exception:  # la suggestion est un confort : son échec ne bloque jamais la réponse
+            journal.exception("Suggestion d'orientation indisponible")
+            return None
+
+    def _orientation(self, request, donnees, resultat, suggestion=None):
+        """Jeton d'urgence en cas de détresse ; sinon, si Titou oriente vers un
+        professionnel, celui que l'algorithme a choisi avant la réponse."""
+        utilisateur = self._utilisateur(request)
         if utilisateur is None:
             return {}
         supplement = {}
-        besoins = None
         if resultat.get('urgence'):
             nature = resultat.get('nature_detresse')
             # Mise en relation gratuite, sans écran de paiement
@@ -107,14 +139,13 @@ class ChatbotMessageView(APIView):
             self._signaler_equipe(utilisateur, nature, prevenue)
             # Un professionnel adapté reste proposé, en plus des numéros d'urgence
             besoins = ['VIOLENCES'] if nature == 'VIOLENCES' else ['CRISE']
+            try:
+                suggestion = suggerer(utilisateur, textes=textes, besoins=besoins)
+            except Exception:  # la suggestion est un confort : son échec ne bloque jamais la réponse
+                journal.exception("Suggestion d'orientation indisponible")
+                return supplement
         elif not resultat.get('orientation_professionnel'):
             return {}
-        textes = [e['contenu'] for e in donnees['historique'] if e['auteur'] == 'UTILISATEUR'] + [donnees['message']]
-        try:
-            suggestion = suggerer(utilisateur, textes=textes, besoins=besoins)
-        except Exception:  # la suggestion est un confort : son échec ne bloque jamais la réponse
-            journal.exception("Suggestion d'orientation indisponible")
-            return supplement
         if suggestion is None:
             return supplement
         pro = suggestion.professionnel

@@ -6,6 +6,8 @@ Toujours dans cet ordre :
               le modèle de langage n'est jamais appelé.
 - Cadrage   : une demande hors du bien-être (calcul, devoir, code, actualité…)
               reçoit un recadrage prédéfini, sans appel au modèle.
+- Question sur soi (« comment je m'appelle ? ») : réponse à partir du seul
+              profil partagé avec accord ; sans accord, phrase fixe.
 - Niveau 1  : classification d'intention. Sans modèle de langage, la réponse
               validée prédéfinie de l'intention est renvoyée ; avec un modèle,
               elle devient le filet de sécurité, car un texte fixe ignore le
@@ -38,6 +40,12 @@ from app.detecteur_hors_sujet import detecter_hors_sujet, reponse_recadrage
 from app.generateur_reponse import echeance_totale, ecouter, generation_disponible, generer
 from app.gravite import REPONSE_DANGER_AUTRUI, REPONSE_VIOLENCES, danger_autrui, nature_grave, risque_vital, violences
 from app.moderateur_forum import moderer
+from app.reponses_profil import (
+    REPONSE_PROFIL_SANS_CONSENTEMENT,
+    REPONSE_PROFIL_VISITEUR,
+    demande_prenom,
+    reponse_profil,
+)
 from app.moteur_rag import NOMBRE_MAX_RESULTATS, catalogue, indexer_ressources, rechercher, rechercher_plusieurs
 from app.synthese_vocale import SyntheseIndisponible, synthetiser
 from app.transcription import AudioRefuse, TranscriptionIndisponible, comprehensible, transcrire
@@ -86,6 +94,12 @@ class MessageEntree(BaseModel):
     # Compte connecté : Django affichera sous la réponse le professionnel
     # suggéré par son algorithme d'orientation (jamais par le modèle)
     suggestion_possible: bool = False
+    # Consentement à la personnalisation : sans lui, ni profil ni prénom
+    personnalisation: bool = False
+    # Prénom seul, avec consentement (jamais nom, e-mail, ville ni pseudonyme)
+    prenom: str | None = Field(default=None, max_length=40)
+    # Spécialité du professionnel que Django affichera : le texte doit citer la même
+    specialite_suggeree: str | None = Field(default=None, max_length=60)
 
 
 class RessourceSuggeree(BaseModel):
@@ -235,6 +249,8 @@ def _repondre(entree: MessageEntree) -> MessageSortie:
 
     # Niveau 1 — classification d'intention
     resultat = classifier(message)
+    if resultat.intention == 'QUESTION_PROFIL' and resultat.reconnue_avec_confiance:
+        return _repondre_sur_le_profil(entree, message)
     intention = resultat.intention if resultat.reconnue_avec_confiance and resultat.intention in REPONSE_PAR_INTENTION else None
     if intention and not generation_disponible():
         return MessageSortie(
@@ -257,6 +273,8 @@ def _repondre(entree: MessageEntree) -> MessageSortie:
             [e.model_dump() for e in entree.historique],
             entree.profil_tendance,
             entree.suggestion_possible,
+            prenom=entree.prenom,
+            specialite=entree.specialite_suggeree,
         )
         if texte:
             return MessageSortie(
@@ -352,12 +370,52 @@ def _catalogue_ou_rien() -> list[dict]:
         return []
 
 
+def _repondre_sur_le_profil(entree: MessageEntree, message: str) -> MessageSortie:
+    """Ce que Titou sait de la personne : seulement ce qu'elle a accepté de partager."""
+
+    def sortie(texte: str, source: str) -> MessageSortie:
+        return MessageSortie(reponse=texte, source_reponse=source, urgence=False, intention='QUESTION_PROFIL', ressource=None)
+
+    if not entree.personnalisation:
+        return sortie(REPONSE_PROFIL_SANS_CONSENTEMENT if entree.suggestion_possible else REPONSE_PROFIL_VISITEUR, 'REGLE')
+
+    if generation_disponible():
+        historique = [e.model_dump() for e in entree.historique]
+        precedentes = [e['contenu'] for e in historique if e['auteur'] == 'BOT']
+        # « Comment je m'appelle ? » : une réponse sans le prénom est rejetée
+        prenom_attendu = entree.prenom.lower() if entree.prenom and demande_prenom(message) else None
+
+        def accepter(texte: str) -> bool:
+            validation = valider(
+                texte, [], 'ecoute', precedentes,
+                controle_metier=entree.suggestion_possible, metier_attendu=entree.specialite_suggeree,
+            )
+            return validation.valide and (prenom_attendu is None or prenom_attendu in texte.lower())
+
+        texte = ecouter(
+            message,
+            historique,
+            _catalogue_ou_rien(),
+            echeance_totale(),
+            accepter=accepter,
+            profil=entree.profil_tendance,
+            suggestion_possible=entree.suggestion_possible,
+            prenom=entree.prenom,
+            specialite=entree.specialite_suggeree,
+        )
+        if texte:
+            return sortie(texte, 'GENERATION')
+    return sortie(reponse_profil(entree.prenom, message), 'REGLE')
+
+
 def _generer_valide(
     message: str,
     ressources: list[dict],
     historique: list[dict],
     profil: list[str] | None = None,
     suggestion_possible: bool = False,
+    prenom: str | None = None,
+    specialite: str | None = None,
 ) -> str | None:
     """Réponse générée qui a passé le validateur, ou None.
 
@@ -372,7 +430,10 @@ def _generer_valide(
 
     def accepter_en(mode: str):
         def accepter(texte: str) -> bool:
-            validation = valider(texte, ressources, mode, precedentes)
+            validation = valider(
+                texte, ressources, mode, precedentes,
+                controle_metier=suggestion_possible, metier_attendu=specialite,
+            )
             if not validation.valide:
                 # Seule la raison est journalisée, jamais le message ni la réponse
                 journal.warning('Réponse générée rejetée (mode %s) : %s', mode, validation.raison)
@@ -390,6 +451,8 @@ def _generer_valide(
             accepter=accepter_en('ressources'),
             profil=profil,
             suggestion_possible=suggestion_possible,
+            prenom=prenom,
+            specialite=specialite,
         )
         if texte:
             return texte
@@ -401,6 +464,8 @@ def _generer_valide(
         accepter=accepter_en('ecoute'),
         profil=profil,
         suggestion_possible=suggestion_possible,
+        prenom=prenom,
+        specialite=specialite,
     )
 
 

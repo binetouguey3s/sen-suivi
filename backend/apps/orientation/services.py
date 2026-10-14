@@ -5,6 +5,8 @@ reproduire. Les critères sont comparés dans cet ordre, le suivant ne servant
 qu'à départager les ex æquo du précédent :
 1. adéquation entre les besoins de la personne et le métier ou les domaines
    déclarés par le professionnel ;
+   puis, avec l'accord de la personne, un métier qu'elle a dit l'intéresser
+   dans l'onboarding (bonus modéré : il ne passe jamais devant un besoin exprimé) ;
 2. langue commune ;
 3. proximité géographique ;
 4. disponibilité (accepte de nouvelles demandes) ;
@@ -145,8 +147,10 @@ def _raison(professionnel, couverts: list[str], ville_commune: bool, langue: str
     return f'{professionnel.get_specialite_display()}, {professionnel.nom} {phrase}.'
 
 
-def classer(besoins: list[str], langue: str | None = None, ville: str | None = None) -> list[Suggestion]:
+def classer(besoins: list[str], langue: str | None = None, ville: str | None = None,
+            metiers_preferes: list[str] | None = None) -> list[Suggestion]:
     """Tous les professionnels validés, du plus au moins adapté."""
+    preferes = set(metiers_preferes or [])
     depuis = timezone.now() - timedelta(days=FENETRE_EQUITE_JOURS)
     professionnels = Professionnel.objects.filter(statut_validation=StatutValidationPro.VALIDE).annotate(
         sollicitations=Count('demandes_contact_recues', filter=Q(demandes_contact_recues__date__gte=depuis))
@@ -161,6 +165,7 @@ def classer(besoins: list[str], langue: str | None = None, ville: str | None = N
         ville_commune = bool(ville_n) and (ville_n in normaliser(pro.ville) or normaliser(pro.ville).split()[0] in ville_n)
         criteres = {
             'adequation': points,
+            'metier_prefere': pro.specialite in preferes,
             'langue_commune': langue_commune,
             'proximite': ville_commune,
             'disponible': pro.accepte_demandes,
@@ -168,20 +173,26 @@ def classer(besoins: list[str], langue: str | None = None, ville: str | None = N
         }
         # Tri lexicographique dans l'ordre des critères ; l'identifiant garantit
         # un résultat reproductible entre deux professionnels en tout point égaux
-        cle = (-points, not langue_commune, not ville_commune, not pro.accepte_demandes, pro.sollicitations, pro.pk)
+        cle = (
+            -points, pro.specialite not in preferes, not langue_commune, not ville_commune,
+            not pro.accepte_demandes, pro.sollicitations, pro.pk,
+        )
         raison = _raison(pro, couverts, ville_commune, langue if langue_commune else None)
         classes.append((cle, Suggestion(pro, raison, couverts, criteres)))
     return [s for _, s in sorted(classes, key=lambda c: c[0])]
 
 
 def suggerer(utilisateur=None, textes: list[str] | None = None, besoins: list[str] | None = None,
-             langue: str | None = None, ville: str | None = None) -> Suggestion | None:
+             langue: str | None = None, ville: str | None = None,
+             metiers_preferes: list[str] | None = None) -> Suggestion | None:
     """LE professionnel mis en avant : le mieux classé parmi ceux qui acceptent
-    de nouvelles demandes. Aucun si personne n'est disponible."""
+    de nouvelles demandes. Aucun si personne n'est disponible.
+    `metiers_preferes` : seulement avec le consentement à la personnalisation."""
     if besoins is None:
         besoins = besoins_de(utilisateur, textes)
     if langue is None and textes and parle_wolof(textes):
         langue = 'wolof'
     if ville is None and utilisateur is not None:
         ville = getattr(utilisateur, 'ville', '') or None
-    return next((s for s in classer(besoins, langue, ville) if s.professionnel.accepte_demandes), None)
+    classes = classer(besoins, langue, ville, metiers_preferes)
+    return next((s for s in classes if s.professionnel.accepte_demandes), None)

@@ -18,6 +18,13 @@ from apps.suivi.models import SuiviHumeur
 from .models import ConversationChatbot, MessageChatbot
 
 URL_MESSAGE = '/api/chatbot/message'
+
+ONBOARDING = {
+    'version': 1, 'statut': 'termine', 'date': '2026-10-01T10:00:00Z', 'genre': 'femme',
+    'preoccupations': ['stress', 'sommeil'], 'rien_de_particulier': False,
+    'bien_etre': ['musique', 'respiration'], 'spiritualite': [], 'moments': [], 'formats': [],
+    'rappels': False, 'metiers': [],
+}
 URL_CONVERSATIONS = '/api/chatbot/conversations'
 
 
@@ -78,7 +85,9 @@ class ConservationTests(APITestCase):
 
         self.client.post(URL_MESSAGE, {'message': 'Ça va', 'historique': historique}, format='json')
 
-        traiter.assert_called_once_with('Ça va', historique, None, False)
+        traiter.assert_called_once_with(
+            'Ça va', historique, None, False, personnalisation=False, prenom=None, specialite_suggeree=None
+        )
         self.assertFalse(MessageChatbot.objects.exists())
 
     def test_une_reponse_generee_par_le_modele_est_conservee(self, traiter):
@@ -114,18 +123,38 @@ class PersonnalisationTests(APITestCase):
         return traiter.call_args.args[2]
 
     def test_sans_consentement_aucun_profil_n_est_transmis(self, traiter):
+        self.utilisateur.preferences = {'onboarding': ONBOARDING}
+        self.utilisateur.save()
+
         self.assertIsNone(self._profil_transmis(traiter))
+        self.assertEqual(traiter.call_args.kwargs['prenom'], None)
+        self.assertFalse(traiter.call_args.kwargs['personnalisation'])
 
     def test_avec_consentement_seuls_des_mots_cles_sont_transmis(self, traiter):
         self.utilisateur.preferences = {'personnalisation_chatbot': True}
+        self.utilisateur.ville = 'Dakar'
         self.utilisateur.save()
 
         profil = self._profil_transmis(traiter)
 
         self.assertEqual(profil, ['journal irrégulier'])
-        texte = ' '.join(profil)
-        for donnee_brute in ('Mon secret', 'Awa', 'Diop', 'awa@test.sn'):
-            self.assertNotIn(donnee_brute, texte)
+        # Le prénom seul, dans son propre champ, jamais parmi les mots-clés
+        self.assertEqual(traiter.call_args.kwargs['prenom'], 'Awa')
+        self.assertTrue(traiter.call_args.kwargs['personnalisation'])
+        self.assertNotIn('Awa', ' '.join(profil))
+        tout_ce_qui_part = str(traiter.call_args)
+        for donnee_brute in ('Mon secret', 'Diop', 'awa@test.sn', 'Dakar'):
+            self.assertNotIn(donnee_brute, tout_ce_qui_part)
+
+    def test_avec_consentement_l_onboarding_est_transmis_en_mots_cles(self, traiter):
+        self.utilisateur.preferences = {'personnalisation_chatbot': True, 'onboarding': ONBOARDING}
+        self.utilisateur.save()
+
+        profil = self._profil_transmis(traiter)
+
+        self.assertIn('préoccupations : stress, sommeil', profil)
+        self.assertIn('ce qui fait du bien : musique, respiration', profil)
+        self.assertNotIn('femme', ' '.join(profil))
 
     def test_un_consentement_retire_coupe_la_personnalisation(self, traiter):
         self.utilisateur.preferences = {'personnalisation_chatbot': False}
@@ -298,7 +327,9 @@ class ChatbotVocalTests(APITestCase):
 
         corps = self.client.post(self.url, {'audio': audio()}, format='multipart').data
 
-        traiter.assert_called_once_with('Je suis stressée', [], None, False)
+        traiter.assert_called_once_with(
+            'Je suis stressée', [], None, False, personnalisation=False, prenom=None, specialite_suggeree=None
+        )
         self.assertEqual((corps['transcription'], corps['reponse']), ('Je suis stressée', 'Je vous écoute.'))
         self.assertTrue(corps['jeton_vocal'])
 

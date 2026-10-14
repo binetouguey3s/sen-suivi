@@ -42,6 +42,15 @@ _MOTS_CLES: dict[str, list[tuple[str, float]]] = {
         ('besoin d\'aide tout de suite', 0.8), ('c\'est urgent', 0.8),
         ('j\'ai besoin d\'aide maintenant', 0.8), ('immediat', 0.4),
     ],
+    # Ce que Titou sait de la personne : son prénom, son profil, ses données.
+    # « mon profil » seul ne suffit pas (« comment modifier mon profil ? »).
+    'QUESTION_PROFIL': [
+        ('comment je m\'appelle', 0.8), ('je m\'appelle comment', 0.8), ('mon prenom', 0.7),
+        ('que savez-vous de moi', 0.8), ('que savez vous de moi', 0.8), ('que sais-tu de moi', 0.8),
+        ('que sais tu de moi', 0.8), ('savez sur moi', 0.8), ('sais sur moi', 0.8),
+        ('me connaitre', 0.7), ('me connaissez', 0.7), ('me connais', 0.7),
+        ('mon profil', 0.4), ('mes informations', 0.4), ('mes infos', 0.4), ('mes donnees', 0.4),
+    ],
 }
 
 REPONSE_PAR_INTENTION: dict[str, str] = {
@@ -92,6 +101,7 @@ class ResultatClassification:
 
 
 def _normaliser(texte: str) -> str:
+    texte = texte.replace('’', "'").replace('ʼ', "'")
     sans_accents = unicodedata.normalize('NFKD', texte).encode('ascii', 'ignore').decode('ascii')
     return sans_accents.lower()
 

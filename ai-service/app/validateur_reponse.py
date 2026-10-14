@@ -14,15 +14,20 @@ from app.config.regles_reponse import (
     CONSEILS_INTERDITS,
     EXHORTATIONS,
     FORMULES_CREUSES,
+    METIERS,
+    MOTS_DE_LIAISON,
+    MOTS_REDITE_MIN,
     MOTS_ANGLAIS,
     MOTS_ANGLAIS_MAX,
     MOTS_VIDES,
     NUMEROS_AUTORISES,
+    ORIENTATION,
     PHRASES_MAX,
     PHRASES_MAX_ECOUTE,
     PROMESSES_INTERDITES,
     QUESTIONS_MAX,
     RESOLUTIONS,
+    SIMILARITE_REDITE_MAX,
     SIMILARITE_REPETITION_MAX,
     TERMES_CLINIQUES,
     TERMES_PAYANTS,
@@ -66,6 +71,9 @@ _EXHORTATIONS = [
     for mot in EXHORTATIONS
 ]
 
+_METIERS = {libelle: re.compile(r'(?<![a-z])(?:' + motif + ')') for libelle, motif in METIERS.items()}
+_ORIENTATION = re.compile(ORIENTATION)
+
 # Résolution d'une tâche hors du bien-être (calcul, code)
 _RESOLUTIONS = [(nom, re.compile(motif, re.MULTILINE)) for nom, motif in RESOLUTIONS.items()]
 
@@ -90,6 +98,43 @@ def reponse_achevee(texte: str) -> bool:
     return bool(_FIN_ACHEVEE.search(texte.strip()))
 
 
+def metiers_cites(texte: str) -> set[str]:
+    """Métiers de l'annuaire nommés dans un texte (libellés de Django)."""
+    normalise = _normaliser(texte)
+    return {libelle for libelle, motif in _METIERS.items() if motif.search(normalise)}
+
+
+def _mots(texte: str) -> list[str]:
+    return re.findall(r'[a-z]+', _normaliser(texte))
+
+
+def _redite(precedente: str, phrase: str) -> bool:
+    """La phrase redit la précédente : identique, quasi identique, ou déjà contenue dedans."""
+    avant, mots = _mots(precedente), _mots(phrase)
+    if not mots or avant == mots:
+        return bool(mots)
+    coeur = [m for m in mots if m not in MOTS_DE_LIAISON]
+    if len(coeur) >= MOTS_REDITE_MIN and f" {' '.join(coeur)} " in f" {' '.join(avant)} ":
+        return True
+    a, b = set(avant), set(mots)
+    return min(len(a), len(b)) > MOTS_REDITE_MIN and len(a & b) / len(a | b) >= SIMILARITE_REDITE_MAX
+
+
+def dedoublonner(texte: str) -> str:
+    """Retire une phrase qui redit celle qui la précède, en gardant la première.
+
+    Certains modèles bégaient : « … ce que beaucoup de personnes traversent.
+    Beaucoup de personnes traversent cela. »
+    """
+    phrases = [p for p in re.split(r'(?<=[.!?…])\s+', texte.strip()) if p]
+    gardees: list[str] = []
+    for phrase in phrases:
+        if gardees and _redite(gardees[-1], phrase):
+            continue
+        gardees.append(phrase)
+    return ' '.join(gardees)
+
+
 def _compter_phrases(texte: str) -> int:
     morceaux = re.split(r'(?<=[.!?…])\s+', texte.strip())
     return len([m for m in morceaux if re.search(r'[a-zA-Z]', m)])
@@ -112,13 +157,21 @@ def _similarite(a: str, b: str) -> float:
 
 
 def valider(
-    reponse: str, ressources: list[dict], mode: str = 'ressources', precedentes: list[str] | None = None
+    reponse: str,
+    ressources: list[dict],
+    mode: str = 'ressources',
+    precedentes: list[str] | None = None,
+    controle_metier: bool = False,
+    metier_attendu: str | None = None,
 ) -> ResultatValidation:
     """Vérifie une réponse générée ; `ressources` = celles fournies au modèle.
 
     Mode « ressources » : une réponse sans ressource est toujours rejetée.
     Mode « écoute » : pas de ressource attendue, mais une réponse plus courte.
     `precedentes` : réponses déjà données par Titou dans la conversation.
+    `controle_metier` : une carte de professionnel peut s'afficher sous la
+    réponse ; si elle oriente, elle ne nomme que `metier_attendu` (le métier de
+    la carte), ou aucun métier quand personne n'est disponible.
     """
     if not reponse or not reponse.strip():
         return ResultatValidation(False, 'réponse vide')
@@ -159,6 +212,11 @@ def valider(
         # Les petits nombres (« 5 minutes », « 4 temps ») ne sont pas des numéros
         if len(chiffres) >= 4 and chiffres not in NUMEROS_AUTORISES:
             return ResultatValidation(False, f'numéro non autorisé : {numero.strip()}')
+
+    if controle_metier and _ORIENTATION.search(normalise):
+        autres = metiers_cites(reponse) - ({metier_attendu} if metier_attendu else set())
+        if autres:
+            return ResultatValidation(False, f'métier différent de la suggestion : {", ".join(sorted(autres))}')
 
     for precedente in precedentes or []:
         if _similarite(reponse, precedente) > SIMILARITE_REPETITION_MAX:

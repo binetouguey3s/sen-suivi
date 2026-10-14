@@ -27,7 +27,7 @@ from concurrent.futures import TimeoutError as FuturTimeout
 
 import httpx
 
-from app.validateur_reponse import reponse_achevee
+from app.validateur_reponse import dedoublonner, reponse_achevee
 
 journal = logging.getLogger(__name__)
 
@@ -216,8 +216,9 @@ def generation_disponible() -> bool:
 
 
 def _nettoyer_sortie(texte: str) -> str:
-    """Retire la réflexion interne que certains modèles écrivent entre balises <think>."""
-    return re.sub(r'<think>.*?</think>', '', texte, flags=re.DOTALL).strip()
+    """Retire la réflexion interne que certains modèles écrivent entre balises <think>,
+    puis une phrase redite deux fois de suite."""
+    return dedoublonner(re.sub(r'<think>.*?</think>', '', texte, flags=re.DOTALL).strip())
 
 
 def _messages_historique(historique: list[dict] | None) -> list[dict]:
@@ -314,33 +315,52 @@ def _contexte(ressources: list[dict]) -> str:
     return 'Ressources validées de Sen Suivi, seules sources autorisées :\n\n' + '\n\n'.join(blocs)
 
 
-_CONSIGNES_PROFIL = """Tendance récente de la personne (résumé anonyme, partagé avec son accord) : {profil}.
+_CONSIGNES_PROFIL = """Ce que la personne a choisi de partager (résumé anonyme, transmis avec son accord) : {profil}.
 
 Comment t'en servir :
-- Elle guide ton TON seulement, jamais le contenu : tes conseils restent tirés des seules ressources fournies.
+- Il guide ton ton et ton choix parmi les ressources fournies, jamais le contenu : tes conseils restent \
+tirés des seules ressources fournies, tu n'inventes rien.
+- Parmi les ressources fournies, privilégie celles dont la thématique correspond à ses préoccupations \
+et au format qu'elle préfère (audio, texte, vidéo, exercice guidé).
+- Quand tu proposes une piste, aligne-la si possible sur ce qui lui fait du bien (la musique, la \
+respiration, la marche…), sans inventer de contenu.
 - N'en parle pas de toi-même. « Je vois que votre humeur baisse depuis cinq jours » est \
 intrusif ; « Comment se passent vos journées en ce moment ? » est juste.
-- Mais si la personne te demande elle-même son humeur ou son résultat, ne prétends jamais ne rien \
-savoir : donne-lui la tendance avec douceur, sans chiffre ni interprétation (« votre humeur a \
-plutôt remonté ces derniers jours »), et invite-la à ouvrir son journal d'humeur ou ses \
-auto-évaluations pour le détail.
+- Si la personne demande ce que tu sais d'elle (son prénom, son profil, son humeur, ses résultats), \
+réponds honnêtement à partir de ces informations, avec douceur, sans tout réciter, sans chiffre ni \
+interprétation, et rappelle qu'elle peut les modifier ou les effacer dans « Mon profil ». Ne \
+prétends jamais ne rien savoir.
 - N'interprète pas, ne prédis rien, n'alerte jamais sur une aggravation.
 - Si l'humeur est en baisse, propose une seule fois, avec délicatesse, d'échanger avec un \
 professionnel de l'annuaire ; si tu l'as déjà proposé dans la conversation, ne le refais pas.
 - Un journal arrêté ou un test ancien ne se reproche jamais."""
 
+_CONSIGNE_PRENOM = """La personne s'appelle {prenom} (prénom partagé avec son accord). Utilise-le avec \
+parcimonie : pour saluer, ou à un moment important, jamais à chaque message. Si elle demande comment \
+elle s'appelle, réponds-lui simplement par son prénom."""
 
-def _contexte_profil(profil: list[str] | None) -> list[dict]:
-    """Profil de tendance : quelques mots-clés, jamais de donnée brute."""
-    if not profil:
-        return []
-    return [{'role': 'system', 'content': _CONSIGNES_PROFIL.format(profil=', '.join(profil))}]
+
+def _contexte_profil(profil: list[str] | None, prenom: str | None = None) -> list[dict]:
+    """Profil (quelques mots-clés, jamais de donnée brute) et prénom, avec consentement."""
+    messages = []
+    if profil:
+        messages.append({'role': 'system', 'content': _CONSIGNES_PROFIL.format(profil=', '.join(profil))})
+    if prenom:
+        messages.append({'role': 'system', 'content': _CONSIGNE_PRENOM.format(prenom=prenom)})
+    return messages
 
 
 _CONSIGNE_SUGGESTION = """La personne est connectée : si tu l'orientes vers un professionnel, une \
 suggestion personnalisée, choisie par la plateforme parmi les professionnels de l'annuaire, \
 s'affiche juste sous ton message. Invite-la à y jeter un œil ou à parcourir l'annuaire, sans \
 citer de nom toi-même, et ne dis jamais que tu ne peux pas lui en proposer."""
+
+# Le texte et la carte affichée dessous doivent nommer le même métier
+_CONSIGNE_SPECIALITE = """Le professionnel suggéré sous ton message est : {specialite}. Si tu orientes \
+vers un professionnel, cite cette spécialité, et aucune autre."""
+
+_CONSIGNE_SANS_PROFESSIONNEL = """Aucun professionnel n'est disponible pour une suggestion en ce moment. \
+Si tu orientes vers un professionnel, parle de l'annuaire de Sen Suivi sans citer de métier."""
 
 
 _CONSIGNE_CRISE = """SITUATION DE CRISE EN COURS : dans ses derniers messages, la personne a exprimé un \
@@ -359,8 +379,11 @@ def _contexte_crise(crise: bool) -> list[dict]:
     return [{'role': 'system', 'content': _CONSIGNE_CRISE}] if crise else []
 
 
-def _contexte_suggestion(suggestion_possible: bool) -> list[dict]:
-    return [{'role': 'system', 'content': _CONSIGNE_SUGGESTION}] if suggestion_possible else []
+def _contexte_suggestion(suggestion_possible: bool, specialite: str | None = None) -> list[dict]:
+    if not suggestion_possible:
+        return []
+    precision = _CONSIGNE_SPECIALITE.format(specialite=specialite) if specialite else _CONSIGNE_SANS_PROFESSIONNEL
+    return [{'role': 'system', 'content': f'{_CONSIGNE_SUGGESTION}\n\n{precision}'}]
 
 
 def _contexte_catalogue(catalogue: list[dict] | None) -> list[dict]:
@@ -380,6 +403,8 @@ def generer(
     accepter: Callable[[str], bool] | None = None,
     profil: list[str] | None = None,
     suggestion_possible: bool = False,
+    prenom: str | None = None,
+    specialite: str | None = None,
 ) -> str | None:
     """Mode ressources : réponse tirée des seules ressources fournies, ou None."""
     if not generation_disponible() or not ressources:
@@ -387,8 +412,8 @@ def generer(
     return _appeler(
         [{'role': 'system', 'content': PROMPT_RESSOURCES}, {'role': 'system', 'content': _contexte(ressources)}]
         + _contexte_catalogue(catalogue)
-        + _contexte_profil(profil)
-        + _contexte_suggestion(suggestion_possible)
+        + _contexte_profil(profil, prenom)
+        + _contexte_suggestion(suggestion_possible, specialite)
         + _messages_historique(historique)
         + [{'role': 'user', 'content': message}],
         echeance,
@@ -405,6 +430,8 @@ def ecouter(
     profil: list[str] | None = None,
     suggestion_possible: bool = False,
     crise: bool = False,
+    prenom: str | None = None,
+    specialite: str | None = None,
 ) -> str | None:
     """Mode écoute : accueil, sans aucun conseil, ou None."""
     if not generation_disponible():
@@ -413,8 +440,8 @@ def ecouter(
         [{'role': 'system', 'content': PROMPT_ECOUTE}]
         + _contexte_crise(crise)
         + _contexte_catalogue(catalogue)
-        + _contexte_profil(profil)
-        + _contexte_suggestion(suggestion_possible)
+        + _contexte_profil(profil, prenom)
+        + _contexte_suggestion(suggestion_possible, specialite)
         + _messages_historique(historique)
         + [{'role': 'user', 'content': message}],
         echeance,
