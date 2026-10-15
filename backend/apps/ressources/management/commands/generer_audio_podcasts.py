@@ -42,8 +42,8 @@ class Command(BaseCommand):
         dossier = Path(dossier)
         a_traiter = []
         for podcast in Ressource.objects.filter(type_ressource=TypeRessource.PODCAST).order_by('pk'):
-            if podcast.url_audio.startswith('https://'):
-                continue  # fichier hébergé ailleurs : rien à produire
+            if podcast.fichier_audio or podcast.url_audio.startswith('https://'):
+                continue  # fichier envoyé depuis le formulaire, ou hébergé ailleurs : rien à produire
             if not tous and podcast.url_audio and (dossier / nom_de_fichier(podcast)).exists():
                 continue
             a_traiter.append(podcast)

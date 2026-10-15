@@ -116,4 +116,7 @@ export interface RessourceAdmin {
   thematique: string;
   duree_lecture: number;
   date_publication: string;
+  url_audio?: string;
+  // À lire : le fichier envoyé en priorité, sinon url_audio
+  audio?: string;
 }

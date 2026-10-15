@@ -41,6 +41,8 @@ export interface Ressource {
   date_publication: string;
   // Podcast : « /audio/podcasts/… » ou adresse https ; vide si aucun fichier
   url_audio?: string;
+  // À lire : le fichier envoyé depuis le formulaire en priorité, sinon url_audio
+  audio?: string;
 }
 
 export interface LieuDetente {

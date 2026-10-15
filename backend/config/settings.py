@@ -118,6 +118,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Fichiers envoyés (audio des podcasts). Dans Docker : volume « media_data »,
+# pour qu'ils survivent à une reconstruction du conteneur.
+MEDIA_URL = '/media/'
+MEDIA_ROOT = Path(env('MEDIA_ROOT', default=str(BASE_DIR / 'media')))
+# Un podcast peut peser jusqu'à 20 Mo : au-delà de 2,5 Mo, Django écrit le
+# fichier reçu dans un fichier temporaire plutôt que de le garder en mémoire
+FICHIER_AUDIO_MAX_OCTETS = 20 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = FICHIER_AUDIO_MAX_OCTETS + 1024 * 1024
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {

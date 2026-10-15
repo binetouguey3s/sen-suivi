@@ -6,6 +6,7 @@ import { RessourceAdmin } from '../../../core/models/administration';
 import { AdministrationService } from '../../../core/services/administration.service';
 import { ICONE_PAR_TYPE, LIBELLE_PAR_TYPE } from '../../../core/utils/ressources';
 import { valeurs } from '../../../core/utils/ressource';
+import { ChampAudioComponent } from '../../../shared/champ-audio/champ-audio.component';
 import { ChampComponent } from '../../../shared/champ/champ.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ModalComponent } from '../../../shared/modal/modal.component';
@@ -17,7 +18,7 @@ const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST'];
 @Component({
   selector: 'ss-admin-ressources',
   standalone: true,
-  imports: [ChampComponent, IconComponent, ModalComponent, PaginationComponent],
+  imports: [ChampComponent, ChampAudioComponent, IconComponent, ModalComponent, PaginationComponent],
   templateUrl: './ressources.component.html',
   styleUrl: './ressources.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +49,10 @@ export class AdminRessourcesComponent {
   protected readonly dureeLecture = signal(5);
   protected readonly contenu = signal('');
   protected readonly envoiEnCours = signal(false);
+  // Podcast : fichier choisi, demande de retrait du fichier actuel, progression de l'envoi
+  protected readonly fichierAudio = signal<File | null>(null);
+  protected readonly retirerAudio = signal(false);
+  protected readonly progressionAudio = signal<number | null>(null);
   protected readonly erreur = signal<string | null>(null);
 
   protected readonly aSupprimer = signal<RessourceAdmin | null>(null);
@@ -66,8 +71,15 @@ export class AdminRessourcesComponent {
     this.thematique.set('');
     this.dureeLecture.set(5);
     this.contenu.set('');
+    this.reinitialiserAudio();
     this.erreur.set(null);
     this.modaleOuverte.set(true);
+  }
+
+  private reinitialiserAudio(): void {
+    this.fichierAudio.set(null);
+    this.retirerAudio.set(false);
+    this.progressionAudio.set(null);
   }
 
   protected ouvrirEdition(ressource: RessourceAdmin): void {
@@ -77,6 +89,7 @@ export class AdminRessourcesComponent {
     this.thematique.set(ressource.thematique);
     this.dureeLecture.set(ressource.duree_lecture);
     this.contenu.set(ressource.contenu);
+    this.reinitialiserAudio();
     this.erreur.set(null);
     this.modaleOuverte.set(true);
   }
@@ -107,19 +120,35 @@ export class AdminRessourcesComponent {
       duree_lecture: this.dureeLecture(),
       contenu: this.contenu().trim(),
     };
+    let id: number | null = null;
     try {
       const existante = this.enEdition();
       if (existante) {
         await this.administration.modifierRessource(existante.id, donnees);
+        id = existante.id;
       } else {
-        await this.administration.creerRessource(donnees);
+        id = (await this.administration.creerRessource(donnees)).id;
+      }
+      // Puis le fichier audio d'un podcast, une fois la ressource enregistrée
+      const fichier = this.fichierAudio();
+      if (this.formatChoisi() === 'PODCAST' && fichier) {
+        this.progressionAudio.set(0);
+        await this.administration.envoyerAudio(id, fichier, (p) => this.progressionAudio.set(p));
+      } else if (this.retirerAudio() && existante?.audio) {
+        await this.administration.retirerAudio(id);
       }
       this.modaleOuverte.set(false);
       this.ressources.reload();
     } catch {
-      this.erreur.set("L'enregistrement a échoué. Réessayez dans un instant.");
+      this.erreur.set(
+        id === null
+          ? "L'enregistrement a échoué. Réessayez dans un instant."
+          : "La ressource est enregistrée, mais le fichier audio n'a pas pu être envoyé. Vérifiez son format (MP3, M4A ou OGG, 20 Mo au plus) et réessayez.",
+      );
+      if (id !== null && !this.enEdition()) this.ressources.reload();
     } finally {
       this.envoiEnCours.set(false);
+      this.progressionAudio.set(null);
     }
   }
 

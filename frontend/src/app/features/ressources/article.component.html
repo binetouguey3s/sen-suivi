@@ -70,7 +70,7 @@
         @if (estPodcast()) {
           <ss-lecteur-audio
             class="art__lecteur"
-            [src]="r.url_audio"
+            [src]="r.audio || r.url_audio"
             [titre]="r.titre"
             [image]="imagePodcast()"
             [resume]="texteResume()"

@@ -481,7 +481,7 @@ GET/POST /api/demandes-contact/{id}/messages → messagerie privée
 
 | Modèle | Description |
 |---|---|
-| `Ressource` | Titre, type (ARTICLE/EXERCICE/PODCAST), contenu, thématique, durée de lecture, date de publication, `url_audio` (fichier d'un podcast : « /audio/podcasts/… » ou adresse https). |
+| `Ressource` | Titre, type (ARTICLE/EXERCICE/PODCAST), contenu, thématique, durée de lecture, date de publication, `fichier_audio` (envoyé depuis le formulaire) et `url_audio` (« /audio/podcasts/… » ou adresse https). |
 | `Favori` | Association utilisateur ↔ ressource, unique. |
 | `LieuDetente` | Lieu de détente au Sénégal avec coordonnées GPS (latitude/longitude), catégorie, accès libre. |
 
@@ -493,7 +493,11 @@ python manage.py reindexer_ressources
 # pour reconstruire l'index ChromaDB après ajout ou modification.
 ```
 
-**Audio des podcasts :** la page d'un podcast affiche un lecteur (`shared/lecteur-audio`). Sans fichier, ou si le fichier est introuvable, elle propose d'écouter le résumé avec la voix française du navigateur. Un vrai enregistrement est préférable : déposez le MP3 dans `frontend/public/audio/podcasts/` sous le nom indiqué dans `url_audio`. À défaut, la synthèse vocale d'ai-service peut le produire (variables `SYNTHESE_*` du `.env`) :
+**Audio des podcasts :** la page d'un podcast affiche un lecteur (`shared/lecteur-audio`). Sans fichier, ou si le fichier est introuvable, elle propose d'écouter le résumé avec la voix française du navigateur.
+
+Le plus simple : dans **Gestion des ressources** (administration), un podcast a un champ « Fichier audio » (`shared/champ-audio`). Le fichier (MP3, M4A ou OGG, 20 Mo au plus) est vérifié sur son contenu, pas seulement sur son nom, puis stocké dans `MEDIA_ROOT/audio/` (volume Docker `media_data`). L'API expose `audio` : le fichier envoyé en priorité, sinon `url_audio`. Remplacer ou retirer un fichier supprime l'ancien du disque. En production, les fichiers de `/media/` doivent être servis par le serveur web (Django ne les sert qu'en mode DEBUG).
+
+Autre possibilité : déposer le MP3 dans `frontend/public/audio/podcasts/` sous le nom indiqué dans `url_audio`. À défaut, la synthèse vocale d'ai-service peut le produire (variables `SYNTHESE_*` du `.env`) :
 
 ```bash
 # En local (le dossier frontend/ est à côté de backend/)

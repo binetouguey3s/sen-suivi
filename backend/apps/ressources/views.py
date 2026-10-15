@@ -59,6 +59,8 @@ class RessourceDetailView(generics.RetrieveUpdateDestroyAPIView):
         declencher_workflow('ressource-modifiee')  # réindexation RAG (n8n)
 
     def perform_destroy(self, instance):
+        if instance.fichier_audio:
+            instance.fichier_audio.delete(save=False)
         instance.delete()
         declencher_workflow('ressource-modifiee')
 

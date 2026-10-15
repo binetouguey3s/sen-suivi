@@ -66,6 +66,16 @@
       <input type="number" min="1" max="120" [value]="dureeLecture()" (input)="saisirDuree($event)" />
     </label>
 
+    @if (formatChoisi() === 'PODCAST') {
+      <ss-champ-audio
+        [actuel]="enEdition()?.audio"
+        [progression]="progressionAudio()"
+        [desactive]="envoiEnCours()"
+        (fichierChange)="fichierAudio.set($event)"
+        (retrait)="retirerAudio.set(true)"
+      />
+    }
+
     <ss-champ libelle="Contenu" type="textarea" [(valeur)]="contenu" [lignes]="6" placeholder="Rédigez le contenu de la ressource…" />
 
     @if (erreur()) { <p class="ar__erreur-modale" role="alert">{{ erreur() }}</p> }

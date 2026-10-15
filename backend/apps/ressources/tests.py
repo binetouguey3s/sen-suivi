@@ -7,8 +7,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 import httpx
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework.test import APITestCase
 
 from .audio import TAILLE_MORCEAU, morceaux, texte_a_lire
@@ -136,3 +137,104 @@ class GenererAudioPodcastsTests(TestCase):
     def test_microservice_injoignable(self, post):
         podcast()
         self.assertIn('injoignable', self.lancer())
+
+
+# Débuts de fichiers réels : ce qui est vérifié, c'est le contenu, pas le nom
+MP3 = b'ID3\x04\x00\x00\x00\x00\x00\x00' + b'\x00' * 64
+M4A = b'\x00\x00\x00\x20ftypM4A ' + b'\x00' * 64
+OGG = b'OggS\x00\x02' + b'\x00' * 64
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class FichierAudioTests(APITestCase):
+    """L'administration joint directement le fichier audio d'un podcast."""
+
+    def setUp(self):
+        from apps.comptes.models import Administrateur, Utilisateur
+
+        self.admin = Administrateur.objects.create(email='admin@test.sn', nom='Admin')
+        self.utilisateur = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+        self.ressource = podcast()
+
+    def envoyer(self, nom, contenu, type_mime='audio/mpeg', compte=None):
+        self.client.force_authenticate(compte or self.admin)
+        fichier = SimpleUploadedFile(nom, contenu, content_type=type_mime)
+        return self.client.patch(f'/api/ressources/{self.ressource.pk}', {'fichier_audio': fichier}, format='multipart')
+
+    def test_un_mp3_envoye_est_enregistre_et_expose_par_l_api(self):
+        reponse = self.envoyer('episode.mp3', MP3)
+
+        self.assertEqual(reponse.status_code, 200, reponse.data)
+        self.ressource.refresh_from_db()
+        self.assertTrue(self.ressource.fichier_audio.name.startswith('audio/episode'))
+        audio = self.client.get(f'/api/ressources/{self.ressource.pk}').data['audio']
+        self.assertTrue(audio.startswith('http://testserver/media/audio/episode'))
+        # Le fichier n'est jamais renvoyé tel quel
+        self.assertNotIn('fichier_audio', reponse.data)
+
+    def test_m4a_et_ogg_sont_acceptes(self):
+        self.assertEqual(self.envoyer('episode.m4a', M4A, 'audio/mp4').status_code, 200)
+        self.assertEqual(self.envoyer('episode.ogg', OGG, 'audio/ogg').status_code, 200)
+
+    def test_le_fichier_envoye_passe_devant_url_audio(self):
+        self.ressource.url_audio = '/audio/podcasts/ancien.mp3'
+        self.ressource.save()
+        self.assertEqual(self.client.get(f'/api/ressources/{self.ressource.pk}').data['audio'], '/audio/podcasts/ancien.mp3')
+
+        self.envoyer('nouveau.mp3', MP3)
+
+        self.assertIn('/media/audio/nouveau', self.client.get(f'/api/ressources/{self.ressource.pk}').data['audio'])
+
+    def test_un_mauvais_format_est_refuse(self):
+        reponse = self.envoyer('image.png', b'\x89PNG\r\n\x1a\n' + b'\x00' * 64, 'image/png')
+        self.assertEqual(reponse.status_code, 400)
+        self.assertIn('MP3, M4A ou OGG', str(reponse.data['fichier_audio']))
+
+    def test_un_faux_mp3_est_refuse(self):
+        # Bonne extension, mauvais contenu : un document renommé
+        reponse = self.envoyer('episode.mp3', b'%PDF-1.7' + b'\x00' * 64)
+        self.assertEqual(reponse.status_code, 400)
+        self.assertIn('pas un enregistrement audio', str(reponse.data['fichier_audio']))
+
+    @override_settings(FICHIER_AUDIO_MAX_OCTETS=50)
+    def test_un_fichier_trop_lourd_est_refuse(self):
+        reponse = self.envoyer('episode.mp3', MP3)
+        self.assertEqual(reponse.status_code, 400)
+        self.assertIn('dépasse', str(reponse.data['fichier_audio']))
+
+    def test_seule_l_administration_peut_envoyer_un_fichier(self):
+        self.assertEqual(self.envoyer('episode.mp3', MP3, compte=self.utilisateur).status_code, 403)
+
+    def test_remplacer_ou_retirer_supprime_l_ancien_fichier(self):
+        self.envoyer('premier.mp3', MP3)
+        self.ressource.refresh_from_db()
+        premier = Path(self.ressource.fichier_audio.path)
+        self.assertTrue(premier.exists())
+
+        self.envoyer('second.mp3', MP3)
+        self.assertFalse(premier.exists())
+
+        self.ressource.refresh_from_db()
+        second = Path(self.ressource.fichier_audio.path)
+        reponse = self.client.patch(f'/api/ressources/{self.ressource.pk}', {'fichier_audio': None}, format='json')
+        self.assertEqual(reponse.status_code, 200)
+        self.assertFalse(second.exists())
+        self.ressource.refresh_from_db()
+        self.assertFalse(self.ressource.fichier_audio)
+
+    def test_supprimer_la_ressource_supprime_son_fichier(self):
+        self.envoyer('episode.mp3', MP3)
+        self.ressource.refresh_from_db()
+        fichier = Path(self.ressource.fichier_audio.path)
+
+        self.client.delete(f'/api/ressources/{self.ressource.pk}')
+
+        self.assertFalse(fichier.exists())
+
+    @patch('apps.ressources.audio.httpx.post')
+    def test_la_commande_ne_regenere_pas_un_podcast_qui_a_son_fichier(self, post):
+        self.envoyer('episode.mp3', MP3)
+        post.reset_mock()  # l'envoi a aussi demandé la réindexation (n8n), par le même httpx
+        sortie = StringIO()
+        call_command('generer_audio_podcasts', '--dossier', tempfile.mkdtemp(), stdout=sortie)
+        post.assert_not_called()
