@@ -177,6 +177,17 @@ img.art__illustration--entiere {
   margin-top: var(--ss-espace-3) !important;
 }
 
+.art__liste {
+  margin: 0 0 var(--ss-espace-2);
+  padding-left: var(--ss-espace-3);
+  color: var(--ss-texte-doux);
+  font-size: 16px;
+
+  li + li {
+    margin-top: 4px;
+  }
+}
+
 blockquote {
   margin: var(--ss-espace-3) 0;
   padding: var(--ss-espace-3);
@@ -301,9 +312,26 @@ blockquote {
   }
 }
 
-// Podcast : le lecteur sous les métadonnées, puis le résumé de l'épisode
-.art__lecteur {
+// Podcast ou vidéo : le lecteur sous les métadonnées, puis le résumé
+.art__lecteur,
+.art__video {
   margin-top: var(--ss-espace-3);
+}
+
+.art__video-impression {
+  display: none;
+}
+
+// Crédit d'une ressource proposée par un professionnel
+.art__texte .art__auteur {
+  margin: calc(var(--ss-espace-2) * -1) 0 var(--ss-espace-2);
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+
+  a {
+    color: var(--ss-texte-marque);
+    font-weight: var(--ss-poids-texte-fort);
+  }
 }
 
 .art__texte .art__resume-titre {
@@ -406,6 +434,11 @@ blockquote {
     color: #000000;
     font-size: 12pt;
     break-inside: avoid;
+  }
+
+  .art__texte .art__video-impression {
+    display: block;
+    font-size: 11pt;
   }
 
   .art__pied-impression {

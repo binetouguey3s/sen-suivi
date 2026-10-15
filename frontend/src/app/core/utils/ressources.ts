@@ -5,12 +5,14 @@ export const ICONE_PAR_TYPE: Record<Ressource['type_ressource'], NomIcone> = {
   ARTICLE: 'article',
   EXERCICE: 'exercice',
   PODCAST: 'podcast',
+  VIDEO: 'video',
 };
 
 export const LIBELLE_PAR_TYPE: Record<Ressource['type_ressource'], string> = {
   ARTICLE: 'Article',
   EXERCICE: 'Exercice',
   PODCAST: 'Podcast',
+  VIDEO: 'Vidéo',
 };
 
 export function ajouteLe(dateIso: string): string {
@@ -22,22 +24,43 @@ export function ajouteLe(dateIso: string): string {
   return `Ajouté il y a ${jours} jours`;
 }
 
-// Découpe le contenu (« ## » intertitre, « > » citation, ligne vide entre paragraphes)
-// en blocs affichables, sans jamais injecter de HTML.
+// Découpe le contenu (« ## » intertitre, « > » citation, « - » liste, ligne
+// vide entre paragraphes) en blocs affichables, sans jamais injecter de HTML.
+// Ligne par ligne : un intertitre peut être directement suivi de son texte,
+// comme l'écrivent les professionnels dans l'éditeur.
 export type BlocContenu =
   | { genre: 'titre'; texte: string; id: string }
   | { genre: 'citation'; texte: string }
-  | { genre: 'paragraphe'; texte: string };
+  | { genre: 'paragraphe'; texte: string }
+  | { genre: 'liste'; texte: string; elements: string[] };
 
-// Permet de decouper le contenu d'une ressource en blocs.
 export function decouperContenu(contenu: string): BlocContenu[] {
-  return contenu
-    .split(/\n\s*\n/)
-    .map((b) => b.trim())
-    .filter(Boolean)
-    .map((bloc, i): BlocContenu => {
-      if (bloc.startsWith('## ')) return { genre: 'titre', texte: bloc.slice(3), id: `section-${i}` };
-      if (bloc.startsWith('> ')) return { genre: 'citation', texte: bloc.slice(2) };
-      return { genre: 'paragraphe', texte: bloc };
-    });
+  const blocs: BlocContenu[] = [];
+  let lignes: string[] = [];
+  let genre: 'paragraphe' | 'citation' | 'liste' | null = null;
+
+  const fermer = () => {
+    if (genre === 'liste') blocs.push({ genre, texte: lignes.join(' '), elements: lignes });
+    else if (genre) blocs.push({ genre, texte: lignes.join(genre === 'citation' ? ' ' : '\n') });
+    lignes = [];
+    genre = null;
+  };
+  const ajouter = (nouveau: NonNullable<typeof genre>, texte: string) => {
+    if (genre !== nouveau) fermer();
+    genre = nouveau;
+    lignes.push(texte);
+  };
+
+  for (const brute of contenu.split('\n')) {
+    const ligne = brute.trim();
+    if (!ligne) fermer();
+    else if (ligne.startsWith('## ')) {
+      fermer();
+      blocs.push({ genre: 'titre', texte: ligne.slice(3).trim(), id: `section-${blocs.length}` });
+    } else if (ligne.startsWith('> ')) ajouter('citation', ligne.slice(2).trim());
+    else if (/^[-•]\s/.test(ligne)) ajouter('liste', ligne.slice(2).trim());
+    else ajouter('paragraphe', ligne);
+  }
+  fermer();
+  return blocs;
 }

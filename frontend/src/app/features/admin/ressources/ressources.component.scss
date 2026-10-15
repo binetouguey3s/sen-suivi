@@ -230,3 +230,99 @@
   gap: var(--ss-espace-2);
   margin-top: var(--ss-espace-1);
 }
+
+// Onglets : tout le catalogue, ou les propositions à relire
+.ar__onglets {
+  display: flex;
+  gap: 6px;
+  margin-bottom: var(--ss-espace-2);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 7px 14px;
+    border: 1px solid var(--ss-bordure);
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-surface);
+    color: var(--ss-texte-doux);
+    font: inherit;
+    font-size: 13px;
+    font-weight: var(--ss-poids-texte-fort);
+    cursor: pointer;
+
+    &[aria-selected='true'] {
+      border-color: var(--ss-primaire);
+      background: var(--ss-primaire);
+      color: var(--ss-primaire-texte);
+    }
+  }
+}
+
+.ar__compteur {
+  padding: 1px 8px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-attente-douce);
+  color: var(--ss-attente);
+  font-size: 11px;
+  font-weight: var(--ss-poids-titre);
+}
+
+.ar__sous-titre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 4px;
+  color: var(--ss-texte-doux);
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte);
+}
+
+.ar-pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: var(--ss-rayon-pilule);
+  font-size: 11px;
+  font-weight: var(--ss-poids-titre);
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.ar-pastille--publiee {
+  background: var(--ss-ok-douce);
+  color: var(--ss-ok);
+}
+
+.ar-pastille--attente {
+  background: var(--ss-attente-douce);
+  color: var(--ss-attente);
+}
+
+.ar-pastille--brouillon {
+  background: var(--ss-surface-neutre);
+  color: var(--ss-texte-doux);
+}
+
+.ar-pastille--refusee {
+  background: var(--ss-alerte-douce);
+  color: var(--ss-alerte-sur-douce);
+}
+
+.ar__lien--valider {
+  color: var(--ss-ok);
+}
+
+.ar__bouton--danger {
+  background: var(--ss-alerte);
+  color: var(--ss-alerte-texte);
+}

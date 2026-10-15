@@ -58,6 +58,15 @@ export class AdministrationService {
     await firstValueFrom(this.http.patch(`${API_BASE_URL}/ressources/${id}`, donnees));
   }
 
+  // Relecture d'une ressource proposée par un professionnel
+  async publierRessource(id: number): Promise<void> {
+    await firstValueFrom(this.http.post(`${API_BASE_URL}/ressources/${id}/publier`, {}));
+  }
+
+  async refuserRessource(id: number, motif: string): Promise<void> {
+    await firstValueFrom(this.http.post(`${API_BASE_URL}/ressources/${id}/refuser`, { motif }));
+  }
+
   async supprimerRessource(id: number): Promise<void> {
     await firstValueFrom(this.http.delete(`${API_BASE_URL}/ressources/${id}`));
   }

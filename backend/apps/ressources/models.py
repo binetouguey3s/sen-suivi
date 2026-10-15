@@ -1,5 +1,6 @@
 """Ressources : Ressource (bibliothèque), Favori, LieuDetente."""
 
+import re
 from pathlib import Path
 
 from django.conf import settings
@@ -47,6 +48,44 @@ class TypeRessource(models.TextChoices):
     ARTICLE = 'ARTICLE', 'Article'
     EXERCICE = 'EXERCICE', 'Exercice'
     PODCAST = 'PODCAST', 'Podcast'
+    VIDEO = 'VIDEO', 'Vidéo'
+
+
+class StatutRessource(models.TextChoices):
+    """Cycle d'une ressource proposée par un professionnel. Seules les ressources
+    PUBLIEE sont visibles du public, donc indexées par le RAG de Titou."""
+
+    BROUILLON = 'BROUILLON', 'Brouillon'
+    EN_ATTENTE = 'EN_ATTENTE', 'En attente'
+    PUBLIEE = 'PUBLIEE', 'Publiée'
+    REFUSEE = 'REFUSEE', 'À corriger'
+
+
+# Lien YouTube : l'identifiant de 11 caractères est extrait, puis l'adresse
+# d'intégration est reconstruite par le front-end (jamais le lien saisi tel quel)
+_ID_YOUTUBE = re.compile(r'^[A-Za-z0-9_-]{11}$')
+_LIENS_YOUTUBE = [
+    re.compile(r'^(?:https?://)?(?:www\.|m\.)?youtube\.com/watch\?(?:.*&)?v=([^&#]+)'),
+    re.compile(r'^(?:https?://)?youtu\.be/([^?&#/]+)'),
+    re.compile(r'^(?:https?://)?(?:www\.|m\.)?youtube\.com/(?:shorts|embed)/([^?&#/]+)'),
+    re.compile(r'^(?:https?://)?(?:www\.)?youtube-nocookie\.com/embed/([^?&#/]+)'),
+]
+MESSAGE_YOUTUBE = 'Seuls les liens YouTube sont acceptés.'
+
+
+def extraire_id_youtube(url: str) -> str | None:
+    """Identifiant de la vidéo, ou None si le lien n'est pas un lien YouTube valide."""
+    url = (url or '').strip()
+    for motif in _LIENS_YOUTUBE:
+        trouve = motif.match(url)
+        if trouve:
+            return trouve.group(1) if _ID_YOUTUBE.match(trouve.group(1)) else None
+    return None
+
+
+def valider_url_video(valeur: str) -> None:
+    if valeur and extraire_id_youtube(valeur) is None:
+        raise ValidationError(MESSAGE_YOUTUBE)
 
 
 class Ressource(models.Model):
@@ -77,6 +116,25 @@ class Ressource(models.Model):
         help_text='MP3, M4A ou OGG, 20 Mo au plus.',
     )
 
+    url_video = models.CharField(
+        'lien de la vidéo', max_length=300, blank=True, validators=[valider_url_video],
+        help_text='Lien YouTube uniquement (youtube.com/watch, youtu.be, shorts ou embed).',
+    )
+    # Proposée par un professionnel (null : créée par l'administration)
+    auteur = models.ForeignKey(
+        'comptes.Professionnel',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='ressources_proposees',
+        verbose_name='auteur',
+    )
+    # PUBLIEE par défaut : les ressources existantes et celles de l'administration
+    statut = models.CharField('statut', max_length=12, choices=StatutRessource.choices, default=StatutRessource.PUBLIEE)
+    motif_refus = models.TextField('motif du refus', blank=True)
+    date_soumission = models.DateTimeField('date de soumission', null=True, blank=True)
+    date_modification = models.DateTimeField('dernière modification', auto_now=True)
+
     class Meta:
         verbose_name = 'ressource'
         verbose_name_plural = 'ressources'
@@ -84,6 +142,27 @@ class Ressource(models.Model):
 
     def __str__(self):
         return self.titre
+
+    @property
+    def video_id(self) -> str | None:
+        return extraire_id_youtube(self.url_video)
+
+    @property
+    def a_un_audio(self) -> bool:
+        return bool(self.fichier_audio or self.url_audio)
+
+    def media_manquant(self) -> str | None:
+        """Ce qui manque pour soumettre ou publier, ou None."""
+        if self.type_ressource == TypeRessource.VIDEO and not self.video_id:
+            return 'Ajoutez un lien YouTube valide.'
+        if self.type_ressource == TypeRessource.PODCAST and not self.a_un_audio:
+            return 'Ajoutez votre fichier audio.'
+        return None
+
+    def clean(self):
+        super().clean()
+        if self.type_ressource == TypeRessource.VIDEO and not self.url_video:
+            raise ValidationError({'url_video': 'Une vidéo a besoin de son lien YouTube.'})
 
     @property
     def podcast_sans_audio(self) -> bool:

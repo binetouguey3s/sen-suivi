@@ -9,7 +9,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { valeurs } from '../../core/utils/ressource';
 
 type Format = Ressource['type_ressource'];
-const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST'];
+const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST', 'VIDEO'];
 const PAGE = 5;
 
 @Component({

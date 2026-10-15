@@ -1,0 +1,143 @@
+<div class="mr">
+  <header class="mr__entete">
+    <div>
+      <p class="mr__surtitre">Espace professionnel</p>
+      <h1>Mes ressources</h1>
+      <p class="mr__sous">
+        Partagez vos conseils avec les utilisateurs de Sen Suivi. L’équipe relit chaque ressource avant sa mise en
+        ligne, puis Titou peut la recommander.
+      </p>
+    </div>
+    <a class="mr-btn mr-btn--primaire" routerLink="/pro/ressources/nouvelle">
+      <ss-icon nom="plus" taille="sm" /> Nouvelle ressource
+    </a>
+  </header>
+
+  @if (service.soumissionReussie()) {
+    <div class="mr__toast" role="status">
+      <ss-icon nom="coche" taille="sm" />
+      <p><b>Ressource envoyée à l’équipe Sen Suivi.</b> Vous recevrez une notification dès qu’elle sera relue, en général sous 48 h.</p>
+    </div>
+  }
+
+  <section class="mr__auteur" aria-label="Votre signature">
+    <div class="mr__qui">
+      <span class="mr-avatar" aria-hidden="true">{{ initiales(nomAffiche()) }}</span>
+      <div>
+        <strong>{{ nomAffiche() }}</strong>
+        <small>{{ specialite() }}@if (ville()) { · {{ ville() }} } · profil validé</small>
+      </div>
+    </div>
+    @if (specialite()) {
+      <p class="mr__exemple">
+        <ss-icon nom="utilisateur" taille="sm" />
+        <span>Sur vos ressources : <b>« Proposé par {{ nomAffiche() }}, {{ specialite() }} »</b></span>
+      </p>
+    }
+  </section>
+
+  @if (ressources.isLoading() && !liste().length) {
+    <div class="mr__liste" aria-busy="true" aria-label="Chargement de vos ressources">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="mr__squelette"></div>
+      }
+    </div>
+  } @else if (ressources.error()) {
+    <p class="mr__vide" role="alert">Vos ressources n’ont pas pu être chargées. Vérifiez votre connexion et rechargez la page.</p>
+  } @else if (!liste().length) {
+    <div class="mr__vide mr__vide--accueil">
+      <ss-icon nom="ressources" taille="lg" />
+      <p>Vous n’avez pas encore proposé de ressource.</p>
+      <a class="mr-btn mr-btn--primaire" routerLink="/pro/ressources/nouvelle">Proposer ma première ressource</a>
+    </div>
+  } @else {
+    <p class="mr__resume" aria-live="polite">
+      <span><b>{{ nombre('PUBLIEE') }}</b>publiée{{ nombre('PUBLIEE') > 1 ? 's' : '' }}</span>
+      <span><b>{{ nombre('EN_ATTENTE') }}</b>en attente</span>
+      <span><b>{{ nombre('REFUSEE') }}</b>à corriger</span>
+    </p>
+
+    <div class="mr__onglets" role="tablist" aria-label="Filtrer par statut">
+      @for (o of onglets(); track o.valeur) {
+        <button type="button" role="tab" [attr.aria-selected]="filtre() === o.valeur" (click)="filtre.set(o.valeur)">
+          {{ o.libelle }} <span class="mr__n">{{ o.nombre }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="mr__liste" role="tabpanel">
+      @for (r of visibles(); track r.id) {
+        <article class="mr__ligne">
+          <div class="mr__vignette" aria-hidden="true"><ss-icon [nom]="format(r.type_ressource).icone" /></div>
+          <div class="mr__corps">
+            <div class="mr__titre-ligne">
+              <h3>{{ r.titre }}</h3>
+              <span class="mr-pastille mr-pastille--{{ statuts[r.statut!].classe }}">{{ statuts[r.statut!].libelle }}</span>
+            </div>
+            <p class="mr__meta">
+              <span><ss-icon [nom]="format(r.type_ressource).icone" taille="sm" /> {{ format(r.type_ressource).libelle }}</span>
+              <span>{{ r.thematique }}</span>
+              <span><ss-icon nom="horloge" taille="sm" /> {{ r.duree_lecture }} min</span>
+              <span>{{ dateDeLigne(r) }}</span>
+            </p>
+            @if (r.statut === 'REFUSEE' && r.motif_refus) {
+              <p class="mr__motif">
+                <ss-icon nom="alerte" taille="sm" />
+                <span><b>Motif de l’équipe :</b> {{ r.motif_refus }}</span>
+              </p>
+            }
+            <div class="mr__actions">
+              @switch (r.statut) {
+                @case ('PUBLIEE') {
+                  <a class="mr-btn-lien" [routerLink]="['/ressources', r.id]"><ss-icon nom="oeil" taille="sm" /> Voir</a>
+                  <button type="button" class="mr-btn-lien" (click)="copierLien(r)"><ss-icon nom="lien" taille="sm" /> Copier le lien</button>
+                }
+                @case ('EN_ATTENTE') {
+                  <button type="button" class="mr-btn-lien" (click)="apercu.set(r)"><ss-icon nom="oeil" taille="sm" /> Aperçu</button>
+                }
+                @default {
+                  <a class="mr-btn-lien" [routerLink]="['/pro/ressources', r.id, 'modifier']">
+                    <ss-icon nom="ecrire" taille="sm" /> {{ r.statut === 'REFUSEE' ? 'Corriger' : 'Continuer' }}
+                  </a>
+                  <button type="button" class="mr-btn-lien" (click)="aSupprimer.set(r)"><ss-icon nom="corbeille" taille="sm" /> Supprimer</button>
+                }
+              }
+            </div>
+          </div>
+        </article>
+      } @empty {
+        <p class="mr__vide">Aucune ressource dans cette catégorie.</p>
+      }
+    </div>
+  }
+  <p class="mr__annonce" role="status">{{ annonce() }}</p>
+</div>
+
+<ss-modal [ouverte]="aSupprimer() !== null" (ouverteChange)="ouvertSuppression($event)">
+  <div class="mr-modale">
+    <h2>Supprimer cette ressource&nbsp;?</h2>
+    <p>« {{ aSupprimer()?.titre }} » sera supprimée définitivement.</p>
+    @if (erreur()) {
+      <p class="mr-modale__erreur" role="alert">{{ erreur() }}</p>
+    }
+    <div class="mr-modale__actions">
+      <button type="button" class="mr-btn mr-btn--contour" (click)="aSupprimer.set(null)">Annuler</button>
+      <button type="button" class="mr-btn mr-btn--alerte" [disabled]="suppressionEnCours()" (click)="supprimer()">
+        {{ suppressionEnCours() ? 'Suppression…' : 'Supprimer' }}
+      </button>
+    </div>
+  </div>
+</ss-modal>
+
+<ss-modal [ouverte]="apercu() !== null" (ouverteChange)="ouvertApercu($event)">
+  @if (apercu(); as r) {
+    <div class="mr-modale">
+      <h2>Aperçu dans la bibliothèque</h2>
+      <ss-carte-ressource [ressource]="r" [apercu]="true" [avecChapo]="true" />
+      <p class="mr-modale__aide">En cours de relecture par l’équipe Sen Suivi : elle n’est pas encore visible du public.</p>
+      <div class="mr-modale__actions">
+        <button type="button" class="mr-btn mr-btn--contour" (click)="apercu.set(null)">Fermer</button>
+      </div>
+    </div>
+  }
+</ss-modal>

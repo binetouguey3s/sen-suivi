@@ -6,6 +6,8 @@ import { RessourceAdmin } from '../../../core/models/administration';
 import { AdministrationService } from '../../../core/services/administration.service';
 import { ICONE_PAR_TYPE, LIBELLE_PAR_TYPE } from '../../../core/utils/ressources';
 import { valeurs } from '../../../core/utils/ressource';
+import { STATUTS } from '../../pro/ressources/ressources-pro';
+import { idYoutube } from '../../../shared/video-youtube/video-youtube.component';
 import { ChampAudioComponent } from '../../../shared/champ-audio/champ-audio.component';
 import { ChampComponent } from '../../../shared/champ/champ.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
@@ -13,7 +15,7 @@ import { ModalComponent } from '../../../shared/modal/modal.component';
 import { PaginationComponent, tranche } from '../../../shared/pagination/pagination.component';
 
 type Format = RessourceAdmin['type_ressource'];
-const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST'];
+const FORMATS: Format[] = ['ARTICLE', 'EXERCICE', 'PODCAST', 'VIDEO'];
 
 @Component({
   selector: 'ss-admin-ressources',
@@ -32,10 +34,15 @@ export class AdminRessourcesComponent {
     icone: ICONE_PAR_TYPE[valeur],
   }));
 
-  protected readonly ressources = httpResource<RessourceAdmin[]>(() => `${API_BASE_URL}/ressources`, {
+  // Tous les statuts : les propositions des professionnels comprises
+  protected readonly ressources = httpResource<RessourceAdmin[]>(() => `${API_BASE_URL}/ressources?statut=TOUS`, {
     defaultValue: [],
   });
-  protected readonly liste = () => valeurs(this.ressources);
+  // Onglets : tout le catalogue, ou les propositions à relire
+  protected readonly onglet = signal<'TOUTES' | 'A_VALIDER'>('TOUTES');
+  protected readonly aValider = computed(() => valeurs(this.ressources).filter((r) => r.statut === 'EN_ATTENTE'));
+  protected readonly liste = () => (this.onglet() === 'A_VALIDER' ? this.aValider() : valeurs(this.ressources));
+  protected readonly libelleStatut = (r: RessourceAdmin) => STATUTS[r.statut ?? 'PUBLIEE'];
 
   // Pagination : 10 éléments par page
   protected readonly page = signal(1);
@@ -48,6 +55,7 @@ export class AdminRessourcesComponent {
   protected readonly thematique = signal('');
   protected readonly dureeLecture = signal(5);
   protected readonly contenu = signal('');
+  protected readonly lienVideo = signal('');
   protected readonly envoiEnCours = signal(false);
   // Podcast : fichier choisi, demande de retrait du fichier actuel, progression de l'envoi
   protected readonly fichierAudio = signal<File | null>(null);
@@ -71,6 +79,7 @@ export class AdminRessourcesComponent {
     this.thematique.set('');
     this.dureeLecture.set(5);
     this.contenu.set('');
+    this.lienVideo.set('');
     this.reinitialiserAudio();
     this.erreur.set(null);
     this.modaleOuverte.set(true);
@@ -89,6 +98,7 @@ export class AdminRessourcesComponent {
     this.thematique.set(ressource.thematique);
     this.dureeLecture.set(ressource.duree_lecture);
     this.contenu.set(ressource.contenu);
+    this.lienVideo.set(ressource.url_video ?? '');
     this.reinitialiserAudio();
     this.erreur.set(null);
     this.modaleOuverte.set(true);
@@ -111,6 +121,10 @@ export class AdminRessourcesComponent {
       this.erreur.set('Merci de compléter le titre, la thématique et le contenu.');
       return;
     }
+    if (this.formatChoisi() === 'VIDEO' && !idYoutube(this.lienVideo())) {
+      this.erreur.set('Seuls les liens YouTube sont acceptés.');
+      return;
+    }
     this.envoiEnCours.set(true);
     this.erreur.set(null);
     const donnees = {
@@ -119,6 +133,7 @@ export class AdminRessourcesComponent {
       thematique: this.thematique().trim(),
       duree_lecture: this.dureeLecture(),
       contenu: this.contenu().trim(),
+      url_video: this.formatChoisi() === 'VIDEO' ? this.lienVideo().trim() : '',
     };
     let id: number | null = null;
     try {
@@ -150,6 +165,55 @@ export class AdminRessourcesComponent {
       this.envoiEnCours.set(false);
       this.progressionAudio.set(null);
     }
+  }
+
+  // ─── Relecture des propositions ─────────────────────────────────────────
+
+  protected readonly aRefuser = signal<RessourceAdmin | null>(null);
+  protected readonly motifRefus = signal('');
+  protected readonly relectureEnCours = signal(false);
+  protected readonly erreurRelecture = signal<string | null>(null);
+
+  protected async publier(ressource: RessourceAdmin): Promise<void> {
+    this.relectureEnCours.set(true);
+    this.erreur.set(null);
+    try {
+      await this.administration.publierRessource(ressource.id);
+      this.ressources.reload();
+    } catch (e) {
+      this.erreur.set((e as { error?: { detail?: string } })?.error?.detail ?? 'La publication a échoué. Réessayez dans un instant.');
+    } finally {
+      this.relectureEnCours.set(false);
+    }
+  }
+
+  protected demanderRefus(ressource: RessourceAdmin): void {
+    this.motifRefus.set('');
+    this.erreurRelecture.set(null);
+    this.aRefuser.set(ressource);
+  }
+
+  protected async refuser(): Promise<void> {
+    const ressource = this.aRefuser();
+    if (!ressource) return;
+    if (this.motifRefus().trim().length < 10) {
+      this.erreurRelecture.set('Expliquez le motif en 10 caractères au moins : le professionnel doit savoir quoi corriger.');
+      return;
+    }
+    this.relectureEnCours.set(true);
+    try {
+      await this.administration.refuserRessource(ressource.id, this.motifRefus().trim());
+      this.aRefuser.set(null);
+      this.ressources.reload();
+    } catch {
+      this.erreurRelecture.set("Le refus n'a pas pu être enregistré. Réessayez dans un instant.");
+    } finally {
+      this.relectureEnCours.set(false);
+    }
+  }
+
+  protected fermerRefus(ouverte: boolean): void {
+    if (!ouverte) this.aRefuser.set(null);
   }
 
   protected async confirmerSuppression(): Promise<void> {

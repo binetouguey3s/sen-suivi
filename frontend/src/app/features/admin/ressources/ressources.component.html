@@ -8,12 +8,22 @@
 
 @if (erreur()) { <p class="ar__erreur" role="alert">{{ erreur() }}</p> }
 
+<div class="ar__onglets" role="tablist" aria-label="Filtrer les ressources">
+  <button type="button" role="tab" [attr.aria-selected]="onglet() === 'TOUTES'" (click)="onglet.set('TOUTES'); page.set(1)">Toutes</button>
+  <button type="button" role="tab" [attr.aria-selected]="onglet() === 'A_VALIDER'" (click)="onglet.set('A_VALIDER'); page.set(1)">
+    À valider
+    @if (aValider().length) {
+      <span class="ar__compteur">{{ aValider().length }}</span>
+    }
+  </button>
+</div>
+
 @if (ressources.isLoading()) {
   <p class="ar__etat">Chargement…</p>
 } @else if (ressources.error()) {
   <p class="ar__etat ar__etat--erreur">Impossible de charger les ressources pour le moment.</p>
 } @else if (!liste().length) {
-  <p class="ar__etat">Aucune ressource pour le moment.</p>
+  <p class="ar__etat">{{ onglet() === 'A_VALIDER' ? 'Aucune proposition à relire pour le moment.' : 'Aucune ressource pour le moment.' }}</p>
 } @else {
   <table class="ar__tableau">
     <thead>
@@ -28,12 +38,22 @@
     <tbody>
       @for (r of listePage(); track r.id) {
         <tr>
-          <td class="ar__titre carte-principale">{{ r.titre }}</td>
+          <td class="ar__titre carte-principale">
+            {{ r.titre }}
+            <span class="ar__sous-titre">
+              <span class="ar-pastille ar-pastille--{{ libelleStatut(r).classe }}">{{ libelleStatut(r).libelle }}</span>
+              @if (r.auteur) { Proposée par {{ r.auteur.nom }}, {{ r.auteur.specialite_affichee }} }
+            </span>
+          </td>
           <td data-label="Format"><span class="ar__chip"><ss-icon [nom]="iconeType(r.type_ressource)" taille="sm" /> {{ libelleType(r.type_ressource) }}</span></td>
           <td data-label="Thématique">{{ r.thematique }}</td>
           <td data-label="Publication">{{ r.date_publication }}</td>
           <td class="carte-actions">
             <div class="ar__actions">
+              @if (r.statut === 'EN_ATTENTE') {
+                <button type="button" class="ar__lien ar__lien--valider" [disabled]="relectureEnCours()" (click)="publier(r)"><ss-icon nom="coche" taille="sm" /> Publier</button>
+                <button type="button" class="ar__lien ar__lien--danger" [disabled]="relectureEnCours()" (click)="demanderRefus(r)"><ss-icon nom="fermer" taille="sm" /> Refuser</button>
+              }
               <button type="button" class="ar__lien" (click)="ouvrirEdition(r)"><ss-icon nom="parametres" taille="sm" /> Modifier</button>
               <button type="button" class="ar__lien ar__lien--danger" (click)="demanderSuppression(r)"><ss-icon nom="corbeille" taille="sm" /> Supprimer</button>
             </div>
@@ -65,6 +85,10 @@
       <span>Durée de lecture (minutes)</span>
       <input type="number" min="1" max="120" [value]="dureeLecture()" (input)="saisirDuree($event)" />
     </label>
+
+    @if (formatChoisi() === 'VIDEO') {
+      <ss-champ libelle="Lien YouTube" [(valeur)]="lienVideo" placeholder="https://www.youtube.com/watch?v=…" [maxlength]="300" />
+    }
 
     @if (formatChoisi() === 'PODCAST') {
       <ss-champ-audio
@@ -98,6 +122,19 @@
       <button type="button" class="ar__bouton ar__bouton--danger" [disabled]="suppressionEnCours()" (click)="confirmerSuppression()">
         {{ suppressionEnCours() ? 'Suppression…' : 'Supprimer' }}
       </button>
+    </div>
+  </div>
+</ss-modal>
+
+<ss-modal [ouverte]="aRefuser() !== null" (ouverteChange)="fermerRefus($event)">
+  <div class="ar__modale">
+    <h2>Refuser « {{ aRefuser()?.titre }} »</h2>
+    <p>Le motif est envoyé au professionnel, qui pourra corriger puis soumettre à nouveau.</p>
+    <ss-champ libelle="Motif" type="textarea" [(valeur)]="motifRefus" [lignes]="4" placeholder="Ex : le paragraphe 3 cite un médicament, merci de le retirer." />
+    @if (erreurRelecture()) { <p class="ar__erreur-modale" role="alert">{{ erreurRelecture() }}</p> }
+    <div class="ar__modale-actions">
+      <button type="button" class="ar__bouton-secondaire" (click)="aRefuser.set(null)">Annuler</button>
+      <button type="button" class="ar__bouton ar__bouton--danger" [disabled]="relectureEnCours()" (click)="refuser()">Refuser</button>
     </div>
   </div>
 </ss-modal>

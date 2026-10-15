@@ -116,3 +116,36 @@ describe('ArticleComponent, podcast', () => {
     expect(hote.textContent).toContain('Sauvegarder le podcast');
   });
 });
+
+describe('ArticleComponent, vidéo proposée par un professionnel', () => {
+  it('intègre la vidéo, intitule le résumé et crédite l’auteur', async () => {
+    await TestBed.configureTestingModule({
+      imports: [ArticleComponent],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FavorisService, useValue: { estFavori: () => false, basculer: vi.fn() } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(ArticleComponent);
+    fixture.componentRef.setInput('id', '30');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(`${API_BASE_URL}/ressources/30`).flush({
+      ...RESSOURCE, id: 30, titre: 'Sophrologie : se détendre en 10 minutes', type_ressource: 'VIDEO',
+      video_id: 'aXItOY0sLRY', auteur: { id: 7, nom: 'Awa Ndiaye', specialite_affichee: 'Sophrologue' },
+    });
+    http.match(`${API_BASE_URL}/ressources`).forEach((r) => r.flush([]));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const hote: HTMLElement = fixture.nativeElement;
+
+    expect(hote.querySelector('ss-video-youtube img')!.getAttribute('src')).toContain('aXItOY0sLRY');
+    expect(hote.querySelector('.art__resume-titre')!.textContent).toContain('Résumé de la vidéo');
+    expect(hote.querySelector('.art__video-impression')!.textContent).toContain('https://www.youtube.com/watch?v=aXItOY0sLRY');
+    const credit = hote.querySelector('.art__auteur')!;
+    expect(credit.textContent!.replace(/\s+/g, ' ')).toContain('Proposé par Awa Ndiaye, Sophrologue');
+    expect(credit.querySelector('a')!.getAttribute('href')).toBe('/professionnels/7');
+  });
+});

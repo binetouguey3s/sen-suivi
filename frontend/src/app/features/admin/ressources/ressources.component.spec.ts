@@ -7,10 +7,16 @@ import { API_BASE_URL } from '../../../core/config/api.config';
 import { AdministrationService } from '../../../core/services/administration.service';
 import { AdminRessourcesComponent } from './ressources.component';
 
+// Méthodes simulées du service d'administration
+type Simulation = Record<
+  'creerRessource' | 'modifierRessource' | 'envoyerAudio' | 'retirerAudio' | 'supprimerRessource' | 'publierRessource' | 'refuserRessource',
+  ReturnType<typeof vi.fn>
+>;
+
 describe('AdminRessourcesComponent, fichier audio', () => {
   let fixture: ComponentFixture<AdminRessourcesComponent>;
   let hote: HTMLElement;
-  let service: { creerRessource: ReturnType<typeof vi.fn>; modifierRessource: ReturnType<typeof vi.fn>; envoyerAudio: ReturnType<typeof vi.fn>; retirerAudio: ReturnType<typeof vi.fn>; supprimerRessource: ReturnType<typeof vi.fn> };
+  let service: Simulation;
 
   const bouton = (texte: string): HTMLButtonElement =>
     [...hote.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent!.trim().startsWith(texte))!;
@@ -28,6 +34,8 @@ describe('AdminRessourcesComponent, fichier audio', () => {
       envoyerAudio: vi.fn(async (_id: number, _f: File, progression: (p: number) => void) => progression(100)),
       retirerAudio: vi.fn().mockResolvedValue(undefined),
       supprimerRessource: vi.fn(),
+      publierRessource: vi.fn().mockResolvedValue(undefined),
+      refuserRessource: vi.fn().mockResolvedValue(undefined),
     };
     await TestBed.configureTestingModule({
       imports: [AdminRessourcesComponent],
@@ -36,7 +44,7 @@ describe('AdminRessourcesComponent, fichier audio', () => {
     fixture = TestBed.createComponent(AdminRessourcesComponent);
     hote = fixture.nativeElement;
     fixture.detectChanges();
-    TestBed.inject(HttpTestingController).match(`${API_BASE_URL}/ressources`).forEach((r) => r.flush([]));
+    TestBed.inject(HttpTestingController).match(`${API_BASE_URL}/ressources?statut=TOUS`).forEach((r) => r.flush([]));
     await fixture.whenStable();
     fixture.detectChanges();
   });
@@ -44,7 +52,7 @@ describe('AdminRessourcesComponent, fichier audio', () => {
   // Laisse finir l'enregistrement, puis sert le rechargement de la liste
   async function terminer(): Promise<void> {
     for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r));
-    TestBed.inject(HttpTestingController).match(`${API_BASE_URL}/ressources`).forEach((r) => r.flush([]));
+    TestBed.inject(HttpTestingController).match(`${API_BASE_URL}/ressources?statut=TOUS`).forEach((r) => r.flush([]));
     fixture.detectChanges();
   }
 
@@ -105,5 +113,70 @@ describe('AdminRessourcesComponent, fichier audio', () => {
     fixture.detectChanges();
 
     expect(hote.querySelector('[role="alert"]')!.textContent).toContain("le fichier audio n'a pas pu être envoyé");
+  });
+});
+
+describe('AdminRessourcesComponent, relecture des propositions', () => {
+  const PROPOSITION = {
+    id: 9, titre: 'Retrouver confiance après un échec', type_ressource: 'ARTICLE', thematique: 'Confiance en soi',
+    contenu: '…', duree_lecture: 6, date_publication: '2026-10-13', statut: 'EN_ATTENTE',
+    auteur: { id: 7, nom: 'Awa Ndiaye', specialite_affichee: 'Sophrologue' },
+  };
+  const PUBLIEE = { ...PROPOSITION, id: 1, titre: 'Respirer avant un examen', statut: 'PUBLIEE', auteur: null };
+  let fixture: ComponentFixture<AdminRessourcesComponent>;
+  let hote: HTMLElement;
+  let service: Simulation;
+
+  const bouton = (texte: string) => [...hote.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent!.trim().startsWith(texte))!;
+
+  beforeEach(async () => {
+    service = {
+      creerRessource: vi.fn(), modifierRessource: vi.fn(), envoyerAudio: vi.fn(), retirerAudio: vi.fn(), supprimerRessource: vi.fn(),
+      publierRessource: vi.fn().mockResolvedValue(undefined), refuserRessource: vi.fn().mockResolvedValue(undefined),
+    };
+    await TestBed.configureTestingModule({
+      imports: [AdminRessourcesComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: AdministrationService, useValue: service }],
+    }).compileComponents();
+    fixture = TestBed.createComponent(AdminRessourcesComponent);
+    hote = fixture.nativeElement;
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne(`${API_BASE_URL}/ressources?statut=TOUS`).flush([PUBLIEE, PROPOSITION]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+  });
+
+  it('l’onglet « À valider » compte et liste les propositions', () => {
+    expect(bouton('À valider').textContent).toContain('1');
+    bouton('À valider').click();
+    fixture.detectChanges();
+    const lignes = hote.querySelectorAll('tbody tr');
+    expect(lignes).toHaveLength(1);
+    expect(lignes[0].textContent).toContain('Proposée par Awa Ndiaye, Sophrologue');
+    expect(lignes[0].textContent).toContain('En attente');
+  });
+
+  it('publier appelle l’API', async () => {
+    bouton('Publier').click();
+    await new Promise((r) => setTimeout(r));
+    expect(service.publierRessource).toHaveBeenCalledWith(9);
+  });
+
+  it('refuser exige un motif de 10 caractères', async () => {
+    bouton('Refuser').click();
+    fixture.detectChanges();
+    const motif = hote.querySelector<HTMLTextAreaElement>('[role="dialog"] textarea')!;
+    motif.value = 'Non.';
+    motif.dispatchEvent(new Event('input'));
+    [...hote.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')].find((b) => b.textContent!.trim() === 'Refuser')!.click();
+    fixture.detectChanges();
+    expect(hote.querySelector('[role="dialog"] [role="alert"]')!.textContent).toContain('10 caractères');
+    expect(service.refuserRessource).not.toHaveBeenCalled();
+
+    motif.value = 'Retirez le nom du médicament au paragraphe 3.';
+    motif.dispatchEvent(new Event('input'));
+    [...hote.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')].find((b) => b.textContent!.trim() === 'Refuser')!.click();
+    await new Promise((r) => setTimeout(r));
+    expect(service.refuserRessource).toHaveBeenCalledWith(9, 'Retirez le nom du médicament au paragraphe 3.');
   });
 });

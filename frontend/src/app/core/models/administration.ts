@@ -1,3 +1,5 @@
+import { Ressource } from './suivi';
+
 // Types correspondant aux sérialiseurs Django (écrans d'administration).
 
 // Situation grave exprimée à Titou : jamais le contenu des messages
@@ -108,15 +110,5 @@ export interface CommentaireForumAdmin {
   decision_ia: DecisionIA | null;
 }
 
-export interface RessourceAdmin {
-  id: number;
-  titre: string;
-  type_ressource: 'ARTICLE' | 'EXERCICE' | 'PODCAST';
-  contenu: string;
-  thematique: string;
-  duree_lecture: number;
-  date_publication: string;
-  url_audio?: string;
-  // À lire : le fichier envoyé en priorité, sinon url_audio
-  audio?: string;
-}
+// Même objet que la ressource publique : l'administration voit en plus les statuts
+export type RessourceAdmin = Ressource;

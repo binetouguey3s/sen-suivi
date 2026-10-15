@@ -31,10 +31,20 @@ export const INFLUENCES_HUMEUR = [
   'Transport',
 ] as const;
 
+export type TypeRessource = 'ARTICLE' | 'EXERCICE' | 'PODCAST' | 'VIDEO';
+export type StatutRessource = 'BROUILLON' | 'EN_ATTENTE' | 'PUBLIEE' | 'REFUSEE';
+
+// Crédit d'une ressource proposée par un professionnel
+export interface AuteurRessource {
+  id: number;
+  nom: string;
+  specialite_affichee: string;
+}
+
 export interface Ressource {
   id: number;
   titre: string;
-  type_ressource: 'ARTICLE' | 'EXERCICE' | 'PODCAST';
+  type_ressource: TypeRessource;
   contenu: string;
   thematique: string;
   duree_lecture: number;
@@ -43,6 +53,15 @@ export interface Ressource {
   url_audio?: string;
   // À lire : le fichier envoyé depuis le formulaire en priorité, sinon url_audio
   audio?: string;
+  // Vidéo : seul l'identifiant YouTube sert à l'intégration
+  url_video?: string;
+  video_id?: string | null;
+  // null : créée par l'administration
+  auteur?: AuteurRessource | null;
+  statut?: StatutRessource;
+  motif_refus?: string;
+  date_soumission?: string | null;
+  date_modification?: string;
 }
 
 export interface LieuDetente {

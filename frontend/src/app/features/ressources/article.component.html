@@ -39,6 +39,11 @@
       <article class="art__texte">
         <span class="art__thematique">{{ r.thematique }}</span>
         <h1>{{ r.titre }}</h1>
+        @if (r.auteur; as auteur) {
+          <p class="art__auteur">
+            Proposé par <a [routerLink]="['/professionnels', auteur.id]">{{ auteur.nom }}</a>, {{ auteur.specialite_affichee }}
+          </p>
+        }
 
         <div class="art__meta">
           @if (estPodcast()) {
@@ -80,6 +85,13 @@
           <h2 class="art__resume-titre">Résumé de l’épisode</h2>
         }
 
+        @if (estVideo()) {
+          <ss-video-youtube class="art__video" [videoId]="r.video_id" [titre]="r.titre" />
+          <!-- À l'impression, la vidéo est remplacée par son lien -->
+          <p class="art__video-impression">Vidéo à voir sur : https://www.youtube.com/watch?v={{ r.video_id }}</p>
+          <h2 class="art__resume-titre">Résumé de la vidéo</h2>
+        }
+
         @if (introduction(); as intro) {
           <p class="art__intro">{{ intro }}</p>
         }
@@ -91,6 +103,13 @@
             }
             @case ('citation') {
               <blockquote>{{ bloc.texte }}</blockquote>
+            }
+            @case ('liste') {
+              <ul class="art__liste">
+                @for (element of bloc.elements; track $index) {
+                  <li>{{ element }}</li>
+                }
+              </ul>
             }
             @default {
               <p>{{ bloc.texte }}</p>

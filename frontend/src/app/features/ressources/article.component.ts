@@ -17,12 +17,13 @@ import { CarteRessourceComponent } from '../../shared/carte-ressource/carte-ress
 import { IconComponent } from '../../shared/icon/icon.component';
 import { LecteurAudioComponent } from '../../shared/lecteur-audio/lecteur-audio.component';
 import { MenuPartageComponent } from '../../shared/menu-partage/menu-partage.component';
+import { VideoYoutubeComponent } from '../../shared/video-youtube/video-youtube.component';
 import { valeurs } from '../../core/utils/ressource';
 
 @Component({
   selector: 'ss-article',
   standalone: true,
-  imports: [RouterLink, IconComponent, CarteRessourceComponent, MenuPartageComponent, LecteurAudioComponent],
+  imports: [RouterLink, IconComponent, CarteRessourceComponent, MenuPartageComponent, LecteurAudioComponent, VideoYoutubeComponent],
   templateUrl: './article.component.html',
   styleUrl: './article.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,6 +86,7 @@ export class ArticleComponent {
   // ─── Podcast ─────────────────────────────────────────────────────────────
 
   protected readonly estPodcast = computed(() => this.ressource.value()?.type_ressource === 'PODCAST');
+  protected readonly estVideo = computed(() => this.ressource.value()?.type_ressource === 'VIDEO');
   // Durée réelle de l'audio, dès que le lecteur l'a lue dans les métadonnées
   protected readonly dureeAudio = signal<number | null>(null);
   protected readonly dureeAffichee = computed(() => {
@@ -100,6 +102,7 @@ export class ArticleComponent {
   });
   protected readonly libelleSauvegarde = computed(() => {
     if (this.estPodcast()) return this.estFavori() ? 'Podcast sauvegardé' : 'Sauvegarder le podcast';
+    if (this.estVideo()) return this.estFavori() ? 'Vidéo sauvegardée' : 'Sauvegarder la vidéo';
     return this.estFavori() ? 'Article sauvegardé' : "Sauvegarder l'article";
   });
 

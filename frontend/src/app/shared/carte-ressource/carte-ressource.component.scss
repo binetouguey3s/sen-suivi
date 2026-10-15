@@ -196,3 +196,48 @@ img.cr__illustration--entiere {
   background: var(--ss-primaire);
   color: var(--ss-primaire-texte);
 }
+
+.cr__chapo {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+// « Proposé par … » : la même signature dans la bibliothèque et dans l'aperçu
+.cr__signature {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: 10px;
+  margin: var(--ss-espace-1) 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--ss-bordure);
+  color: var(--ss-texte);
+  font-size: 13px;
+
+  b {
+    color: var(--ss-texte-marque);
+    font-weight: var(--ss-poids-texte-fort);
+  }
+}
+
+.cr__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ss-accent);
+  color: var(--ss-accent-texte);
+  font-size: 11px;
+  font-weight: var(--ss-poids-titre);
+}
+
+.cr--apercu {
+  box-shadow: var(--ss-ombre-forte);
+}

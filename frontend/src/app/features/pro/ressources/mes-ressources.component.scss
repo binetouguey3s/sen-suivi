@@ -1,0 +1,289 @@
+@use 'ressources-pro' as pro;
+
+@include pro.communs;
+
+.mr {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1080px;
+}
+
+// En-tête
+.mr__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+
+  h1 {
+    margin-top: 4px;
+    color: var(--ss-texte);
+    font-size: clamp(26px, 4vw, 34px);
+  }
+}
+
+.mr__sous {
+  max-width: 58ch;
+  margin-top: 6px !important;
+  color: var(--ss-texte-doux);
+}
+
+// Message après une soumission
+.mr__toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--ss-ok-douce);
+  color: var(--ss-texte);
+  font-size: 14px;
+
+  ss-icon {
+    margin-top: 2px;
+    color: var(--ss-ok);
+  }
+}
+
+// Bandeau auteur : la signature qui figurera sur chaque ressource publiée
+.mr__auteur {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: var(--ss-surface-douce);
+
+  strong {
+    display: block;
+    color: var(--ss-texte);
+    font-family: var(--ss-police-titres);
+    font-size: 16px;
+  }
+
+  small {
+    color: var(--ss-texte-doux);
+    font-size: 13px;
+  }
+}
+
+.mr__qui {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mr__exemple {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-left: auto !important;
+  padding: 8px 12px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
+  font-size: 13px;
+
+  b {
+    font-weight: var(--ss-poids-titre);
+  }
+}
+
+// Résumé chiffré, sans grosses tuiles
+.mr__resume {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 22px;
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+
+  b {
+    margin-right: 4px;
+    color: var(--ss-texte);
+    font-family: var(--ss-police-titres);
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Onglets de statut, en pilules défilables
+.mr__onglets {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+
+  button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 7px 14px;
+    border: 1px solid var(--ss-bordure);
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-surface);
+    color: var(--ss-texte-doux);
+    font: inherit;
+    font-size: 13px;
+    font-weight: var(--ss-poids-texte-fort);
+    cursor: pointer;
+
+    &[aria-selected='true'] {
+      border-color: var(--ss-primaire);
+      background: var(--ss-primaire);
+      color: var(--ss-primaire-texte);
+    }
+  }
+}
+
+.mr__n {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+// Liste
+.mr__liste {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mr__ligne {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--ss-bordure);
+  border-radius: 18px;
+  background: var(--ss-surface);
+  box-shadow: var(--ss-ombre);
+
+  @media (min-width: 700px) {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+}
+
+.mr__vignette {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--ss-vignette-debut), var(--ss-vignette-fin));
+  color: var(--ss-texte-sur-photo);
+
+  @media (min-width: 700px) {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+.mr__corps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mr__titre-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+
+  h3 {
+    flex: 1 1 220px;
+    min-width: 0;
+    color: var(--ss-texte);
+    font-size: 16px;
+  }
+}
+
+.mr__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+.mr__motif {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--ss-alerte-douce);
+  color: var(--ss-texte);
+  font-size: 13px;
+
+  ss-icon {
+    margin-top: 2px;
+    color: var(--ss-alerte-sur-douce);
+  }
+}
+
+.mr__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-left: -8px;
+}
+
+.mr__vide {
+  padding: 28px;
+  border: 1px dashed var(--ss-bordure);
+  border-radius: 18px;
+  color: var(--ss-texte-doux);
+  text-align: center;
+}
+
+.mr__vide--accueil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--ss-texte-doux);
+
+  ss-icon {
+    color: var(--ss-texte-marque);
+  }
+}
+
+.mr__squelette {
+  height: 104px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, var(--ss-surface) 0%, var(--ss-surface-legere) 50%, var(--ss-surface) 100%);
+  background-size: 200% 100%;
+  animation: mr-squelette 1.4s ease-in-out infinite;
+}
+
+.mr__annonce:empty {
+  display: none;
+}
+
+.mr__annonce {
+  color: var(--ss-texte-marque);
+  font-size: 14px;
+  font-weight: var(--ss-poids-texte-fort);
+}
+
+@keyframes mr-squelette {
+  to {
+    background-position: -200% 0;
+  }
+}

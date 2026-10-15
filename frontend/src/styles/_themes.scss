@@ -54,6 +54,14 @@
   --ss-alerte-texte:          #ffffff;
   --ss-alerte-douce:          rgba(212, 69, 27, 0.12);
   --ss-alerte-sur-douce:      #d4451b;   // texte des badges posés sur --ss-alerte-douce
+  // Statuts d'une ressource proposée : en attente de relecture, publiée
+  --ss-attente:               #9a5b00;
+  --ss-attente-douce:         rgba(230, 150, 30, 0.16);
+  --ss-ok:                    #1f6b4f;
+  --ss-ok-douce:              rgba(46, 150, 110, 0.15);
+  // Vignettes et illustrations en dégradé (format d'une ressource)
+  --ss-vignette-debut:        #1b4b6e;
+  --ss-vignette-fin:          #a9d6c4;
 
   // Traits et ombres
   --ss-bordure:               #edeef1;
@@ -142,6 +150,12 @@
   --ss-alerte-texte:          #0e2739;
   --ss-alerte-douce:          rgba(255, 154, 122, 0.12);
   --ss-alerte-sur-douce:      #ff9a7a;   // 4,7:1 sur le fond du badge
+  --ss-attente:               #f5c06a;
+  --ss-attente-douce:         rgba(245, 192, 106, 0.16);
+  --ss-ok:                    #8fe0bd;
+  --ss-ok-douce:              rgba(143, 224, 189, 0.14);
+  --ss-vignette-debut:        #0a1e2c;
+  --ss-vignette-fin:          #1b4b6e;
 
   // Traits et ombres
   --ss-bordure:               rgba(232, 241, 238, 0.14);

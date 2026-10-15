@@ -1,0 +1,249 @@
+<div class="ed">
+  <a class="mr-btn-lien ed__retour" routerLink="/pro/ressources"><ss-icon nom="fleche-gauche" taille="sm" /> Mes ressources</a>
+
+  <header class="ed__entete">
+    <p class="mr-surtitre">{{ libelleStatut() }}</p>
+    <h1>{{ id() ? 'Modifier la ressource' : 'Nouvelle ressource' }}</h1>
+    <p class="ed__sous">Écrivez pour une personne qui découvre le sujet : des phrases simples, un conseil concret, aucun diagnostic.</p>
+  </header>
+
+  @if (chargement()) {
+    <p class="ed__etat">Chargement de la ressource…</p>
+  } @else if (introuvable()) {
+    <p class="ed__etat" role="alert">Cette ressource est introuvable. <a routerLink="/pro/ressources">Retour à mes ressources</a></p>
+  } @else if (!modifiable()) {
+    <p class="ed__etat">
+      Cette ressource est {{ statut() === 'PUBLIEE' ? 'publiée' : 'en cours de relecture' }} : elle n’est plus modifiable.
+      Pour la modifier, contactez l’administration.
+    </p>
+  } @else {
+    @if (statut() === 'REFUSEE' && motifRefus()) {
+      <p class="ed__motif"><ss-icon nom="alerte" taille="sm" /><span><b>Motif de l’équipe :</b> {{ motifRefus() }}</span></p>
+    }
+
+    <div class="ed__grille">
+      <form class="ed__formulaire" novalidate (submit)="soumettre($event)">
+        <!-- 1. Format -->
+        <section class="ed-bloc" aria-labelledby="t-format">
+          <div class="ed-bloc__titre">
+            <span class="ed-bloc__num" aria-hidden="true">1</span>
+            <div><h2 id="t-format">Format</h2><p>Comment les utilisateurs vont-ils la découvrir&nbsp;?</p></div>
+          </div>
+          <div class="ed__formats" role="radiogroup" aria-labelledby="t-format">
+            @for (f of formats; track f.valeur) {
+              <button type="button" class="ed__format" role="radio" [attr.aria-checked]="typeRessource() === f.valeur" (click)="changer(typeRessource, f.valeur)">
+                <span class="ed__format-ico"><ss-icon [nom]="f.icone" /></span>
+                <b>{{ f.libelle }}</b>
+                <small>{{ f.aide }}</small>
+              </button>
+            }
+          </div>
+        </section>
+
+        <!-- 2. L'essentiel -->
+        <section class="ed-bloc" aria-labelledby="t-essentiel">
+          <div class="ed-bloc__titre">
+            <span class="ed-bloc__num" aria-hidden="true">2</span>
+            <div><h2 id="t-essentiel">L’essentiel</h2><p>Ce qui s’affiche sur la carte de la bibliothèque.</p></div>
+          </div>
+          <div class="ed-champ">
+            <label for="ed-titre">Titre</label>
+            <input id="ed-titre" class="ed-saisie" [attr.maxlength]="titreMax" [value]="titre()" (input)="changer(titre, $any($event.target).value)" />
+            <span class="ed-champ__compteur" aria-live="polite">{{ titre().length }} / {{ titreMax }}</span>
+          </div>
+          <div class="ed-champ">
+            <span class="ed-champ__libelle" id="ed-lib-theme">Thématique</span>
+            <div class="ed__puces" role="radiogroup" aria-labelledby="ed-lib-theme">
+              @for (t of thematiques(); track t) {
+                <button type="button" class="ed__puce" role="radio" [attr.aria-checked]="thematique() === t" (click)="changer(thematique, t)">{{ t }}</button>
+              }
+            </div>
+          </div>
+          <div class="ed__ligne-champs">
+            <div class="ed-champ">
+              <label for="ed-chapo">Chapô <span class="ed-champ__aide">(2 phrases qui donnent envie)</span></label>
+              <textarea id="ed-chapo" class="ed-saisie ed-saisie--court" [attr.maxlength]="chapoMax" [value]="chapo()" (input)="changer(chapo, $any($event.target).value)"></textarea>
+              <span class="ed-champ__compteur">{{ chapo().length }} / {{ chapoMax }}</span>
+            </div>
+            <div class="ed-champ">
+              <label for="ed-duree">Durée (minutes)</label>
+              <input id="ed-duree" class="ed-saisie" type="number" min="1" max="120" inputmode="numeric" [value]="duree()" (input)="saisirDuree($event)" />
+              <span class="ed-champ__aide">Temps de lecture, d’écoute ou de pratique.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Média -->
+        <section class="ed-bloc" aria-labelledby="t-media">
+          <div class="ed-bloc__titre">
+            <span class="ed-bloc__num" aria-hidden="true">3</span>
+            <div>
+              <h2 id="t-media">Média</h2>
+              <p>
+                @switch (typeRessource()) {
+                  @case ('VIDEO') { Collez le lien de votre vidéo YouTube. }
+                  @case ('PODCAST') { Envoyez votre enregistrement (MP3, M4A ou OGG, 20 Mo au plus). }
+                  @default { Rien à ajouter pour ce format. }
+                }
+              </p>
+            </div>
+          </div>
+
+          @switch (typeRessource()) {
+            @case ('VIDEO') {
+              <div class="ed-champ">
+                <label for="ed-video">Lien YouTube</label>
+                <input
+                  id="ed-video"
+                  class="ed-saisie"
+                  inputmode="url"
+                  placeholder="https://www.youtube.com/watch?v=…"
+                  [value]="lienVideo()"
+                  (input)="changer(lienVideo, $any($event.target).value)"
+                />
+                <p class="ed-etat" aria-live="polite">
+                  @if (videoId(); as id) {
+                    <span class="ed-etat--ok"><ss-icon nom="coche" taille="sm" /> Vidéo reconnue (identifiant {{ id }})</span>
+                  } @else if (lienVideo().trim()) {
+                    <span class="ed-etat--erreur"><ss-icon nom="alerte" taille="sm" /> Seuls les liens YouTube sont acceptés.</span>
+                  }
+                </p>
+              </div>
+              @if (videoId()) {
+                <ss-video-youtube [videoId]="videoId()" [titre]="titre() || 'Votre vidéo'" />
+              }
+            }
+            @case ('PODCAST') {
+              <div class="ed__depot" (dragover)="$event.preventDefault()" (drop)="deposer($event)">
+                <ss-icon nom="televerser" />
+                <span>Glissez votre fichier ici ou <label for="ed-audio">choisissez un fichier</label></span>
+                <input id="ed-audio" class="ed__fichier-cache" type="file" accept=".mp3,.m4a,.ogg,audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg" (change)="choisirFichier($event)" />
+              </div>
+              @if (progression() !== null && fichierAudio(); as f) {
+                <div class="ed__fichier">
+                  <ss-icon nom="podcast" />
+                  <div class="ed__fichier-nom">
+                    <b>{{ f.nom }}</b>
+                    <span class="ed-champ__aide" aria-live="polite">Envoi… {{ progression() }} %</span>
+                    <div class="ed__progression" role="progressbar" aria-label="Envoi du fichier" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progression()">
+                      <span [style.width.%]="progression()"></span>
+                    </div>
+                  </div>
+                </div>
+              } @else if (audioActuel()) {
+                <div class="ed__fichier">
+                  <ss-icon nom="podcast" />
+                  <div class="ed__fichier-nom">
+                    <b>{{ fichierAudio()?.nom ?? 'Fichier audio enregistré' }}</b>
+                    <span class="ed-champ__aide">Envoyé{{ fichierAudio() ? ' · ' + tailleMo(fichierAudio()!.taille) : '' }}</span>
+                    <audio controls preload="none" [src]="audioActuel()" aria-label="Écouter le fichier envoyé"></audio>
+                  </div>
+                </div>
+              }
+              @if (erreurAudio()) {
+                <p class="ed-etat ed-etat--erreur" role="alert"><ss-icon nom="alerte" taille="sm" /> {{ erreurAudio() }}</p>
+              }
+            }
+            @default {
+              <p class="ed__note"><ss-icon nom="image" taille="sm" /><span>L’illustration est choisie automatiquement selon la thématique, pour garder une bibliothèque harmonieuse.</span></p>
+            }
+          }
+        </section>
+
+        <!-- 4. Contenu -->
+        <section class="ed-bloc" aria-labelledby="t-contenu">
+          <div class="ed-bloc__titre">
+            <span class="ed-bloc__num" aria-hidden="true">4</span>
+            <div><h2 id="t-contenu">Contenu</h2><p>Indexé par Titou une fois la ressource publiée.</p></div>
+          </div>
+          <div class="ed__outils" role="toolbar" aria-label="Mise en forme">
+            <button type="button" (click)="inserer('##')">Intertitre</button>
+            <button type="button" (click)="inserer('>')">Citation</button>
+            <button type="button" (click)="inserer('-')">Liste</button>
+          </div>
+          <div class="ed-champ">
+            <label for="ed-texte">Texte de la ressource</label>
+            <textarea #champTexte id="ed-texte" class="ed-saisie ed-saisie--long" [value]="texte()" (input)="changer(texte, $any($event.target).value)"></textarea>
+            <span class="ed-champ__aide">« ## » pour un intertitre, « &gt; » pour une citation, « - » pour une liste.</span>
+          </div>
+        </section>
+
+        <!-- 5. Envoi -->
+        <section class="ed-bloc" aria-labelledby="t-envoi">
+          <div class="ed-bloc__titre">
+            <span class="ed-bloc__num" aria-hidden="true">5</span>
+            <div><h2 id="t-envoi">Envoi</h2><p>L’équipe Sen Suivi relit avant publication.</p></div>
+          </div>
+          <label class="ed__charte">
+            <input type="checkbox" [checked]="charte()" (change)="charte.set($any($event.target).checked)" />
+            <span>
+              Je m’engage à proposer un contenu de <b>bien-être et de prévention</b>, sans diagnostic ni traitement
+              médicamenteux, dont je détiens les droits (vidéo, audio, images), et compréhensible par tous.
+            </span>
+          </label>
+          @if (erreur()) {
+            <p class="ed-etat ed-etat--erreur" role="alert"><ss-icon nom="alerte" taille="sm" /> {{ erreur() }}</p>
+          }
+          <div class="ed__pied">
+            <span class="ed__sauve" aria-live="polite">
+              @if (enregistrement()) {
+                <ss-icon nom="sauvegarde" taille="sm" /> Enregistrement…
+              } @else if (derniereSauvegarde()) {
+                <ss-icon nom="sauvegarde" taille="sm" /> Brouillon enregistré à {{ heureSauvegarde() }}
+              }
+            </span>
+            <button type="button" class="mr-btn mr-btn--contour" [disabled]="enregistrement()" (click)="enregistrerBrouillon()">Enregistrer le brouillon</button>
+            <button type="submit" class="mr-btn mr-btn--primaire" [disabled]="!soumissionPossible()" aria-describedby="ed-aide-soumettre">
+              <ss-icon nom="envoyer" taille="sm" /> Soumettre à validation
+            </button>
+          </div>
+          <p class="ed__aide-soumettre" id="ed-aide-soumettre" aria-live="polite">{{ manque() ?? 'Prêt à être relu par l’équipe.' }}</p>
+        </section>
+      </form>
+
+      <aside class="ed__cote" aria-label="Aperçu et conseils">
+        <p class="ed__etiquette"><ss-icon nom="oeil" taille="sm" /> Aperçu dans la bibliothèque</p>
+        <ss-carte-ressource [ressource]="apercu()" [apercu]="true" [avecChapo]="true" />
+
+        <section class="ed__parcours" aria-labelledby="t-parcours">
+          <h3 id="t-parcours">Parcours de validation</h3>
+          <ol class="ed__etapes">
+            <li [class.ed__etape--actuelle]="etapeActuelle() === 0" [class.ed__etape--faite]="etapeActuelle() > 0">
+              <span class="ed__point" aria-hidden="true"></span>
+              <div><b>{{ statut() === 'REFUSEE' ? 'À corriger' : 'Brouillon' }}</b>Visible par vous seul·e.</div>
+            </li>
+            <li [class.ed__etape--actuelle]="etapeActuelle() === 1" [class.ed__etape--faite]="etapeActuelle() > 1">
+              <span class="ed__point" aria-hidden="true"></span>
+              <div><b>En attente de relecture</b>L’administration vérifie le contenu.</div>
+            </li>
+            <li [class.ed__etape--actuelle]="etapeActuelle() === 2">
+              <span class="ed__point" aria-hidden="true"></span>
+              <div><b>Publiée</b>Dans la bibliothèque, avec votre nom. Titou peut la recommander.</div>
+            </li>
+          </ol>
+        </section>
+
+        <section class="ed__conseils" aria-labelledby="t-conseils">
+          <h3 id="t-conseils"><ss-icon nom="ampoule" taille="sm" /> Conseils de rédaction</h3>
+          <ul>
+            <li>Un seul sujet par ressource.</li>
+            <li>Des étapes courtes, faciles à suivre.</li>
+            <li>Terminez par une idée à retenir.</li>
+            <li>En cas de détresse, renvoyez vers « Besoin d’aide ».</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  }
+</div>
+
+<ss-modal [ouverte]="confirmationSortie()" (ouverteChange)="!$event && repondreSortie('rester')">
+  <div class="mr-modale">
+    <h2>Enregistrer le brouillon avant de partir&nbsp;?</h2>
+    <p>Vos dernières modifications ne sont pas encore enregistrées.</p>
+    <div class="mr-modale__actions">
+      <button type="button" class="mr-btn mr-btn--contour" (click)="repondreSortie('quitter')">Quitter sans enregistrer</button>
+      <button type="button" class="mr-btn mr-btn--primaire" (click)="repondreSortie('enregistrer')">Enregistrer et quitter</button>
+    </div>
+  </div>
+</ss-modal>

@@ -17,6 +17,9 @@
         >
           <ss-icon [nom]="lien.icone" />
           {{ lien.libelle }}
+          @if (lien.compteur) {
+            <span class="layout-app__compteur" [attr.aria-label]="lien.compteur + ' en attente de relecture'">{{ lien.compteur }}</span>
+          }
         </a>
       }
     </nav>

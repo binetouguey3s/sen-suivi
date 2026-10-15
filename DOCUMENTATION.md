@@ -481,7 +481,7 @@ GET/POST /api/demandes-contact/{id}/messages → messagerie privée
 
 | Modèle | Description |
 |---|---|
-| `Ressource` | Titre, type (ARTICLE/EXERCICE/PODCAST), contenu, thématique, durée de lecture, date de publication, `fichier_audio` (envoyé depuis le formulaire) et `url_audio` (« /audio/podcasts/… » ou adresse https). |
+| `Ressource` | Titre, type (ARTICLE/EXERCICE/PODCAST/VIDEO), statut (BROUILLON/EN_ATTENTE/PUBLIEE/REFUSEE), auteur (professionnel, ou vide si créée par l'administration), motif de refus, `url_video`, contenu, thématique, durée de lecture, date de publication, `fichier_audio` (envoyé depuis le formulaire) et `url_audio` (« /audio/podcasts/… » ou adresse https). |
 | `Favori` | Association utilisateur ↔ ressource, unique. |
 | `LieuDetente` | Lieu de détente au Sénégal avec coordonnées GPS (latitude/longitude), catégorie, accès libre. |
 
@@ -492,6 +492,8 @@ python manage.py reindexer_ressources
 # Envoie toutes les ressources au microservice IA (POST /reindexer)
 # pour reconstruire l'index ChromaDB après ajout ou modification.
 ```
+
+**Ressources proposées par les professionnels :** un professionnel validé propose une ressource depuis « Mes ressources » (`/pro/ressources`, maquette `docs/maquettes/ressources-pro.html`). Elle suit le parcours BROUILLON → EN_ATTENTE (soumise avec la charte) → PUBLIEE, ou REFUSEE avec un motif, puis corrigée et soumise à nouveau. **Seules les ressources PUBLIEE sont visibles du public** : l'indexation RAG (n8n) lit `GET /api/ressources` sans compte, donc Titou ne cite jamais un brouillon ni une proposition non validée. Une ressource publiée porte la signature « Proposé par {nom}, {spécialité} ». Type VIDEO : lien YouTube uniquement ; l'API n'expose que `video_id`, et le front-end reconstruit lui-même l'adresse youtube-nocookie (aucun lien saisi n'est intégré tel quel), l'iframe n'étant chargée qu'au clic.
 
 **Audio des podcasts :** la page d'un podcast affiche un lecteur (`shared/lecteur-audio`). Sans fichier, ou si le fichier est introuvable, elle propose d'écouter le résumé avec la voix française du navigateur.
 
@@ -514,8 +516,14 @@ La commande lit le titre puis le contenu (intertitres en pause, citations lues n
 **Endpoints :**
 
 ```
-GET         /api/ressources                → liste avec filtres (type, thematique, q)
-GET         /api/ressources/{id}           → détail d'une ressource
+GET         /api/ressources                → ressources PUBLIEE, filtres (format, thematique, q)
+                                             (administration : ?statut=TOUS ou un statut précis)
+GET         /api/ressources/{id}           → détail d'une ressource publiée
+POST        /api/ressources/{id}/publier   → l'administration publie une proposition
+POST        /api/ressources/{id}/refuser   → refus avec motif (10 caractères au moins)
+GET/POST    /api/pro/ressources            → ressources du professionnel (créées en BROUILLON)
+GET/PATCH/DELETE /api/pro/ressources/{id}  → les siennes, modifiables en BROUILLON ou REFUSEE
+POST        /api/pro/ressources/{id}/soumettre → EN_ATTENTE, charte acceptée, admins prévenus
 POST/DELETE /api/favoris                   → ajouter/retirer un favori
 GET         /api/favoris                   → mes favoris
 GET         /api/lieux                     → liste des lieux

@@ -405,3 +405,15 @@
 .layout-app__chat {
   text-decoration: none;
 }
+
+// Pastille orange : ressources en attente de relecture
+.layout-app__compteur {
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-attente-douce);
+  color: var(--ss-attente);
+  font-size: 11px;
+  font-weight: var(--ss-poids-titre);
+  font-variant-numeric: tabular-nums;
+}

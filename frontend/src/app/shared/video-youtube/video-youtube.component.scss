@@ -1,0 +1,73 @@
+:host {
+  display: block;
+}
+
+.vy {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--ss-vignette-debut), var(--ss-vignette-fin));
+}
+
+.vy__cadre,
+.vy__miniature {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.vy__miniature {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  small {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    padding: 3px 9px;
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-photo-voile);
+    color: var(--ss-texte-sur-photo);
+    font-size: 12px;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--ss-primaire);
+    outline-offset: -3px;
+  }
+}
+
+// Gros bouton Lecture, posé sur la miniature
+.vy__lecture {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  padding-left: 3px;
+  border-radius: 50%;
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
+  box-shadow: var(--ss-ombre-forte);
+}
+
+@media print {
+  :host {
+    display: none;
+  }
+}

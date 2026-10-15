@@ -1,5 +1,5 @@
-<article class="cr" [class.cr--vedette]="vedette()">
-  <a class="cr__lien" [routerLink]="['/ressources', ressource().id]">
+<article class="cr" [class.cr--vedette]="vedette()" [class.cr--apercu]="apercu()">
+  <ng-template #interieur>
     <div class="cr__visuel" [attr.data-type]="ressource().type_ressource">
       @if (visuel(); as v) {
         @if (v.genre === 'photo') {
@@ -33,23 +33,40 @@
         }
       </span>
       <h3 class="cr__titre">{{ ressource().titre }}</h3>
+      @if (avecChapo() && chapo()) {
+        <p class="cr__chapo">{{ chapo() }}</p>
+      }
       <p class="cr__meta">
         <span><ss-icon [nom]="estPodcast() ? 'ecouter' : 'horloge'" taille="sm" /> {{ ressource().duree_lecture }} min</span>
         @if (vedette()) {
           <span><ss-icon nom="calendrier" taille="sm" /> {{ ajout() }}</span>
         }
       </p>
+      @if (ressource().auteur; as auteur) {
+        <p class="cr__signature">
+          <span class="cr__avatar" aria-hidden="true">{{ initiales(auteur.nom) }}</span>
+          <span>Proposé par <b>{{ auteur.nom }}</b>, {{ auteur.specialite_affichee }}</span>
+        </p>
+      }
     </div>
-  </a>
+  </ng-template>
 
-  <button
-    type="button"
-    class="cr__coeur"
-    [class.cr__coeur--actif]="estFavori()"
-    [attr.aria-pressed]="estFavori()"
-    [attr.aria-label]="estFavori() ? 'Retirer des favoris' : 'Ajouter aux favoris'"
-    (click)="basculerFavori($event)"
-  >
-    <ss-icon nom="coeur" taille="sm" />
-  </button>
+  @if (apercu()) {
+    <div class="cr__lien"><ng-container *ngTemplateOutlet="interieur" /></div>
+  } @else {
+    <a class="cr__lien" [routerLink]="['/ressources', ressource().id]"><ng-container *ngTemplateOutlet="interieur" /></a>
+  }
+
+  @if (!apercu()) {
+    <button
+      type="button"
+      class="cr__coeur"
+      [class.cr__coeur--actif]="estFavori()"
+      [attr.aria-pressed]="estFavori()"
+      [attr.aria-label]="estFavori() ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+      (click)="basculerFavori($event)"
+    >
+      <ss-icon nom="coeur" taille="sm" />
+    </button>
+  }
 </article>

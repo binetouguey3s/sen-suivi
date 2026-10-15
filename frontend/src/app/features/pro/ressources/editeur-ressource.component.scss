@@ -1,0 +1,592 @@
+@use 'ressources-pro' as pro;
+
+@include pro.communs;
+
+.ed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1080px;
+}
+
+.ed__retour {
+  align-self: flex-start;
+  margin-left: -8px;
+}
+
+.ed__entete h1 {
+  margin-top: 4px;
+  color: var(--ss-texte);
+  font-size: clamp(26px, 4vw, 34px);
+}
+
+.ed__sous {
+  max-width: 58ch;
+  margin-top: 6px !important;
+  color: var(--ss-texte-doux);
+}
+
+.ed__etat {
+  padding: 20px;
+  border: 1px dashed var(--ss-bordure);
+  border-radius: 18px;
+  color: var(--ss-texte-doux);
+}
+
+.ed__motif {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--ss-alerte-douce);
+  color: var(--ss-texte);
+  font-size: 14px;
+
+  ss-icon {
+    margin-top: 2px;
+    color: var(--ss-alerte-sur-douce);
+  }
+}
+
+// Formulaire à gauche, aperçu collant à droite (≥ 1100 px)
+.ed__grille {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+
+  @media (min-width: 1100px) {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+}
+
+.ed__formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+// Blocs numérotés
+.ed-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--ss-bordure);
+  border-radius: 20px;
+  background: var(--ss-surface);
+}
+
+.ed-bloc__titre {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  h2 {
+    color: var(--ss-texte);
+    font-size: 18px;
+  }
+
+  p {
+    color: var(--ss-texte-doux);
+    font-size: 13px;
+  }
+}
+
+.ed-bloc__num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte-marque);
+  font-size: 13px;
+  font-weight: var(--ss-poids-titre-fort);
+  font-variant-numeric: tabular-nums;
+}
+
+// 1. Format : 4 cartes radio (2 colonnes sur mobile)
+.ed__formats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ed__format {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px;
+  border: 1.5px solid var(--ss-bordure);
+  border-radius: 16px;
+  background: var(--ss-surface-legere);
+  color: var(--ss-texte);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  b {
+    font-size: 14px;
+  }
+
+  small {
+    color: var(--ss-texte-doux);
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  &[aria-checked='true'] {
+    border-color: var(--ss-primaire);
+    background: var(--ss-surface);
+    box-shadow: var(--ss-ombre);
+
+    .ed__format-ico {
+      background: var(--ss-primaire);
+      color: var(--ss-primaire-texte);
+    }
+  }
+}
+
+.ed__format-ico {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--ss-surface);
+  color: var(--ss-texte-marque);
+}
+
+// Champs
+.ed-champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+
+  label,
+  .ed-champ__libelle {
+    color: var(--ss-texte);
+    font-size: 13px;
+    font-weight: var(--ss-poids-titre);
+  }
+}
+
+.ed-champ__aide {
+  color: var(--ss-texte-doux);
+  font-size: 12px;
+  font-weight: var(--ss-poids-texte);
+}
+
+.ed-champ__compteur {
+  color: var(--ss-texte-doux);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ed-saisie {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--ss-bordure);
+  border-radius: 14px;
+  background: var(--ss-surface);
+  color: var(--ss-texte);
+  font: inherit;
+  font-size: 15px;
+
+  &:focus {
+    border-color: var(--ss-primaire);
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: 2px;
+  }
+}
+
+textarea.ed-saisie {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.ed-saisie--court {
+  min-height: 84px;
+}
+
+.ed-saisie--long {
+  min-height: 220px;
+}
+
+.ed__ligne-champs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+// Thématiques en puces radio
+.ed__puces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ed__puce {
+  min-height: 36px;
+  padding: 6px 13px;
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface);
+  color: var(--ss-texte);
+  font: inherit;
+  font-size: 13px;
+  font-weight: var(--ss-poids-texte-fort);
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    border-color: var(--ss-primaire);
+    background: var(--ss-primaire);
+    color: var(--ss-primaire-texte);
+  }
+}
+
+// État d'un champ vérifié en direct
+.ed-etat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font-size: 13px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.ed-etat--ok {
+  color: var(--ss-ok);
+}
+
+.ed-etat--erreur {
+  color: var(--ss-alerte);
+}
+
+// 3. Podcast : zone de dépôt, fichier, progression
+.ed__depot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  border: 1.5px dashed var(--ss-bordure);
+  border-radius: 16px;
+  background: var(--ss-surface-legere);
+  color: var(--ss-texte-doux);
+  font-size: 14px;
+  text-align: center;
+
+  label {
+    color: var(--ss-texte-marque);
+    font-weight: var(--ss-poids-titre);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--ss-primaire);
+    outline-offset: 2px;
+  }
+}
+
+// Champ fichier masqué visuellement mais atteignable au clavier (via son libellé)
+.ed__fichier-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.ed__fichier {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--ss-surface-legere);
+  color: var(--ss-texte-marque);
+
+  audio {
+    width: 100%;
+    max-width: 360px;
+    height: 36px;
+    margin-top: 6px;
+  }
+}
+
+.ed__fichier-nom {
+  flex: 1;
+  min-width: 0;
+
+  b {
+    display: block;
+    overflow: hidden;
+    color: var(--ss-texte);
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.ed__progression {
+  height: 6px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-surface-neutre);
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--ss-primaire);
+    transition: width 0.2s linear;
+  }
+}
+
+.ed__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--ss-surface-legere);
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}
+
+// 4. Barre de mise en forme
+.ed__outils {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--ss-surface-neutre);
+
+  button {
+    min-height: 36px;
+    padding: 5px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--ss-texte-doux);
+    font: inherit;
+    font-size: 12px;
+    font-weight: var(--ss-poids-titre);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ss-surface);
+      color: var(--ss-texte);
+    }
+  }
+}
+
+// 5. Charte et envoi
+.ed__charte {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--ss-surface-legere);
+  color: var(--ss-texte);
+  font-size: 14px;
+  cursor: pointer;
+
+  input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: var(--ss-primaire);
+  }
+}
+
+.ed__pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.ed__sauve {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  color: var(--ss-texte-doux);
+  font-size: 13px;
+}
+
+.ed__aide-soumettre {
+  color: var(--ss-texte-doux);
+  font-size: 12px;
+  text-align: right;
+}
+
+// Colonne de droite : aperçu, parcours, conseils
+.ed__cote {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+
+  @media (min-width: 1100px) {
+    position: sticky;
+    top: var(--ss-espace-3);
+  }
+
+  h3 {
+    color: var(--ss-texte);
+    font-size: 15px;
+  }
+}
+
+.ed__etiquette {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ss-texte-doux);
+  font-size: 12px;
+  font-weight: var(--ss-poids-titre);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ed__parcours {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--ss-bordure);
+  border-radius: 20px;
+  background: var(--ss-surface);
+}
+
+.ed__etapes {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+    padding-bottom: 14px;
+    color: var(--ss-texte-doux);
+    font-size: 13px;
+
+    // Trait qui relie les étapes
+    &::after {
+      content: '';
+      position: absolute;
+      top: 24px;
+      bottom: 2px;
+      left: 11px;
+      width: 2px;
+      background: var(--ss-bordure);
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  b {
+    display: block;
+    color: var(--ss-texte);
+    font-size: 14px;
+  }
+}
+
+.ed__point {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ss-bordure);
+  border-radius: 50%;
+  background: var(--ss-surface);
+}
+
+.ed__etape--faite .ed__point {
+  border-color: var(--ss-primaire);
+  background: var(--ss-primaire);
+}
+
+.ed__etape--actuelle .ed__point {
+  border-color: var(--ss-primaire);
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ss-primaire);
+  }
+}
+
+.ed__conseils {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--ss-surface-douce);
+  color: var(--ss-texte);
+  font-size: 13px;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding-left: 18px;
+  }
+}

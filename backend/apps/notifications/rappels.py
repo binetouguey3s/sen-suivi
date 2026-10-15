@@ -15,7 +15,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 
-from apps.ressources.models import Ressource, TypeRessource
+from apps.ressources.models import Ressource, StatutRessource, TypeRessource
 from apps.suivi.profil_tendance import a_consenti
 
 MOMENTS = ('matin', 'midi', 'soir', 'coucher')
@@ -101,7 +101,8 @@ def ressource_suggeree(utilisateur) -> Ressource | None:
         return None
     reponses = onboarding(utilisateur)
     types_preferes = {TYPE_PAR_FORMAT[f] for f in _liste(reponses, 'formats') if f in TYPE_PAR_FORMAT}
-    ressources = list(Ressource.objects.order_by('pk'))
+    # Seules les ressources publiées peuvent être proposées
+    ressources = list(Ressource.objects.filter(statut=StatutRessource.PUBLIEE).order_by('pk'))
     for preoccupation in _liste(reponses, 'preoccupations'):
         thematiques = THEMATIQUES_PAR_PREOCCUPATION.get(preoccupation, [])
         candidates = [r for r in ressources if r.thematique.strip().lower() in thematiques]

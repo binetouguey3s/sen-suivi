@@ -12,6 +12,7 @@ import { IconComponent } from '../icon/icon.component';
 import { ModalUrgenceComponent } from '../modal-urgence/modal-urgence.component';
 import { SelecteurThemeComponent } from '../selecteur-theme/selecteur-theme.component';
 import { ConversationService } from '../../core/services/conversation.service';
+import { RessourcesProService } from '../../core/services/ressources-pro.service';
 
 interface LienNav {
   route: string;
@@ -19,6 +20,8 @@ interface LienNav {
   libelleMobile?: string;
   icone: NomIcone;
   exact?: boolean;
+  // Pastille orange : nombre d'éléments qui attendent (ressources en relecture)
+  compteur?: number;
 }
 
 const LIENS_UTILISATEUR: LienNav[] = [
@@ -48,6 +51,7 @@ const ROUTES_MOBILE_UTILISATEUR = ['/app', '/app/journal', '/app/forum', '/app/p
 })
 export class LayoutAppComponent {
   protected readonly conversation = inject(ConversationService);
+  private readonly ressourcesProService = inject(RessourcesProService);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   protected readonly auth = inject(AuthService);
@@ -73,6 +77,7 @@ export class LayoutAppComponent {
           { route: '/pro', libelle: 'Demandes', icone: 'courriel', exact: true },
           { route: '/pro/profil', libelle: 'Mon profil', libelleMobile: 'Profil', icone: 'profil' },
           { route: '/pro/disponibilites', libelle: 'Disponibilités', libelleMobile: 'Dispo', icone: 'calendrier' },
+          { route: '/pro/ressources', libelle: 'Mes ressources', libelleMobile: 'Ressources', icone: 'ressources', compteur: this.ressourcesEnAttente() },
           { route: '/pro/parametres', libelle: 'Paramètres', icone: 'parametres' },
         ]
       : LIENS_UTILISATEUR,
@@ -88,6 +93,15 @@ export class LayoutAppComponent {
     const choisis = ROUTES_MOBILE_UTILISATEUR.map((route) => l.find((lien) => lien.route === route)!);
     return { gauche: choisis.slice(0, 2), droite: choisis.slice(2) };
   });
+
+  // Ressources du professionnel en cours de relecture (compteur de la navigation)
+  private readonly ressourcesPro = httpResource<{ statut: string }[]>(() => {
+    this.ressourcesProService.version();
+    return this.estProfessionnel() ? `${API_BASE_URL}/pro/ressources` : undefined;
+  });
+  protected readonly ressourcesEnAttente = computed(() =>
+    this.ressourcesPro.hasValue() ? this.ressourcesPro.value().filter((r) => r.statut === 'EN_ATTENTE').length : 0,
+  );
 
   // Spécialité et portrait affichés sous le nom d'un professionnel
   private readonly profilPro = httpResource<{ nom: string; specialite_affichee: string }>(() =>

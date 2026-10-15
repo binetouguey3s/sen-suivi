@@ -9,7 +9,7 @@ import httpx
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from apps.ressources.models import Ressource
+from apps.ressources.models import Ressource, StatutRessource
 
 
 class Command(BaseCommand):
@@ -17,7 +17,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ressources = list(
-            Ressource.objects.values('id', 'titre', 'contenu', 'thematique')
+            # Jamais un brouillon ni une proposition en attente : Titou ne cite que le publié
+            Ressource.objects.filter(statut=StatutRessource.PUBLIEE).values('id', 'titre', 'contenu', 'thematique')
         )
         try:
             reponse = httpx.post(

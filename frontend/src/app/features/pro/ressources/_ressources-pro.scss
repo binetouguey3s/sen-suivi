@@ -1,0 +1,194 @@
+// Éléments communs à « Mes ressources » et à l'éditeur (maquette
+// docs/maquettes/ressources-pro.html), uniquement avec les tokens du thème.
+
+@mixin communs {
+  :host {
+    display: block;
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    font-family: var(--ss-police-titres);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .mr-surtitre,
+  .mr__surtitre {
+    color: var(--ss-texte-doux);
+    font-size: 12px;
+    font-weight: var(--ss-poids-titre);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  // Boutons pilule
+  .mr-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    border-radius: var(--ss-rayon-pilule);
+    font: inherit;
+    font-size: 14px;
+    font-weight: var(--ss-poids-titre);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s var(--ss-ease), box-shadow 0.15s var(--ss-ease);
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+      box-shadow: none;
+    }
+  }
+
+  .mr-btn--primaire {
+    background: var(--ss-primaire);
+    color: var(--ss-primaire-texte);
+    box-shadow: var(--ss-ombre);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+
+  .mr-btn--contour {
+    border-color: var(--ss-bordure);
+    background: var(--ss-surface);
+    color: var(--ss-texte);
+  }
+
+  .mr-btn--alerte {
+    background: var(--ss-alerte);
+    color: var(--ss-alerte-texte);
+  }
+
+  .mr-btn-lien {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--ss-texte-marque);
+    font: inherit;
+    font-size: 13px;
+    font-weight: var(--ss-poids-titre);
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ss-surface-neutre);
+    }
+  }
+
+  .mr-btn,
+  .mr-btn-lien,
+  button {
+    &:focus-visible {
+      outline: 2px solid var(--ss-primaire);
+      outline-offset: 2px;
+    }
+  }
+
+  .mr-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--ss-accent);
+    color: var(--ss-accent-texte);
+    font-size: 13px;
+    font-weight: var(--ss-poids-titre);
+  }
+
+  // Pastilles de statut : point coloré + libellé
+  .mr-pastille {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: var(--ss-rayon-pilule);
+    font-size: 12px;
+    font-weight: var(--ss-poids-titre);
+    white-space: nowrap;
+
+    &::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+  }
+
+  .mr-pastille--publiee {
+    background: var(--ss-ok-douce);
+    color: var(--ss-ok);
+  }
+
+  .mr-pastille--attente {
+    background: var(--ss-attente-douce);
+    color: var(--ss-attente);
+  }
+
+  .mr-pastille--brouillon {
+    background: var(--ss-surface-neutre);
+    color: var(--ss-texte-doux);
+  }
+
+  .mr-pastille--refusee {
+    background: var(--ss-alerte-douce);
+    color: var(--ss-alerte-sur-douce);
+  }
+
+  // Modales (ss-modal)
+  .mr-modale {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ss-espace-2);
+
+    h2 {
+      color: var(--ss-texte-marque);
+      font-size: 20px;
+    }
+  }
+
+  .mr-modale__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .mr-modale__erreur {
+    color: var(--ss-alerte);
+    font-size: 14px;
+  }
+
+  .mr-modale__aide {
+    color: var(--ss-texte-doux);
+    font-size: 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}

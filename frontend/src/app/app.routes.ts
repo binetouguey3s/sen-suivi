@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { estConnecteGuard } from './core/guards/est-connecte.guard';
+import { quitterEditeur } from './features/pro/ressources/quitter-editeur.guard';
 import { ouvrirConversation } from './core/guards/ouvrir-conversation.guard';
 import { typeCompteGuard } from './core/guards/type-compte.guard';
 
@@ -68,6 +69,23 @@ export const routes: Routes = [
         path: 'disponibilites',
         loadComponent: () =>
           import('./features/pro/disponibilites.component').then((m) => m.DisponibilitesComponent),
+      },
+      {
+        path: 'ressources',
+        loadComponent: () =>
+          import('./features/pro/ressources/mes-ressources.component').then((m) => m.MesRessourcesComponent),
+      },
+      {
+        path: 'ressources/nouvelle',
+        canDeactivate: [quitterEditeur],
+        loadComponent: () =>
+          import('./features/pro/ressources/editeur-ressource.component').then((m) => m.EditeurRessourceComponent),
+      },
+      {
+        path: 'ressources/:id/modifier',
+        canDeactivate: [quitterEditeur],
+        loadComponent: () =>
+          import('./features/pro/ressources/editeur-ressource.component').then((m) => m.EditeurRessourceComponent),
       },
       {
         path: 'parametres',

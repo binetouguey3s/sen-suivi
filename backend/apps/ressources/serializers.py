@@ -1,6 +1,14 @@
 from rest_framework import serializers
 
-from .models import Favori, LieuDetente, Ressource, valider_fichier_audio
+from .models import Favori, LieuDetente, Ressource, TypeRessource, valider_fichier_audio
+
+
+class AuteurSerializer(serializers.Serializer):
+    """Crédit d'une ressource proposée par un professionnel : jamais son e-mail."""
+
+    id = serializers.IntegerField()
+    nom = serializers.CharField()
+    specialite_affichee = serializers.CharField(source='get_specialite_display')
 
 
 class RessourceSerializer(serializers.ModelSerializer):
@@ -11,13 +19,26 @@ class RessourceSerializer(serializers.ModelSerializer):
     )
     # Ce que le lecteur doit jouer : le fichier envoyé en priorité, sinon url_audio
     audio = serializers.SerializerMethodField()
+    # Seul l'identifiant YouTube sert à intégrer la vidéo, jamais le lien saisi
+    video_id = serializers.CharField(read_only=True)
+    auteur = AuteurSerializer(read_only=True)
 
     class Meta:
         model = Ressource
         fields = [
             'id', 'titre', 'type_ressource', 'contenu', 'thematique',
             'duree_lecture', 'date_publication', 'url_audio', 'fichier_audio', 'audio',
+            'url_video', 'video_id', 'auteur', 'statut', 'motif_refus', 'date_soumission', 'date_modification',
         ]
+        # Le statut ne change que par les actions soumettre / publier / refuser
+        read_only_fields = ['statut', 'motif_refus', 'date_soumission', 'date_modification']
+
+    def validate(self, attrs):
+        type_ressource = attrs.get('type_ressource', getattr(self.instance, 'type_ressource', None))
+        url_video = attrs.get('url_video', getattr(self.instance, 'url_video', ''))
+        if type_ressource == TypeRessource.VIDEO and not url_video:
+            raise serializers.ValidationError({'url_video': 'Une vidéo a besoin de son lien YouTube.'})
+        return attrs
 
     def get_audio(self, ressource) -> str:
         if not ressource.fichier_audio:
@@ -41,6 +62,23 @@ class RessourceSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class RessourceProSerializer(RessourceSerializer):
+    """Brouillon du professionnel : il peut être enregistré incomplet (sauvegarde
+    automatique). Tout est vérifié au moment de la soumission."""
+
+    class Meta(RessourceSerializer.Meta):
+        extra_kwargs = {
+            'titre': {'allow_blank': True},
+            'contenu': {'allow_blank': True},
+            'thematique': {'allow_blank': True},
+        }
+
+    def validate(self, attrs):
+        # Une vidéo sans lien reste un brouillon possible ; le lien saisi, lui,
+        # est toujours vérifié (validateur du champ)
+        return attrs
+
+
 class LieuDetenteSerializer(serializers.ModelSerializer):
     class Meta:
         model = LieuDetente
@@ -51,7 +89,8 @@ class LieuDetenteSerializer(serializers.ModelSerializer):
 
 
 class FavoriEcritureSerializer(serializers.Serializer):
-    ressource = serializers.PrimaryKeyRelatedField(queryset=Ressource.objects.all())
+    # On ne met en favori qu'une ressource publiée
+    ressource = serializers.PrimaryKeyRelatedField(queryset=Ressource.objects.filter(statut='PUBLIEE'))
 
     def create(self, validated_data):
         favori, _ = Favori.objects.get_or_create(
