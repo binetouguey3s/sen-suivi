@@ -74,6 +74,22 @@ illustration aux couleurs de la charte (illustrations.svg, création Sen Suivi).
 | ressource-stress.webp | Stress.jpg | À compléter | À compléter |
 | ressource-travail.webp | Travail.jpg | À compléter | À compléter |
 
+## Fond nature (pages Ressources)
+
+| Fichier | Original | Source | Licence |
+|---|---|---|---|
+| fond-clair.jpg / .webp | vague vue ciel.jpg | À compléter | À compléter |
+| fond-sombre.jpg / .webp | magrove vert-bleu.jpg | À compléter | À compléter |
+
+## Audio des podcasts
+
+Fichiers servis depuis frontend/public/audio/podcasts/.
+
+| Fichier | Contenu | Source | Licence |
+|---|---|---|---|
+| cinq-minutes-pour-respirer.mp3 | Exercice de respiration guidée | À compléter | À compléter |
+| respiration-guidee-4-minutes.mp3 | Kai Engel, « Blizzard (PON I) », album Chapter One / Cold | Free Music Archive (freemusicarchive.org) | À vérifier sur la page du morceau |
+
 ## Illustrations
 
 Illustrations vectorielles issues d'unDraw (undraw.co), licence unDraw,

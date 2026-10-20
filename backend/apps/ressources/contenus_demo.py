@@ -7,7 +7,8 @@ une ligne vide entre deux paragraphes.
 RESSOURCES = [
     {
         'titre': 'Cinq minutes pour respirer avant un examen',
-        'type_ressource': 'EXERCICE',
+        'url_audio': '/audio/podcasts/cinq-minutes-pour-respirer.mp3',
+        'type_ressource': 'PODCAST',
         'thematique': 'Respiration',
         'duree_lecture': 5,
         'contenu': """Avant une épreuve, le corps s'accélère : le cœur bat plus vite, les mains deviennent moites, les idées se bousculent. Cet exercice vous aide à ralentir en cinq minutes, où que vous soyez.
@@ -32,7 +33,8 @@ Ouvrez les yeux, étirez doucement les épaules. Vous pouvez recommencer autant 
     },
     {
         'titre': 'Exercice de respiration guidée, 4 minutes',
-        'type_ressource': 'EXERCICE',
+        'url_audio': '/audio/podcasts/respiration-guidee-4-minutes.mp3',
+        'type_ressource': 'PODCAST',
         'thematique': 'Respiration',
         'duree_lecture': 4,
         'contenu': """Une pratique courte à faire le matin, entre deux cours ou avant de dormir. Aucun matériel n'est nécessaire.
@@ -145,7 +147,8 @@ Un verre d'eau, un repas simple, un échange avec un proche : ces petits rituels
     },
     {
         'titre': "Parler de ce qu'on ressent, même quand ça ne se fait pas",
-        'url_audio': '/audio/podcasts/parler-de-ce-qu-on-ressent.mp3',
+        # Pas encore de fichier audio : la page propose d'écouter le résumé
+        'url_audio': '',
         'type_ressource': 'PODCAST',
         'thematique': 'Expression',
         'duree_lecture': 18,
@@ -163,7 +166,8 @@ Vous n'êtes pas obligé de tout dire d'un coup. Commencez par une phrase simple
     },
     {
         'titre': 'Podcast : la teranga commence par soi-même',
-        'url_audio': '/audio/podcasts/la-teranga-commence-par-soi-meme.mp3',
+        # Pas encore de fichier audio : la page propose d'écouter le résumé
+        'url_audio': '',
         'type_ressource': 'PODCAST',
         'thematique': 'Bien-être',
         'duree_lecture': 22,
@@ -475,6 +479,43 @@ Inspirez par le nez en comptant jusqu'à quatre, expirez par la bouche en compta
 Nommez intérieurement la prochaine petite chose à faire, une seule. Buvez un verre d'eau avant de reprendre.
 
 > Trois minutes de pause valent mieux qu'une heure de travail sous tension.""",
+    },
+    {
+        'titre': 'Paris sportifs en ligne : quand le jeu devient un piège pour les jeunes',
+        'type_ressource': 'VIDEO',
+        'thematique': 'Numérique',
+        'duree_lecture': 1,
+        'url_video': 'https://www.youtube.com/shorts/dfDaoANQ5sw',
+        # Proposée par un professionnel : e-mail de son compte (voir seed_donnees)
+        'auteur': 'bamba.dieng@sensuivi.sn',
+        'contenu': """Miser quelques centaines de francs pour gagner gros : les paris sportifs en ligne attirent de plus en plus de jeunes. Le psychologue Abib Ndiaye explique pourquoi ce jeu de hasard est dangereux, et comment il peut pousser certains jusqu’au vol.
+
+## Ce que vous allez voir
+Dans cette vidéo intitulée « Une jeunesse trop bête, un pays en danger ? », Abib Ndiaye, psychologue et psychothérapeute, alerte sur les paris sportifs en ligne, de plus en plus populaires chez les jeunes au Sénégal.
+
+## Pourquoi c'est dangereux
+- C'est un jeu de hasard : sur la durée, ce sont les sites de paris qui gagnent, pas les joueurs.
+- Un petit gain au début donne l'illusion qu'on peut « maîtriser » le jeu, et pousse à miser toujours plus.
+- Pour se « refaire » après une perte, certains jeunes empruntent, mentent à leurs proches, et peuvent aller jusqu'à voler de l'argent.
+
+> Le jeu promet de gagner de l'argent facilement. Il fait surtout perdre de l'argent, de la confiance et parfois des liens avec ses proches.
+
+## Les signes qui doivent alerter
+- Penser souvent aux paris, même en classe ou au travail.
+- Miser plus que prévu, ou l'argent destiné à autre chose (transport, repas, études).
+- Cacher ses paris ou ses pertes à sa famille.
+- Se sentir irritable ou angoissé quand on ne peut pas jouer.
+
+## Ce qui peut aider
+- Fixer une limite claire, ou mieux, supprimer les applications de paris de son téléphone.
+- Parler de ce que l'on vit à une personne de confiance : un parent, un ami, un enseignant.
+- Remplacer le moment du pari par une autre activité : sport, sortie entre amis, projet personnel.
+
+## À retenir
+Il n'y a pas de honte à demander de l'aide. Plus on en parle tôt, plus il est facile d'arrêter.
+
+## Pour aller plus loin
+Si ce sujet vous concerne, vous ou un proche, vous pouvez en parler à Titou ou échanger avec un professionnel de l'annuaire Sen Suivi.""",
     },
 ]
 

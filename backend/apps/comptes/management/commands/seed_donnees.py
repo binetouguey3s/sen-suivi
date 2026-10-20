@@ -77,6 +77,7 @@ PROFESSIONNELS = [
     ('Ousmane Sow', 'Coach sportif', 'Dakar Ouakam', 'français', 8000, StatutValidationPro.VALIDE),
     ('Ndèye Coumba Diallo', 'Assistant social', 'Saint-Louis', 'français', 9000, StatutValidationPro.EN_ATTENTE),
     ('Ibrahima Kane', 'Coach en développement personnel', 'Ziguinchor', 'français', 11000, StatutValidationPro.EN_ATTENTE),
+    ('Bamba Dieng', 'Psychologue', 'Tambacounda', 'français, wolof, pulaar', 10000, StatutValidationPro.VALIDE),
 ]
 
 # Fiche publique des professionnels validés : complétée seulement si vide,
@@ -121,6 +122,16 @@ FICHES_PROFESSIONNELS = {
         'domaines': ['Activité physique', 'Énergie', 'Confiance en soi'],
         'consultation_cabinet': True,
         'adresse_cabinet': 'Corniche Ouest, Dakar Ouakam',
+        'consultation_distance': True,
+    },
+    'Bamba Dieng': {
+        'presentation': (
+            "Psychologue conseiller depuis plus de dix ans, j'accompagne les jeunes et leurs "
+            "familles face au stress et aux conduites à risque, comme les jeux d'argent en ligne."
+        ),
+        'domaines': ['Gestion du stress', 'Addictions', 'Jeunesse'],
+        'consultation_cabinet': True,
+        'adresse_cabinet': 'Tambacounda',
         'consultation_distance': True,
     },
 }
@@ -267,10 +278,11 @@ class Command(BaseCommand):
 
     def _creer_ressources(self):
         for ressource in RESSOURCES_DEMO:
-            Ressource.objects.update_or_create(
-                titre=ressource['titre'],
-                defaults={cle: valeur for cle, valeur in ressource.items() if cle != 'titre'},
-            )
+            defaults = {cle: valeur for cle, valeur in ressource.items() if cle != 'titre'}
+            # Ressource proposée par un professionnel : « auteur » donne l'e-mail de son compte
+            if 'auteur' in defaults:
+                defaults['auteur'] = Professionnel.objects.get(email=defaults['auteur'])
+            Ressource.objects.update_or_create(titre=ressource['titre'], defaults=defaults)
 
     def _creer_comptes_demo(self, professionnel_valide):
         utilisateur, cree = Utilisateur.objects.get_or_create(
