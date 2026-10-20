@@ -92,6 +92,8 @@
           <h2 class="art__resume-titre">Résumé de la vidéo</h2>
         }
 
+        <!-- Panneau de lecture : même surface que la carte « Sommaire » -->
+        <div class="art__panneau">
         @if (introduction(); as intro) {
           <p class="art__intro">{{ intro }}</p>
         }
@@ -116,6 +118,7 @@
             }
           }
         }
+        </div>
 
         <!-- Visible seulement à l'impression (PDF) -->
         <p class="art__pied-impression">

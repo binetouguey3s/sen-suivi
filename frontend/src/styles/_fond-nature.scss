@@ -1,0 +1,95 @@
+// =============================================================
+//  Sen Suivi — Fond nature (essai, pages Ressources uniquement)
+//  Photo plein écran derrière le contenu, sous un voile fait de la
+//  couleur de fond EXISTANTE (--ss-fond-public) : aucune couleur de
+//  la charte n'est modifiée. L'opacité du voile se règle ici.
+//
+//  La photo est un ::before collant (position: sticky, hauteur d'un
+//  écran) : elle reste immobile pendant le défilement comme un fond fixe,
+//  mais s'arrête avec la page, sans recouvrir le pied de page du layout.
+//  Pas de background-attachment: fixed (mal géré par iOS), pas de
+//  position: fixed (le calque passerait par-dessus le pied de page).
+//  Le contexte d'empilement (isolation) place la photo devant le fond du
+//  layout mais derrière le contenu de la page.
+//  Usage, dans le .scss d'un composant de page : @include fond-nature;
+// =============================================================
+
+@mixin image($nom) {
+  // Repli JPG, puis WebP pour les navigateurs qui le gèrent
+  background-image: var(--fond-nature-calque), url('/assets/images/#{$nom}.jpg');
+  background-image:
+    var(--fond-nature-calque),
+    image-set(url('/assets/images/#{$nom}.webp') type('image/webp'), url('/assets/images/#{$nom}.jpg') type('image/jpeg'));
+}
+
+@mixin fond-nature {
+  :host {
+    // Part de la couleur de fond dans le voile : plus haut, photo plus discrète
+    // 93 % et non 88 % : en dessous, --ss-texte-doux passe sous 4,5:1 sur les zones
+    // les plus sombres de la photo claire (88 % : 4,03:1 ; 93 % : 4,52:1)
+    --voile-fond-clair: 93%;
+    --voile-fond-sombre: 95%;
+    --fond-nature-voile: color-mix(in srgb, var(--ss-fond-public) var(--voile-fond-clair), transparent);
+    // Calque posé sur la photo : voile uniforme, qu'une page peut remplacer (dégradé…)
+    --fond-nature-calque: linear-gradient(var(--fond-nature-voile), var(--fond-nature-voile));
+
+    isolation: isolate;
+    // Coupe la photo à la fin de la page (sinon elle déborde sur le pied de page).
+    // « clip » ne crée pas de zone de défilement : les éléments collants de la page
+    // (sommaire) fonctionnent toujours, et les menus en position: fixed passent.
+    overflow: clip;
+    // La photo descend jusqu'à la bande d'urgence du pied de page : la page
+    // occupe l'espace laissé au-dessus du pied (sa marge haute, layout public),
+    // et une marge négative égale l'annule (les deux marges se compensent).
+    --fond-nature-ecart-pied: var(--ss-espace-6);
+    padding-bottom: var(--fond-nature-ecart-pied);
+    margin-bottom: calc(var(--fond-nature-ecart-pied) * -1);
+
+    @media (min-width: 900px) {
+      --fond-nature-ecart-pied: var(--ss-espace-8);
+    }
+  }
+
+  :host::before {
+    content: '';
+    display: block;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    // N'occupe aucune place : le contenu de la page glisse par-dessus
+    margin-bottom: -100vh;
+    z-index: -1;
+    pointer-events: none;
+    background-position: center center, center center;
+    background-size: cover, cover;
+    background-repeat: no-repeat;
+    @include image('fond-clair');
+  }
+
+  // Thème sombre : posé sur <html> par le ThemeService, y compris en mode « Système »
+  :host-context([data-theme='sombre']) {
+    --fond-nature-voile: color-mix(in srgb, var(--ss-fond-public) var(--voile-fond-sombre), transparent);
+  }
+
+  :host-context([data-theme='sombre'])::before {
+    @include image('fond-sombre');
+  }
+
+  // Avant le démarrage d'Angular, aucun data-theme : on suit le réglage de l'appareil
+  @media (prefers-color-scheme: dark) {
+    :host-context(html:not([data-theme])) {
+      --fond-nature-voile: color-mix(in srgb, var(--ss-fond-public) var(--voile-fond-sombre), transparent);
+    }
+
+    :host-context(html:not([data-theme]))::before {
+      @include image('fond-sombre');
+    }
+  }
+
+  // À l'impression, rien derrière le texte
+  @media print {
+    :host::before {
+      display: none;
+    }
+  }
+}

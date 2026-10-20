@@ -1,10 +1,41 @@
+@use 'fond-nature' as *;
+
+// Essai : fond nature derrière la page (src/styles/_fond-nature.scss)
+@include fond-nature;
+
 :host {
   display: block;
 }
 
+// Bandeau : le voile uniforme devient un dégradé horizontal, opaque derrière le
+// texte (95 % à gauche), plus léger à droite (80 %) pour laisser voir la photo.
+// Sur mobile, le texte occupe toute la largeur : on garde le voile uniforme.
+@media (min-width: 900px) {
+  :host {
+    --fond-nature-calque: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ss-fond-public) 95%, transparent) 0%,
+      color-mix(in srgb, var(--ss-fond-public) 95%, transparent) 45%,
+      color-mix(in srgb, var(--ss-fond-public) 80%, transparent) 100%
+    );
+  }
+
+  // Thème sombre : voile uniforme à 95 %, comme sur le reste des pages
+  :host-context([data-theme='sombre']) {
+    --fond-nature-calque: linear-gradient(var(--fond-nature-voile), var(--fond-nature-voile));
+  }
+}
+
+// Thème sombre : images des cartes un peu atténuées
+:host-context([data-theme='sombre']) ::ng-deep ss-carte-ressource .cr__illustration {
+  filter: brightness(0.85);
+}
+
 .bib__hero {
   padding: var(--ss-espace-6) var(--ss-marge-mobile) var(--ss-espace-4);
-  background: linear-gradient(180deg, var(--ss-surface-douce), var(--ss-fond-public));
+  // Essai fond nature : bandeau transparent pour laisser voir la photo
+  // (avant : linear-gradient(180deg, var(--ss-surface-douce), var(--ss-fond-public)))
+  background: transparent;
 
   @media (min-width: 900px) {
     padding: var(--ss-espace-8) var(--ss-gouttiere-page) var(--ss-espace-5);
@@ -177,7 +208,13 @@
   gap: var(--ss-espace-2);
   color: var(--ss-texte-doux);
   text-align: center;
-  padding: var(--ss-espace-6) 0;
+  padding: var(--ss-espace-6) var(--ss-espace-3);
+  // Panneau de lecture (comme sur la page détail) : le message reste lisible
+  // même là où le voile du fond est le plus léger
+  border-radius: var(--ss-rayon-carte);
+  background: color-mix(in srgb, var(--ss-fond) 92%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .bib__etat--erreur {

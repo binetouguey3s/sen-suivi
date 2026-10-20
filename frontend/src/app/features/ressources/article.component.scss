@@ -1,5 +1,14 @@
+@use 'fond-nature' as *;
+
+// Essai : fond nature derrière la page (src/styles/_fond-nature.scss)
+@include fond-nature;
+
 :host {
   display: block;
+  // Voile un peu plus couvrant que sur la bibliothèque : la bannière de la
+  // ressource est déjà une image, la photo du fond doit rester en retrait
+  --voile-fond-clair: 95%;
+  --voile-fond-sombre: 95%;
 }
 
 // Alignée sur la colonne commune des pages publiques (en-tête, pied de page)
@@ -171,6 +180,34 @@ img.art__illustration--entiere {
   color: var(--ss-primaire-texte) !important;
 }
 
+// Panneau de lecture : surface de la carte « Sommaire » (--ss-fond), légèrement
+// transparente et floutée au-dessus de la photo ; même rayon, même marge interne
+.art__panneau {
+  margin-top: var(--ss-espace-3);
+  padding: var(--ss-espace-3);
+  border-radius: var(--ss-rayon-carte);
+  background: color-mix(in srgb, var(--ss-fond) 92%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+
+  // Le premier et le dernier bloc collent au bord du panneau
+  > :first-child {
+    margin-top: 0 !important;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Thème sombre : images un peu atténuées, pour ne pas éblouir sur la photo de nuit
+:host-context([data-theme='sombre']) {
+  .art__illustration,
+  ::ng-deep ss-carte-ressource .cr__illustration {
+    filter: brightness(0.85);
+  }
+}
+
 .art__intro {
   font-style: italic;
   font-size: 17px !important;
@@ -251,6 +288,34 @@ blockquote {
 
 .art__carte--aide {
   background: var(--ss-surface-douce);
+
+  strong {
+    color: var(--ss-texte);
+  }
+}
+
+// Essai fond nature : relief des surfaces posées sur la photo.
+// En clair, --ss-fond et --ss-surface-legere ont presque la couleur du voile
+// (#eef5f2) : les cartes disparaissaient. On les passe en blanc presque opaque,
+// avec bordure et ombre douce. En sombre, seule l'ombre s'ajoute.
+.art__carte,
+.art__panneau,
+.art__lecteur {
+  border-radius: var(--ss-rayon-carte);
+  box-shadow: var(--ss-ombre);
+}
+
+:host-context([data-theme='clair']) {
+  .art__carte:not(.art__carte--aide),
+  .art__panneau {
+    background: color-mix(in srgb, var(--ss-surface) 94%, transparent);
+    border: 1px solid var(--ss-surface-douce);
+  }
+
+  .art__lecteur ::ng-deep .la {
+    background: var(--ss-surface);
+    border-color: var(--ss-surface-douce);
+  }
 }
 
 .art__bouton-plein,
@@ -425,6 +490,16 @@ blockquote {
 
   .art__intro {
     font-size: 12pt !important;
+  }
+
+  .art__panneau {
+    margin-top: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   blockquote {
