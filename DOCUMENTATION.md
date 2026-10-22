@@ -1,7 +1,7 @@
 # Documentation technique complète — Sen Suivi
 
 > Plateforme sénégalaise de prévention et de suivi du bien-être mental.
-> Version au 6 octobre 2026.
+> Version au 22 octobre 2026.
 
 ---
 
@@ -27,6 +27,7 @@
    - 5.2 Pipeline complet d'un message (`main.py`)
    - 5.3 Niveau 0 — Détection de détresse
    - 5.3 bis Cadrage — Demandes hors sujet
+   - 5.3 ter Questions sur soi et profil
    - 5.4 Niveau 1 — Classification d'intention
    - 5.5 Niveau 2a — Moteur RAG (ChromaDB)
    - 5.6 Niveau 2b — Génération encadrée (LLM)
@@ -39,6 +40,7 @@
    - 6.3 Authentification côté client
    - 6.4 Intercepteur JWT
    - 6.5 Services principaux
+   - 6.6 Parcours utilisateur et pages récentes
 7. [Service d'automatisation — n8n](#7-service-dautomatisation--n8n)
    - 7.1 Pourquoi n8n
    - 7.2 Les cinq workflows
@@ -55,8 +57,10 @@
 Sen Suivi est une plateforme de bien-être mental conçue pour le contexte sénégalais. Elle accompagne les utilisateurs à travers plusieurs fonctionnalités complémentaires :
 
 - Un **chatbot empathique** nommé Titou, accessible sans compte, qui écoute, oriente et détecte les situations graves.
+- Un **onboarding** personnalisé (toutes les étapes facultatives) et une page **Mon profil**.
 - Un **journal d'humeur** quotidien et des **auto-évaluations** (stress, anxiété, fatigue).
-- Une **bibliothèque** d'articles, exercices et podcasts.
+- Un **tableau de bord** avec le conseil du jour et une section « Pour vous » de 3 ressources.
+- Une **bibliothèque** d'articles, exercices, podcasts (lecteur audio) et vidéos YouTube, dont certaines proposées par les professionnels.
 - Un **annuaire** de professionnels validés (psychologues, sophrologues, coachs, assistants sociaux, etc.) avec **mise en relation** directe.
 - Un **forum anonyme** modéré automatiquement par l'IA.
 - Un répertoire de **lieux de détente** au Sénégal.
@@ -127,6 +131,7 @@ services:
 ### Volumes persistants
 
 - `postgres_data` — données PostgreSQL (ne jamais supprimer en prod)
+- `media_data` — fichiers envoyés depuis l'application (audio des podcasts, `MEDIA_ROOT`)
 - `chroma_data` — index vectoriel ChromaDB (reconstruit par `/reindexer`)
 - `n8n_data` — données et identifiants n8n
 - `./automations:/automations:ro` — workflows n8n exportés en lecture seule
@@ -157,7 +162,7 @@ Tous les conteneurs s'appellent par leur nom de service (ex. `http://backend:800
 
 | Technologie | Version | Pourquoi ce choix |
 |---|---|---|
-| **Django** | 5.x | Framework Python le plus complet, inclut l'ORM, l'admin, les migrations, les validateurs de mot de passe. Idéal pour une application avec des règles métier complexes. |
+| **Django** | 5.2 LTS | Framework Python le plus complet, inclut l'ORM, l'admin, les migrations, les validateurs de mot de passe. Idéal pour une application avec des règles métier complexes. |
 | **djangorestframework (DRF)** | 3.15 | Standard de facto pour les API REST en Python. Fournit serializers, views génériques, permissions. Évite de réinventer la roue. |
 | **djangorestframework-simplejwt** | 5.3 | Authentification sans état (stateless) par JWT. Le frontend Angular peut vérifier le type de compte directement depuis le token, sans aller-retour supplémentaire. |
 | **psycopg (v3)** | 3.2 | Driver PostgreSQL moderne, asynchrone-ready, plus performant que psycopg2. Version binaire (`psycopg[binary]`) pour simplifier l'installation. |
@@ -315,6 +320,12 @@ Interprétation : ≤33 = faible, 33-66 = modéré, >66 = élevé. Au-delà de 3
 Ce module produit une liste de mots-clés anonymes décrivant la tendance récente d'un utilisateur (ex. `["humeur en baisse sur 7 jours", "journal irrégulier", "niveau de stress modéré au dernier test"]`).
 
 Ce profil est transmis au chatbot **uniquement si l'utilisateur y a consenti** (préférence `personnalisation_chatbot`). Il ne contient jamais de données brutes : ni texte du journal, ni réponses aux tests, ni identité.
+
+Avec ce consentement, il est complété par des mots-clés issus de l'onboarding (`libelles_onboarding.py` : préoccupations, rythme, formats préférés…), dans la limite de 10 éléments de 80 caractères. Ne sont jamais transmis : le genre, l'âge, le détail de la spiritualité ni l'humeur de départ. Le prénom seul est envoyé dans un champ à part (`prenom`), toujours sous condition de consentement.
+
+**Réponses de l'onboarding (`preferences.onboarding`) :**
+
+Les réponses du parcours `/bienvenue` sont enregistrées dans le champ JSON `preferences` du compte (`PATCH /api/comptes/moi`), sans table supplémentaire : statut (`termine` ou `passe`), profil, humeur et énergie de départ, préoccupations, habitudes de bien-être, moments et formats préférés, choix des rappels (`rappels`, `frequence_rappels`), attentes envers un professionnel. Aucune réponse n'est obligatoire. Les deux consentements (« personnaliser mes suggestions » et « conserver mes échanges avec Titou ») sont **désactivés par défaut**.
 
 ### 4.6 App `chatbot`
 
@@ -495,6 +506,8 @@ python manage.py reindexer_ressources
 
 **Ressources proposées par les professionnels :** un professionnel validé propose une ressource depuis « Mes ressources » (`/pro/ressources`, maquette `docs/maquettes/ressources-pro.html`). Elle suit le parcours BROUILLON → EN_ATTENTE (soumise avec la charte) → PUBLIEE, ou REFUSEE avec un motif, puis corrigée et soumise à nouveau. **Seules les ressources PUBLIEE sont visibles du public** : l'indexation RAG (n8n) lit `GET /api/ressources` sans compte, donc Titou ne cite jamais un brouillon ni une proposition non validée. Une ressource publiée porte la signature « Proposé par {nom}, {spécialité} ». Type VIDEO : lien YouTube uniquement ; l'API n'expose que `video_id`, et le front-end reconstruit lui-même l'adresse youtube-nocookie (aucun lien saisi n'est intégré tel quel), l'iframe n'étant chargée qu'au clic.
 
+**Données de démonstration (`contenus_demo.py`, commande `seed_donnees`) :** 21 ressources, dont deux podcasts de respiration dont l'audio est versionné dans `frontend/public/audio/podcasts/` (`cinq-minutes-pour-respirer.mp3`, `respiration-guidee-4-minutes.mp3`) et la vidéo « Paris sportifs en ligne », proposée par le professionnel de démonstration Bamba Dieng (clé `auteur` = e-mail de son compte). Les deux autres podcasts n'ont pas encore de fichier : leur page propose l'écoute du résumé. La commande utilise `update_or_create` : relancée, elle met à jour sans dupliquer. Un clone du dépôt suffit donc à retrouver la démonstration complète, sans dépendre des fichiers envoyés sur une autre machine (volume `media_data`).
+
 **Audio des podcasts :** la page d'un podcast affiche un lecteur (`shared/lecteur-audio`). Sans fichier, ou si le fichier est introuvable, elle propose d'écouter le résumé avec la voix française du navigateur.
 
 Le plus simple : dans **Gestion des ressources** (administration), un podcast a un champ « Fichier audio » (`shared/champ-audio`). Le fichier (MP3, M4A ou OGG, 20 Mo au plus) est vérifié sur son contenu, pas seulement sur son nom, puis stocké dans `MEDIA_ROOT/audio/` (volume Docker `media_data`). L'API expose `audio` : le fichier envoyé en priorité, sinon `url_audio`. Remplacer ou retirer un fichier supprime l'ancien du disque. En production, les fichiers de `/media/` doivent être servis par le serveur web (Django ne les sert qu'en mode DEBUG).
@@ -567,11 +580,18 @@ def declencher_workflow(nom, donnees=None):
 - Jamais l'adresse ni le contenu dans les logs en cas d'erreur : seulement le type d'exception.
 - Une signature pied-de-page est ajoutée à tous les emails (numéros d'urgence).
 
+**Rappels selon l'onboarding (`rappels.py`) :**
+
+- Rappel de journal coupé si la personne l'a demandé : l'onboarding **et** les paramètres doivent être d'accord.
+- Fréquence choisie respectée : 1 par jour, ou 3 par semaine au plus. Sans réponse, la règle générale s'applique (un rappel par `RAPPEL_FREQUENCE_MAX_JOURS`).
+- Moment choisi (`matin`, `midi`, `soir`, `coucher`) ; par défaut, le matin.
+- Avec le consentement seulement : le rappel suggère une ressource liée à une préoccupation, dans le format préféré si possible.
+
 **Endpoints internes (appelés par n8n uniquement) :**
 
 ```
-GET  /api/interne/utilisateurs-inactifs   → utilisateurs sans journal depuis N jours
-GET  /api/interne/utilisateurs-a-retester → utilisateurs sans test depuis N jours
+GET  /api/interne/utilisateurs-inactifs?moment=soir   → utilisateurs sans journal depuis N jours, dont c'est le moment
+GET  /api/interne/utilisateurs-a-retester?moment=soir → utilisateurs sans test depuis N jours, dont c'est le moment
 GET  /api/interne/administrateurs         → liste des admins
 POST /api/interne/notifications-email     → créer une notification programmatiquement
 ```
@@ -657,6 +677,18 @@ Exécuté juste après le niveau 0 et avant la classification d'intention. Titou
 - Un **signal de bien-être** (stress, peur, fatigue, « je me sens »…) ou une **mention de la plateforme** l'emporte toujours : « j'ai un examen de maths demain et je panique » reste dans le cadre, on répond à l'émotion.
 - Cinq catégories (`CALCUL_DEVOIRS`, `TACHE`, `INFORMATION`, `CONSEIL_EXPERT`, `PERSONNEL`), deux recadrages chacune, au vouvoiement ; jamais deux fois de suite le même.
 - En complément, la section « Ton périmètre » du prompt (`_CADRE`) interdit au LLM de traiter une tâche, même en partie, et le validateur rejette toute réponse qui en résout une.
+
+### 5.3 ter Questions sur soi et profil
+
+**Fichier :** `app/reponses_profil.py`
+
+Titou ne sait que ce que la personne a accepté de partager. Aux questions sur soi (« comment je m'appelle ? », « que savez-vous de moi ? ») :
+
+- **sans consentement** : réponse fixe, sans modèle de langage, qui explique comment activer la personnalisation dans *Mon profil › Confidentialité* ;
+- **avec consentement** : le modèle répond à partir du prénom et des mots-clés reçus ; le validateur vérifie que le prénom cité est bien celui du profil ;
+- ces questions ne sont **jamais** classées hors sujet.
+
+Lorsqu'une orientation est proposée, le professionnel est choisi **avant** la réponse : le métier cité par Titou est celui de la carte affichée, et les métiers choisis dans l'onboarding servent de départage. Les phrases redites sont retirées des réponses générées.
 
 ### 5.4 Niveau 1 — Classification d'intention
 
@@ -917,6 +949,19 @@ Le jeton d'urgence (`UrgenceService`) est lu et ajouté automatiquement à chaqu
 | `AccesService` | État de l'offre de lancement |
 | `PersonneConfianceService` | Gestion de la personne de confiance |
 
+### 6.6 Parcours utilisateur et pages récentes
+
+| Page / élément | Route ou fichier | Rôle |
+|---|---|---|
+| Onboarding | `/bienvenue` (`features/onboarding/`) | 9 écrans : accueil, présentation, 6 étapes facultatives (profil, humeur, préoccupations, bien-être, rythme, accompagnement), puis « Votre parcours est prêt ». Vouvoiement, mobile et ordinateur, accessible au clavier. État géré par `OnboardingStore`. |
+| Mon profil | `/app/profil` (`features/profil/`) | Réponses de l'inscription et de l'onboarding en cinq cartes (libellés, jamais les codes). Chaque section se modifie dans une modale qui reprend l'écran de l'onboarding ; « Annuler » ne garde rien. Choix de confidentialité modifiables et effacement des réponses. |
+| Tableau de bord | `/app` | **Conseil du jour** (30 astuces ancrées au Sénégal, stables sur la journée, bouton « Un autre conseil ») et **« Pour vous »** (`core/utils/suggestions.ts`) : 3 ressources choisies par des règles explicables (préoccupations, humeur basse du jour, format et durée préférés), avec la raison affichée. Sans consentement : les nouveautés et un lien « Personnaliser ». |
+| Journal | `/app/journal` | 3 phrases pour commencer, stables sur la journée ; note privée de 1 000 caractères au plus. |
+| Détail d'une ressource | `/ressources/:id` | Lecteur audio (`shared/lecteur-audio`) ou vidéo YouTube (`shared/video-youtube`), sommaire, menu de partage (`shared/menu-partage` : copier le lien, WhatsApp, e-mail, PDF, partage natif sur mobile). La feuille d'impression ne garde que la ressource, en clair, avec l'adresse et le SAMU 1515 en bas de page. |
+| Ressources du professionnel | `/pro/ressources` | Proposer, modifier et soumettre une ressource (voir 4.10). |
+
+**Fond nature des pages Ressources (`styles/_fond-nature.scss`) :** la bibliothèque et le détail d'une ressource s'affichent sur une photo de paysage (`src/assets/images/fond-clair` et `fond-sombre`, en JPG et WebP), sous un voile de la couleur de fond du thème. Le mixin `@include fond-nature` s'ajoute dans le `.scss` d'une page. Opacité du voile : **95 % en mode sombre** ; en mode clair, 93 % par défaut et 95 % sur le détail d'une ressource (en dessous, le texte secondaire passerait sous le contraste 4,5:1). Sur ordinateur, la bibliothèque en mode clair utilise un dégradé de 95 % (derrière le texte) à 80 % (à droite). La photo est un pseudo-élément collant (pas de `background-attachment: fixed`, mal géré par iOS) qui s'arrête au pied de page. Les cartes, le lecteur et le sommaire posés dessus ont une surface presque opaque et une ombre douce. À l'impression, le fond est retiré.
+
 ---
 
 ## 7. Service d'automatisation — n8n
@@ -934,17 +979,20 @@ n8n est un outil d'automatisation open source, auto-hébergé, avec interface vi
 #### `rappel-inactivite.json` — Rappel journal d'humeur
 
 ```
-Déclencheur : chaque jour à 9h
-→ GET /api/interne/utilisateurs-inactifs  (X-Cle-Interne)
+Déclencheurs : chaque jour à 8 h, 12 h 30, 18 h et 21 h
+  (un par moment : matin, midi, soir, coucher)
+→ GET /api/interne/utilisateurs-inactifs?moment=…  (X-Cle-Interne)
 → Pour chaque utilisateur :
    POST /api/interne/notifications-email
 ```
+
+Chaque déclencheur ne traite que les personnes qui ont choisi ce moment dans l'onboarding (le matin par défaut). La fréquence et la désactivation choisies sont respectées (voir 4.11).
 
 Django retourne la liste des utilisateurs sans entrée depuis `RAPPEL_JOURNAL_JOURS` (défaut 3) jours, qui n'ont pas désactivé ce rappel et qui n'ont pas déjà reçu un rappel dans les `RAPPEL_FREQUENCE_MAX_JOURS` (défaut 7) jours.
 
 #### `rappel-auto-evaluation.json` — Rappel test mensuel
 
-Même structure, mais appelle `/api/interne/utilisateurs-a-retester` (dernier test > `RAPPEL_TEST_JOURS` jours).
+Même structure (quatre déclencheurs), mais appelle `/api/interne/utilisateurs-a-retester?moment=…` (dernier test > `RAPPEL_TEST_JOURS` jours).
 
 #### `nouvelle-demande.json` — Notification nouvelle mise en relation
 
@@ -1243,12 +1291,24 @@ docker compose exec backend python manage.py createcachetable
 # 5. (Optionnel) Créer un superutilisateur admin
 docker compose exec backend python manage.py createsuperuser
 
-# 6. (Optionnel) Charger des données de démonstration
+# 6. Charger les données de démonstration (indispensable pour une présentation)
 docker compose exec backend python manage.py seed_donnees
 
 # 7. Indexer les ressources dans ChromaDB
 docker compose exec backend python manage.py reindexer_ressources
 ```
+
+### Comptes de démonstration
+
+Créés par `seed_donnees`, mot de passe commun `SenSuivi2026!` :
+
+| Compte | E-mail |
+|---|---|
+| Utilisateur | `awa.ndiaye@sensuivi.sn` |
+| Professionnel | `aminata.ba@sensuivi.sn`, `bamba.dieng@sensuivi.sn` |
+| Administrateur | `admin@sensuivi.sn` |
+
+Pour présenter le projet sur un autre ordinateur : cloner le dépôt, copier le fichier `.env` à la racine (il n'est jamais versionné), puis suivre les étapes ci-dessus. Les comptes et fichiers créés à la main sur une autre machine restent dans ses volumes Docker et ne suivent pas le dépôt.
 
 ### Accès
 
@@ -1314,9 +1374,11 @@ Branches présentes dans le dépôt :
 - `feat/tableau-de-bord-pro`, `feat/orientation-pro`
 - `feat/aide-urgence`, `feat/securite-authentification`
 - `feat/images-lieux`, `feat/courriels`, `feat/onboarding-animations`
+- `feat/cadrage-titou`, `feat/titou-profil`, `feat/rappels-onboarding`, `feat/pour-vous`, `feat/conseil-et-journal`
+- `feat/partage-ressource`, `feat/podcasts-audio`, `feat/upload-audio`, `feat/ressources-pro`
 - `fix/forum-clignotement`, `fix/message-moderation`
 - `style/contrastes-clair`, `style/fiche-professionnel`, etc.
 
 ---
 
-*Documentation générée le 6 octobre 2026 à partir du code source complet du projet Sen Suivi.*
+*Documentation mise à jour le 22 octobre 2026 à partir du code source complet du projet Sen Suivi.*

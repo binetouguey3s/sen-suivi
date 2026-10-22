@@ -1,14 +1,19 @@
 # Sen Suivi
 
-Plateforme sénégalaise de prévention, suivi et orientation vers le bien-être mental.
+Plateforme sénégalaise de prévention, suivi et orientation pour le bien-être mental.
 Projet de certification, Simplon Sénégal, Promo 9 (2025-2026). Autrice : Binetou Gueye.
 
 ## Fonctionnalités
 
-- **Journal d'humeur** et tableau de bord : suivi quotidien, courbe sur 7 jours, statistiques personnelles
+- **Onboarding personnalisé** (9 écrans, toutes les étapes facultatives) et page **Mon profil** pour modifier ses réponses et ses choix de confidentialité
+- **Journal d'humeur** et tableau de bord : suivi quotidien, courbe sur 7 jours, statistiques personnelles, phrases pour commencer le journal
+- **Conseil du jour** et section **« Pour vous »** : 3 ressources suggérées par des règles simples et explicables, avec le consentement
 - **Auto-évaluation** (stress, anxiété, fatigue) : score de tendance et suggestion de professionnels validés
 - **Chatbot** accessible sans compte, qui oriente vers des ressources validées
-- **Bibliothèque de ressources** (articles, exercices, podcasts) et **répertoire de lieux** de détente au Sénégal
+- **Bibliothèque de ressources** (articles, exercices, podcasts avec lecteur audio, vidéos YouTube), partage (lien, WhatsApp, e-mail) et enregistrement en PDF, sur un fond nature en mode clair et sombre
+- **Ressources proposées par les professionnels**, publiées après validation par un administrateur
+- **Répertoire de lieux** de détente au Sénégal
+- **Rappels doux** (journal, auto-évaluation) au moment de la journée et à la fréquence choisis
 - **Mise en relation** avec des professionnels, dont l'inscription est validée par un administrateur
 - **Forum anonyme** (pseudonymes), avec modération a priori
 - **Administration** : validation des professionnels, modération du forum, gestion des ressources
@@ -90,8 +95,23 @@ docker compose exec backend python manage.py seed_donnees
 docker compose exec backend python manage.py reindexer_ressources
 ```
 
-La commande de seed affiche le mot de passe commun à tous les comptes de
-démonstration. Interface d'administration Django : `http://localhost:8000/admin/`.
+La commande de seed recrée toutes les données de démonstration : questions des tests,
+professionnels, lieux, 21 ressources (dont les podcasts de respiration avec leur audio et
+une vidéo proposée par un professionnel), forum et comptes de démonstration. Elle peut être
+relancée sans créer de doublons. Mot de passe commun : `SenSuivi2026!`.
+
+| Compte | E-mail |
+|---|---|
+| Utilisateur | `awa.ndiaye@sensuivi.sn` |
+| Professionnel | `aminata.ba@sensuivi.sn`, `bamba.dieng@sensuivi.sn` |
+| Administrateur | `admin@sensuivi.sn` |
+
+Interface d'administration Django : `http://localhost:8000/admin/`.
+
+> **Présenter le projet sur un autre ordinateur** : cloner le dépôt, copier le fichier `.env`
+> (jamais versionné) à la racine, puis lancer les commandes ci-dessus. Les comptes et
+> fichiers créés à la main sur une autre machine restent dans ses volumes Docker : ils ne
+> suivent pas le dépôt.
 
 Le front-end Angular se lance en développement avec `cd frontend && npm install && npm start`.
 
@@ -130,11 +150,12 @@ cd frontend && npm test -- --watch=false            # Vitest
 
 ## Persistance des données
 
-Trois volumes Docker nommés conservent les données entre deux redémarrages :
+Quatre volumes Docker nommés conservent les données entre deux redémarrages :
 
 | Volume | Contenu |
 |---|---|
 | `postgres_data` | Base de données PostgreSQL |
+| `media_data` | Fichiers envoyés depuis l'application (audio des podcasts) |
 | `chroma_data` | Base vectorielle ChromaDB du microservice IA, montée sur `CHROMA_PERSIST_DIR` |
 | `n8n_data` | Workflows et identifiants n8n |
 
@@ -172,6 +193,14 @@ identifiants n8n sont conservés dans le volume `n8n_data` :
 ```bash
 docker compose up -d --force-recreate n8n
 ```
+
+**Une modification du front-end n'apparaît pas sur `localhost:4200`**
+Le conteneur `frontend` est construit à partir d'une copie du code : il faut le reconstruire
+après chaque modification (`docker compose up -d --build frontend`), puis recharger la page
+avec Ctrl + Maj + R. Pour voir les changements en direct, arrêter le conteneur
+(`docker stop sensuivi_frontend`) et lancer `ng serve --poll 2000` depuis `frontend/`
+(l'option `--poll` est utile sur un disque externe, où les changements de fichiers ne sont
+pas toujours détectés).
 
 **Le backend démarre avant que PostgreSQL soit prêt**
 `depends_on` garantit seulement que le conteneur `db` est *démarré*, pas que PostgreSQL
