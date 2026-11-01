@@ -26,8 +26,25 @@ class FavoriAdmin(admin.ModelAdmin):
     list_display = ('utilisateur', 'ressource', 'date_ajout')
 
 
+class FiltrePhotoEnvoyee(admin.SimpleListFilter):
+    """Photos envoyées seulement : celles livrées avec le front-end ne sont pas en base."""
+
+    title = 'photo envoyée'
+    parameter_name = 'photo'
+
+    def lookups(self, request, model_admin):
+        return (('oui', 'Oui'), ('non', 'Non'))
+
+    def queryset(self, request, queryset):
+        if self.value() == 'oui':
+            return queryset.exclude(image='')
+        if self.value() == 'non':
+            return queryset.filter(image='')
+        return queryset
+
+
 @admin.register(LieuDetente)
 class LieuDetenteAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'ville', 'categorie')
-    list_filter = ('ville', 'categorie')
-    search_fields = ('nom', 'ville')
+    list_display = ('nom', 'region', 'ville', 'categorie', 'acces')
+    list_filter = ('region', 'categorie', 'acces', FiltrePhotoEnvoyee)
+    search_fields = ('nom', 'ville', 'type_lieu')

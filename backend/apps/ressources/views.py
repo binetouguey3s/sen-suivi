@@ -1,3 +1,5 @@
+import unicodedata
+
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -11,7 +13,7 @@ from apps.comptes.models import Administrateur
 from apps.comptes.permissions import EstAdministrateur, EstProfessionnelValide, EstUtilisateur
 from apps.notifications.services import declencher_workflow, notifier
 
-from .models import Favori, LieuDetente, Ressource, StatutRessource
+from .models import AccesLieu, Favori, LieuDetente, Ressource, StatutRessource, valider_image_lieu
 from .serializers import FavoriEcritureSerializer, LieuDetenteSerializer, RessourceProSerializer, RessourceSerializer
 
 
@@ -245,23 +247,46 @@ class ProRessourceSoumettreView(APIView):
         return Response(RessourceSerializer(ressource, context={'request': request}).data)
 
 
+def _sans_accents(texte: str) -> str:
+    decompose = unicodedata.normalize('NFD', texte)
+    return ''.join(c for c in decompose if not unicodedata.combining(c)).casefold()
+
+
+def _ids_trouves(queryset, recherche: str) -> list[int]:
+    """Recherche sans majuscules ni accents : chaque mot doit figurer dans un des
+    champs. Faite en Python, suffisant pour une centaine de lieux, ce qui évite
+    d'installer l'extension PostgreSQL unaccent."""
+    mots = _sans_accents(recherche).split()
+    ids = []
+    for pk, *champs in queryset.values_list('pk', 'nom', 'ville', 'region', 'type_lieu'):
+        texte = _sans_accents(' '.join(champs))
+        if all(mot in texte for mot in mots):
+            ids.append(pk)
+    return ids
+
+
 class LieuDetenteListView(generics.ListAPIView):
-    """GET /api/lieux — filtres ville, catégorie et recherche, accès public."""
+    """GET /api/lieux — filtres région, catégorie, accès (plusieurs valeurs
+    possibles), ville, recherche q, et ouverts=1 pour masquer les lieux
+    restreints. Accès public."""
 
     permission_classes = [AllowAny]
     serializer_class = LieuDetenteSerializer
 
     def get_queryset(self):
         queryset = LieuDetente.objects.all()
-        ville = self.request.query_params.get('ville')
-        categorie = self.request.query_params.get('categorie')
-        recherche = self.request.query_params.get('q')
-        if ville:
-            queryset = queryset.filter(ville=ville)
-        if categorie:
-            queryset = queryset.filter(categorie=categorie)
+        parametres = self.request.query_params
+        for champ in ('region', 'ville', 'categorie'):
+            if parametres.get(champ):
+                queryset = queryset.filter(**{champ: parametres[champ]})
+        acces = parametres.getlist('acces')
+        if acces:
+            queryset = queryset.filter(acces__in=acces)
+        if parametres.get('ouverts') == '1':
+            queryset = queryset.exclude(acces=AccesLieu.RESTREINT)
+        recherche = parametres.get('q', '').strip()
         if recherche:
-            queryset = queryset.filter(Q(nom__icontains=recherche) | Q(ville__icontains=recherche))
+            queryset = queryset.filter(pk__in=_ids_trouves(queryset, recherche))
         return queryset
 
 
@@ -271,6 +296,38 @@ class LieuDetenteDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     serializer_class = LieuDetenteSerializer
     queryset = LieuDetente.objects.all()
+
+
+class ImageLieuSerializer(serializers.Serializer):
+    image = serializers.FileField(validators=[valider_image_lieu])
+
+
+class LieuDetenteImageView(APIView):
+    """POST /api/lieux/{id}/image — ajoute ou remplace la photo d'un lieu.
+    DELETE — la retire. Réservé à l'administration."""
+
+    permission_classes = [EstAdministrateur]
+
+    def _reponse(self, request, lieu):
+        return Response(LieuDetenteSerializer(lieu, context={'request': request}).data)
+
+    def post(self, request, pk):
+        lieu = get_object_or_404(LieuDetente, pk=pk)
+        entree = ImageLieuSerializer(data=request.data)
+        # Vérifiée d'abord : un envoi refusé laisse la photo en place
+        entree.is_valid(raise_exception=True)
+        if lieu.image:
+            lieu.image.delete(save=False)
+        lieu.image = entree.validated_data['image']
+        lieu.save(update_fields=['image'])
+        return self._reponse(request, lieu)
+
+    def delete(self, request, pk):
+        lieu = get_object_or_404(LieuDetente, pk=pk)
+        if lieu.image:
+            lieu.image.delete(save=False)
+            lieu.save(update_fields=['image'])
+        return self._reponse(request, lieu)
 
 
 class FavoriListCreateView(generics.ListCreateAPIView):

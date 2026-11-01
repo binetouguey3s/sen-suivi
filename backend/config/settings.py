@@ -126,6 +126,7 @@ MEDIA_ROOT = Path(env('MEDIA_ROOT', default=str(BASE_DIR / 'media')))
 # fichier reçu dans un fichier temporaire plutôt que de le garder en mémoire
 FICHIER_AUDIO_MAX_OCTETS = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = FICHIER_AUDIO_MAX_OCTETS + 1024 * 1024
+IMAGE_LIEU_MAX_OCTETS = 5 * 1024 * 1024
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

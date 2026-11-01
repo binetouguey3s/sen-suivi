@@ -1,0 +1,15 @@
+<a class="carte-lieu" [class.carte-lieu--selection]="selectionne()" [routerLink]="['/lieux', lieu().id]">
+  <span class="carte-lieu__media">
+    @if (image(); as src) {
+      <img [src]="src" [alt]="'Photo : ' + lieu().nom" loading="lazy" />
+    } @else {
+      <ss-couverture-lieu [nomCategorie]="lieu().categorie" />
+    }
+    <ss-pastille-acces class="carte-lieu__acces" [acces]="lieu().acces" />
+  </span>
+  <span class="carte-lieu__corps">
+    <span class="carte-lieu__nom" role="heading" [attr.aria-level]="niveauTitre()">{{ lieu().nom }}</span>
+    <span class="carte-lieu__ligne"><ss-icon nom="lieux" taille="sm" /> {{ lieu().ville }} · {{ lieu().region }}</span>
+    <span class="carte-lieu__ligne"><ss-icon [nom]="icone()" taille="sm" /> {{ lieu().categorie }}</span>
+  </span>
+</a>

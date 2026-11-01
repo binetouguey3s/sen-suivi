@@ -19,6 +19,7 @@ const LIENS: LienNavAdmin[] = [
   { route: '/admin/professionnels', libelle: 'Professionnels', icone: 'utilisateur' },
   { route: '/admin/forum', libelle: 'Forum', icone: 'forum' },
   { route: '/admin/ressources', libelle: 'Ressources', icone: 'ressources' },
+  { route: '/admin/lieux', libelle: 'Lieux', icone: 'lieux' },
 ];
 
 // Écrans d'administration : fond blanc pur, aucun

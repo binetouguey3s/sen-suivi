@@ -17,6 +17,9 @@ import { IconComponent } from '../icon/icon.component';
 const PIN =
   '<svg viewBox="0 0 30 38" aria-hidden="true"><path d="M15 1C8 1 2.5 6.5 2.5 13.5 2.5 23 15 37 15 37S27.5 23 27.5 13.5C27.5 6.5 22 1 15 1Z"/><circle cx="15" cy="13.5" r="4.5" fill="white" stroke="none"/></svg>';
 
+// Mini-carte d'un lieu : assez près pour se repérer, sans voir toute la région
+const ZOOM_COMPACT = 14;
+
 function icone(selection: boolean): L.DivIcon {
   return L.divIcon({
     className: selection ? 'ss-pin ss-pin--selection' : 'ss-pin',
@@ -66,6 +69,9 @@ export class CarteLieuxComponent implements OnDestroy {
       this.carte = L.map(this.conteneur().nativeElement, {
         zoomControl: false,
         attributionControl: true,
+        // Mini-carte : la molette ou le doigt font défiler la page, pas la carte
+        scrollWheelZoom: !this.compact(),
+        dragging: !(this.compact() && L.Browser.mobile),
       }).setView([14.6, -17.3], 9);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -125,12 +131,13 @@ export class CarteLieuxComponent implements OnDestroy {
       });
       repere.on('click', () => (estChoisi ? this.ouvrir.emit(lieu.id) : this.choisi.emit(lieu.id)));
       if (estChoisi) {
-        repere.bindTooltip(lieu.nom, { permanent: true, direction: 'top', offset: [0, -34], className: 'ss-etiquette' });
+        repere.bindTooltip(lieu.nom, { permanent: !this.compact(), direction: 'top', offset: [0, -34], className: 'ss-etiquette' });
       }
       repere.addTo(this.calque);
     }
     const actuel = this.avecCoordonnees().find((l) => l.id === choisie);
-    if (actuel) this.carte.flyTo([actuel.latitude!, actuel.longitude!], this.compact() ? 11 : Math.max(this.carte.getZoom(), 10), { duration: 0.6 });
+    if (actuel && this.compact()) this.carte.setView([actuel.latitude!, actuel.longitude!], ZOOM_COMPACT);
+    else if (actuel) this.carte.flyTo([actuel.latitude!, actuel.longitude!], Math.max(this.carte.getZoom(), 10), { duration: 0.6 });
     else this.ajuster();
   }
 }

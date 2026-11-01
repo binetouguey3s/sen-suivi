@@ -7,6 +7,7 @@ import { MoodChartComponent, PointHumeur } from '../../shared/mood-chart/mood-ch
 import { MoodSelectorComponent } from '../../shared/mood-selector/mood-selector.component';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { imageDuLieu } from '../../core/config/images-lieux';
+import { lieuxOuverts } from '../../core/utils/lieux';
 import { AuthService } from '../../core/services/auth.service';
 import { CompteService } from '../../core/services/compte.service';
 import { SuiviHumeurService } from '../../core/services/suivi-humeur.service';
@@ -139,15 +140,15 @@ export class TableauDeBordComponent {
   }
 
   // Priorité à un lieu dont on a une vraie photo (docs/CREDITS-IMAGES.md) ;
-  // à défaut, le premier lieu renvoyé par l'API.
+  // à défaut, le premier lieu ouvert renvoyé par l'API.
   protected readonly lieuProche = computed<LieuDetente | null>(() => {
-    const tous = valeurs(this.lieux);
-    return tous.find((l) => imageDuLieu(l.nom) !== null) ?? tous[0] ?? null;
+    const ouverts = lieuxOuverts(valeurs(this.lieux));
+    return ouverts.find((l) => imageDuLieu(l) !== null) ?? ouverts[0] ?? null;
   });
 
   protected readonly imageLieuProche = computed<string | null>(() => {
     const lieu = this.lieuProche();
-    return lieu ? imageDuLieu(lieu.nom) : null;
+    return lieu ? imageDuLieu(lieu) : null;
   });
 
   protected async choisirHumeur(niveau: NiveauHumeur): Promise<void> {

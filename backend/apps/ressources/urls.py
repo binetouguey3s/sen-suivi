@@ -12,6 +12,7 @@ urlpatterns = [
     path('pro/ressources/<int:pk>/soumettre', views.ProRessourceSoumettreView.as_view()),
     path('lieux', views.LieuDetenteListView.as_view()),
     path('lieux/<int:pk>', views.LieuDetenteDetailView.as_view()),
+    path('lieux/<int:pk>/image', views.LieuDetenteImageView.as_view()),
     path('favoris', views.FavoriListCreateView.as_view()),
     path('favoris/<int:ressource_id>', views.FavoriSuppressionView.as_view()),
 ]

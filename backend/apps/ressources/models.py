@@ -199,20 +199,111 @@ class Favori(models.Model):
         return f'{self.utilisateur} ♥ {self.ressource}'
 
 
+class Region(models.TextChoices):
+    """La valeur est le libellé : les adresses de recherche restent lisibles
+    (/lieux?region=Thiès)."""
+
+    DAKAR = 'Dakar', 'Dakar'
+    THIES = 'Thiès', 'Thiès'
+    SAINT_LOUIS = 'Saint-Louis', 'Saint-Louis'
+    LOUGA = 'Louga', 'Louga'
+    MATAM = 'Matam', 'Matam'
+    TAMBACOUNDA = 'Tambacounda', 'Tambacounda'
+    KEDOUGOU = 'Kédougou', 'Kédougou'
+    KOLDA = 'Kolda', 'Kolda'
+    SEDHIOU = 'Sédhiou', 'Sédhiou'
+    ZIGUINCHOR = 'Ziguinchor', 'Ziguinchor'
+    FATICK = 'Fatick', 'Fatick'
+    KAOLACK = 'Kaolack', 'Kaolack'
+    KAFFRINE = 'Kaffrine', 'Kaffrine'
+    DIOURBEL = 'Diourbel', 'Diourbel'
+
+
+class CategorieLieu(models.TextChoices):
+    PLAGES = 'Plages & littoral', 'Plages & littoral'
+    PARCS = 'Parcs & jardins', 'Parcs & jardins'
+    RESERVES = 'Parcs nationaux & réserves', 'Parcs nationaux & réserves'
+    LACS = 'Lacs & lagunes', 'Lacs & lagunes'
+    ILES = 'Îles', 'Îles'
+    FORETS = 'Forêts', 'Forêts'
+    CASCADES = 'Cascades & montagnes', 'Cascades & montagnes'
+    FLEUVES = 'Fleuves & mangroves', 'Fleuves & mangroves'
+    DESERT = 'Désert & dunes', 'Désert & dunes'
+    PATRIMOINE = 'Patrimoine & culture', 'Patrimoine & culture'
+
+
+class AccesLieu(models.TextChoices):
+    GRATUIT = 'GRATUIT', 'Gratuit'
+    LIBRE = 'LIBRE', 'Accès libre'
+    PAYANT = 'PAYANT', 'Payant'
+    MIXTE = 'MIXTE', 'Mixte'
+    RESTREINT = 'RESTREINT', 'Restreint'
+
+
+# Photo d'un lieu : même contrôle que pour l'audio. SVG exclu, il peut contenir du script.
+EXTENSIONS_IMAGE = {
+    '.jpg': lambda debut: debut.startswith(b'\xff\xd8\xff'),
+    '.jpeg': lambda debut: debut.startswith(b'\xff\xd8\xff'),
+    '.png': lambda debut: debut.startswith(b'\x89PNG\r\n\x1a\n'),
+    '.webp': lambda debut: debut.startswith(b'RIFF') and debut[8:12] == b'WEBP',
+}
+
+
+def valider_image_lieu(fichier) -> None:
+    signature_valide = EXTENSIONS_IMAGE.get(Path(fichier.name).suffix.lower())
+    if signature_valide is None:
+        raise ValidationError('Formats acceptés : JPEG, PNG ou WebP.')
+    if fichier.size > settings.IMAGE_LIEU_MAX_OCTETS:
+        raise ValidationError(f'Le fichier dépasse {settings.IMAGE_LIEU_MAX_OCTETS // (1024 * 1024)} Mo.')
+    fichier.seek(0)
+    debut = fichier.read(12)
+    fichier.seek(0)
+    if not signature_valide(debut):
+        raise ValidationError("Ce fichier n'est pas une image lisible (JPEG, PNG ou WebP).")
+
+
 class LieuDetente(models.Model):
     nom = models.CharField('nom', max_length=150)
-    ville = models.CharField('ville', max_length=100)
+    # Vide seulement pour les lignes créées avant l'import des sites du répertoire
+    region = models.CharField('région', max_length=20, choices=Region.choices, blank=True)
+    ville = models.CharField('localité', max_length=100)
+    type_lieu = models.CharField('type de lieu', max_length=150, blank=True)
     description = models.TextField('description')
-    categorie = models.CharField('catégorie', max_length=100)
+    categorie = models.CharField('catégorie', max_length=100, choices=CategorieLieu.choices)
     # Ajoutés suite à la correction du diagramme de classes.
     latitude = models.FloatField('latitude', null=True, blank=True)
     longitude = models.FloatField('longitude', null=True, blank=True)
-    acces_libre = models.BooleanField('accès libre', default=True)
+    acces = models.CharField('accès', max_length=10, choices=AccesLieu.choices, default=AccesLieu.LIBRE)
+    precisions = models.TextField('précisions', blank=True, help_text='Tarif, pirogue, permis…')
+    vigilance = models.TextField('points de vigilance', blank=True)
+    meilleure_periode = models.CharField('meilleure période', max_length=100, blank=True)
+    derniere_verification = models.DateField('dernière vérification', null=True, blank=True)
+    # Photo envoyée par l'administration : prioritaire sur les photos livrées
+    # avec le front-end (images-lieux.ts)
+    image = models.FileField(
+        'photo',
+        upload_to='lieux/',
+        blank=True,
+        validators=[valider_image_lieu],
+        help_text='Photo réelle du lieu, au Sénégal. JPEG, PNG ou WebP, 5 Mo au plus.',
+    )
 
     class Meta:
         verbose_name = 'lieu de détente'
         verbose_name_plural = 'lieux de détente'
         ordering = ['ville', 'nom']
+        constraints = [
+            # Un même site peut figurer dans deux régions (Lac de Guiers, Ferlo…)
+            models.UniqueConstraint(
+                fields=['nom', 'region'],
+                condition=~models.Q(region=''),
+                name='lieu_unique_par_nom_et_region',
+            )
+        ]
 
     def __str__(self):
         return f'{self.nom} ({self.ville})'
+
+    @property
+    def acces_libre(self) -> bool:
+        return self.acces in (AccesLieu.GRATUIT, AccesLieu.LIBRE)

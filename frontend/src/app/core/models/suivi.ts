@@ -64,13 +64,23 @@ export interface Ressource {
   date_modification?: string;
 }
 
+export type AccesLieu = 'GRATUIT' | 'LIBRE' | 'PAYANT' | 'MIXTE' | 'RESTREINT';
+
 export interface LieuDetente {
   id: number;
   nom: string;
-  ville: string;
+  region: string;
+  ville: string; // localité
+  type_lieu: string;
   description: string;
   categorie: string;
   latitude: number | null;
   longitude: number | null;
+  acces: AccesLieu;
   acces_libre: boolean;
+  precisions: string;
+  vigilance: string;
+  meilleure_periode: string;
+  derniere_verification: string | null;
+  image: string | null; // photo envoyée par l'administration
 }
