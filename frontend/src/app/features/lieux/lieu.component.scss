@@ -238,8 +238,11 @@ ss-couverture-lieu.lieu__hero-media {
   }
 }
 
-// Sous 1024 px, les deux colonnes s'effacent : leurs blocs deviennent frères et
-// « order » les range, le bandeau de vigilance d'abord : il peut changer la décision de partir
+// Sous 1024 px : une colonne, « order » range les blocs, le bandeau de vigilance
+// d'abord car il peut changer la décision de partir.
+// À partir de 1024 px : deux rangées alignées en haut et en bas
+//   À propos + Bien-être | L'essentiel
+//   À découvrir aussi    | Carte
 .lieu__grille {
   display: flex;
   flex-direction: column;
@@ -249,26 +252,60 @@ ss-couverture-lieu.lieu__hero-media {
     display: grid;
     grid-template-columns: minmax(0, 1fr) $colonne-laterale;
     gap: var(--ss-espace-4);
-    align-items: start;
   }
 }
 
+// Ces enveloppes ne comptent pas dans la mise en page : leurs blocs sont placés directement
 .lieu__principale,
 .lieu__laterale {
   display: contents;
+}
+
+.lieu__pile {
+  display: contents;
 
   @media (min-width: $bureau) {
+    grid-column: 1;
+    grid-row: 1;
     display: flex;
     flex-direction: column;
     gap: var(--ss-espace-3);
     min-width: 0;
+
+    // Se partagent la hauteur pour finir au même niveau que « L'essentiel »
+    .lieu__description,
+    .lieu__bien-etre {
+      flex: 1 1 auto;
+    }
   }
 }
 
-.lieu__laterale {
+.lieu__essentiel {
   @media (min-width: $bureau) {
-    position: sticky;
-    top: var(--ss-espace-3);
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+.lieu__suggestions {
+  @media (min-width: $bureau) {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+  }
+}
+
+.lieu__carte-bloc {
+  @media (min-width: $bureau) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+// Sans carte, rien à côté des suggestions : elles prennent toute la largeur
+.lieu__grille--sans-carte .lieu__suggestions {
+  @media (min-width: $bureau) {
+    grid-column: 1 / -1;
   }
 }
 
@@ -310,7 +347,7 @@ ss-couverture-lieu.lieu__hero-media {
   }
 
   h2 {
-    margin: 0 0 12px;
+    margin: 0;
     font-size: 20px;
     font-weight: var(--ss-poids-titre);
     color: var(--ss-texte-marque);
@@ -331,6 +368,19 @@ ss-couverture-lieu.lieu__hero-media {
   from {
     opacity: 0;
     transform: translateY(8px);
+  }
+}
+
+// Le même en-tête pour toutes les cartes de contenu : une icône ronde et le titre
+.lieu__bloc-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .lieu__icone {
+    width: 40px;
+    height: 40px;
   }
 }
 
@@ -374,6 +424,9 @@ ss-couverture-lieu.lieu__hero-media {
 }
 
 .lieu__essentiel {
+  display: flex;
+  flex-direction: column;
+
   // L'animation créerait un repère pour la barre fixée en bas de l'écran
   @media (max-width: $mobile-max) {
     animation: none;
@@ -455,6 +508,12 @@ ss-couverture-lieu.lieu__hero-media {
 
   .lieu__bouton {
     min-height: 48px;
+  }
+
+  // Calés en bas de la carte si elle s'allonge pour suivre la colonne voisine
+  @media (min-width: $bureau) {
+    margin-top: auto;
+    padding-top: 20px;
   }
 
   @media (min-width: $tablette) and (max-width: $tablette-max) {
@@ -559,61 +618,47 @@ ss-couverture-lieu.lieu__hero-media {
   }
 }
 
-// Même carte que « À propos », avec un léger accent à gauche
+// Même carte que « À propos ». Le bouton reste calé en bas si la carte s'allonge
 .lieu__bien-etre {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border-left: 3px solid var(--ss-accent);
-  // La bordure d'accent fait 2 px de plus : le texte reste aligné sur « À propos »
-  padding-left: 26px;
 
-  @media (max-width: $mobile-max) {
-    padding-left: calc(var(--ss-espace-3) - 2px);
+  p {
+    margin-bottom: var(--ss-espace-2);
   }
 
   .lieu__bouton {
     align-self: flex-start;
     width: fit-content;
     max-width: 100%;
-    margin-top: 4px;
+    margin-top: auto;
     text-align: center;
   }
 }
 
-.lieu__bien-etre-entete {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  .lieu__icone {
-    width: 40px;
-    height: 40px;
-  }
-
-  h2 {
-    margin: 0;
-  }
-}
-
+// La carte et son lien forment un seul bloc, sans marge intérieure
 .lieu__carte-bloc {
   display: flex;
   flex-direction: column;
-  gap: var(--ss-espace-1);
+  padding: 0;
+  overflow: hidden;
 }
 
 .lieu__mini-carte {
-  height: 200px;
-  padding: 0;
-  overflow: hidden;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 200px;
 
   @media (min-width: $bureau) {
-    height: 220px;
+    min-height: 220px;
   }
 
+  // Annule la hauteur minimale du composant : la carte suit son emplacement,
+  // sinon elle déborde sur le lien et le repère n'est plus centré
   ss-carte-lieux {
-    display: block;
-    height: 100%;
+    position: absolute;
+    inset: 0;
+    min-height: 0;
   }
 
   // Le fond de carte reste clair quel que soit le thème : on l'atténue en mode
@@ -624,12 +669,18 @@ ss-couverture-lieu.lieu__hero-media {
 }
 
 .lieu__lien-carte {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  align-self: flex-start;
+  min-height: 44px;
+  border-top: 1px solid var(--ss-bordure);
   color: var(--ss-texte-marque);
   font-size: 14px;
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
 }
 
 .lieu__suggestions {

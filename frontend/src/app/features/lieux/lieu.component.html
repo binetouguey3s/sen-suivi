@@ -39,42 +39,48 @@
   </header>
 
   <main class="lieu__page">
-    <div class="lieu__grille">
+    <div class="lieu__grille" [class.lieu__grille--sans-carte]="!avecCoordonnees()">
       <div class="lieu__principale">
-        @if (avecBandeau()) {
-          <section class="lieu__vigilance lieu__bloc">
-            <ss-icon nom="info" />
-            <div>
-              @if (estRestreint()) {
-                <h2>Ce site n'est pas ouvert librement</h2>
-                <p><strong>{{ l.precisions }}.</strong> Renseignez-vous avant de vous déplacer.</p>
-              } @else {
-                <h2>À savoir avant de partir</h2>
-              }
-              @if (l.vigilance) {
-                <p>{{ l.vigilance }}</p>
-              }
-            </div>
-          </section>
-        }
+        <div class="lieu__pile">
+          @if (avecBandeau()) {
+            <section class="lieu__vigilance lieu__bloc">
+              <ss-icon nom="info" />
+              <div>
+                @if (estRestreint()) {
+                  <h2>Ce site n'est pas ouvert librement</h2>
+                  <p><strong>{{ l.precisions }}.</strong> Renseignez-vous avant de vous déplacer.</p>
+                } @else {
+                  <h2>À savoir avant de partir</h2>
+                }
+                @if (l.vigilance) {
+                  <p>{{ l.vigilance }}</p>
+                }
+              </div>
+            </section>
+          }
 
-        <section class="lieu__description lieu__bloc" aria-labelledby="lieu-titre-description">
-          <h2 id="lieu-titre-description">À propos de ce lieu</h2>
-          <p>{{ l.description }}</p>
-        </section>
-
-        @if (categorie(); as c) {
-          <section class="lieu__bien-etre lieu__bloc" aria-labelledby="lieu-titre-bien-etre">
-            <div class="lieu__bien-etre-entete">
-              <span class="lieu__icone"><ss-icon nom="meditation" /></span>
-              <h2 id="lieu-titre-bien-etre">Pour votre bien-être sur place</h2>
+          <section class="lieu__description lieu__bloc" aria-labelledby="lieu-titre-description">
+            <div class="lieu__bloc-entete">
+              <span class="lieu__icone"><ss-icon nom="article" /></span>
+              <h2 id="lieu-titre-description">À propos de ce lieu</h2>
             </div>
-            <p>{{ c.bienEtre }}</p>
-            <a class="lieu__bouton lieu__bouton--contour" routerLink="/ressources" [queryParams]="{ thematique: c.thematique }">
-              <ss-icon nom="exercice" taille="sm" /> Explorer les ressources « {{ c.thematique }} »
-            </a>
+            <p>{{ l.description }}</p>
           </section>
-        }
+
+          @if (categorie(); as c) {
+            <section class="lieu__bien-etre lieu__bloc" aria-labelledby="lieu-titre-bien-etre">
+              <div class="lieu__bloc-entete">
+                <span class="lieu__icone"><ss-icon nom="meditation" /></span>
+                <h2 id="lieu-titre-bien-etre">Pour votre bien-être sur place</h2>
+              </div>
+              <p>{{ c.bienEtre }}</p>
+              <a class="lieu__bouton lieu__bouton--contour" routerLink="/ressources" [queryParams]="{ thematique: c.thematique }">
+                <ss-icon nom="exercice" taille="sm" /> Explorer les ressources « {{ c.thematique }} »
+              </a>
+            </section>
+          }
+
+        </div>
 
         @if (suggestions().length) {
           <section class="lieu__suggestions">
@@ -90,7 +96,10 @@
 
       <aside class="lieu__laterale">
         <section class="lieu__essentiel lieu__bloc" aria-labelledby="lieu-titre-essentiel">
-          <h2 id="lieu-titre-essentiel">L'essentiel</h2>
+          <div class="lieu__bloc-entete">
+            <span class="lieu__icone"><ss-icon nom="ampoule" /></span>
+            <h2 id="lieu-titre-essentiel">L'essentiel</h2>
+          </div>
           <ul>
             <li>
               <span class="lieu__icone"><ss-icon nom="carte" taille="sm" /></span>
@@ -139,8 +148,8 @@
         </section>
 
         @if (avecCoordonnees()) {
-          <div class="lieu__carte-bloc">
-            <section class="lieu__mini-carte lieu__bloc" aria-label="Position du lieu sur la carte">
+          <div class="lieu__carte-bloc lieu__bloc">
+            <section class="lieu__mini-carte" aria-label="Position du lieu sur la carte">
               <ss-carte-lieux [lieux]="pourCarte()" [selection]="l.id" [compact]="true" />
             </section>
             <a class="lieu__lien-carte" [href]="carteGoogle()" target="_blank" rel="noopener">

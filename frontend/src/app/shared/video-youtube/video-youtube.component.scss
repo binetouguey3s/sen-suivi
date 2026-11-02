@@ -52,6 +52,17 @@
   }
 }
 
+// Lien de secours, sous le lecteur
+.vy__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--ss-texte-marque);
+  font-size: 14px;
+  font-weight: 600;
+}
+
 // Gros bouton Lecture, posé sur la miniature
 .vy__lecture {
   position: relative;

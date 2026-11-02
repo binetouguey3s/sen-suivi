@@ -53,11 +53,19 @@ describe('VideoYoutubeComponent', () => {
     expect(cadre.getAttribute('referrerpolicy')).toBe('strict-origin-when-cross-origin');
   });
 
+  it('propose toujours un lien pour regarder sur YouTube', () => {
+    const { hote } = creer('aXItOY0sLRY');
+    const lien = hote.querySelector<HTMLAnchorElement>('a.vy__lien')!;
+    expect(lien.getAttribute('href')).toBe('https://www.youtube.com/watch?v=aXItOY0sLRY');
+    expect(lien.getAttribute('target')).toBe('_blank');
+    expect(lien.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
   it('un identifiant invalide n’intègre rien', () => {
     for (const id of ['court', 'aXItOY0sLRY"><script>', 'https://evil.sn/embed/x', null]) {
       TestBed.resetTestingModule();
       const { hote } = creer(id);
-      expect(hote.querySelector('iframe, img, button')).toBeNull();
+      expect(hote.querySelector('iframe, img, button, a')).toBeNull();
     }
   });
 });

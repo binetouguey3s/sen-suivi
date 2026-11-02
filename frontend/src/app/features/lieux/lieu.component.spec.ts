@@ -310,13 +310,28 @@ describe('LieuComponent', () => {
       expect(lien('Ouvrir dans Google Maps')).toBeUndefined();
     });
 
-    it('le bien-être : l’icône et le titre sur une ligne, le texte et le bouton dessous', async () => {
+    it('chaque carte de contenu a le même en-tête : une icône et son titre', async () => {
       await ouvrir(1);
-      const entete = hote().querySelector('.lieu__bien-etre-entete')!;
-      expect(entete.querySelector('.lieu__icone')).not.toBeNull();
-      expect(entete.querySelector('h2')!.textContent).toContain('Pour votre bien-être sur place');
-      expect(entete.querySelector('p')).toBeNull();
-      expect(entete.querySelector('a')).toBeNull();
+      for (const bloc of ['.lieu__description', '.lieu__bien-etre', '.lieu__essentiel']) {
+        const entete = hote().querySelector(`${bloc} .lieu__bloc-entete`)!;
+        expect(entete.querySelector('.lieu__icone')).not.toBeNull();
+        expect(entete.querySelector('h2')).not.toBeNull();
+      }
+    });
+
+    it('le lien vers Google Maps fait partie de la carte', async () => {
+      await ouvrir(1);
+      expect(hote().querySelector('.lieu__carte-bloc.lieu__bloc .lieu__lien-carte')).not.toBeNull();
+    });
+
+    it('les suggestions prennent toute la largeur quand il n’y a pas de carte', async () => {
+      await ouvrir(2);
+      expect(hote().querySelector('.lieu__grille--sans-carte')).not.toBeNull();
+    });
+
+    it('avec une carte, les suggestions partagent la rangée', async () => {
+      await ouvrir(1);
+      expect(hote().querySelector('.lieu__grille--sans-carte')).toBeNull();
     });
 
     it('« À découvrir aussi » suit le bien-être dans la colonne principale, pour équilibrer la page', async () => {
