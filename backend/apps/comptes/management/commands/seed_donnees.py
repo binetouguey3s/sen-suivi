@@ -11,13 +11,14 @@ sur les clés naturelles : email, titre, nom+ville).
 
 from datetime import timedelta
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from apps.comptes.models import Administrateur, Professionnel, StatutValidationPro, Utilisateur
 from apps.forum.models import CommentaireForum, PublicationForum, StatutModeration, ThematiqueForum
-from apps.ressources.contenus_demo import LIEUX as LIEUX_DETAILS, RESSOURCES as RESSOURCES_DEMO
-from apps.ressources.models import LieuDetente, Ressource
+from apps.ressources.contenus_demo import RESSOURCES as RESSOURCES_DEMO
+from apps.ressources.models import Ressource
 from apps.suivi.models import (
     AutoEvaluation,
     NiveauHumeur,
@@ -136,17 +137,6 @@ FICHES_PROFESSIONNELS = {
     },
 }
 
-LIEUX = [
-    ('Plage de Ngor', 'Dakar', 'Plage'),
-    ('Île de Gorée', 'Dakar', 'Île'),
-    ('Lac Rose', 'Niayes', 'Site naturel'),
-    ('Parc Forestier de Hann', 'Dakar', 'Parc'),
-    ('Lagune de la Somone', 'Mbour', 'Lagune'),
-    ('Corniche Ouest', 'Dakar', 'Site naturel'),
-    ('Popenguine', 'Thiès', 'Plage'),
-    ('Toubab Dialaw', 'Thiès', 'Plage'),
-]
-
 PUBLICATIONS_FORUM = [
     {
         'pseudonyme': 'Teranga221',
@@ -210,10 +200,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self._creer_questions()
         professionnel_valide = self._creer_professionnels()
-        self._creer_lieux()
         self._creer_ressources()
         utilisateur_demo = self._creer_comptes_demo(professionnel_valide)
         self._creer_forum(utilisateur_demo)
+        call_command('importer_lieux', stdout=self.stdout)
         self.stdout.write(self.style.SUCCESS('Données de test créées.'))
         self.stdout.write(f"Mot de passe de tous les comptes de démonstration : {MOT_DE_PASSE_DEMO}")
 
@@ -265,16 +255,6 @@ class Command(BaseCommand):
             if statut == StatutValidationPro.VALIDE and professionnel_valide is None:
                 professionnel_valide = professionnel
         return professionnel_valide
-
-    def _creer_lieux(self):
-        for nom, ville, categorie in LIEUX:
-            details = LIEUX_DETAILS.get(nom, {})
-            LieuDetente.objects.update_or_create(
-                nom=nom, ville=ville,
-                defaults={'categorie': categorie, 'description': details.get('description', f'{nom}, {ville}.'),
-                          'latitude': details.get('latitude'), 'longitude': details.get('longitude'),
-                          'acces_libre': details.get('acces_libre', True)},
-            )
 
     def _creer_ressources(self):
         for ressource in RESSOURCES_DEMO:

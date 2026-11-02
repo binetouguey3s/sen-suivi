@@ -1,84 +1,167 @@
 @if (lieu.isLoading()) {
-  <p class="lieu__etat">Chargement du lieu…</p>
+  <div class="lieu__squelette" aria-hidden="true">
+    <div class="lieu__squelette-hero"></div>
+    <div class="lieu__squelette-bloc"></div>
+    <div class="lieu__squelette-bloc"></div>
+  </div>
+  <p class="lieu__sr" role="status">Chargement du lieu</p>
 } @else if (lieu.error() || !lieu.hasValue()) {
   <div class="lieu__etat">
+    <ss-icon nom="lieux" taille="xl" />
     <p>Ce lieu est introuvable.</p>
     <a routerLink="/lieux">Retour au répertoire</a>
   </div>
 } @else if (lieu.value(); as l) {
-  <div class="lieu__page">
-    <a class="lieu__retour" routerLink="/lieux"><ss-icon nom="fleche-gauche" taille="sm" /> Tous les lieux</a>
-
-    <header class="lieu__entete">
-      <div class="lieu__intro">
-        <p class="lieu__surtitre"><ss-icon nom="lieux" taille="sm" /> {{ l.ville }}, Sénégal</p>
-        <h1>{{ l.nom }}</h1>
-        <ul class="lieu__etiquettes">
-          <li>{{ l.categorie }}</li>
-          <li [class.lieu__etiquette--libre]="l.acces_libre">{{ l.acces_libre ? 'Accès libre' : 'Entrée payante' }}</li>
-        </ul>
-        <p class="lieu__description">{{ l.description }}</p>
-        <div class="lieu__actions">
-          @if (itineraire(); as lien) {
-            <a class="lieu__bouton" [href]="lien" target="_blank" rel="noopener">
-              <ss-icon nom="itineraire" taille="sm" /> Ouvrir l'itinéraire
-            </a>
-          }
-          <a class="lieu__bouton lieu__bouton--contour" routerLink="/ressources" [queryParams]="{ thematique: 'Respiration' }">
-            <ss-icon nom="exercice" taille="sm" /> Un exercice à faire sur place
-          </a>
-        </div>
-      </div>
-
-      <figure class="lieu__photo" [class.lieu__photo--vide]="!image(l)">
-        @if (image(l); as src) {
-          <img [src]="src" [alt]="l.nom" />
+  <header class="lieu__hero">
+    @if (image(); as src) {
+      <img class="lieu__hero-media" [src]="src" [alt]="'Photo : ' + l.nom" />
+    } @else {
+      <ss-couverture-lieu class="lieu__hero-media" [nomCategorie]="l.categorie" />
+    }
+    <div class="lieu__hero-contenu">
+      <nav class="lieu__ariane" aria-label="Fil d’Ariane">
+        <a routerLink="/lieux">Lieux</a>
+        <ss-icon nom="chevron-droite" taille="sm" />
+        @if (localiteDistincte()) {
+          <a routerLink="/lieux" [queryParams]="{ region: l.region }">{{ l.region }}</a>
+          <ss-icon nom="chevron-droite" taille="sm" />
+          <span aria-current="page">{{ l.ville }}</span>
         } @else {
-          <ss-icon nom="lieux" taille="xl" />
+          <a routerLink="/lieux" [queryParams]="{ region: l.region }" aria-current="page">{{ l.region }}</a>
         }
-      </figure>
-    </header>
-
-    <section class="lieu__details" aria-label="Infos pratiques">
-      <ul class="lieu__infos">
-        <li>
-          <span class="lieu__infos-icone"><ss-icon nom="lieux" /></span>
-          <div><span>Localisation</span><strong>{{ l.ville }}, Sénégal</strong></div>
-        </li>
-        <li>
-          <span class="lieu__infos-icone"><ss-icon nom="carte" /></span>
-          <div><span>Type de lieu</span><strong>{{ l.categorie }}</strong></div>
-        </li>
-        <li>
-          <span class="lieu__infos-icone"><ss-icon [nom]="l.acces_libre ? 'verifie' : 'ticket'" /></span>
-          <div><span>Accès</span><strong>{{ l.acces_libre ? 'Libre et gratuit' : 'Entrée payante' }}</strong></div>
-        </li>
-      </ul>
-      <div class="lieu__mini-carte">
-        <ss-carte-lieux [lieux]="pourCarte()" [selection]="l.id" [compact]="true" />
+      </nav>
+      <h1>{{ l.nom }}</h1>
+      <div class="lieu__badges">
+        <span class="lieu__badge-categorie"><ss-icon [nom]="iconeCategorie()" taille="sm" /> {{ l.categorie }}</span>
+        <ss-pastille-acces [acces]="l.acces" [surPhoto]="true" />
       </div>
-    </section>
-  </div>
+    </div>
+  </header>
 
-  @if (proches().length) {
-    <section class="lieu__proches">
-      <h2>Autres lieux à proximité</h2>
-      <div class="lieu__proches-grille">
-        @for (autre of proches(); track autre.id) {
-          <a class="lieu__proche" [routerLink]="['/lieux', autre.id]">
-            @if (image(autre); as src) {
-              <img [src]="src" [alt]="autre.nom" loading="lazy" />
-            } @else {
-              <span class="lieu__proche-vide" aria-hidden="true"><ss-icon nom="lieux" taille="xl" /></span>
+  <main class="lieu__page">
+    <div class="lieu__grille" [class.lieu__grille--sans-carte]="!avecCoordonnees()">
+      <div class="lieu__principale">
+        <div class="lieu__pile">
+          @if (avecBandeau()) {
+            <section class="lieu__vigilance lieu__bloc">
+              <ss-icon nom="info" />
+              <div>
+                @if (estRestreint()) {
+                  <h2>Ce site n'est pas ouvert librement</h2>
+                  <p><strong>{{ l.precisions }}.</strong> Renseignez-vous avant de vous déplacer.</p>
+                } @else {
+                  <h2>À savoir avant de partir</h2>
+                }
+                @if (l.vigilance) {
+                  <p>{{ l.vigilance }}</p>
+                }
+              </div>
+            </section>
+          }
+
+          <section class="lieu__description lieu__bloc" aria-labelledby="lieu-titre-description">
+            <div class="lieu__bloc-entete">
+              <span class="lieu__icone"><ss-icon nom="article" /></span>
+              <h2 id="lieu-titre-description">À propos de ce lieu</h2>
+            </div>
+            <p>{{ l.description }}</p>
+          </section>
+
+          @if (categorie(); as c) {
+            <section class="lieu__bien-etre lieu__bloc" aria-labelledby="lieu-titre-bien-etre">
+              <div class="lieu__bloc-entete">
+                <span class="lieu__icone"><ss-icon nom="meditation" /></span>
+                <h2 id="lieu-titre-bien-etre">Pour votre bien-être sur place</h2>
+              </div>
+              <p>{{ c.bienEtre }}</p>
+              <a class="lieu__bouton lieu__bouton--contour" routerLink="/ressources" [queryParams]="{ thematique: c.thematique }">
+                <ss-icon nom="exercice" taille="sm" /> Explorer les ressources « {{ c.thematique }} »
+              </a>
+            </section>
+          }
+
+        </div>
+
+        @if (suggestions().length) {
+          <section class="lieu__suggestions">
+            <h2>À découvrir aussi en région {{ l.region }}</h2>
+            <ul>
+              @for (autre of suggestions(); track autre.id) {
+                <li><ss-carte-lieu [lieu]="autre" [niveauTitre]="3" /></li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+
+      <aside class="lieu__laterale">
+        <section class="lieu__essentiel lieu__bloc" aria-labelledby="lieu-titre-essentiel">
+          <div class="lieu__bloc-entete">
+            <span class="lieu__icone"><ss-icon nom="ampoule" /></span>
+            <h2 id="lieu-titre-essentiel">L'essentiel</h2>
+          </div>
+          <ul>
+            <li>
+              <span class="lieu__icone"><ss-icon nom="carte" taille="sm" /></span>
+              <div><span>Région</span><strong>{{ l.region }}</strong></div>
+            </li>
+            <li>
+              <span class="lieu__icone"><ss-icon nom="lieux" taille="sm" /></span>
+              <div><span>Localité</span><strong>{{ l.ville }}</strong></div>
+            </li>
+            <li>
+              <span class="lieu__icone"><ss-icon nom="ticket" taille="sm" /></span>
+              <div>
+                <span>Accès</span>
+                <strong>{{ l.precisions || libelleAcces() }}</strong>
+                @if (avecNoteDpn()) {
+                  <p class="lieu__note">{{ noteDpn }}</p>
+                }
+              </div>
+            </li>
+            <li>
+              <span class="lieu__icone"><ss-icon nom="feuille" taille="sm" /></span>
+              <div><span>Type de lieu</span><strong>{{ l.type_lieu }}</strong></div>
+            </li>
+            @if (l.meilleure_periode) {
+              <li>
+                <span class="lieu__icone"><ss-icon nom="calendrier" taille="sm" /></span>
+                <div><span>Meilleure période</span><strong>{{ l.meilleure_periode }}</strong></div>
+              </li>
             }
-            <span class="lieu__proche-ville">{{ autre.ville }}</span>
-            <h3>{{ autre.nom }}</h3>
-            <p>{{ autre.description }}</p>
-          </a>
+          </ul>
+
+          <div class="lieu__actions">
+            <a class="lieu__bouton" [href]="itineraire()" target="_blank" rel="noopener">
+              <ss-icon nom="itineraire" taille="sm" /> Itinéraire
+            </a>
+            <button type="button" class="lieu__bouton lieu__bouton--contour" (click)="partager(l)">
+              <ss-icon nom="partage" taille="sm" /> Partager
+            </button>
+            @if (estAdministrateur()) {
+              <a class="lieu__lien-admin" routerLink="/admin/lieux" [queryParams]="{ q: l.nom, photo: 'TOUTES' }">
+                <ss-icon nom="image" taille="sm" /> {{ image() ? 'Changer la photo' : 'Ajouter une photo' }}
+              </a>
+            }
+            <p class="lieu__message" role="status">{{ messagePartage() }}</p>
+          </div>
+        </section>
+
+        @if (avecCoordonnees()) {
+          <div class="lieu__carte-bloc lieu__bloc">
+            <section class="lieu__mini-carte" aria-label="Position du lieu sur la carte">
+              <ss-carte-lieux [lieux]="pourCarte()" [selection]="l.id" [compact]="true" />
+            </section>
+            <a class="lieu__lien-carte" [href]="carteGoogle()" target="_blank" rel="noopener">
+              <ss-icon nom="carte" taille="sm" /> Ouvrir dans Google Maps
+            </a>
+          </div>
         }
-      </div>
-    </section>
-  }
+      </aside>
+    </div>
+
+    <p class="lieu__mention">{{ mentionTarifs }}</p>
+  </main>
 
   <footer class="lieu__pied">
     <span>© 2026 Sen Suivi</span>

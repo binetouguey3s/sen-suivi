@@ -1,0 +1,83 @@
+<header class="al__entete">
+  <h1>Photos des lieux</h1>
+  <p>{{ nombreSansPhoto() }} {{ nombreSansPhoto() > 1 ? 'lieux' : 'lieu' }} sans photo sur {{ total() }}</p>
+  <p class="al__rappel"><ss-icon nom="info" taille="sm" /> Photo réelle du lieu, au Sénégal, dont vous avez les droits. JPEG, PNG ou WebP, 5 Mo au plus.</p>
+</header>
+
+<div class="al__filtres">
+  <div class="al__champ al__champ--large">
+    <label for="al-recherche">Rechercher</label>
+    <input id="al-recherche" type="search" placeholder="Nom, localité, région…" [value]="recherche()" (input)="saisirRecherche($event)" />
+  </div>
+  <div class="al__champ">
+    <label for="al-photo">Photo</label>
+    <select id="al-photo" [value]="filtrePhoto()" (change)="choisirFiltre($event)">
+      <option value="SANS" [selected]="filtrePhoto() === 'SANS'">Sans photo</option>
+      <option value="AVEC" [selected]="filtrePhoto() === 'AVEC'">Avec photo</option>
+      <option value="TOUTES" [selected]="filtrePhoto() === 'TOUTES'">Tous les lieux</option>
+    </select>
+  </div>
+  <div class="al__champ">
+    <label for="al-region">Région</label>
+    <select id="al-region" (change)="choisirRegion($event)">
+      <option value="">Toutes les régions</option>
+      @for (r of regions; track r) {
+        <option [value]="r">{{ r }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+<p class="al__confirmation" role="status">{{ confirmation() }}</p>
+
+@if (lieux.isLoading() && !total()) {
+  <p class="al__etat">Chargement…</p>
+} @else if (lieux.error()) {
+  <p class="al__etat">Impossible de charger les lieux pour le moment.</p>
+} @else if (!affiches().length) {
+  <p class="al__etat">
+    {{ !nombreSansPhoto() && filtrePhoto() === 'SANS' ? 'Tous les lieux ont une photo.' : 'Aucun lieu ne correspond à ces filtres.' }}
+  </p>
+} @else {
+  <ul class="al__liste">
+    @for (lieu of affiches(); track lieu.id) {
+      <li class="al__ligne">
+        <div class="al__vignette">
+          @if (image(lieu); as src) {
+            <img [src]="src" [alt]="'Photo : ' + lieu.nom" loading="lazy" />
+          } @else {
+            <ss-couverture-lieu [nomCategorie]="lieu.categorie" />
+          }
+        </div>
+        <div class="al__infos">
+          <a class="al__nom" [routerLink]="['/lieux', lieu.id]">{{ lieu.nom }}</a>
+          <span>{{ lieu.ville }} · {{ lieu.region }}</span>
+          @if (erreur()?.id === lieu.id) {
+            <p class="al__erreur" role="alert"><ss-icon nom="info" taille="sm" /> {{ erreur()!.message }}</p>
+          }
+        </div>
+        <div class="al__actions">
+          @if (enCours() === lieu.id) {
+            <span class="al__envoi">Envoi en cours…</span>
+          } @else {
+            <label class="al__bouton" [class.al__bouton--contour]="image(lieu)">
+              <ss-icon nom="televerser" taille="sm" /> {{ image(lieu) ? 'Remplacer' : 'Ajouter une photo' }}
+              <input
+                type="file"
+                [accept]="formats"
+                [attr.aria-label]="(image(lieu) ? 'Remplacer la photo de ' : 'Ajouter une photo pour ') + lieu.nom"
+                (change)="envoyer(lieu, $event)"
+              />
+            </label>
+            <!-- Seule une photo envoyée se retire : celle livrée avec le site reprend sa place -->
+            @if (lieu.image) {
+              <button type="button" class="al__bouton al__bouton--contour" [attr.aria-label]="'Retirer la photo de ' + lieu.nom" (click)="retirer(lieu)">
+                <ss-icon nom="corbeille" taille="sm" /> Retirer
+              </button>
+            }
+          }
+        </div>
+      </li>
+    }
+  </ul>
+}

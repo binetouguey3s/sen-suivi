@@ -75,6 +75,30 @@
   --ss-vide-fin:              #a9d6c4;
   --ss-vide-texte:            #1b4b6e;
 
+  // Accès d'un lieu de détente : teinte du texte et fond de la pastille.
+  // Payant reste neutre et Restreint ambre : pas de rouge, on reste dans le bien-être
+  --ss-acces-gratuit:         #1f6b4f;
+  --ss-acces-gratuit-fond:    rgba(46, 150, 110, 0.15);
+  --ss-acces-libre:           #1b4b6e;
+  --ss-acces-libre-fond:      rgba(27, 75, 110, 0.12);
+  --ss-acces-payant:          #4f5666;
+  --ss-acces-payant-fond:     rgba(95, 101, 115, 0.14);
+  --ss-acces-mixte:           #5a4688;
+  --ss-acces-mixte-fond:      rgba(110, 90, 170, 0.14);
+  --ss-acces-restreint:       #7f4c00;
+  --ss-acces-restreint-fond:  rgba(230, 150, 30, 0.24);
+
+  // Couverture d'un lieu sans photo, par famille de catégories
+  --ss-couv-eau-debut:        #1b4b6e;
+  --ss-couv-eau-fin:          #5fa79a;
+  --ss-couv-vert-debut:       #1f5a47;
+  --ss-couv-vert-fin:         #7dbb9f;
+  --ss-couv-sable-debut:      #7a5a2e;
+  --ss-couv-sable-fin:        #c9a873;
+
+  // Fond de carte d'un lieu : tel quel en clair
+  --ss-carte-filtre:          none;
+
   // Graphiques : tracé et grille menthe, remplissage menthe pâle
   --ss-graphe-trace:          #a9d6c4;
   --ss-graphe-remplis:        #e9f4ef;
@@ -169,6 +193,29 @@
   --ss-vide-fin:              #163a55;
   --ss-vide-texte:            #a9d6c4;
 
+  // Accès d'un lieu de détente
+  --ss-acces-gratuit:         #8fe0bd;
+  --ss-acces-gratuit-fond:    rgba(143, 224, 189, 0.14);
+  --ss-acces-libre:           #a8d4f0;
+  --ss-acces-libre-fond:      rgba(168, 212, 240, 0.14);
+  --ss-acces-payant:          #cfd6dc;
+  --ss-acces-payant-fond:     rgba(207, 214, 220, 0.12);
+  --ss-acces-mixte:           #cbbcf5;
+  --ss-acces-mixte-fond:      rgba(203, 188, 245, 0.14);
+  --ss-acces-restreint:       #f5c06a;
+  --ss-acces-restreint-fond:  rgba(245, 192, 106, 0.18);
+
+  // Couverture d'un lieu sans photo
+  --ss-couv-eau-debut:        #0a1e2c;
+  --ss-couv-eau-fin:          #1f5a6e;
+  --ss-couv-vert-debut:       #0f2f27;
+  --ss-couv-vert-fin:         #2a6a55;
+  --ss-couv-sable-debut:      #2e2415;
+  --ss-couv-sable-fin:        #6f5634;
+
+  // Fond de carte d'un lieu : atténué pour ne pas éblouir
+  --ss-carte-filtre:          brightness(0.72) saturate(0.85);
+
   // Graphiques
   --ss-graphe-trace:          #a9d6c4;
   --ss-graphe-remplis:        rgba(169, 214, 196, 0.2);
@@ -205,6 +252,12 @@
   --ss-photo-voile:           rgba(18, 53, 79, 0.75);
   --ss-photo-voile-leger:     rgba(18, 53, 79, 0.1);
   --ss-photo-voile-nul:       rgba(18, 53, 79, 0);
+  // Accès d'un lieu posé sur le voile d'une photo
+  --ss-acces-gratuit-sur-photo:   #8fe0bd;
+  --ss-acces-libre-sur-photo:     #a8d4f0;
+  --ss-acces-payant-sur-photo:    #e3e8ec;
+  --ss-acces-mixte-sur-photo:     #d6caf8;
+  --ss-acces-restreint-sur-photo: #f5c06a;
   --ss-survol-sur-fonce:      rgba(255, 255, 255, 0.12);
   --ss-trait-sur-fonce:       rgba(255, 255, 255, 0.15);
   --ss-survol-sur-alerte:     rgba(255, 255, 255, 0.16);

@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { DIAPOS_BANDEAU, DUREE_DIAPO_MS, IMAGES_ACCUEIL } from '../../core/config/images-accueil';
 import { imageDuLieu } from '../../core/config/images-lieux';
+import { lieuxOuverts } from '../../core/utils/lieux';
 import { IMAGE_PAR_PROFESSIONNEL } from '../../core/config/images-professionnels';
 import { NomIcone } from '../../core/icons/icons';
 import { LieuDetente } from '../../core/models/suivi';
@@ -87,9 +88,9 @@ export class AccueilComponent {
     defaultValue: [],
   });
 
-  // Uniquement les lieux dont on dispose d'une vraie photo
+  // Uniquement les lieux ouverts dont on dispose d'une vraie photo
   protected readonly lieux = computed(() =>
-    valeurs(this.tousLesLieux).filter((l) => imageDuLieu(l.nom) !== null).slice(0, 4),
+    lieuxOuverts(valeurs(this.tousLesLieux)).filter((l) => imageDuLieu(l) !== null).slice(0, 4),
   );
 
   protected readonly specialite = signal<string | null>(null);
@@ -112,7 +113,7 @@ export class AccueilComponent {
   );
 
   protected imageLieu(lieu: LieuDetente): string {
-    return imageDuLieu(lieu.nom) ?? '';
+    return imageDuLieu(lieu) ?? '';
   }
 
   protected portrait(pro: ProfessionnelPublic): string | null {

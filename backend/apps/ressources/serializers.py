@@ -80,12 +80,24 @@ class RessourceProSerializer(RessourceSerializer):
 
 
 class LieuDetenteSerializer(serializers.ModelSerializer):
+    acces_libre = serializers.BooleanField(read_only=True)
+    # Photo envoyée par l'administration, null sinon. L'envoi a sa propre route
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = LieuDetente
         fields = [
-            'id', 'nom', 'ville', 'description', 'categorie',
-            'latitude', 'longitude', 'acces_libre',
+            'id', 'nom', 'region', 'ville', 'type_lieu', 'description', 'categorie',
+            'latitude', 'longitude', 'acces', 'acces_libre', 'precisions', 'vigilance',
+            'meilleure_periode', 'derniere_verification', 'image',
         ]
+
+    def get_image(self, lieu) -> str | None:
+        if not lieu.image:
+            return None
+        requete = self.context.get('request')
+        # Adresse complète : le front-end n'est pas servi par le même hôte que Django
+        return requete.build_absolute_uri(lieu.image.url) if requete else lieu.image.url
 
 
 class FavoriEcritureSerializer(serializers.Serializer):

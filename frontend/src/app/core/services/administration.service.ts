@@ -54,6 +54,16 @@ export class AdministrationService {
     await firstValueFrom(this.http.patch(`${API_BASE_URL}/ressources/${id}`, { fichier_audio: null }));
   }
 
+  async envoyerImageLieu(id: number, fichier: File): Promise<void> {
+    const corps = new FormData();
+    corps.append('image', fichier);
+    await firstValueFrom(this.http.post(`${API_BASE_URL}/lieux/${id}/image`, corps));
+  }
+
+  async retirerImageLieu(id: number): Promise<void> {
+    await firstValueFrom(this.http.delete(`${API_BASE_URL}/lieux/${id}/image`));
+  }
+
   async modifierRessource(id: number, donnees: Partial<RessourceAdmin>): Promise<void> {
     await firstValueFrom(this.http.patch(`${API_BASE_URL}/ressources/${id}`, donnees));
   }

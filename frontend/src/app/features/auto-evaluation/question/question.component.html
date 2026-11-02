@@ -1,65 +1,144 @@
 <div class="q">
-  <div class="q__progression" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progression()">
-    <span [style.width.%]="progression()"></span>
-  </div>
-
   <header class="q__entete">
-    <p class="q__compteur">
-      @if (courante()) {
-        Question {{ index() + 1 }} sur {{ total() }}
-      }
-    </p>
-    <a class="q__quitter" routerLink="/app">
-      Quitter <ss-icon nom="fermer" taille="sm" />
+    <a class="q__logo" routerLink="/app" aria-label="Sen Suivi, retour à l'accueil">
+      <img src="/logo-sen-suivi.png" alt="" />
+    </a>
+    <span class="q__pastille">{{ titre() }}</span>
+    <a class="q__quitter" routerLink="/app" aria-label="Quitter le test">
+      <span class="q__quitter-texte">Quitter</span> <ss-icon nom="fermer" taille="sm" />
     </a>
   </header>
 
-  <main class="q__contenu">
-    @if (!typeValide()) {
+  @if (!typeValide()) {
+    <main class="q__contenu">
       <p class="q__etat">Ce test n'existe pas. <a routerLink="/app">Retour à l'accueil</a></p>
-    } @else if (questions.isLoading()) {
-      <p class="q__etat">Chargement des questions…</p>
-    } @else if (questions.error() || !courante()) {
-      <p class="q__etat q__etat--erreur">Impossible de charger les questions pour le moment.</p>
-    } @else if (courante(); as question) {
-      <h1 class="q__question">{{ question.libelle }}</h1>
-
-      <fieldset class="q__options">
-        <legend class="q__legende">Votre réponse</legend>
-        @for (option of question.options; track option.id) {
-          <label class="q__option" [class.q__option--choisie]="optionChoisie() === option.id">
-            <span>{{ option.libelle }}</span>
-            <input
-              type="radio"
-              name="reponse"
-              [value]="option.id"
-              [checked]="optionChoisie() === option.id"
-              (change)="choisir(option.id)"
-            />
-            <span class="q__radio" aria-hidden="true"></span>
-          </label>
-        }
-      </fieldset>
-
-      @if (erreur()) {
-        <p class="q__etat q__etat--erreur" role="alert">{{ erreur() }}</p>
+    </main>
+  } @else if (!commence()) {
+    <main class="q__intro">
+      @if (photo(); as image) {
+        <img class="q__photo" [src]="image" alt="" />
       }
-    }
-  </main>
+      <div class="q__intro-texte">
+        <p class="q__surtitre">Auto-évaluation bien-être</p>
+        <h1 class="q__titre">{{ titre() }}</h1>
+        <p class="q__accroche">{{ accroche() }}</p>
 
-  <footer class="q__pied">
-    <button type="button" class="q__precedent" [disabled]="index() === 0" (click)="precedent()">
-      <ss-icon nom="fleche-gauche" taille="sm" /> Précédent
-    </button>
-    <button
-      type="button"
-      class="q__suivant"
-      [disabled]="optionChoisie() === null || envoiEnCours()"
-      (click)="suivant()"
-    >
-      {{ estDerniere() ? 'Voir mon résultat' : 'Suivant' }} <ss-icon nom="fleche" taille="sm" />
-    </button>
-  </footer>
+        <ul class="q__reperes">
+          <li>
+            <span class="q__repere-icone"><ss-icon nom="article" taille="sm" /></span>
+            <span>
+              @if (total()) {
+                <strong>{{ total() }} questions</strong>
+              } @else {
+                <strong>Quelques questions</strong>
+              }
+              simples, une seule réponse à chaque fois
+            </span>
+          </li>
+          <li>
+            <span class="q__repere-icone"><ss-icon nom="horloge" taille="sm" /></span>
+            <span><strong>Environ {{ minutesRestantes() }} minutes</strong>, vous pouvez revenir en arrière</span>
+          </li>
+          <li>
+            <span class="q__repere-icone"><ss-icon nom="cadenas" taille="sm" /></span>
+            <span><strong>Confidentiel</strong> : vos réponses ne sont visibles que par vous</span>
+          </li>
+        </ul>
 
-  <ss-courbe-marque class="q__courbe" />
+        @if (questions.error()) {
+          <p class="q__etat q__etat--erreur" role="alert">Impossible de charger les questions pour le moment.</p>
+        } @else {
+          <button type="button" class="q__commencer" [disabled]="!total()" (click)="commencer()">
+            {{ questions.isLoading() ? 'Chargement…' : 'Commencer le test' }} <ss-icon nom="fleche" taille="sm" />
+          </button>
+        }
+
+        <p class="q__mention">
+          <ss-icon nom="info" taille="sm" />
+          Ce test vous aide à faire le point. Il ne remplace pas l'avis d'un professionnel de santé.
+        </p>
+      </div>
+    </main>
+  } @else {
+    <main class="q__contenu">
+      @if (courante(); as question) {
+        <div class="q__suivi">
+          <p class="q__compteur">Question <strong>{{ index() + 1 }}</strong> sur {{ total() }}</p>
+          <p class="q__duree"><ss-icon nom="horloge" taille="sm" /> ≈ {{ minutesRestantes() }} min</p>
+        </div>
+
+        <ol class="q__segments" aria-label="Progression du test">
+          @for (q of liste(); track q.id; let i = $index) {
+            <li>
+              <button
+                type="button"
+                class="q__segment"
+                [class.q__segment--repondu]="repondue(q)"
+                [class.q__segment--courant]="i === index()"
+                [disabled]="!accessible(i)"
+                [attr.aria-current]="i === index() ? 'step' : null"
+                [attr.aria-label]="'Question ' + (i + 1) + (repondue(q) ? ', répondue' : '')"
+                (click)="aller(i)"
+              ></button>
+            </li>
+          }
+        </ol>
+
+        <section class="q__carte">
+          <fieldset class="q__options">
+            <legend>
+              <span class="q__consigne">Choisissez la réponse qui vous ressemble le plus</span>
+              <span class="q__question">{{ question.libelle }}</span>
+            </legend>
+
+            @for (option of question.options; track option.id; let i = $index; let n = $count) {
+              <label class="q__option" [class.q__option--choisie]="optionChoisie() === option.id">
+                <input
+                  type="radio"
+                  name="reponse"
+                  [value]="option.id"
+                  [checked]="optionChoisie() === option.id"
+                  (change)="choisir(option.id)"
+                />
+                <span class="q__numero" aria-hidden="true">{{ i + 1 }}</span>
+                <span class="q__libelle">{{ option.libelle }}</span>
+                <span class="q__barres" aria-hidden="true">
+                  @for (b of [0, 1, 2, 3]; track b) {
+                    <span [class.q__barre--pleine]="b < intensite(i, n)"></span>
+                  }
+                </span>
+                <span class="q__coche" aria-hidden="true"><ss-icon nom="coche" taille="sm" /></span>
+              </label>
+            }
+          </fieldset>
+
+          @if (erreur()) {
+            <p class="q__etat q__etat--erreur" role="alert">{{ erreur() }}</p>
+          }
+        </section>
+
+        <p class="q__rassurant">
+          <ss-icon nom="cadenas" taille="sm" />
+          <span>Il n'y a pas de bonne ou de mauvaise réponse.<span class="q__astuce"> Astuce : touches 1 à {{ question.options.length }} du clavier.</span></span>
+        </p>
+      }
+    </main>
+
+    <footer class="q__pied">
+      <div class="q__pied-interieur">
+        <button type="button" class="q__precedent" (click)="precedent()">
+          <ss-icon nom="fleche-gauche" taille="sm" /> Précédent
+        </button>
+        <button
+          type="button"
+          class="q__suivant"
+          [disabled]="optionChoisie() === null || envoiEnCours()"
+          (click)="suivant()"
+        >
+          {{ estDerniere() ? (envoiEnCours() ? 'Envoi…' : 'Voir mon résultat') : 'Suivant' }}
+          <ss-icon nom="fleche" taille="sm" />
+        </button>
+      </div>
+    </footer>
+  }
 </div>

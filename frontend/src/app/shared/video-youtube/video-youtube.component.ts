@@ -46,6 +46,10 @@ export function idYoutube(lien: string): string | null {
           </button>
         }
       </div>
+      <!-- Secours : certaines vidéos refusent la lecture hors de YouTube -->
+      <a class="vy__lien" [href]="'https://www.youtube.com/watch?v=' + id" target="_blank" rel="noopener noreferrer">
+        <ss-icon nom="lien" taille="sm" /> Regarder sur YouTube
+      </a>
     }
   `,
   styleUrl: './video-youtube.component.scss',

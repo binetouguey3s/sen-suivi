@@ -1,76 +1,195 @@
 @if (resultat(); as r) {
-  <div class="res">
-    <ss-courbe-marque class="res__courbe" />
-
+  <div class="res" [attr.data-niveau]="niveau()">
     <header class="res__entete">
-      <img class="res__logo" src="/logo-sen-suivi.png" alt="Sen Suivi" />
+      <a class="res__logo" routerLink="/app" aria-label="Sen Suivi, retour à l'accueil">
+        <img src="/logo-sen-suivi.png" alt="" />
+      </a>
+      <a class="res__retour" routerLink="/app"><ss-icon nom="accueil" taille="sm" /> Retour à l'accueil</a>
     </header>
 
     <main class="res__contenu">
-      <ss-gauge [valeur]="r.score_de_tendance" />
-      <h1 class="res__titre">{{ titre() }}</h1>
+      <!-- 1. Mon résultat -->
+      <section class="res__carte res__score" aria-labelledby="titre-resultat">
+        <ss-gauge class="res__jauge" [valeur]="r.score_de_tendance" />
+        <div class="res__score-texte">
+          <p class="res__surtitre">Résultat de votre test {{ typeLibelle() }} · {{ date }}</p>
+          <h1 id="titre-resultat" class="res__titre">{{ titre() }}</h1>
+          <p class="res__resume">{{ resume() }}</p>
 
-      <section class="res__carte res__interpretation">
-        <p>{{ r.texte_interpretation }}</p>
-        <p class="res__avertissement">{{ r.avertissement }}</p>
+          <div class="res__echelle" role="img" [attr.aria-label]="'Votre score se situe dans la zone ' + r.interpretation.replace('Niveau ', '')">
+            <div class="res__piste">
+              @for (n of niveaux; track n.valeur) {
+                <span class="res__zone res__zone--{{ n.valeur }}"></span>
+              }
+              <span class="res__repere" [style.left.%]="position()">
+                <span class="res__vous">Vous</span>
+              </span>
+            </div>
+            <ul class="res__legendes" aria-hidden="true">
+              @for (n of niveaux; track n.valeur) {
+                <li [class.res__legende--active]="n.valeur === niveau()">{{ n.libelle }}</li>
+              }
+            </ul>
+          </div>
+        </div>
       </section>
 
-      @if (r.professionnels_suggeres.length) {
-        <section class="res__pros" aria-labelledby="titre-pros">
-          <div class="res__pros-entete">
-            <h2 id="titre-pros">Des professionnels qui peuvent vous accompagner</h2>
-            <span class="res__glisser" aria-hidden="true">Faites glisser <ss-icon nom="fleche" taille="sm" /></span>
-          </div>
-          @if (r.raison_suggestion) {
-            <p class="res__raison"><ss-icon nom="suggestion" taille="sm" /> {{ r.raison_suggestion }}</p>
-          }
+      <!-- 2. Ce que cela veut dire -->
+      <section class="res__carte res__sens" aria-labelledby="titre-sens">
+        <span class="res__icone-ronde"><ss-icon nom="ampoule" /></span>
+        <div>
+          <h2 id="titre-sens">Ce que cela veut dire</h2>
+          <p>{{ r.texte_interpretation }}</p>
+          <p class="res__avertissement"><ss-icon nom="info" taille="sm" /> {{ r.avertissement }}</p>
+        </div>
+      </section>
 
-          <ul class="res__liste">
-            @for (pro of r.professionnels_suggeres; track pro.id) {
-              <li class="res__pro">
+      @if (niveau() === 'eleve') {
+        <aside class="res__ecoute" aria-label="Écoute immédiate">
+          <span class="res__ecoute-icone"><ss-icon nom="telephone" /></span>
+          <p>
+            <strong>Besoin d'être écouté·e maintenant ?</strong>
+            Appelez gratuitement le <a href="tel:800805805">800 805 805</a>, ou le <a href="tel:1515">1515</a> en cas d'urgence.
+          </p>
+          <button type="button" class="res__ecoute-bouton" (click)="modaleUrgenceOuverte.set(true)">Numéros d'aide</button>
+        </aside>
+      }
+
+      <!-- 3. Vos prochains pas -->
+      <section class="res__bloc" aria-labelledby="titre-pas">
+        <h2 id="titre-pas" class="res__titre-bloc">Vos prochains pas</h2>
+        <p class="res__sous-titre">Choisissez ce qui vous fait du bien aujourd'hui. Un petit pas suffit.</p>
+
+        <ol class="res__actions">
+          <li class="res__action">
+            <span class="res__action-rang" aria-hidden="true">1</span>
+            <span class="res__icone-ronde"><ss-icon nom="respirer" /></span>
+            <h3>Faire une pause guidée</h3>
+            <p>Respirer quelques minutes pour relâcher la pression.</p>
+            <a class="res__action-lien" routerLink="/ressources" [queryParams]="exercices()">
+              Voir les exercices <ss-icon nom="fleche" taille="sm" />
+            </a>
+          </li>
+          <li class="res__action">
+            <span class="res__action-rang" aria-hidden="true">2</span>
+            <span class="res__icone-ronde"><ss-icon nom="chat" /></span>
+            <h3>En parler avec Titou</h3>
+            <p>Notre assistant vous écoute et vous oriente, 24h/24, en toute confidentialité.</p>
+            <button
+              type="button"
+              class="res__action-lien"
+              aria-controls="fenetre-chat"
+              [attr.aria-expanded]="conversation.ouverte()"
+              (click)="conversation.basculer()"
+            >
+              Ouvrir la conversation <ss-icon nom="fleche" taille="sm" />
+            </button>
+          </li>
+          <li class="res__action">
+            <span class="res__action-rang" aria-hidden="true">3</span>
+            @if (afficherPros()) {
+              <span class="res__icone-ronde"><ss-icon nom="accompagnement" /></span>
+              <h3>Être accompagné·e</h3>
+              <p>Des professionnels choisis pour vous, selon votre besoin, votre ville et votre langue.</p>
+              <button type="button" class="res__action-lien" (click)="allerAuxPros()">
+                Voir les professionnels <ss-icon nom="fleche" taille="sm" />
+              </button>
+            } @else {
+              <span class="res__icone-ronde"><ss-icon nom="journal" /></span>
+              <h3>Suivre mon humeur</h3>
+              <p>Quelques secondes par jour pour garder un œil sur votre équilibre.</p>
+              <a class="res__action-lien" routerLink="/app/journal">
+                Ouvrir mon journal <ss-icon nom="fleche" taille="sm" />
+              </a>
+            }
+          </li>
+        </ol>
+      </section>
+
+      <!-- 4. Les professionnels -->
+      @if (afficherPros()) {
+        <section #pros class="res__bloc res__pros" tabindex="-1" aria-labelledby="titre-pros">
+          <h2 id="titre-pros" class="res__titre-bloc">Des professionnels pour vous accompagner</h2>
+          <p class="res__sous-titre">
+            Sélectionnés selon votre résultat, votre ville et vos langues. Le premier échange se fait quand vous êtes prêt·e.
+          </p>
+
+          @if (vedette(); as pro) {
+            <article class="res__vedette">
+              <div class="res__vedette-media">
                 @if (portrait(pro); as image) {
-                  <img class="res__portrait" [src]="image" [alt]="'Portrait illustratif de ' + pro.nom" />
+                  <img [src]="image" [alt]="'Portrait illustratif de ' + pro.nom" />
                 } @else {
-                  <span class="res__portrait res__portrait--initiales" aria-hidden="true">{{ initiales(pro) }}</span>
+                  <span class="res__initiales res__initiales--grand" aria-hidden="true">{{ initiales(pro) }}</span>
                 }
+                <span class="res__badge"><ss-icon nom="suggestion" taille="sm" /> Le plus adapté pour vous</span>
+              </div>
+              <div class="res__vedette-corps">
                 <h3>{{ pro.nom }}</h3>
                 <span class="res__specialite">{{ pro.specialite_affichee }}</span>
-                <p class="res__ville"><ss-icon nom="lieux" taille="sm" /> {{ pro.ville }}</p>
-                <ul class="res__langues">
-                  @for (langue of langues(pro); track langue) {
-                    <li>{{ langue }}</li>
-                  }
+                @if (r.raison_suggestion) {
+                  <p class="res__raison">
+                    <ss-icon nom="utilisateur-verifie" taille="sm" />
+                    <span><strong>Pourquoi ce choix ?</strong> {{ r.raison_suggestion }}</span>
+                  </p>
+                }
+                <ul class="res__infos">
+                  <li><ss-icon nom="lieux" taille="sm" /> {{ pro.ville }}</li>
+                  <li><ss-icon nom="globe" taille="sm" /> {{ langues(pro) }}</li>
+                  <li><ss-icon nom="billet" taille="sm" /> {{ tarif(pro) }} <span>/ séance</span></li>
                 </ul>
-                <p class="res__tarif"><strong>{{ tarif(pro) }}</strong> <span>/ séance</span></p>
-                <a class="res__bouton-contour" [routerLink]="['/professionnels', pro.id]">Voir le profil</a>
-              </li>
+                <a class="res__bouton" [routerLink]="['/professionnels', pro.id]">
+                  Voir le profil et prendre contact <ss-icon nom="fleche" taille="sm" />
+                </a>
+              </div>
+            </article>
+
+            @if (autres().length) {
+              <h3 class="res__autres-titre">Autres profils possibles</h3>
+              <ul class="res__autres">
+                @for (autre of autres(); track autre.id) {
+                  <li>
+                    <a class="res__autre" [routerLink]="['/professionnels', autre.id]">
+                      @if (portrait(autre); as image) {
+                        <img class="res__avatar" [src]="image" alt="" />
+                      } @else {
+                        <span class="res__avatar res__initiales" aria-hidden="true">{{ initiales(autre) }}</span>
+                      }
+                      <span class="res__autre-texte">
+                        <strong>{{ autre.nom }}</strong>
+                        <span class="res__specialite">{{ autre.specialite_affichee }}</span>
+                        <span class="res__autre-infos">{{ autre.ville }} · {{ langues(autre) }} · {{ tarif(autre) }}</span>
+                      </span>
+                      <ss-icon class="res__chevron" nom="chevron-droite" taille="sm" />
+                    </a>
+                  </li>
+                }
+              </ul>
             }
-          </ul>
-          <a class="res__annuaire" routerLink="/professionnels">Voir tout l'annuaire des professionnels</a>
-        </section>
-      } @else {
-        <section class="res__carte res__sans-pros">
-          <img src="/images/illustrations/etat-vide-demandes.svg" alt="" width="160" height="160" />
-          @if (niveauFaible()) {
-            <h2>Des ressources pour continuer à prendre soin de vous</h2>
-            <p>Nos ressources guidées vous aident à garder votre équilibre au quotidien.</p>
           } @else {
-            <h2>Aucun professionnel disponible pour ce besoin pour le moment</h2>
-            <p>
-              {{ r.message }} Nous élargissons constamment notre réseau. En attendant, vous pouvez
-              consulter nos ressources guidées pour vous accompagner.
-            </p>
+            <div class="res__carte res__sans-pros">
+              <img src="/images/illustrations/etat-vide-demandes.svg" alt="" width="120" height="120" />
+              <div>
+                <h3>Aucun professionnel disponible pour ce besoin pour le moment</h3>
+                <p>{{ r.message }} Notre réseau s'agrandit : en attendant, nos ressources guidées peuvent vous accompagner.</p>
+              </div>
+            </div>
           }
-          <button type="button" class="res__bouton-plein" title="Écran à venir">Découvrir les ressources</button>
+
+          <a class="res__annuaire" routerLink="/professionnels">
+            Voir tout l'annuaire des professionnels <ss-icon nom="fleche" taille="sm" />
+          </a>
         </section>
       }
 
-      <p class="res__liens">
-        @if (r.professionnels_suggeres.length) {
-          <span class="res__lien-fort" title="Écran à venir">Voir mes ressources recommandées</span>
-        }
-        <a routerLink="/app">Refaire le test plus tard</a>
-      </p>
+      <div class="res__fin">
+        <a class="res__bouton-contour" [routerLink]="['/app/evaluation', r.type_evaluation]">
+          <ss-icon nom="reculer" taille="sm" /> Refaire ce test
+        </a>
+        <a class="res__bouton-contour" routerLink="/app/statistiques">
+          <ss-icon nom="journal" taille="sm" /> Suivre mon évolution
+        </a>
+      </div>
     </main>
 
     <footer class="res__pied">

@@ -20,9 +20,9 @@ const CIRCONFERENCE = 2 * Math.PI * RAYON;
           [attr.stroke-dashoffset]="decalage()"
         />
       </svg>
-      <div class="gauge__texte" role="img" [attr.aria-label]="'Score total : ' + valeur() + ' pour cent'">
-        <span class="gauge__nombre">{{ valeur() }}%</span>
-        <span class="gauge__legende">Score total</span>
+      <div class="gauge__texte" role="img" [attr.aria-label]="'Score : ' + valeur() + ' sur 100'">
+        <span class="gauge__nombre">{{ valeur() }}</span>
+        <span class="gauge__legende">sur 100</span>
       </div>
     </div>
   `,
@@ -30,11 +30,12 @@ const CIRCONFERENCE = 2 * Math.PI * RAYON;
     `
       :host {
         display: inline-block;
+        width: 200px;
       }
       .gauge {
         position: relative;
-        width: 200px;
-        height: 200px;
+        width: 100%;
+        aspect-ratio: 1;
       }
       svg {
         width: 100%;
@@ -51,6 +52,7 @@ const CIRCONFERENCE = 2 * Math.PI * RAYON;
       .gauge__valeur {
         stroke: var(--ss-primaire);
         stroke-linecap: round;
+        transition: stroke-dashoffset 0.8s ease;
       }
       .gauge__texte {
         position: absolute;
@@ -63,7 +65,7 @@ const CIRCONFERENCE = 2 * Math.PI * RAYON;
       .gauge__nombre {
         font-family: var(--ss-police-titres);
         font-weight: var(--ss-poids-titre-fort);
-        font-size: 44px;
+        font-size: 2.75em;
         line-height: var(--ss-hauteur-ligne-titre);
         color: var(--ss-texte-marque);
         font-variant-numeric: tabular-nums;

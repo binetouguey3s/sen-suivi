@@ -246,6 +246,10 @@ export const routes: Routes = [
             (m) => m.AdminRessourcesComponent,
           ),
       },
+      {
+        path: 'lieux',
+        loadComponent: () => import('./features/admin/lieux/lieux.component').then((m) => m.AdminLieuxComponent),
+      },
     ],
   },
   {

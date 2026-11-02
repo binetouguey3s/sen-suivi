@@ -95,6 +95,14 @@ import {
   LucidePersonStanding,
   LucideInfo,
   LucideLeaf,
+  LucideWaves,
+  LucideBird,
+  LucideDroplets,
+  LucideTrees,
+  LucideMountain,
+  LucideSailboat,
+  LucideLandmark,
+  LucideSlidersHorizontal,
 } from '@lucide/angular';
 
 export const ICONES = {
@@ -193,6 +201,14 @@ export const ICONES = {
   yoga: LucidePersonStanding,
   info: LucideInfo,
   feuille: LucideLeaf,
+  vagues: LucideWaves,
+  oiseau: LucideBird,
+  eau: LucideDroplets,
+  arbres: LucideTrees,
+  montagne: LucideMountain,
+  voilier: LucideSailboat,
+  monument: LucideLandmark,
+  filtres: LucideSlidersHorizontal,
 } as const;
 
 export type NomIcone = keyof typeof ICONES;

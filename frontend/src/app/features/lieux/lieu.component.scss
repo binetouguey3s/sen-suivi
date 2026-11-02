@@ -1,13 +1,58 @@
+// Mise en page par largeur d'écran :
+//   < 640 px : une colonne, bannière bord à bord, barre d'actions fixée en bas
+//   640 à 1023 px : une colonne, « L'essentiel » sur deux colonnes
+//   >= 1024 px : contenu principal à gauche, colonne latérale collante à droite
+$mobile-max: 639px;
+$tablette: 640px;
+$tablette-max: 1023px;
+$bureau: 1024px;
+$grand-bureau: 1280px;
+$largeur-contenu: 1200px;
+$colonne-laterale: 360px;
+
+// Bannière, contenu et pied partagent exactement les mêmes bords
+@mixin colonne-de-page {
+  box-sizing: border-box;
+  width: min(#{$largeur-contenu}, calc(100% - 2 * var(--ss-marge-mobile)));
+  margin-inline: auto;
+
+  @media (min-width: $bureau) {
+    width: min(#{$largeur-contenu}, calc(100% - 2 * var(--ss-espace-6)));
+  }
+}
+
 :host {
   display: block;
   background: var(--ss-fond-public);
   min-height: 100vh;
 }
 
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ss-primaire);
+  outline-offset: 2px;
+}
+
+.lieu__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
 .lieu__etat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ss-espace-2);
   padding: var(--ss-espace-8) var(--ss-marge-mobile);
   text-align: center;
   color: var(--ss-texte-doux);
+
+  p {
+    margin: 0;
+  }
 
   a {
     color: var(--ss-texte-marque);
@@ -15,326 +60,700 @@
   }
 }
 
-// Colonne commune du site : mêmes bords que l'en-tête et le pied de page
-.lieu__page {
-  padding: var(--ss-espace-3) var(--ss-marge-mobile) var(--ss-espace-5);
+// Squelette de chargement
+.lieu__squelette {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-3);
+  padding-top: var(--ss-espace-3);
 
-  @media (min-width: 900px) {
-    padding: var(--ss-espace-4) var(--ss-gouttiere-page) var(--ss-espace-6);
+  @media (max-width: $mobile-max) {
+    padding-top: 0;
+  }
+
+  @media (min-width: $bureau) {
+    padding-top: var(--ss-espace-6);
   }
 }
 
-.lieu__retour {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ss-espace-1);
-  padding: 6px var(--ss-espace-2);
-  border: 1px solid var(--ss-bordure);
-  border-radius: var(--ss-rayon-pilule);
-  background: var(--ss-surface);
-  color: var(--ss-texte-marque);
-  font-size: 14px;
-  font-weight: var(--ss-poids-texte-fort);
-  text-decoration: none;
+.lieu__squelette-hero,
+.lieu__squelette-bloc {
+  background: var(--ss-surface-neutre);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: lieu-pulsation 1.4s ease-in-out infinite;
+  }
 }
 
-// --- En-tête : texte à gauche, photo à droite, à une taille où elle reste nette ---
+.lieu__squelette-hero {
+  @include colonne-de-page;
+  height: clamp(260px, 32vw, 380px);
+  border-radius: var(--ss-rayon-grande-carte);
 
-.lieu__entete {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--ss-espace-4);
-  align-items: center;
+  @media (max-width: $mobile-max) {
+    width: 100%;
+    height: 240px;
+    border-radius: 0;
+  }
+}
+
+.lieu__squelette-bloc {
+  @include colonne-de-page;
+  height: 140px;
+  border-radius: var(--ss-rayon-carte);
+}
+
+@keyframes lieu-pulsation {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+// Bannière arrondie, alignée sur le contenu. Aucune carte ne se pose dessus
+.lieu__hero {
+  @include colonne-de-page;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(260px, 32vw, 380px);
   margin-top: var(--ss-espace-3);
+  overflow: hidden;
+  border-radius: var(--ss-rayon-grande-carte);
 
-  @media (min-width: 900px) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
-    gap: var(--ss-espace-6);
-    margin-top: var(--ss-espace-4);
+  @media (min-width: $bureau) {
+    margin-top: var(--ss-espace-6);
+  }
+
+  @media (max-width: $mobile-max) {
+    width: 100%;
+    min-height: 240px;
+    margin-top: 0;
+    border-radius: 0;
+  }
+
+  // Le voile part du bas et s'efface vers 60 % de la hauteur
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--ss-photo-voile-fort) 0%, var(--ss-photo-voile) 30%, var(--ss-photo-voile-nul) 60%);
   }
 }
 
-.lieu__intro {
-  order: 2;
+.lieu__hero-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  @media (min-width: 900px) {
-    order: 1;
+// Couverture : l'icône en haut à droite, le texte reste en bas à gauche
+ss-couverture-lieu.lieu__hero-media {
+  align-items: flex-start;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  padding: var(--ss-espace-3);
+}
+
+.lieu__hero-contenu {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: var(--ss-espace-4);
+  color: var(--ss-texte-sur-photo);
+  // Le fil d'Ariane peut dépasser le voile et tomber sur un ciel clair
+  text-shadow: 0 1px 8px var(--ss-photo-voile-fort);
+
+  @media (max-width: $mobile-max) {
+    padding: var(--ss-espace-3) var(--ss-marge-mobile);
   }
 
   h1 {
-    margin: var(--ss-espace-1) 0 0;
-    font-size: 34px;
-    color: var(--ss-texte-marque);
+    margin: 0;
+    max-width: 24ch;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: var(--ss-hauteur-ligne-titre);
     letter-spacing: var(--ss-interlettrage-moyen);
+    color: inherit;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+}
 
-    @media (min-width: 900px) {
-      font-size: 48px;
-      letter-spacing: var(--ss-interlettrage-grand);
+.lieu__ariane {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+
+  a {
+    color: inherit;
+    text-underline-offset: 2px;
+
+    &:focus-visible {
+      outline-color: currentColor;
     }
   }
 }
 
-.lieu__surtitre {
+.lieu__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ss-espace-1);
+  text-shadow: none;
+}
+
+// Même gabarit que la pastille d'accès posée sur une photo
+.lieu__badge-categorie {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin: 0;
-  color: var(--ss-texte-doux);
-  font-size: 14px;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: var(--ss-rayon-pilule);
+  background: var(--ss-photo-voile);
+  backdrop-filter: blur(8px);
+  color: var(--ss-texte-sur-photo);
+  font-size: var(--ss-texte-taille-min);
   font-weight: var(--ss-poids-texte-fort);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 
-.lieu__etiquettes {
+.lieu__page {
+  @include colonne-de-page;
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--ss-espace-1);
-  margin: var(--ss-espace-2) 0 0;
-  padding: 0;
-  list-style: none;
+  flex-direction: column;
+  gap: var(--ss-espace-4);
+  padding-block: var(--ss-espace-4);
 
-  li {
-    padding: 4px 12px;
-    border-radius: var(--ss-rayon-pilule);
-    background: var(--ss-surface-douce);
-    color: var(--ss-texte-marque);
-    font-size: 13px;
-    font-weight: var(--ss-poids-texte-fort);
+  @media (max-width: $mobile-max) {
+    padding-block: var(--ss-espace-3);
   }
+}
 
-  .lieu__etiquette--libre {
-    background: var(--ss-accent);
-    color: var(--ss-accent-texte-fort);
+// Sous 1024 px : une colonne, « order » range les blocs, le bandeau de vigilance
+// d'abord car il peut changer la décision de partir.
+// À partir de 1024 px : deux rangées alignées en haut et en bas
+//   À propos + Bien-être | L'essentiel
+//   À découvrir aussi    | Carte
+.lieu__grille {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-espace-3);
+
+  @media (min-width: $bureau) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) $colonne-laterale;
+    gap: var(--ss-espace-4);
   }
+}
+
+// Ces enveloppes ne comptent pas dans la mise en page : leurs blocs sont placés directement
+.lieu__principale,
+.lieu__laterale {
+  display: contents;
+}
+
+.lieu__pile {
+  display: contents;
+
+  @media (min-width: $bureau) {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ss-espace-3);
+    min-width: 0;
+
+    // Se partagent la hauteur pour finir au même niveau que « L'essentiel »
+    .lieu__description,
+    .lieu__bien-etre {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+.lieu__essentiel {
+  @media (min-width: $bureau) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+.lieu__suggestions {
+  @media (min-width: $bureau) {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+  }
+}
+
+.lieu__carte-bloc {
+  @media (min-width: $bureau) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+// Sans carte, rien à côté des suggestions : elles prennent toute la largeur
+.lieu__grille--sans-carte .lieu__suggestions {
+  @media (min-width: $bureau) {
+    grid-column: 1 / -1;
+  }
+}
+
+.lieu__vigilance {
+  order: 1;
+}
+
+.lieu__essentiel {
+  order: 2;
 }
 
 .lieu__description {
-  max-width: 560px;
-  margin: var(--ss-espace-3) 0 0;
-  color: var(--ss-texte);
-  font-size: 17px;
-  line-height: 1.6;
+  order: 3;
 }
 
-.lieu__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ss-espace-2);
-  margin-top: var(--ss-espace-4);
+.lieu__bien-etre {
+  order: 4;
 }
 
-.lieu__bouton {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ss-espace-1);
-  padding: 12px var(--ss-espace-3);
-  border: 2px solid var(--ss-primaire);
-  border-radius: var(--ss-rayon-bouton);
-  background: var(--ss-primaire);
-  color: var(--ss-primaire-texte);
-  font-weight: var(--ss-poids-texte-fort);
-  text-decoration: none;
+.lieu__carte-bloc {
+  order: 5;
 }
 
-.lieu__bouton--contour {
-  background: transparent;
-  color: var(--ss-texte-marque);
+.lieu__suggestions {
+  order: 6;
 }
 
-.lieu__photo {
-  order: 1;
-  margin: 0;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--ss-rayon-grande-carte);
-  overflow: hidden;
-  background: var(--ss-surface-douce);
-  box-shadow: var(--ss-ombre);
-
-  @media (min-width: 900px) {
-    order: 2;
-  }
-
-  img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-.lieu__photo--vide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--ss-vide-debut), var(--ss-vide-fin));
-  color: var(--ss-vide-texte);
-}
-
-// --- Infos pratiques et carte, sur une même bande ---
-
-.lieu__details {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--ss-espace-3);
-  margin-top: var(--ss-espace-5);
-
-  @media (min-width: 900px) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
-    gap: var(--ss-espace-6);
-    align-items: stretch;
-  }
-}
-
-.lieu__infos {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0;
-  padding: var(--ss-espace-2) var(--ss-espace-3);
-  border-radius: var(--ss-rayon-grande-carte);
+// Même gabarit pour toutes les cartes de contenu
+.lieu__bloc {
+  box-sizing: border-box;
+  padding: 28px;
   background: var(--ss-surface);
+  border: 1px solid var(--ss-bordure);
+  border-radius: var(--ss-rayon-carte);
   box-shadow: var(--ss-ombre);
-  list-style: none;
 
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--ss-espace-2);
-    padding: var(--ss-espace-2) 0;
-    border-bottom: 1px solid var(--ss-bordure);
-
-    &:last-child {
-      border-bottom: none;
-    }
+  @media (max-width: $mobile-max) {
+    padding: var(--ss-espace-3);
   }
 
-  span:not(.lieu__infos-icone) {
-    display: block;
-    color: var(--ss-texte-doux);
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: var(--ss-poids-titre);
+    color: var(--ss-texte-marque);
   }
 
-  strong {
+  p {
+    margin: 0;
+    line-height: var(--ss-hauteur-ligne-texte);
     color: var(--ss-texte);
-    font-weight: var(--ss-poids-texte-fort);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: lieu-apparition var(--ss-duree) var(--ss-ease) both;
   }
 }
 
-.lieu__infos-icone {
-  display: inline-flex;
+@keyframes lieu-apparition {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+// Le même en-tête pour toutes les cartes de contenu : une icône ronde et le titre
+.lieu__bloc-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .lieu__icone {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.lieu__description p {
+  max-width: 70ch;
+}
+
+.lieu__vigilance {
+  display: flex;
+  gap: var(--ss-espace-2);
+  background: var(--ss-acces-restreint-fond);
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--ss-acces-restreint);
+
+  > ss-icon {
+    flex-shrink: 0;
+  }
+
+  h2 {
+    margin-bottom: 4px;
+    font-size: 17px;
+    color: inherit;
+  }
+
+  p + p {
+    margin-top: 4px;
+  }
+}
+
+.lieu__icone {
+  display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--ss-surface-douce);
   color: var(--ss-texte-marque);
 }
 
-.lieu__mini-carte {
-  min-height: 240px;
-  border-radius: var(--ss-rayon-grande-carte);
-  overflow: hidden;
-  box-shadow: var(--ss-ombre);
-}
-
-.lieu__proches {
-  padding: 0 var(--ss-marge-mobile) var(--ss-espace-6);
-
-  @media (min-width: 900px) {
-    padding: 0 var(--ss-gouttiere-page) var(--ss-espace-6);
-  }
-
-  h2 {
-    font-size: 28px;
-    color: var(--ss-texte-marque);
-    margin-bottom: var(--ss-espace-3);
-  }
-}
-
-.lieu__proches-grille {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--ss-espace-3);
-
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.lieu__proche {
+.lieu__essentiel {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  text-decoration: none;
-  color: inherit;
 
-  img,
-  .lieu__proche-vide {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: var(--ss-rayon-carte);
-    margin-bottom: var(--ss-espace-1);
+  // L'animation créerait un repère pour la barre fixée en bas de l'écran
+  @media (max-width: $mobile-max) {
+    animation: none;
   }
 
-  .lieu__proche-vide {
-    background: linear-gradient(135deg, var(--ss-vide-debut), var(--ss-vide-fin));
-    color: var(--ss-vide-texte);
-  }
-
-  h3 {
-    color: var(--ss-texte-marque);
-    font-size: 20px;
-  }
-
-  p {
+  ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @media (min-width: $tablette) and (max-width: $tablette-max) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--ss-espace-3);
+    }
+  }
+
+  li {
+    display: flex;
+    gap: 12px;
+    padding-block: 14px;
+    border-bottom: 1px solid var(--ss-bordure);
+
+    &:first-child {
+      padding-top: 2px;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    // Deux colonnes : un trait sous certaines lignes seulement ferait désordre
+    @media (min-width: $tablette) and (max-width: $tablette-max) {
+      padding-block: 0 var(--ss-espace-2);
+      border-bottom: none;
+
+      &:first-child {
+        padding-top: 0;
+      }
+
+      &:last-child {
+        padding-bottom: var(--ss-espace-2);
+      }
+    }
+  }
+
+  li > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  li > div > span {
+    font-size: var(--ss-texte-taille-min);
     color: var(--ss-texte-doux);
-    font-size: 14px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  }
+
+  strong {
+    font-weight: var(--ss-poids-titre);
+    color: var(--ss-texte);
+    overflow-wrap: anywhere;
   }
 }
 
-.lieu__proche-ville {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.lieu__note {
+  margin-top: 4px !important;
+  font-size: 14px;
+  color: var(--ss-texte-doux) !important;
+}
+
+.lieu__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+
+  .lieu__bouton {
+    min-height: 48px;
+  }
+
+  // Calés en bas de la carte si elle s'allonge pour suivre la colonne voisine
+  @media (min-width: $bureau) {
+    margin-top: auto;
+    padding-top: 20px;
+  }
+
+  @media (min-width: $tablette) and (max-width: $tablette-max) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 4px;
+
+    .lieu__bouton {
+      flex: 1;
+    }
+
+    .lieu__lien-admin,
+    .lieu__message {
+      flex-basis: 100%;
+    }
+  }
+
+  // Mobile : barre fixée en bas de l'écran, à portée de pouce
+  @media (max-width: $mobile-max) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    flex-direction: row;
+    margin: 0;
+    padding: var(--ss-espace-1) var(--ss-marge-mobile) calc(var(--ss-espace-1) + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--ss-surface) 80%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--ss-ombre-forte);
+
+    .lieu__bouton {
+      flex: 1;
+    }
+  }
+}
+
+.lieu__bouton {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ss-espace-1);
+  min-height: 44px;
+  padding: var(--ss-espace-1) var(--ss-espace-3);
+  border: 1px solid var(--ss-primaire);
+  border-radius: var(--ss-rayon-bouton);
+  background: var(--ss-primaire);
+  color: var(--ss-primaire-texte);
+  font: inherit;
+  font-weight: var(--ss-poids-texte-fort);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lieu__bouton--contour {
+  background: transparent;
+  color: var(--ss-texte-marque);
+  border-color: var(--ss-texte-marque);
+}
+
+.lieu__lien-admin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--ss-texte-marque);
+  font-size: 14px;
+
+  // Réservé à l'administration : au-dessus de la barre fixée, trop étroite
+  @media (max-width: $mobile-max) {
+    position: absolute;
+    right: var(--ss-marge-mobile);
+    bottom: 100%;
+    margin-bottom: var(--ss-espace-1);
+    padding: 4px var(--ss-espace-2);
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-surface);
+    box-shadow: var(--ss-ombre);
+  }
+}
+
+.lieu__message {
+  font-size: 14px;
+  text-align: center;
+  color: var(--ss-texte-doux) !important;
+
+  &:empty {
+    display: none;
+  }
+
+  @media (max-width: $mobile-max) {
+    position: absolute;
+    left: var(--ss-marge-mobile);
+    bottom: 100%;
+    margin-bottom: var(--ss-espace-1) !important;
+    padding: 4px var(--ss-espace-2);
+    border-radius: var(--ss-rayon-pilule);
+    background: var(--ss-surface);
+    box-shadow: var(--ss-ombre);
+    color: var(--ss-texte) !important;
+  }
+}
+
+// Même carte que « À propos ». Le bouton reste calé en bas si la carte s'allonge
+.lieu__bien-etre {
+  display: flex;
+  flex-direction: column;
+
+  p {
+    margin-bottom: var(--ss-espace-2);
+  }
+
+  .lieu__bouton {
+    align-self: flex-start;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: auto;
+    text-align: center;
+  }
+}
+
+// La carte et son lien forment un seul bloc, sans marge intérieure
+.lieu__carte-bloc {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.lieu__mini-carte {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 200px;
+
+  @media (min-width: $bureau) {
+    min-height: 220px;
+  }
+
+  // Annule la hauteur minimale du composant : la carte suit son emplacement,
+  // sinon elle déborde sur le lien et le repère n'est plus centré
+  ss-carte-lieux {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+  }
+
+  // Le fond de carte reste clair quel que soit le thème : on l'atténue en mode
+  // sombre. Les repères et l'étiquette ne sont pas concernés
+  ::ng-deep .leaflet-tile-pane {
+    filter: var(--ss-carte-filtre);
+  }
+}
+
+.lieu__lien-carte {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  border-top: 1px solid var(--ss-bordure);
+  color: var(--ss-texte-marque);
+  font-size: 14px;
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
+.lieu__suggestions {
+  h2 {
+    margin: 0 0 var(--ss-espace-2);
+    font-size: 20px;
+    font-weight: var(--ss-poids-titre);
+    color: var(--ss-texte-marque);
+  }
+
+  ul {
+    display: flex;
+    gap: var(--ss-espace-2);
+    margin: 0;
+    padding: 0 0 var(--ss-espace-2);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    list-style: none;
+
+    // Trois cartes seulement si elles ont la place : la colonne principale est
+    // trop étroite entre 1024 et 1279 px, où elles défilent comme sur mobile
+    @media (min-width: $tablette) and (max-width: $tablette-max), (min-width: $grand-bureau) {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      padding: 0;
+      overflow: visible;
+    }
+  }
+
+  // La carte suivante dépasse, ce qui montre qu'on peut faire défiler
+  li {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+
+    @media (min-width: $bureau) {
+      flex-basis: 240px;
+    }
+  }
+}
+
+.lieu__mention {
+  margin: 0;
+  font-size: var(--ss-texte-taille-min);
   color: var(--ss-texte-doux);
 }
 
 .lieu__pied {
+  @include colonne-de-page;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: var(--ss-espace-3) var(--ss-marge-mobile);
+  gap: var(--ss-espace-1);
+  padding-block: var(--ss-espace-3);
   border-top: 1px solid var(--ss-bordure);
-  background: var(--ss-fond);
-  font-size: 14px;
   color: var(--ss-texte-doux);
+  font-size: 14px;
+
+  // Mobile : rien ne reste caché sous la barre d'actions fixée
+  @media (max-width: $mobile-max) {
+    padding-bottom: calc(var(--ss-espace-8) + var(--ss-espace-3) + env(safe-area-inset-bottom));
+  }
 
   button {
     display: inline-flex;
     align-items: center;
-    gap: var(--ss-espace-1);
-    background: none;
+    gap: 4px;
+    padding: 0;
     border: none;
-    color: var(--ss-alerte);
+    background: none;
+    color: var(--ss-texte-marque);
+    font: inherit;
     font-weight: var(--ss-poids-texte-fort);
     cursor: pointer;
-  }
-
-  @media (min-width: 900px) {
-    padding: var(--ss-espace-3) var(--ss-gouttiere-page);
   }
 }

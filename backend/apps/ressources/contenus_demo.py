@@ -519,21 +519,22 @@ Si ce sujet vous concerne, vous ou un proche, vous pouvez en parler à Titou ou 
     },
 ]
 
+# Les 8 premiers lieux publiés : leur texte est repris par lieux_senegal.py
 LIEUX = {
-    'Plage de Ngor': {'latitude': 14.7500, 'longitude': -17.5170, 'acces_libre': True,
+    'Plages publiques (Ngor, Yoff, Virage, Anse Bernard, Malibu)': {'latitude': 14.7500, 'longitude': -17.5170,
         'description': "Une plage de sable clair au nord de Dakar, face à l'île de Ngor. L'endroit est idéal pour marcher, écouter les vagues et respirer au calme, surtout tôt le matin."},
-    'Île de Gorée': {'latitude': 14.6693, 'longitude': -17.3986, 'acces_libre': False,
+    'Île de Gorée': {'latitude': 14.6693, 'longitude': -17.3986,
         'description': "À vingt minutes en chaloupe de Dakar, une île sans voiture aux ruelles fleuries. Un lieu de mémoire et de calme pour une promenade lente."},
-    'Lac Rose': {'latitude': 14.8386, 'longitude': -17.2333, 'acces_libre': True,
+    'Lac Rose (Lac Retba)': {'latitude': 14.8386, 'longitude': -17.2333,
         'description': "Le lac Retba, célèbre pour sa couleur rose, offre un paysage apaisant. Une escapade d'une journée pour changer d'air et de rythme."},
-    'Parc Forestier de Hann': {'latitude': 14.7250, 'longitude': -17.4250, 'acces_libre': False,
+    'Parc Forestier et Zoologique de Hann': {'latitude': 14.7250, 'longitude': -17.4250,
         'description': "Un grand espace vert au cœur de Dakar, avec ombre, oiseaux et sentiers. Parfait pour une marche méditative loin du bruit de la ville."},
-    'Lagune de la Somone': {'latitude': 14.4900, 'longitude': -17.0800, 'acces_libre': True,
+    'Lagune de la Somone (RNIC)': {'latitude': 14.4900, 'longitude': -17.0800,
         'description': "Véritable sanctuaire de biodiversité classé réserve naturelle, la lagune de la Somone offre un spectacle enchanteur entre mangroves verdoyantes et eaux calmes. L'endroit idéal pour observer les oiseaux dans un calme absolu."},
-    'Corniche Ouest': {'latitude': 14.6800, 'longitude': -17.4750, 'acces_libre': True,
+    'Corniche Ouest & parcours sportifs': {'latitude': 14.6800, 'longitude': -17.4750,
         'description': "L'air marin et le bruit des vagues sont idéaux pour une marche méditative. Il y a moins d'affluence le matin, entre 8h et 10h."},
-    'Popenguine': {'latitude': 14.5497, 'longitude': -17.1197, 'acces_libre': True,
+    'Réserve Naturelle de Popenguine': {'latitude': 14.5497, 'longitude': -17.1197,
         'description': "Falaises, plage et réserve naturelle en bord de mer : un lieu paisible pour se ressourcer le temps d'un week-end."},
-    'Toubab Dialaw': {'latitude': 14.5600, 'longitude': -17.1500, 'acces_libre': True,
+    'Toubab Dialaw': {'latitude': 14.5600, 'longitude': -17.1500,
         'description': "Village de pêcheurs et centre culturel entre falaises et océan, réputé pour son ambiance calme et créative."},
 }
