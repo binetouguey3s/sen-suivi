@@ -32,7 +32,7 @@ passe à retenir.
   parfait pour tester et montrer, à remplacer avant d'encaisser des paiements.
 - **n8n n'est pas déployé.** Django envoie lui-même les notifications
   (nouvelle demande, nouvelle inscription) et met à jour l'index de Titou. Les
-  rappels automatiques (journal, tests) sont en pause jusqu'au passage chez LWS.
+  rappels (journal, tests) partent grâce à une tâche planifiée GitHub (étape 10).
 - **Secrets.** Ne jamais écrire une clé dans un fichier du dépôt : elles se
   saisissent uniquement dans le tableau de bord de chaque service.
 
@@ -45,16 +45,28 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 
 - la première sera `AI_SERVICE_CLE` (la même sur Render et Hugging Face) ;
-- la seconde n'est pas nécessaire : Render génère seul `DJANGO_SECRET_KEY`.
+- la seconde sera la **clé interne des rappels** : `N8N_API_KEY` sur Render et
+  `CLE_INTERNE` sur GitHub (étape 10).
 
-## Étape 1 — La base de données (Neon)
+`DJANGO_SECRET_KEY` n'est pas à préparer : Render la génère seul.
 
-1. Sur [neon.com](https://neon.com), créer un projet nommé `sen-suivi`.
-2. Région : **AWS Europe Central 1 (Frankfurt)**, la plus proche de Dakar.
-   Nom de la base : `sensuivi`. Version de Postgres : 16.
-3. Dans « Connect », copier l'adresse de connexion. Elle ressemble à
-   `postgresql://…@ep-….eu-central-1.aws.neon.tech/sensuivi?sslmode=require`.
-   C'est `DATABASE_URL`.
+## Étape 1 — La base de données (Neon) — déjà faite
+
+Le projet Neon `sen-suivi` existe (Francfort, PostgreSQL 16, base `sensuivi`)
+et contient déjà les tables et les données de démonstration : 98 lieux,
+21 ressources, 7 professionnels, les questions des tests et 15 comptes de
+démonstration.
+
+Il reste à copier son adresse, `DATABASE_URL` :
+
+1. Sur [console.neon.tech](https://console.neon.tech), ouvrir le projet `sen-suivi`.
+2. Bouton **Connect** : base `sensuivi`, rôle `sensuivi`, et **désactiver
+   « Connection pooling »** (l'adresse ne doit pas contenir `-pooler`).
+3. Copier l'adresse. Elle ressemble à
+   `postgresql://sensuivi:…@ep-young-art-….eu-central-1.aws.neon.tech/sensuivi?sslmode=require`.
+
+Pour repartir d'une base neuve un jour : créer un projet comme ci-dessus,
+puis lancer les commandes de l'étape 6.
 
 ## Étape 2 — Le stockage des fichiers (Supabase Storage)
 
@@ -123,31 +135,46 @@ l'administration disparaissent à chaque redémarrage de l'API.
    | `AI_SERVICE_CLE` | la clé de l'étape 0 |
    | `EMAIL_*`, `DEFAULT_FROM_EMAIL` | les valeurs de l'étape 3 |
    | `STOCKAGE_*` | les valeurs de l'étape 2 (`STOCKAGE_BUCKET` = `sen-suivi-fichiers`) |
+   | `N8N_API_KEY` | la clé interne des rappels (étape 0) |
 
 3. Valider. Le premier déploiement prend quelques minutes ; il crée les tables
    dans Neon. Ensuite, `https://sen-suivi-api.onrender.com/api/sante` doit
    afficher `{"statut":"ok"}`.
 
-## Étape 6 — Les données et le compte administrateur
+## Étape 6 — Ton compte administrateur
 
-L'offre gratuite de Render ne donne pas de terminal : ces commandes se lancent
-depuis ton ordinateur, Docker démarré, en visant la base Neon.
+Les données sont déjà dans Neon (étape 1). Il reste à créer **ton** compte
+administrateur, avec ton e-mail et un mot de passe personnel. L'offre gratuite
+de Render ne donne pas de terminal : la commande se lance depuis ton
+ordinateur, Docker démarré, en visant la base Neon.
 
 ```
 docker compose build backend
-docker compose run --rm -e DATABASE_URL="adresse-neon-de-l-etape-1" backend python manage.py seed_donnees
 docker compose run --rm -e DATABASE_URL="adresse-neon-de-l-etape-1" backend python manage.py creer_administrateur
 ```
 
-La première commande installe les nouvelles dépendances. La deuxième charge les
-questions des tests, les ressources, les 98 lieux et les comptes de
-démonstration. La troisième crée **ton** compte administrateur (e-mail et mot de
-passe personnels).
+La première commande installe les nouvelles dépendances (une seule fois). La
+seconde pose trois questions : e-mail, nom affiché, mot de passe (rien ne
+s'affiche quand on tape le mot de passe, c'est normal).
 
-**Important :** les comptes de démonstration, dont l'administrateur de
-démonstration, ont le mot de passe connu `SenSuivi2026!`. Avant d'ouvrir le
-site au public, les désactiver (case « actif ») dans l'administration Django,
-`https://sen-suivi-api.onrender.com/admin/`, connectée avec ton compte.
+Pour recharger les données de démonstration dans une base neuve, remplacer
+`creer_administrateur` par `seed_donnees`.
+
+### Avant d'ouvrir le site au public : les comptes de démonstration
+
+Les 15 comptes de démonstration (`…@sensuivi.sn`) ont tous le mot de passe
+`SenSuivi2026!`, écrit dans le code et la documentation : quiconque le lit pourrait s'y
+connecter, y compris sur l'administrateur de démonstration. Garde-les tant que
+tu testes ; avant d'ouvrir le site à de vrais utilisateurs, lance :
+
+```
+docker compose run --rm -e DATABASE_URL="adresse-neon-de-l-etape-1" backend python manage.py securiser_comptes_demo
+```
+
+Chaque compte de démonstration reçoit un mot de passe aléatoire que personne ne
+connaît : les profils restent visibles (annuaire, forum, ressources), mais plus
+personne ne peut s'y connecter. Pour les faire aussi disparaître du site,
+ajouter `--desactiver` à la fin. Ton propre compte n'est jamais touché.
 
 ## Étape 7 — Le site (Vercel)
 
@@ -175,6 +202,20 @@ HTTP, toutes les 5 minutes :
 - `https://binetouguey3s-sen-suivi-ia.hf.space/health`
 
 Ils évitent la mise en veille et envoient un e-mail si un service tombe.
+
+## Étape 10 — Les rappels (journal, tests)
+
+Une tâche planifiée GitHub (`.github/workflows/rappels.yml`) appelle l'API à
+8 h, 12 h 30, 18 h et 21 h, heure de Dakar, avec les mêmes règles que n8n :
+moment choisi dans l'onboarding, fréquence, rappels désactivables.
+
+Dans le dépôt **sen-suivi > Settings > Secrets and variables > Actions** :
+
+- onglet *Variables* : `API_URL` = `https://sen-suivi-api.onrender.com`
+- onglet *Secrets* : `CLE_INTERNE` = la clé interne des rappels (étape 0), la
+  même que `N8N_API_KEY` sur Render.
+
+Pour essayer tout de suite : onglet **Actions**, **Rappels**, « Run workflow ».
 
 ## Ensuite, à chaque mise à jour
 

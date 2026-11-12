@@ -10,4 +10,5 @@ urlpatterns = [
     path('interne/utilisateurs-a-retester', interne.UtilisateursARetesterView.as_view()),
     path('interne/administrateurs', interne.AdministrateursView.as_view()),
     path('interne/notifications-email', interne.CreerNotificationView.as_view()),
+    path('interne/envoyer-rappels', interne.EnvoyerRappelsView.as_view()),
 ]
