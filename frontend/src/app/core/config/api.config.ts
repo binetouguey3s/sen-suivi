@@ -1,6 +1,7 @@
-// URL de base de l'API Django (.env API_BASE_URL). Angular ne lit pas les
-// fichiers .env au runtime : cette valeur sera à brancher sur un vrai
-// mécanisme de configuration par environnement quand plusieurs
-// déploiements existeront (pas nécessaire tant qu'il n'y a que le poste
-// de développement).
-export const API_BASE_URL = 'http://localhost:8000/api';
+// URL de base de l'API Django. En production, la construction la remplace
+// par la variable d'environnement API_BASE_URL (scripts/construire.mjs, option
+// « define » d'Angular) ; sans elle, c'est l'API du poste de développement.
+declare const SEN_SUIVI_API_BASE_URL: string | undefined;
+
+export const API_BASE_URL =
+  typeof SEN_SUIVI_API_BASE_URL === 'string' ? SEN_SUIVI_API_BASE_URL : 'http://localhost:8000/api';
