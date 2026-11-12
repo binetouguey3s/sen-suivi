@@ -26,8 +26,13 @@ historique ne peut jamais retarder une réponse d'urgence.
 """
 
 import logging
+import os
 import re
+import threading
+from contextlib import asynccontextmanager
 from typing import Annotated, Literal
+
+import httpx
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -67,7 +72,36 @@ REPONSE_REPLI_BIS = (
     "l'annuaire de Sen Suivi vous permet de demander une mise en relation avec un professionnel."
 )
 
-app = FastAPI(title='Sen Suivi — Microservice IA')
+# En ligne, seul Django peut appeler ce service : il envoie cette clé dans
+# l'en-tête X-Cle-Service. Vide (développement local) : aucun contrôle.
+CLE_SERVICE = os.environ.get('AI_SERVICE_CLE', '')
+# Adresse du back-end Django : au démarrage, le service lui demande les
+# ressources publiées pour remplir le RAG (le disque d'un hébergement gratuit
+# est effacé à chaque mise en veille). Vide : on attend /reindexer.
+BACKEND_URL = os.environ.get('BACKEND_URL', '').rstrip('/')
+
+
+def _indexer_depuis_le_backend():
+    try:
+        reponse = httpx.get(f'{BACKEND_URL}/api/ressources', timeout=120)
+        reponse.raise_for_status()
+        ressources = [
+            {cle: r[cle] for cle in ('id', 'titre', 'contenu', 'thematique')} for r in reponse.json()
+        ]
+        journal.info('%s ressource(s) indexée(s) au démarrage.', indexer_ressources(ressources))
+    except (httpx.HTTPError, ValueError, KeyError, TypeError) as erreur:
+        journal.warning('Indexation au démarrage impossible : %s', type(erreur).__name__)
+
+
+@asynccontextmanager
+async def demarrage(_app):
+    if BACKEND_URL:
+        # Le back-end peut lui-même être en train de se réveiller : on n'attend pas
+        threading.Thread(target=_indexer_depuis_le_backend, daemon=True).start()
+    yield
+
+
+app = FastAPI(title='Sen Suivi — Microservice IA', lifespan=demarrage)
 
 # Le front-end (Angular, localhost:4200) et Django n'appellent jamais ce
 # service directement depuis le navigateur ; CORS n'ouvre que le strict
@@ -78,6 +112,14 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+
+@app.middleware('http')
+async def verifier_cle(request: Request, call_next):
+    # /health reste ouvert : l'hébergeur s'en sert pour savoir si le service répond
+    if CLE_SERVICE and request.url.path not in ('/', '/health') and request.headers.get('x-cle-service') != CLE_SERVICE:
+        return JSONResponse({'detail': 'Accès réservé au back-end Sen Suivi.'}, status_code=401)
+    return await call_next(request)
 
 
 class EchangePrecedent(BaseModel):
@@ -142,6 +184,7 @@ def _suggestion(ressource: dict | None) -> RessourceSuggeree | None:
     )
 
 
+@app.get('/')
 @app.get('/health')
 def health():
     return {'statut': 'ok'}
