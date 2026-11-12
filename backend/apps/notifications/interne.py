@@ -1,4 +1,4 @@
-"""Endpoints internes appelés par n8n (automatisation), jamais par le front-end.
+"""Endpoints internes appelés par n8n ou une tâche planifiée, jamais par le front-end.
 
 Protégés par un secret partagé (N8N_API_KEY, dans .env) envoyé dans l'en-tête
 X-Cle-Interne : ni un compte utilisateur, ni un jeton JWT, seulement une
@@ -123,6 +123,29 @@ def _moment(request):
     return moment
 
 
+def _rappels_journal(moment):
+    """Sans entrée de journal depuis RAPPEL_JOURNAL_JOURS."""
+    jours = settings.RAPPEL_JOURNAL_JOURS
+    limite = timezone.localdate() - timedelta(days=jours)
+    limite_datetime = timezone.now() - timedelta(days=jours)
+
+    recents = SuiviHumeur.objects.filter(date__gt=limite).values_list('utilisateur_id', flat=True)
+    inactifs = Utilisateur.objects.filter(date_creation__lt=limite_datetime).exclude(pk__in=recents)
+    return _rappels(
+        inactifs, OBJET_RAPPEL, (CONTENU_RAPPEL, CONTENU_RAPPEL_PERSONNALISE), 'rappel_journal', moment, journal=True,
+    )
+
+
+def _rappels_test(moment):
+    """Dernière auto-évaluation plus ancienne que RAPPEL_TEST_JOURS."""
+    limite = timezone.now() - timedelta(days=settings.RAPPEL_TEST_JOURS)
+    a_retester = Utilisateur.objects.annotate(dernier_test=Max('auto_evaluations__date')).filter(dernier_test__lt=limite)
+    return _rappels(
+        a_retester, OBJET_RAPPEL_TEST, (CONTENU_RAPPEL_TEST, CONTENU_RAPPEL_TEST_PERSONNALISE),
+        'rappel_auto_evaluation', moment, journal=False,
+    )
+
+
 class UtilisateursInactifsView(APIView):
     """GET /api/interne/utilisateurs-inactifs?moment=soir
 
@@ -134,16 +157,7 @@ class UtilisateursInactifsView(APIView):
     permission_classes = [EstAutomatisation]
 
     def get(self, request):
-        moment = _moment(request)
-        jours = settings.RAPPEL_JOURNAL_JOURS
-        limite = timezone.localdate() - timedelta(days=jours)
-        limite_datetime = timezone.now() - timedelta(days=jours)
-
-        recents = SuiviHumeur.objects.filter(date__gt=limite).values_list('utilisateur_id', flat=True)
-        inactifs = Utilisateur.objects.filter(date_creation__lt=limite_datetime).exclude(pk__in=recents)
-        return Response(_rappels(
-            inactifs, OBJET_RAPPEL, (CONTENU_RAPPEL, CONTENU_RAPPEL_PERSONNALISE), 'rappel_journal', moment, journal=True,
-        ))
+        return Response(_rappels_journal(_moment(request)))
 
 
 class UtilisateursARetesterView(APIView):
@@ -156,13 +170,30 @@ class UtilisateursARetesterView(APIView):
     permission_classes = [EstAutomatisation]
 
     def get(self, request):
+        return Response(_rappels_test(_moment(request)))
+
+
+class EnvoyerRappelsView(APIView):
+    """POST /api/interne/envoyer-rappels?moment=soir
+
+    Sans n8n (hébergement gratuit) : une tâche planifiée GitHub Actions appelle
+    cette adresse aux quatre moments de la journée. Elle envoie les rappels de
+    journal puis de test, avec les mêmes règles que les workflows n8n.
+    """
+
+    permission_classes = [EstAutomatisation]
+
+    def post(self, request):
         moment = _moment(request)
-        limite = timezone.now() - timedelta(days=settings.RAPPEL_TEST_JOURS)
-        a_retester = Utilisateur.objects.annotate(dernier_test=Max('auto_evaluations__date')).filter(dernier_test__lt=limite)
-        return Response(_rappels(
-            a_retester, OBJET_RAPPEL_TEST, (CONTENU_RAPPEL_TEST, CONTENU_RAPPEL_TEST_PERSONNALISE),
-            'rappel_auto_evaluation', moment, journal=False,
-        ))
+        envoyes = {}
+        # Le journal d'abord, puis le test : la fréquence se compte tous types
+        # confondus, donc une personne qui vient d'avoir un rappel n'en a pas un second
+        for nom, calcul in (('journal', _rappels_journal), ('test', _rappels_test)):
+            liste = calcul(moment)
+            for rappel in liste:
+                notifier(Utilisateur.objects.get(pk=rappel['id']), rappel['objet'], rappel['contenu'], rappel['preference'])
+            envoyes[nom] = len(liste)
+        return Response({'moment': moment, 'envoyes': envoyes})
 
 
 class AdministrateursView(APIView):

@@ -288,3 +288,36 @@ class EnvoiEmailTests(APITestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('/nouveau-mot-de-passe?uid=', mail.outbox[0].body)
+
+
+@override_settings(
+    N8N_API_KEY=CLE, RAPPEL_JOURNAL_JOURS=3, RAPPEL_TEST_JOURS=30, RAPPEL_FREQUENCE_MAX_JOURS=7,
+    EMAIL_NOTIFICATIONS=False,
+)
+class EnvoyerRappelsTests(APITestCase):
+    """Sans n8n : la tâche planifiée envoie les rappels en un seul appel."""
+
+    url = '/api/interne/envoyer-rappels?moment=matin'
+
+    def setUp(self):
+        self.awa = Utilisateur.objects.create(email='awa@test.sn', nom='Diop', prenom='Awa')
+        Utilisateur.objects.filter(pk=self.awa.pk).update(date_creation=timezone.now() - timedelta(days=60))
+
+    def envoyer(self):
+        return self.client.post(self.url, headers={'X-Cle-Interne': CLE})
+
+    def test_sans_la_cle_rien_ne_part(self):
+        self.assertEqual(self.client.post(self.url).status_code, 401)
+        self.assertFalse(NotificationEmail.objects.exists())
+
+    def test_le_rappel_de_journal_est_envoye_une_seule_fois(self):
+        self.assertEqual(self.envoyer().data['envoyes'], {'journal': 1, 'test': 0})
+        self.assertEqual(NotificationEmail.objects.get().objet, OBJET_RAPPEL)
+        # Relancée le même jour, la tâche respecte la fréquence choisie
+        self.assertEqual(self.envoyer().data['envoyes'], {'journal': 0, 'test': 0})
+
+    def test_jamais_deux_rappels_au_meme_moment(self):
+        test = AutoEvaluation.objects.create(utilisateur=self.awa, type_evaluation='STRESS', score_de_tendance=40)
+        AutoEvaluation.objects.filter(pk=test.pk).update(date=timezone.now() - timedelta(days=45))
+        self.assertEqual(self.envoyer().data['envoyes'], {'journal': 1, 'test': 0})
+        self.assertEqual(NotificationEmail.objects.count(), 1)

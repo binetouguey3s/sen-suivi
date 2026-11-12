@@ -1,0 +1,46 @@
+# Rappels doux (journal, test) sans n8n : appelle l'API aux quatre moments
+# de la journée choisis dans l'onboarding. Dakar est à l'heure UTC.
+# À régler une fois dans GitHub (Settings > Secrets and variables > Actions) :
+#   - variable API_URL     : ex. https://sen-suivi-api.onrender.com
+#   - secret   CLE_INTERNE : la même valeur que N8N_API_KEY sur Render
+# GitHub peut lancer une tâche planifiée avec quelques minutes de retard.
+name: Rappels
+
+on:
+  schedule:
+    - cron: '0 8 * * *'    # matin
+    - cron: '30 12 * * *'  # midi
+    - cron: '0 18 * * *'   # soir
+    - cron: '0 21 * * *'   # coucher
+  workflow_dispatch:
+    inputs:
+      moment:
+        description: Moment des rappels
+        type: choice
+        options: [matin, midi, soir, coucher]
+        default: matin
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    if: ${{ vars.API_URL != '' }}
+    steps:
+      - name: Envoyer les rappels
+        env:
+          API_URL: ${{ vars.API_URL }}
+          CLE_INTERNE: ${{ secrets.CLE_INTERNE }}
+          PLANIFIE: ${{ github.event.schedule }}
+          CHOISI: ${{ inputs.moment }}
+        run: |
+          case "$PLANIFIE" in
+            '0 8 * * *') MOMENT=matin ;;
+            '30 12 * * *') MOMENT=midi ;;
+            '0 18 * * *') MOMENT=soir ;;
+            '0 21 * * *') MOMENT=coucher ;;
+            *) MOMENT="${CHOISI:-matin}" ;;
+          esac
+          # L'API gratuite peut dormir : on lui laisse le temps de se réveiller
+          curl --fail-with-body --silent --show-error --max-time 180 \
+            --retry 3 --retry-delay 30 --retry-all-errors \
+            -X POST -H "X-Cle-Interne: ${CLE_INTERNE}" \
+            "${API_URL}/api/interne/envoyer-rappels?moment=${MOMENT}"

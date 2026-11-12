@@ -240,3 +240,43 @@ class SupervisionIATests(APITestCase):
         self.client.force_authenticate(self.awa)
         reponse = self.client.post(f'/api/administration/signalements/{self.signalement.pk}/suivi')
         self.assertEqual(reponse.status_code, 403)
+
+
+class SecuriserComptesDemoTests(APITestCase):
+    """Avant l'ouverture au public, le mot de passe de démonstration n'ouvre plus rien."""
+
+    def test_seuls_les_comptes_de_demonstration_sont_touches(self):
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        from apps.comptes.management.commands.seed_donnees import MOT_DE_PASSE_DEMO
+
+        demo = Administrateur.objects.create(email='admin@sensuivi.sn', nom='Démo')
+        demo.set_password(MOT_DE_PASSE_DEMO)
+        demo.save()
+        vrai = Administrateur.objects.create(email='binetou@sensuivi.sn', nom='Binetou')
+        vrai.set_password('Un-Vrai-Mot-2026!')
+        vrai.save()
+
+        call_command('securiser_comptes_demo', stdout=StringIO())
+
+        demo.refresh_from_db()
+        vrai.refresh_from_db()
+        self.assertFalse(demo.check_password(MOT_DE_PASSE_DEMO))
+        self.assertTrue(demo.is_active)
+        self.assertTrue(vrai.check_password('Un-Vrai-Mot-2026!'))
+
+    def test_desactiver_cache_aussi_les_comptes(self):
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        from apps.comptes.management.commands.seed_donnees import MOT_DE_PASSE_DEMO
+
+        demo = Administrateur.objects.create(email='admin@sensuivi.sn', nom='Démo')
+        demo.set_password(MOT_DE_PASSE_DEMO)
+        demo.save()
+        call_command('securiser_comptes_demo', '--desactiver', stdout=StringIO())
+        demo.refresh_from_db()
+        self.assertFalse(demo.is_active)

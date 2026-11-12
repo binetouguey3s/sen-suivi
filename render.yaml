@@ -35,6 +35,9 @@ services:
       # Pas de n8n en hébergement gratuit : Django envoie lui-même les notifications
       - key: N8N_WEBHOOK_URL
         value: ""
+      # Clé interne des rappels (tâche planifiée GitHub Actions « Rappels »)
+      - key: N8N_API_KEY
+        sync: false
       - key: GUNICORN_WORKERS
         value: "2"
       # Un réveil du microservice IA peut prendre une minute
