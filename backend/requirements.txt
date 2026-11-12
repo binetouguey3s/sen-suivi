@@ -5,3 +5,7 @@ psycopg[binary]>=3.2,<3.3
 django-environ>=0.11,<0.12
 django-cors-headers>=4.4,<4.5
 httpx>=0.28,<0.29
+# Production : serveur d'application, fichiers statiques, stockage des fichiers envoyés
+gunicorn>=23.0,<24.0
+whitenoise>=6.8,<7.0
+django-storages[s3]>=1.14,<1.15

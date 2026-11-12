@@ -17,7 +17,7 @@ from .models import ModerationMessage, PublicationForum, StatutModeration
 
 
 def decision_ia(decision, categorie='CONFORME', gravite=1, message='', priorite=0, extrait=''):
-    def faux_post(url, json, timeout):
+    def faux_post(url, json, timeout, headers=None):
         corps = {
             'decision': decision, 'categorie': categorie, 'gravite': gravite, 'extrait': extrait,
             'raison': 'raison de test', 'message': message, 'niveau': 'MODELE', 'priorite': priorite,

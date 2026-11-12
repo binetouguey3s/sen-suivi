@@ -1,0 +1,199 @@
+# Déployer Sen Suivi gratuitement
+
+Ce guide met Sen Suivi en ligne sans rien payer, en attendant un hébergement
+LWS et un nom de domaine. Compter une après-midi la première fois.
+
+## Les noms à utiliser partout
+
+Utiliser exactement ces noms : les adresses en découlent, et les fichiers du
+dépôt (`render.yaml`, workflows GitHub) les attendent.
+
+| Partie | Service gratuit | Nom à créer | Adresse obtenue |
+| --- | --- | --- | --- |
+| Base de données | Neon | projet `sen-suivi`, base `sensuivi` | (adresse secrète `DATABASE_URL`) |
+| Fichiers envoyés | Supabase Storage | projet `sen-suivi`, bucket `sen-suivi-fichiers` | (clés secrètes) |
+| E-mails | Brevo | expéditeur `Sen Suivi` | — |
+| Service IA (Titou) | Hugging Face Spaces | Space `sen-suivi-ia` | `https://binetouguey3s-sen-suivi-ia.hf.space` |
+| API Django | Render | service `sen-suivi-api` | `https://sen-suivi-api.onrender.com` |
+| Site | Vercel | projet `sen-suivi` | `https://sen-suivi.vercel.app` |
+
+Plus tard, avec LWS : `sensuivi.com` (ou `sensuivi.sn`) pour le site et
+`api.sensuivi.com` pour l'API. Ces deux noms étaient libres le 12 novembre 2026.
+
+Chaque service se crée avec le bouton « Continue with GitHub » : un seul mot de
+passe à retenir.
+
+## Ce qu'il faut savoir avant
+
+- **Mise en veille.** L'API Render s'endort après 15 minutes sans visite et met
+  environ une minute à se réveiller ; le service IA s'endort après 48 heures.
+  L'étape 9 les garde éveillés.
+- **Usage.** L'offre gratuite de Vercel est réservée à un usage non commercial :
+  parfait pour tester et montrer, à remplacer avant d'encaisser des paiements.
+- **n8n n'est pas déployé.** Django envoie lui-même les notifications
+  (nouvelle demande, nouvelle inscription) et met à jour l'index de Titou. Les
+  rappels automatiques (journal, tests) sont en pause jusqu'au passage chez LWS.
+- **Secrets.** Ne jamais écrire une clé dans un fichier du dépôt : elles se
+  saisissent uniquement dans le tableau de bord de chaque service.
+
+## Étape 0 — Préparer deux clés secrètes
+
+Dans le terminal, lancer deux fois cette commande et noter les deux résultats :
+
+```
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+- la première sera `AI_SERVICE_CLE` (la même sur Render et Hugging Face) ;
+- la seconde n'est pas nécessaire : Render génère seul `DJANGO_SECRET_KEY`.
+
+## Étape 1 — La base de données (Neon)
+
+1. Sur [neon.com](https://neon.com), créer un projet nommé `sen-suivi`.
+2. Région : **AWS Europe Central 1 (Frankfurt)**, la plus proche de Dakar.
+   Nom de la base : `sensuivi`. Version de Postgres : 16.
+3. Dans « Connect », copier l'adresse de connexion. Elle ressemble à
+   `postgresql://…@ep-….eu-central-1.aws.neon.tech/sensuivi?sslmode=require`.
+   C'est `DATABASE_URL`.
+
+## Étape 2 — Le stockage des fichiers (Supabase Storage)
+
+Sans cette étape, l'audio des podcasts et les photos envoyées depuis
+l'administration disparaissent à chaque redémarrage de l'API.
+
+1. Sur [supabase.com](https://supabase.com), créer un projet `sen-suivi`,
+   région **Central EU (Frankfurt)**.
+2. Dans **Storage**, créer un bucket `sen-suivi-fichiers`, **privé**.
+3. Dans **Project Settings > Storage > S3 Connection**, noter :
+   - l'**Endpoint** → `STOCKAGE_URL` ;
+   - la **Region** → `STOCKAGE_REGION` ;
+   - créer une clé d'accès : **Access key ID** → `STOCKAGE_CLE_ACCES`,
+     **Secret access key** → `STOCKAGE_CLE_SECRETE`.
+
+## Étape 3 — Les e-mails (Brevo)
+
+1. Sur [brevo.com](https://www.brevo.com), créer un compte (300 e-mails par jour gratuits).
+2. Ajouter et vérifier l'adresse d'expédition (par exemple ton Gmail en attendant le domaine).
+3. Dans **SMTP & API > SMTP**, noter le login et créer une clé SMTP :
+   - `EMAIL_HOST` = `smtp-relay.brevo.com`
+   - `EMAIL_HOST_USER` = le login SMTP
+   - `EMAIL_HOST_PASSWORD` = la clé SMTP
+   - `DEFAULT_FROM_EMAIL` = `Sen Suivi <adresse-vérifiée>`
+
+## Étape 4 — Le service IA (Hugging Face)
+
+1. Sur [huggingface.co](https://huggingface.co), créer un compte `binetouguey3s`.
+2. **New Space** : nom `sen-suivi-ia`, SDK **Docker**, modèle **Blank**,
+   matériel **CPU basic (free)**, visibilité **Public** (le service est protégé
+   par `AI_SERVICE_CLE`). Si Hugging Face exige un abonnement pour un Space
+   Docker, s'arrêter là et prévenir : il existe un plan B.
+3. Dans **Settings > Variables and secrets** du Space, ajouter :
+
+   | Nom | Type | Valeur |
+   | --- | --- | --- |
+   | `AI_SERVICE_CLE` | Secret | la clé de l'étape 0 |
+   | `BACKEND_URL` | Variable | `https://sen-suivi-api.onrender.com` |
+   | `CHROMA_PERSIST_DIR` | Variable | `/data/chroma` |
+   | `LLM_ACTIVE`, `LLM_FOURNISSEURS`, `LLM_URL_BASE`, `LLM_MODELE`… | Variables | les mêmes valeurs que ton `.env` |
+   | `LLM_CLE_API`, `MISTRAL_CLE_API` | Secrets | les mêmes valeurs que ton `.env` |
+
+4. Créer un jeton : **Settings > Access Tokens > New token**, type **Write**.
+5. Sur GitHub, dans le dépôt **sen-suivi > Settings > Secrets and variables > Actions** :
+   - onglet *Secrets* : `HF_TOKEN` = le jeton ;
+   - onglet *Variables* : `HF_SPACE` = `binetouguey3s/sen-suivi-ia`.
+6. Dans l'onglet **Actions** du dépôt, lancer **Déployer le service IA**
+   (bouton « Run workflow »). La construction sur Hugging Face prend environ
+   10 minutes. Ensuite, `https://binetouguey3s-sen-suivi-ia.hf.space/health`
+   doit afficher `{"statut":"ok"}`.
+
+## Étape 5 — L'API Django (Render)
+
+1. Sur [render.com](https://render.com), **New > Blueprint**, choisir le dépôt
+   `sen-suivi`. Render lit `render.yaml` et prépare le service `sen-suivi-api`.
+2. Remplir les valeurs demandées :
+
+   | Nom | Valeur |
+   | --- | --- |
+   | `DATABASE_URL` | l'adresse Neon de l'étape 1 |
+   | `DJANGO_ALLOWED_HOSTS` | `sen-suivi-api.onrender.com` |
+   | `CORS_ALLOWED_ORIGINS` | `https://sen-suivi.vercel.app` |
+   | `CSRF_TRUSTED_ORIGINS` | `https://sen-suivi-api.onrender.com` |
+   | `FRONTEND_URL` | `https://sen-suivi.vercel.app` |
+   | `AI_SERVICE_URL` | `https://binetouguey3s-sen-suivi-ia.hf.space` |
+   | `AI_SERVICE_CLE` | la clé de l'étape 0 |
+   | `EMAIL_*`, `DEFAULT_FROM_EMAIL` | les valeurs de l'étape 3 |
+   | `STOCKAGE_*` | les valeurs de l'étape 2 (`STOCKAGE_BUCKET` = `sen-suivi-fichiers`) |
+
+3. Valider. Le premier déploiement prend quelques minutes ; il crée les tables
+   dans Neon. Ensuite, `https://sen-suivi-api.onrender.com/api/sante` doit
+   afficher `{"statut":"ok"}`.
+
+## Étape 6 — Les données et le compte administrateur
+
+L'offre gratuite de Render ne donne pas de terminal : ces commandes se lancent
+depuis ton ordinateur, Docker démarré, en visant la base Neon.
+
+```
+docker compose build backend
+docker compose run --rm -e DATABASE_URL="adresse-neon-de-l-etape-1" backend python manage.py seed_donnees
+docker compose run --rm -e DATABASE_URL="adresse-neon-de-l-etape-1" backend python manage.py creer_administrateur
+```
+
+La première commande installe les nouvelles dépendances. La deuxième charge les
+questions des tests, les ressources, les 98 lieux et les comptes de
+démonstration. La troisième crée **ton** compte administrateur (e-mail et mot de
+passe personnels).
+
+**Important :** les comptes de démonstration, dont l'administrateur de
+démonstration, ont le mot de passe connu `SenSuivi2026!`. Avant d'ouvrir le
+site au public, les désactiver (case « actif ») dans l'administration Django,
+`https://sen-suivi-api.onrender.com/admin/`, connectée avec ton compte.
+
+## Étape 7 — Le site (Vercel)
+
+1. Sur [vercel.com](https://vercel.com), **Add New > Project**, importer le dépôt `sen-suivi`.
+2. Nom du projet : `sen-suivi`. **Root Directory** : `frontend`.
+   Les autres réglages viennent de `frontend/vercel.json`.
+3. **Environment Variables** : `API_BASE_URL` = `https://sen-suivi-api.onrender.com/api`
+4. **Deploy**. Le site est en ligne sur `https://sen-suivi.vercel.app`.
+
+## Étape 8 — Vérifier que tout marche
+
+- [ ] Le site s'ouvre et la liste des lieux s'affiche.
+- [ ] Connexion avec le compte administrateur.
+- [ ] Un message à Titou reçoit une réponse (la première peut prendre une minute).
+- [ ] Un test de stress va jusqu'au résultat.
+- [ ] Une inscription de professionnel envoie un e-mail à l'administrateur.
+- [ ] Mot de passe oublié : l'e-mail arrive, le lien ouvre bien `sen-suivi.vercel.app`.
+
+## Étape 9 — Garder le site éveillé
+
+Sur [uptimerobot.com](https://uptimerobot.com) (gratuit), créer deux moniteurs
+HTTP, toutes les 5 minutes :
+
+- `https://sen-suivi-api.onrender.com/api/sante`
+- `https://binetouguey3s-sen-suivi-ia.hf.space/health`
+
+Ils évitent la mise en veille et envoient un e-mail si un service tombe.
+
+## Ensuite, à chaque mise à jour
+
+Il suffit de fusionner dans `main` sur GitHub :
+
+- Vercel et Render redéploient tout seuls ;
+- le workflow **Déployer le service IA** republie Titou si `ai-service/` a changé ;
+- le workflow **Tests** vérifie le code à chaque envoi.
+
+## Plus tard : passer chez LWS avec un nom de domaine
+
+1. Acheter `sensuivi.com` (ou `sensuivi.sn`) chez LWS.
+2. Sans changer d'hébergeur, faire pointer le domaine (zone DNS chez LWS) :
+   - `sensuivi.com` et `www` → Vercel (Vercel affiche les enregistrements à créer
+     dans **Settings > Domains**) ;
+   - `api.sensuivi.com` → Render (**Settings > Custom Domains** du service).
+3. Mettre à jour sur Render : `DJANGO_ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`,
+   `CSRF_TRUSTED_ORIGINS` et `FRONTEND_URL` avec les nouvelles adresses ; sur
+   Vercel : `API_BASE_URL` = `https://api.sensuivi.com/api` ; sur Hugging Face :
+   `BACKEND_URL`.
+4. Pour tout héberger chez LWS, il faut un **VPS** (l'hébergement mutualisé ne
+   fait pas tourner Docker). On y relance alors `docker compose`, avec n8n.

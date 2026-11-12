@@ -9,7 +9,8 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_DEFAULT_TIMEOUT=300 \
-    PIP_RETRIES=10
+    PIP_RETRIES=10 \
+    HF_HOME=/opt/modeles
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -18,10 +19,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # (EMBEDDING_MODELE du .env, transmis par docker-compose) : le service n'a
 # ainsi plus besoin d'Internet au démarrage ni après un redémarrage.
 ARG EMBEDDING_MODELE=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('${EMBEDDING_MODELE}')"
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('${EMBEDDING_MODELE}')" \
+    && chmod -R a+rX /opt/modeles
 
 COPY . .
 
+# Hugging Face Spaces lance le conteneur avec un utilisateur sans droits :
+# l'index du RAG s'écrit dans un dossier ouvert à tous
+RUN mkdir -p /data/chroma && chmod -R a+rwX /data
+
 EXPOSE 8001
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+# PORT : donné par l'hébergeur (Render) ; 8001 en local et sur Hugging Face
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8001}"]

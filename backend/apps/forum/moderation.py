@@ -51,7 +51,10 @@ def _analyser(texte: str) -> dict:
     """Décision du microservice ; en cas de panne, attente humaine."""
     try:
         reponse = httpx.post(
-            f'{settings.AI_SERVICE_URL}/moderer', json={'texte': texte}, timeout=settings.AI_SERVICE_DELAI_SECONDES
+            f'{settings.AI_SERVICE_URL}/moderer',
+            json={'texte': texte},
+            headers=settings.AI_SERVICE_ENTETES,
+            timeout=settings.AI_SERVICE_DELAI_SECONDES,
         )
         reponse.raise_for_status()
         return reponse.json()
