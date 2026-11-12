@@ -168,6 +168,13 @@ fichier vers `.env` avant de lancer le projet ; `.env` n'est jamais versionné.
 
 ---
 
+## Mise en ligne
+
+Le déploiement gratuit (Vercel, Render, Hugging Face, Neon) est décrit pas à pas
+dans [`DEPLOIEMENT.md`](./DEPLOIEMENT.md).
+
+---
+
 ## Dépannage
 
 **Port déjà utilisé**
