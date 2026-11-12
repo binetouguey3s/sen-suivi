@@ -65,7 +65,10 @@ def synthetiser(texte: str) -> bytes:
     for morceau in morceaux(texte):
         try:
             reponse = httpx.post(
-                f'{settings.AI_SERVICE_URL}/reponse-vocale', json={'texte': morceau}, timeout=DELAI_SYNTHESE_SECONDES
+                f'{settings.AI_SERVICE_URL}/reponse-vocale',
+                json={'texte': morceau},
+                headers=settings.AI_SERVICE_ENTETES,
+                timeout=DELAI_SYNTHESE_SECONDES,
             )
         except httpx.HTTPError as erreur:
             raise SyntheseIndisponible(f'microservice IA injoignable ({type(erreur).__name__})') from erreur

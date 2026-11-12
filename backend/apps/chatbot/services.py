@@ -20,7 +20,7 @@ def transcrire(audio: bytes) -> dict:
         reponse = httpx.post(
             f'{settings.AI_SERVICE_URL}/transcrire',
             content=audio,
-            headers={'Content-Type': 'application/octet-stream'},
+            headers={'Content-Type': 'application/octet-stream', **settings.AI_SERVICE_ENTETES},
             timeout=settings.AI_SERVICE_DELAI_SECONDES,
         )
     except httpx.HTTPError as erreur:
@@ -36,7 +36,12 @@ def synthetiser(texte: str) -> bytes | None:
     """Audio d'une réponse déjà validée, ou None : l'interface lira alors le texte
     avec la voix du navigateur. Jamais d'erreur bloquante."""
     try:
-        reponse = httpx.post(f'{settings.AI_SERVICE_URL}/reponse-vocale', json={'texte': texte}, timeout=20)
+        reponse = httpx.post(
+            f'{settings.AI_SERVICE_URL}/reponse-vocale',
+            json={'texte': texte},
+            headers=settings.AI_SERVICE_ENTETES,
+            timeout=20,
+        )
         return reponse.content if reponse.status_code == 200 else None
     except httpx.HTTPError:
         return None
@@ -70,6 +75,7 @@ def traiter_message(
                 'prenom': prenom,
                 'specialite_suggeree': specialite_suggeree,
             },
+            headers=settings.AI_SERVICE_ENTETES,
             # Plus long que le budget de la cascade de modèles côté IA (LLM_DELAI_TOTAL_SECONDES)
             timeout=settings.AI_SERVICE_DELAI_SECONDES,
         )

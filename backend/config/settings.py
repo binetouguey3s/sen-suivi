@@ -13,6 +13,14 @@ env = environ.Env()
 SECRET_KEY = env('DJANGO_SECRET_KEY', default='change_moi')
 DEBUG = env.bool('DJANGO_DEBUG', default=False)
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+# Render donne l'adresse publique du service : elle est acceptée sans réglage
+if env('RENDER_EXTERNAL_HOSTNAME', default=''):
+    ALLOWED_HOSTS.append(env('RENDER_EXTERNAL_HOSTNAME'))
+
+# En production, une clé secrète par défaut ou trop courte rendrait les jetons
+# de connexion falsifiables : le serveur refuse de démarrer.
+if not DEBUG and (SECRET_KEY == 'change_moi' or len(SECRET_KEY) < 40):
+    raise RuntimeError('DJANGO_SECRET_KEY doit être une vraie clé secrète (40 caractères ou plus) en production.')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -36,6 +44,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Fichiers statiques (administration Django) servis par Django lui-même en production
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -66,16 +76,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('POSTGRES_DB', default='sensuivi'),
-        'USER': env('POSTGRES_USER', default='sensuivi'),
-        'PASSWORD': env('POSTGRES_PASSWORD', default=''),
-        'HOST': env('POSTGRES_HOST', default='db'),
-        'PORT': env('POSTGRES_PORT', default='5432'),
+# En production, une seule adresse DATABASE_URL (celle que donne Neon,
+# avec ?sslmode=require) ; en local, les variables POSTGRES_* du .env.
+if env('DATABASE_URL', default=''):
+    DATABASES = {'default': env.db('DATABASE_URL')}
+    DATABASES['default']['CONN_MAX_AGE'] = 60
+    DATABASES['default']['CONN_HEALTH_CHECKS'] = True
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('POSTGRES_DB', default='sensuivi'),
+            'USER': env('POSTGRES_USER', default='sensuivi'),
+            'PASSWORD': env('POSTGRES_PASSWORD', default=''),
+            'HOST': env('POSTGRES_HOST', default='db'),
+            'PORT': env('POSTGRES_PORT', default='5432'),
+        }
     }
-}
 
 # CompteUtilisateur est le modèle d'authentification : aucun profil séparé
 # du modèle User natif de Django n'est utilisé (voir apps/comptes/models.py).
@@ -117,6 +134,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Fichiers envoyés (audio des podcasts). Dans Docker : volume « media_data »,
 # pour qu'ils survivent à une reconstruction du conteneur.
@@ -127,6 +145,30 @@ MEDIA_ROOT = Path(env('MEDIA_ROOT', default=str(BASE_DIR / 'media')))
 FICHIER_AUDIO_MAX_OCTETS = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = FICHIER_AUDIO_MAX_OCTETS + 1024 * 1024
 IMAGE_LIEU_MAX_OCTETS = 5 * 1024 * 1024
+
+# Stockage des fichiers envoyés. En local : le dossier MEDIA_ROOT. En
+# production gratuite, le disque du serveur est effacé à chaque redémarrage :
+# les fichiers partent alors dans un stockage compatible S3 (Supabase Storage,
+# Cloudflare R2…) dès que STOCKAGE_BUCKET est renseigné.
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
+if env('STOCKAGE_BUCKET', default=''):
+    STORAGES['default'] = {
+        'BACKEND': 'storages.backends.s3.S3Storage',
+        'OPTIONS': {
+            'bucket_name': env('STOCKAGE_BUCKET'),
+            'endpoint_url': env('STOCKAGE_URL'),
+            'access_key': env('STOCKAGE_CLE_ACCES'),
+            'secret_key': env('STOCKAGE_CLE_SECRETE'),
+            'region_name': env('STOCKAGE_REGION', default='auto'),
+            # Liens signés et temporaires : un fichier n'est jamais public par défaut
+            'querystring_auth': True,
+            'querystring_expire': 3600,
+            'file_overwrite': False,
+        },
+    }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -153,6 +195,20 @@ CORS_ALLOWED_ORIGINS = env.list(
 
 # Jeton d'urgence (apps.orientation.urgence) envoyé par le front en plus des en-têtes standard
 CORS_ALLOW_HEADERS = (*default_headers, 'x-jeton-urgence')
+# Formulaires de l'administration Django servis derrière HTTPS
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+
+# Production : HTTPS obligatoire derrière le proxy de l'hébergeur (Render, Nginx)
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=True)
+    # La vérification de santé de l'hébergeur passe en HTTP interne
+    SECURE_REDIRECT_EXEMPT = [r'^api/sante$']
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=3600)
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
 
 # E-mails réels : serveur SMTP lu dans le .env (Gmail avec un mot de passe
 # d'application, Brevo…). Sans EMAIL_HOST, les e-mails s'affichent dans les
@@ -177,6 +233,10 @@ FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 
 # Microservice IA (FastAPI), séparé du back-end.
 AI_SERVICE_URL = env('AI_SERVICE_URL', default='http://localhost:8001')
+# Clé partagée avec le microservice IA quand il est en ligne : sans elle,
+# n'importe qui pourrait utiliser Titou (et la clé du modèle de langage).
+AI_SERVICE_CLE = env('AI_SERVICE_CLE', default='')
+AI_SERVICE_ENTETES = {'X-Cle-Service': AI_SERVICE_CLE} if AI_SERVICE_CLE else {}
 
 # Dossier des MP3 des podcasts, servis par le front-end sous /audio/podcasts/
 # (commande generer_audio_podcasts). Dans Docker, le front-end n'est pas monté :
@@ -188,6 +248,8 @@ AI_SERVICE_DELAI_SECONDES = env.float('AI_SERVICE_DELAI_SECONDES', default=25)
 # Automatisation n8n : adresse des webhooks et clé partagée pour les
 # endpoints internes (/api/interne/...). La clé est générée par l'équipe
 # (jamais une clé d'un service externe) : voir .env.example.
+# Vide (hébergement gratuit sans n8n) : Django fait lui-même l'essentiel,
+# voir apps.notifications.services.declencher_workflow.
 N8N_WEBHOOK_URL = env('N8N_WEBHOOK_URL', default='http://n8n:5678')
 N8N_API_KEY = env('N8N_API_KEY', default='')
 
