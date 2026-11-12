@@ -1,7 +1,7 @@
 # Publie le dossier ai-service/ sur le Space Hugging Face à chaque mise à jour
 # de main. À régler une fois dans GitHub (Settings > Secrets and variables > Actions) :
 #   - secret   HF_TOKEN : jeton Hugging Face avec le droit d'écriture
-#   - variable HF_SPACE : nom du Space, ex. binetouguey3s/sen-suivi-ia
+#   - variable HF_SPACE : nom du Space, ex. Binetu/sen-suivi-ia
 name: Déployer le service IA
 
 on:

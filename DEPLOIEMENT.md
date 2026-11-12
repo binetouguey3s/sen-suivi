@@ -13,7 +13,7 @@ dépôt (`render.yaml`, workflows GitHub) les attendent.
 | Base de données | Neon | projet `sen-suivi`, base `sensuivi` | (adresse secrète `DATABASE_URL`) |
 | Fichiers envoyés | Supabase Storage | projet `sen-suivi`, bucket `sen-suivi-fichiers` | (clés secrètes) |
 | E-mails | Brevo | expéditeur `Sen Suivi` | — |
-| Service IA (Titou) | Hugging Face Spaces | Space `sen-suivi-ia` | `https://binetouguey3s-sen-suivi-ia.hf.space` |
+| Service IA (Titou) | Hugging Face Spaces | Space `sen-suivi-ia` | `https://binetu-sen-suivi-ia.hf.space` |
 | API Django | Render | service `sen-suivi-api` | `https://sen-suivi-api.onrender.com` |
 | Site | Vercel | projet `sen-suivi` | `https://sen-suivi.vercel.app` |
 
@@ -94,28 +94,28 @@ l'administration disparaissent à chaque redémarrage de l'API.
 
 ## Étape 4 — Le service IA (Hugging Face)
 
-1. Sur [huggingface.co](https://huggingface.co), créer un compte `binetouguey3s`.
-2. **New Space** : nom `sen-suivi-ia`, SDK **Docker**, modèle **Blank**,
-   matériel **CPU basic (free)**, visibilité **Public** (le service est protégé
-   par `AI_SERVICE_CLE`). Si Hugging Face exige un abonnement pour un Space
-   Docker, s'arrêter là et prévenir : il existe un plan B.
+1. Sur [huggingface.co](https://huggingface.co), se connecter au compte `Binetu`.
+2. **New Space** : nom `sen-suivi-ia`, SDK **Gradio** (gratuit ; Docker est
+   payant), modèle **Blank**, matériel **CPU basic (free)**, visibilité
+   **Public** (le service est protégé par `AI_SERVICE_CLE`). Le fichier
+   `ai-service/README.md` dit ensuite à Hugging Face de lancer
+   `lancer_space.py`, qui démarre le service FastAPI.
 3. Dans **Settings > Variables and secrets** du Space, ajouter :
 
    | Nom | Type | Valeur |
    | --- | --- | --- |
    | `AI_SERVICE_CLE` | Secret | la clé de l'étape 0 |
    | `BACKEND_URL` | Variable | `https://sen-suivi-api.onrender.com` |
-   | `CHROMA_PERSIST_DIR` | Variable | `/data/chroma` |
    | `LLM_ACTIVE`, `LLM_FOURNISSEURS`, `LLM_URL_BASE`, `LLM_MODELE`… | Variables | les mêmes valeurs que ton `.env` |
    | `LLM_CLE_API`, `MISTRAL_CLE_API` | Secrets | les mêmes valeurs que ton `.env` |
 
 4. Créer un jeton : **Settings > Access Tokens > New token**, type **Write**.
 5. Sur GitHub, dans le dépôt **sen-suivi > Settings > Secrets and variables > Actions** :
    - onglet *Secrets* : `HF_TOKEN` = le jeton ;
-   - onglet *Variables* : `HF_SPACE` = `binetouguey3s/sen-suivi-ia`.
+   - onglet *Variables* : `HF_SPACE` = `Binetu/sen-suivi-ia`.
 6. Dans l'onglet **Actions** du dépôt, lancer **Déployer le service IA**
    (bouton « Run workflow »). La construction sur Hugging Face prend environ
-   10 minutes. Ensuite, `https://binetouguey3s-sen-suivi-ia.hf.space/health`
+   10 minutes. Ensuite, `https://binetu-sen-suivi-ia.hf.space/health`
    doit afficher `{"statut":"ok"}`.
 
 ## Étape 5 — L'API Django (Render)
@@ -131,7 +131,7 @@ l'administration disparaissent à chaque redémarrage de l'API.
    | `CORS_ALLOWED_ORIGINS` | `https://sen-suivi.vercel.app` |
    | `CSRF_TRUSTED_ORIGINS` | `https://sen-suivi-api.onrender.com` |
    | `FRONTEND_URL` | `https://sen-suivi.vercel.app` |
-   | `AI_SERVICE_URL` | `https://binetouguey3s-sen-suivi-ia.hf.space` |
+   | `AI_SERVICE_URL` | `https://binetu-sen-suivi-ia.hf.space` |
    | `AI_SERVICE_CLE` | la clé de l'étape 0 |
    | `EMAIL_*`, `DEFAULT_FROM_EMAIL` | les valeurs de l'étape 3 |
    | `STOCKAGE_*` | les valeurs de l'étape 2 (`STOCKAGE_BUCKET` = `sen-suivi-fichiers`) |
@@ -199,7 +199,7 @@ Sur [uptimerobot.com](https://uptimerobot.com) (gratuit), créer deux moniteurs
 HTTP, toutes les 5 minutes :
 
 - `https://sen-suivi-api.onrender.com/api/sante`
-- `https://binetouguey3s-sen-suivi-ia.hf.space/health`
+- `https://binetu-sen-suivi-ia.hf.space/health`
 
 Ils évitent la mise en veille et envoient un e-mail si un service tombe.
 
