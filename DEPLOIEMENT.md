@@ -165,6 +165,17 @@ s'affiche quand on tape le mot de passe, c'est normal).
 Pour recharger les données de démonstration dans une base neuve, remplacer
 `creer_administrateur` par `seed_donnees`.
 
+**Sans Docker** (Docker bloqué ou disque presque plein), avec Python 3.13 :
+
+```
+python3.13 -m venv ~/.venvs/sen-suivi
+~/.venvs/sen-suivi/bin/pip install -r backend/requirements.txt
+cd backend
+DJANGO_DEBUG=True DATABASE_URL="adresse-neon-de-l-etape-1" ~/.venvs/sen-suivi/bin/python manage.py creer_administrateur
+```
+
+Les deux premières lignes ne se font qu'une fois.
+
 ### Avant d'ouvrir le site au public : les comptes de démonstration
 
 Les 15 comptes de démonstration (`…@sensuivi.sn`) ont tous le mot de passe
