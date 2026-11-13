@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('chatbot/reveil', views.ReveilView.as_view()),
     path('chatbot/message', views.ChatbotMessageView.as_view()),
     path('chatbot/message-vocal', views.ChatbotVocalView.as_view()),
     path('chatbot/reponse-vocale', views.ReponseVocaleView.as_view()),

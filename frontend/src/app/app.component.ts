@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+import { ChatbotService } from './core/services/chatbot.service';
 import { FenetreChatComponent } from './shared/fenetre-chat/fenetre-chat.component';
 
 @Component({
@@ -11,4 +12,8 @@ import { FenetreChatComponent } from './shared/fenetre-chat/fenetre-chat.compone
   template: '<router-outlet /><ss-fenetre-chat />',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor() {
+    inject(ChatbotService).reveiller();
+  }
+}

@@ -9,6 +9,12 @@ import { ConversationDetail, ConversationResume, EchangePrecedent, MessageAnteri
 export class ChatbotService {
   private readonly http = inject(HttpClient);
 
+  // Hébergement gratuit : Titou s'endort sans visite. Le site le réveille dès
+  // son ouverture, sans attendre la réponse ni signaler d'erreur.
+  reveiller(): void {
+    this.http.get(`${API_BASE_URL}/chatbot/reveil`).subscribe({ error: () => undefined });
+  }
+
   async envoyer(
     message: string,
     conversationId: number | null,

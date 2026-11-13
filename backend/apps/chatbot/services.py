@@ -83,3 +83,24 @@ def traiter_message(
         return reponse.json()
     except httpx.HTTPError as erreur:
         raise MicroserviceIAIndisponible(str(erreur)) from erreur
+
+
+def reveiller_microservice():
+    """Réveille le microservice IA en arrière-plan (hébergement gratuit : il
+    s'endort après 15 minutes sans visite et met jusqu'à une minute à repartir).
+    Au plus une tentative toutes les 4 minutes, quel que soit le nombre de visiteurs."""
+    import threading
+
+    from django.core.cache import cache
+
+    if not cache.add('reveil_microservice_ia', True, timeout=240):
+        return False
+
+    def _appeler():
+        try:
+            httpx.get(f'{settings.AI_SERVICE_URL}/health', timeout=90)
+        except httpx.HTTPError:
+            pass
+
+    threading.Thread(target=_appeler, daemon=True).start()
+    return True

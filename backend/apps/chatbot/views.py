@@ -362,3 +362,16 @@ class ConversationDetailView(APIView):
     def delete(self, request, pk):
         get_object_or_404(conversations_de(request), pk=pk).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ReveilView(APIView):
+    """GET /api/chatbot/reveil — appelé par le site à son ouverture : Titou est
+    réveillé pendant que la personne lit la page. Répond tout de suite (204)."""
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        from .services import reveiller_microservice
+
+        reveiller_microservice()
+        return Response(status=status.HTTP_204_NO_CONTENT)
