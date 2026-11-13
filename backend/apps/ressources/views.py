@@ -1,4 +1,7 @@
+import logging
 import unicodedata
+
+from botocore.exceptions import BotoCoreError, ClientError
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -15,6 +18,8 @@ from apps.notifications.services import declencher_workflow, notifier
 
 from .models import AccesLieu, Favori, LieuDetente, Ressource, StatutRessource, valider_image_lieu
 from .serializers import FavoriEcritureSerializer, LieuDetenteSerializer, RessourceProSerializer, RessourceSerializer
+
+journal = logging.getLogger(__name__)
 
 
 def _est_admin(request) -> bool:
@@ -302,6 +307,18 @@ class ImageLieuSerializer(serializers.Serializer):
     image = serializers.FileField(validators=[valider_image_lieu])
 
 
+def _refus_stockage(erreur):
+    """Le stockage en ligne (Supabase Storage) a refusé le fichier : la cause
+    exacte part dans les journaux et s'affiche à l'administration, seule à
+    pouvoir envoyer des photos."""
+    journal.exception('Stockage des fichiers : envoi refusé')
+    code = getattr(erreur, 'response', {}).get('Error', {}).get('Code', type(erreur).__name__)
+    return Response(
+        {'detail': f'Le stockage des fichiers a refusé la photo ({code}). Vérifier les réglages STOCKAGE_* sur Render.'},
+        status=status.HTTP_502_BAD_GATEWAY,
+    )
+
+
 class LieuDetenteImageView(APIView):
     """POST /api/lieux/{id}/image — ajoute ou remplace la photo d'un lieu.
     DELETE — la retire. Réservé à l'administration."""
@@ -316,10 +333,13 @@ class LieuDetenteImageView(APIView):
         entree = ImageLieuSerializer(data=request.data)
         # Vérifiée d'abord : un envoi refusé laisse la photo en place
         entree.is_valid(raise_exception=True)
-        if lieu.image:
-            lieu.image.delete(save=False)
-        lieu.image = entree.validated_data['image']
-        lieu.save(update_fields=['image'])
+        try:
+            if lieu.image:
+                lieu.image.delete(save=False)
+            lieu.image = entree.validated_data['image']
+            lieu.save(update_fields=['image'])
+        except (BotoCoreError, ClientError) as erreur:
+            return _refus_stockage(erreur)
         return self._reponse(request, lieu)
 
     def delete(self, request, pk):
