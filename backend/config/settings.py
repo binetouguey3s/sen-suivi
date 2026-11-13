@@ -3,6 +3,7 @@
 from datetime import timedelta
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 import environ
 from corsheaders.defaults import default_headers
 
@@ -83,6 +84,12 @@ if env('DATABASE_URL', default=''):
     DATABASES['default']['CONN_MAX_AGE'] = 60
     DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 else:
+    # En ligne, sans DATABASE_URL, Django chercherait l'hôte « db » de Docker
+    # et échouerait avec un message obscur : on le dit clairement.
+    if not DEBUG and not env('POSTGRES_HOST', default=''):
+        raise ImproperlyConfigured(
+            'DATABASE_URL est vide : coller l\'adresse Neon dans Environment (Render).'
+        )
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',

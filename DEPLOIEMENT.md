@@ -124,7 +124,7 @@ dépôt**, les lignes de ton `.env` qui commencent par `LLM_`, `MISTRAL_`,
    | `AI_SERVICE_URL` | `https://sen-suivi-ia.onrender.com` |
    | `AI_SERVICE_CLE` | la clé de l'étape 0 |
    | `EMAIL_*`, `DEFAULT_FROM_EMAIL` | les valeurs de l'étape 3 |
-   | `STOCKAGE_*` | les valeurs de l'étape 2 (`STOCKAGE_BUCKET` = `sen-suivi-fichiers`) |
+   | `STOCKAGE_*` | les valeurs de l'étape 2 (`STOCKAGE_BUCKET` `sen-suivi-fichiers`) |
    | `N8N_API_KEY` | la clé interne des rappels (étape 0) |
 
    Et pour `sen-suivi-ia` :
