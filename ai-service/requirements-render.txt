@@ -1,0 +1,8 @@
+# Version allégée pour l'offre gratuite de Render (512 Mo) : sans PyTorch ni
+# sentence-transformers. Les vecteurs du RAG sont calculés par l'API Mistral
+# (EMBEDDING_FOURNISSEUR=mistral). Voir Dockerfile.render.
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+httpx==0.28.1
+chromadb==0.5.23

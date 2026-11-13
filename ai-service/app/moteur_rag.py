@@ -10,16 +10,58 @@ import hashlib
 import os
 
 import chromadb
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+import httpx
+from chromadb import Documents, EmbeddingFunction, Embeddings
 
 CHROMA_PERSIST_DIR = os.environ.get('CHROMA_PERSIST_DIR', '/data/chroma')
+# « local » : modèle sentence-transformers exécuté ici (PyTorch, Docker).
+# « mistral » : vecteurs calculés par l'API Mistral, sans PyTorch : c'est ce
+# qui permet au service de tenir dans les 512 Mo de l'offre gratuite de Render.
+EMBEDDING_FOURNISSEUR = os.environ.get('EMBEDDING_FOURNISSEUR', 'local').lower()
 # Modèle multilingue : le modèle par défaut de ChromaDB ne comprend que l'anglais
-EMBEDDING_MODELE = os.environ.get('EMBEDDING_MODELE', 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-SEUIL_SIMILARITE_RAG = float(os.environ.get('SEUIL_SIMILARITE_RAG', '0.45'))
+EMBEDDING_MODELE = os.environ.get(
+    'EMBEDDING_MODELE',
+    'mistral-embed' if EMBEDDING_FOURNISSEUR == 'mistral'
+    else 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
+)
+# Chaque modèle a son échelle : mistral-embed donne 0,70 à 0,80 aux questions
+# liées à une ressource et 0,64 à 0,72 aux questions sans rapport (mesuré sur
+# les 21 ressources de démonstration) ; le modèle local, environ 0,45.
+SEUIL_SIMILARITE_RAG = float(os.environ.get(
+    'SEUIL_SIMILARITE_RAG', '0.695' if EMBEDDING_FOURNISSEUR == 'mistral' else '0.45'
+))
 NOMBRE_MAX_RESULTATS = int(os.environ.get('NOMBRE_MAX_RESSOURCES', '3'))
 
 _client = None
 _collection = None
+
+
+class EmbeddingsMistral(EmbeddingFunction):
+    """Vecteurs calculés par l'API Mistral (même clé que la génération)."""
+
+    def __init__(self, modele: str):
+        self.modele = modele
+        self.url = os.environ.get('MISTRAL_URL_BASE', 'https://api.mistral.ai/v1').rstrip('/')
+        self.cle = os.environ.get('MISTRAL_CLE_API', '')
+
+    def __call__(self, input: Documents) -> Embeddings:
+        reponse = httpx.post(
+            f'{self.url}/embeddings',
+            headers={'Authorization': f'Bearer {self.cle}'},
+            json={'model': self.modele, 'input': list(input)},
+            timeout=30,
+        )
+        reponse.raise_for_status()
+        donnees = sorted(reponse.json()['data'], key=lambda d: d['index'])
+        return [d['embedding'] for d in donnees]
+
+
+def _fonction_embeddings():
+    if EMBEDDING_FOURNISSEUR == 'mistral':
+        return EmbeddingsMistral(EMBEDDING_MODELE)
+    # Import tardif : PyTorch n'est installé que pour le fournisseur local
+    from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+    return SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_MODELE)
 
 
 def _obtenir_collection():
@@ -37,7 +79,7 @@ def _obtenir_collection():
         _collection = _client.get_or_create_collection(
             name=f'ressources_{empreinte}',
             metadata={'hnsw:space': 'cosine', 'modele': EMBEDDING_MODELE},
-            embedding_function=SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_MODELE),
+            embedding_function=_fonction_embeddings(),
         )
     return _collection
 

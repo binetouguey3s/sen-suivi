@@ -61,3 +61,29 @@ services:
         sync: false
       - key: STOCKAGE_REGION
         sync: false
+
+  # Microservice IA (Titou), version allégée : sans PyTorch, les vecteurs du
+  # RAG viennent de l'API Mistral (118 Mo de mémoire mesurés, limite 512 Mo).
+  # Les autres réglages LLM_*, MODERATION_*, SYNTHESE_*… s'ajoutent dans
+  # Render avec « Add from .env » (voir DEPLOIEMENT.md, étape 4).
+  - type: web
+    name: sen-suivi-ia
+    runtime: docker
+    plan: free
+    region: frankfurt
+    rootDir: ai-service
+    dockerfilePath: ./Dockerfile.render
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: EMBEDDING_FOURNISSEUR
+        value: mistral
+      - key: AI_SERVICE_CLE
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: MISTRAL_CLE_API
+        sync: false
+      - key: LLM_CLE_API
+        sync: false

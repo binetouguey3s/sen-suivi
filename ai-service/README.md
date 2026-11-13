@@ -1,30 +1,27 @@
----
-title: Sen Suivi IA
-emoji: 🌿
-colorFrom: green
-colorTo: blue
-sdk: gradio
-sdk_version: 5.9.1
-python_version: "3.12"
-app_file: lancer_space.py
-pinned: false
----
-
 # Sen Suivi — microservice IA
 
 Titou (chatbot), modération du forum, transcription et RAG des ressources.
-Ce dossier est publié tel quel sur un Space Hugging Face (Docker) par le
-workflow GitHub `.github/workflows/deployer-ia.yml`.
 
-Le bloc en tête de ce fichier est lu par Hugging Face. Les Spaces Docker étant
-payants, le Space est déclaré `gradio` (gratuit) : Hugging Face installe
-`requirements.txt` puis exécute `lancer_space.py`, qui démarre le service FastAPI
-sur le port 7860. Le `Dockerfile` sert au développement local (docker compose).
+## Deux façons de le lancer
 
-Réglages à saisir dans **Settings > Variables and secrets** du Space :
-
-| Nom | Type | Rôle |
+| | Local (docker compose) | En ligne (Render, offre gratuite) |
 | --- | --- | --- |
-| `AI_SERVICE_CLE` | Secret | Clé partagée avec Django (la même des deux côtés) |
-| `BACKEND_URL` | Variable | Adresse du back-end, ex. `https://sen-suivi-api.onrender.com` |
-| `LLM_*`, `MISTRAL_*`, `MODERATION_*`, `TRANSCRIPTION_*` | Secrets | Comme dans `.env.example` |
+| Image | `Dockerfile` | `Dockerfile.render` |
+| Dépendances | `requirements.txt` (avec PyTorch) | `requirements-render.txt` (sans PyTorch) |
+| Vecteurs du RAG | modèle sentence-transformers local | API Mistral (`EMBEDDING_FOURNISSEUR=mistral`) |
+| Index ChromaDB | volume `chroma_data` | `/tmp/chroma`, reconstruit à chaque démarrage depuis `BACKEND_URL` |
+
+La version en ligne tient dans les 512 Mo de Render (environ 120 Mo mesurés).
+Changer de fournisseur de vecteurs crée une nouvelle collection : l'index se
+reconstruit tout seul.
+
+## Réglages propres à la mise en ligne
+
+| Nom | Rôle |
+| --- | --- |
+| `AI_SERVICE_CLE` | Clé partagée avec Django (la même des deux côtés) |
+| `BACKEND_URL` | Adresse du back-end, ex. `https://sen-suivi-api.onrender.com` |
+| `EMBEDDING_FOURNISSEUR` | `mistral` sur Render, `local` sinon |
+| `MISTRAL_CLE_API`, `LLM_*`, `MODERATION_*`… | Comme dans `.env.example` |
+
+Voir `DEPLOIEMENT.md` à la racine du dépôt.
