@@ -1,5 +1,6 @@
 """Configuration Django du back-end Sen Suivi."""
 
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -13,6 +14,8 @@ env = environ.Env()
 
 SECRET_KEY = env('DJANGO_SECRET_KEY', default='change_moi')
 DEBUG = env.bool('DJANGO_DEBUG', default=False)
+# Lancement de la suite de tests (manage.py test)
+TESTS = len(sys.argv) > 1 and sys.argv[1] == 'test'
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 # Render donne l'adresse publique du service : elle est acceptée sans réglage
 if env('RENDER_EXTERNAL_HOSTNAME', default=''):
@@ -198,6 +201,15 @@ REST_FRAMEWORK = {
     # Le paramètre ?format= sert de filtre de la bibliothèque : on désactive
     # l'usage qu'en fait DRF pour le rendu.
     'URL_FORMAT_OVERRIDE': None,
+    # Plafonds d'envois par visiteur (config/limitation.py) : protègent les
+    # crédits des modèles de langage et la boîte mail des administrateurs.
+    # Pendant les tests, plafonds très hauts pour ne gêner aucun test.
+    'DEFAULT_THROTTLE_RATES': {
+        'chatbot': env('LIMITE_CHATBOT', default='20/min') if not TESTS else '10000/min',
+        'inscription': env('LIMITE_INSCRIPTION', default='10/hour') if not TESTS else '10000/min',
+        'reinitialisation': env('LIMITE_REINITIALISATION', default='5/hour') if not TESTS else '10000/min',
+        'forum': env('LIMITE_FORUM', default='30/hour') if not TESTS else '10000/min',
+    },
 }
 
 SIMPLE_JWT = {

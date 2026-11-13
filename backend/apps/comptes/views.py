@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from config.limitation import LimiteEcritures
 from apps.notifications.services import declencher_workflow
 
 from .mixins import LimitationTentativesConnexionMixin
@@ -37,6 +38,8 @@ from .serializers import (
 
 class InscriptionUtilisateurView(generics.CreateAPIView):
     """POST /api/auth/register"""
+    throttle_classes = [LimiteEcritures]
+    throttle_scope = 'inscription'
 
     permission_classes = [AllowAny]
     serializer_class = InscriptionUtilisateurSerializer
@@ -52,6 +55,8 @@ class LoginView(LimitationTentativesConnexionMixin, TokenObtainPairView):
 
 class InscriptionProfessionnelView(generics.CreateAPIView):
     """POST /api/professionnels/inscription — crée le compte en EN_ATTENTE."""
+    throttle_classes = [LimiteEcritures]
+    throttle_scope = 'inscription'
 
     permission_classes = [AllowAny]
     serializer_class = InscriptionProfessionnelSerializer
@@ -119,6 +124,8 @@ class ProfessionnelDetailView(generics.RetrieveUpdateAPIView):
 
 class DemandeReinitialisationView(APIView):
     """POST /api/auth/mot-de-passe-oublie — répond toujours 200 (pas de fuite d'existence du compte)."""
+    throttle_classes = [LimiteEcritures]
+    throttle_scope = 'reinitialisation'
 
     permission_classes = [AllowAny]
 

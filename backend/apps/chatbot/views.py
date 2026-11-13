@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config.limitation import LimiteEcritures
 from apps.comptes.permissions import EstUtilisateur
 from apps.comptes.personne_confiance import alerter_automatiquement
 from apps.orientation.services import suggerer
@@ -43,6 +44,8 @@ class ChatbotMessageView(APIView):
     explicitement accepté la conservation (ConversationChatbot.consentement_conservation).
     Sans compte ou sans ce consentement, l'échange est traité sans être stocké.
     """
+    throttle_classes = [LimiteEcritures]
+    throttle_scope = 'chatbot'
 
     permission_classes = [AllowAny]
 
@@ -266,6 +269,8 @@ class ReponseVocaleView(APIView):
     signé). 204 si la synthèse échoue : l'interface garde le texte, et peut
     utiliser la voix du navigateur.
     """
+    throttle_classes = [LimiteEcritures]
+    throttle_scope = 'chatbot'
 
     permission_classes = [AllowAny]
 

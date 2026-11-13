@@ -8,6 +8,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config.limitation import LimiteEcritures
 from apps.comptes.permissions import EstAdministrateur, EstUtilisateur
 
 from . import moderation as moderation_service
@@ -53,6 +54,8 @@ class PublicationForumListCreateView(generics.ListCreateAPIView):
 
     Filtres : ?thematique=STRESS et ?q=texte (titre ou contenu).
     """
+    throttle_classes = [LimiteEcritures]
+    throttle_scope = 'forum'
 
     permission_classes = [EstUtilisateur]
 
@@ -99,6 +102,8 @@ class PublicationForumDetailView(generics.RetrieveAPIView):
 
 class CommentaireForumCreateView(generics.CreateAPIView):
     """POST /api/forum/publications/{id}/commentaires"""
+    throttle_classes = [LimiteEcritures]
+    throttle_scope = 'forum'
 
     permission_classes = [EstUtilisateur]
     serializer_class = CommentaireForumEcritureSerializer
