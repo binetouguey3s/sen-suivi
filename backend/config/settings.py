@@ -162,6 +162,8 @@ STORAGES = {
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 if env('STOCKAGE_BUCKET', default=''):
+    from botocore.config import Config as ConfigBoto
+
     STORAGES['default'] = {
         'BACKEND': 'storages.backends.s3.S3Storage',
         'OPTIONS': {
@@ -174,6 +176,16 @@ if env('STOCKAGE_BUCKET', default=''):
             'querystring_auth': True,
             'querystring_expire': 3600,
             'file_overwrite': False,
+            # Supabase Storage et les autres stockages « compatibles S3 » :
+            # adresses de la forme …/s3/<bucket>/<fichier>, et pas de sommes de
+            # contrôle CRC32 automatiques (ajoutées par boto3 depuis la 1.36,
+            # elles font refuser les envois)
+            'addressing_style': 'path',
+            'signature_version': 's3v4',
+            'client_config': ConfigBoto(
+                request_checksum_calculation='when_required',
+                response_checksum_validation='when_required',
+            ),
         },
     }
 
