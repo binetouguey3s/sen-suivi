@@ -256,6 +256,11 @@ EMAIL_TIMEOUT = env.int('EMAIL_TIMEOUT', default=10)
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Sen Suivi <no-reply@sensuivi.sn>')
 # Notifications aussi envoyées par e-mail (en plus de la cloche), selon les préférences de chacun
 EMAIL_NOTIFICATIONS = env.bool('EMAIL_NOTIFICATIONS', default=True)
+# Domaines sans boîte mail réelle (comptes de démonstration) : aucun e-mail n'y
+# part. À vider (EMAIL_DOMAINES_SANS_ENVOI=) le jour où sensuivi.sn est acheté.
+EMAIL_DOMAINES_SANS_ENVOI = [
+    d.strip().lower() for d in env('EMAIL_DOMAINES_SANS_ENVOI', default='sensuivi.sn').split(',') if d.strip()
+]
 # Les notifications partent en arrière-plan : la page n'attend jamais le serveur d'e-mails
 EMAIL_ASYNCHRONE = env.bool('EMAIL_ASYNCHRONE', default=True)
 

@@ -21,6 +21,12 @@ SIGNATURE = (
 
 def envoyer(adresse: str, objet: str, contenu: str) -> bool:
     """Envoie un e-mail tout de suite ; vrai s'il est parti. Jamais d'exception."""
+    # Comptes de démonstration (@sensuivi.sn) : le domaine n'existe pas encore,
+    # chaque envoi reviendrait en erreur et nuirait à la réputation de
+    # l'expéditeur chez Brevo. La notification reste visible dans la cloche.
+    domaine = adresse.rsplit('@', 1)[-1].lower()
+    if domaine in settings.EMAIL_DOMAINES_SANS_ENVOI:
+        return False
     try:
         send_mail(objet, contenu + SIGNATURE, settings.DEFAULT_FROM_EMAIL, [adresse], fail_silently=False)
         return True

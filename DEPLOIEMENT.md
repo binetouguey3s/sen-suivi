@@ -253,5 +253,9 @@ Il suffit de fusionner dans `main` sur GitHub :
    `CSRF_TRUSTED_ORIGINS` et `FRONTEND_URL` avec les nouvelles adresses ; sur
    Vercel : `API_BASE_URL` = `https://api.sensuivi.com/api` ; sur Render
    (`sen-suivi-ia`) : `BACKEND_URL`.
-4. Pour tout héberger chez LWS, il faut un **VPS** (l'hébergement mutualisé ne
+4. Si c'est `sensuivi.sn` qui est acheté : sur Render, ajouter
+   `EMAIL_DOMAINES_SANS_ENVOI` avec une valeur vide. Sans cela, aucun e-mail
+   ne part vers les adresses `@sensuivi.sn` (réservées aux comptes de
+   démonstration tant que le domaine n'existe pas).
+5. Pour tout héberger chez LWS, il faut un **VPS** (l'hébergement mutualisé ne
    fait pas tourner Docker). On y relance alors `docker compose`, avec n8n.

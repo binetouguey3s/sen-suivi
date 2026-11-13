@@ -45,3 +45,15 @@ class SanteTests(TestCase):
         reponse = self.client.get('/api/sante')
         self.assertEqual(reponse.status_code, 200)
         self.assertEqual(reponse.json(), {'statut': 'ok'})
+
+
+class DomainesSansEnvoiTests(TestCase):
+    @override_settings(EMAIL_DOMAINES_SANS_ENVOI=['sensuivi.sn'])
+    @patch('apps.notifications.courriel.send_mail')
+    def test_aucun_email_vers_les_comptes_de_demonstration(self, send_mail):
+        from .courriel import envoyer
+
+        self.assertFalse(envoyer('awa.ndiaye@sensuivi.sn', 'Rappel', 'Bonjour'))
+        send_mail.assert_not_called()
+        self.assertTrue(envoyer('vraie.personne@gmail.com', 'Rappel', 'Bonjour'))
+        send_mail.assert_called_once()
