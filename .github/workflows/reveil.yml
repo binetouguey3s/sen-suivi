@@ -1,0 +1,26 @@
+# Garde l'API et Titou éveillés en journée : sur l'offre gratuite de Render,
+# un service s'endort après 15 minutes sans visite et met ensuite près de
+# 30 secondes à répondre (chatbot, vocal, premiers chargements).
+# Plage limitée à 7 h - 19 h (Dakar = UTC) pour rester sous les 750 heures
+# gratuites par mois de Render. GitHub peut décaler un passage de quelques minutes.
+name: Réveil
+
+on:
+  schedule:
+    - cron: '*/10 7-18 * * *'
+  workflow_dispatch:
+
+jobs:
+  reveiller:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Réveiller l'API et Titou
+        run: |
+          for url in \
+            https://sen-suivi-api.onrender.com/api/sante \
+            https://sen-suivi-ia.onrender.com/health
+          do
+            curl --silent --show-error --output /dev/null --max-time 120 \
+              --retry 2 --retry-delay 20 --retry-all-errors \
+              --write-out "$url -> %{http_code} en %{time_total}s\n" "$url" || true
+          done
