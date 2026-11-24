@@ -1300,7 +1300,7 @@ docker compose exec backend python manage.py reindexer_ressources
 
 ### Comptes de démonstration
 
-Créés par `seed_donnees`, mot de passe commun `SenSuivi2026!` :
+Créés par `seed_donnees`. Leur mot de passe commun n'est écrit ni dans le code ni dans la documentation : il vient de `MOT_DE_PASSE_DEMO` dans le `.env`, ou la commande en tire un au hasard et l'affiche une seule fois à la fin.
 
 | Compte | E-mail |
 |---|---|

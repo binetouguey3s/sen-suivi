@@ -243,40 +243,53 @@ class SupervisionIATests(APITestCase):
 
 
 class SecuriserComptesDemoTests(APITestCase):
-    """Avant l'ouverture au public, le mot de passe de démonstration n'ouvre plus rien."""
+    """Avant l'ouverture au public, les comptes de démonstration n'ouvrent plus rien."""
+
+    MOT_DEMO = 'Mot-De-Demo-Test-1'
+
+    def _compte(self, email, mot_de_passe):
+        compte = Administrateur.objects.create(email=email, nom='Test')
+        compte.set_password(mot_de_passe)
+        compte.save()
+        return compte
 
     def test_seuls_les_comptes_de_demonstration_sont_touches(self):
         from io import StringIO
 
         from django.core.management import call_command
 
-        from apps.comptes.management.commands.seed_donnees import MOT_DE_PASSE_DEMO
-
-        demo = Administrateur.objects.create(email='admin@sensuivi.sn', nom='Démo')
-        demo.set_password(MOT_DE_PASSE_DEMO)
-        demo.save()
-        vrai = Administrateur.objects.create(email='binetou@sensuivi.sn', nom='Binetou')
-        vrai.set_password('Un-Vrai-Mot-2026!')
-        vrai.save()
+        demo = self._compte('admin@sensuivi.sn', self.MOT_DEMO)
+        vrai = self._compte('binetou@exemple.sn', 'Un-Vrai-Mot-2026!')
 
         call_command('securiser_comptes_demo', stdout=StringIO())
 
         demo.refresh_from_db()
         vrai.refresh_from_db()
-        self.assertFalse(demo.check_password(MOT_DE_PASSE_DEMO))
+        self.assertFalse(demo.check_password(self.MOT_DEMO))
         self.assertTrue(demo.is_active)
         self.assertTrue(vrai.check_password('Un-Vrai-Mot-2026!'))
+
+    def test_sauf_garde_les_comptes_nommes(self):
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        garde = self._compte('awa.ndiaye@sensuivi.sn', self.MOT_DEMO)
+        autre = self._compte('admin@sensuivi.sn', self.MOT_DEMO)
+
+        call_command('securiser_comptes_demo', '--sauf', 'Awa.Ndiaye@sensuivi.sn', stdout=StringIO())
+
+        garde.refresh_from_db()
+        autre.refresh_from_db()
+        self.assertTrue(garde.check_password(self.MOT_DEMO))
+        self.assertFalse(autre.check_password(self.MOT_DEMO))
 
     def test_desactiver_cache_aussi_les_comptes(self):
         from io import StringIO
 
         from django.core.management import call_command
 
-        from apps.comptes.management.commands.seed_donnees import MOT_DE_PASSE_DEMO
-
-        demo = Administrateur.objects.create(email='admin@sensuivi.sn', nom='Démo')
-        demo.set_password(MOT_DE_PASSE_DEMO)
-        demo.save()
+        demo = self._compte('admin@sensuivi.sn', self.MOT_DEMO)
         call_command('securiser_comptes_demo', '--desactiver', stdout=StringIO())
         demo.refresh_from_db()
         self.assertFalse(demo.is_active)

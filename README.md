@@ -98,7 +98,8 @@ docker compose exec backend python manage.py reindexer_ressources
 La commande de seed recrée toutes les données de démonstration : questions des tests,
 professionnels, lieux, 21 ressources (dont les podcasts de respiration avec leur audio et
 une vidéo proposée par un professionnel), forum et comptes de démonstration. Elle peut être
-relancée sans créer de doublons. Mot de passe commun : `SenSuivi2026!`.
+relancée sans créer de doublons. Le mot de passe des comptes de démonstration n'est écrit
+nulle part : la commande l'affiche une fois à la fin (ou utilise `MOT_DE_PASSE_DEMO` du `.env`).
 
 | Compte | E-mail |
 |---|---|

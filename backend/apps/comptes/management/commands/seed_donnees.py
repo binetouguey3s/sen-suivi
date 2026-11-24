@@ -9,6 +9,8 @@ Idempotente : peut être relancée sans dupliquer les données (get_or_create
 sur les clés naturelles : email, titre, nom+ville).
 """
 
+import os
+import secrets
 from datetime import timedelta
 
 from django.core.management import call_command
@@ -28,7 +30,12 @@ from apps.suivi.models import (
     TypeEvaluation,
 )
 
-MOT_DE_PASSE_DEMO = 'SenSuivi2026!'
+# Aucun mot de passe écrit dans le dépôt (public) : il vient de la variable
+# d'environnement MOT_DE_PASSE_DEMO, ou il est tiré au hasard et affiché une
+# seule fois à la fin de la commande.
+def mot_de_passe_demo() -> tuple[str, bool]:
+    choisi = os.environ.get('MOT_DE_PASSE_DEMO', '').strip()
+    return (choisi, False) if choisi else (secrets.token_urlsafe(12), True)
 
 OPTIONS_STANDARD = [
     ('Jamais', 0),
@@ -198,6 +205,7 @@ class Command(BaseCommand):
     help = "Crée les données de démonstration (professionnels, lieux, ressources, comptes, forum, questions)."
 
     def handle(self, *args, **options):
+        self.mot_de_passe, genere = mot_de_passe_demo()
         self._creer_questions()
         professionnel_valide = self._creer_professionnels()
         self._creer_ressources()
@@ -205,7 +213,13 @@ class Command(BaseCommand):
         self._creer_forum(utilisateur_demo)
         call_command('importer_lieux', stdout=self.stdout)
         self.stdout.write(self.style.SUCCESS('Données de test créées.'))
-        self.stdout.write(f"Mot de passe de tous les comptes de démonstration : {MOT_DE_PASSE_DEMO}")
+        if genere:
+            self.stdout.write(
+                f"Mot de passe des comptes de démonstration créés à l'instant : {self.mot_de_passe}\n"
+                "Notez-le : il n'est enregistré nulle part. Les comptes qui existaient déjà gardent le leur."
+            )
+        else:
+            self.stdout.write('Comptes de démonstration créés avec le mot de passe de MOT_DE_PASSE_DEMO.')
 
     def _creer_questions(self):
         for type_evaluation, questions in QUESTIONS_PAR_TYPE.items():
@@ -244,7 +258,7 @@ class Command(BaseCommand):
                 },
             )
             if cree:
-                professionnel.set_password(MOT_DE_PASSE_DEMO)
+                professionnel.set_password(self.mot_de_passe)
                 professionnel.save()
             fiche = FICHES_PROFESSIONNELS.get(nom, {})
             a_completer = {champ: valeur for champ, valeur in fiche.items() if not getattr(professionnel, champ)}
@@ -270,7 +284,7 @@ class Command(BaseCommand):
             defaults={'nom': 'Ndiaye', 'prenom': 'Awa'},
         )
         if cree:
-            utilisateur.set_password(MOT_DE_PASSE_DEMO)
+            utilisateur.set_password(self.mot_de_passe)
             utilisateur.save()
 
             aujourdhui = timezone.localdate()
@@ -295,7 +309,7 @@ class Command(BaseCommand):
             defaults={'nom': 'Administrateur', 'is_staff': True, 'is_superuser': True},
         )
         if cree:
-            admin.set_password(MOT_DE_PASSE_DEMO)
+            admin.set_password(self.mot_de_passe)
             admin.save()
 
         return utilisateur
@@ -328,7 +342,7 @@ class Command(BaseCommand):
             defaults={'nom': pseudonyme, 'prenom': pseudonyme},
         )
         if cree:
-            auteur.set_password(MOT_DE_PASSE_DEMO)
+            auteur.set_password(self.mot_de_passe)
             auteur.pseudonyme = pseudonyme
             auteur.save()
         return auteur

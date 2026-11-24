@@ -178,19 +178,20 @@ Les deux premières lignes ne se font qu'une fois.
 
 ### Avant d'ouvrir le site au public : les comptes de démonstration
 
-Les 15 comptes de démonstration (`…@sensuivi.sn`) ont tous le mot de passe
-`SenSuivi2026!`, écrit dans le code et la documentation : quiconque le lit pourrait s'y
-connecter, y compris sur l'administrateur de démonstration. Garde-les tant que
-tu testes ; avant d'ouvrir le site à de vrais utilisateurs, lance :
+Les 15 comptes de démonstration (`…@sensuivi.sn`) partagent le même mot de
+passe, celui affiché par `seed_donnees` (jamais écrit dans le dépôt). Avant
+d'ouvrir le site à de vrais utilisateurs, lance :
 
 ```
 docker compose run --rm -e DATABASE_URL="adresse-neon-de-l-etape-1" backend python manage.py securiser_comptes_demo
 ```
 
-Chaque compte de démonstration reçoit un mot de passe aléatoire que personne ne
-connaît : les profils restent visibles (annuaire, forum, ressources), mais plus
-personne ne peut s'y connecter. Pour les faire aussi disparaître du site,
-ajouter `--desactiver` à la fin. Ton propre compte n'est jamais touché.
+Chaque compte en `@sensuivi.sn` reçoit un mot de passe aléatoire que personne
+ne connaît : les profils restent visibles (annuaire, forum, ressources), mais
+plus personne ne peut s'y connecter. Pour les faire aussi disparaître du site,
+ajouter `--desactiver` à la fin. Pour garder les comptes d'une démonstration,
+ajouter `--sauf awa.ndiaye@sensuivi.sn aminata.ba@sensuivi.sn`. Ton propre
+compte (autre adresse) n'est jamais touché.
 
 ## Étape 7 — Le site (Vercel)
 
